@@ -2,9 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import { MemoryRouter as Router } from 'react-router-dom';
 import { compose, createStore } from 'redux';
 import reportWebVitals from './reportWebVitals';
-import rootReducer from './store/reducer/rootReducer'
+import rootReducer from './store/reducer/rootReducer';
 import { Provider } from 'react-redux';
 
 declare global {
@@ -14,15 +15,14 @@ declare global {
 }
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-const store = createStore(
-  rootReducer,
-  composeEnhancers()
-);
+const store = createStore(rootReducer, composeEnhancers());
 
 ReactDOM.render(
   <Provider store={store}>
     <React.StrictMode>
-      <App />
+      <Router>
+        <App />
+      </Router>
     </React.StrictMode>
   </Provider>,
   document.getElementById('root')
