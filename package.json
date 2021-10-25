@@ -2,6 +2,9 @@
   "name": "beesaber2",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "server/*"
+  ],
   "scripts": {
     "build": "react-scripts build",
     "eject": "react-scripts eject",
@@ -54,7 +57,6 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.6.2",
-    "jest": "^27.3.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-is": "^17.0.2",
@@ -77,6 +79,7 @@
     "@types/sass": "^1.16.1",
     "@types/styled-components": "^5.1.15",
     "husky": "^7.0.4",
+    "jest": "^27.3.1",
     "jest-styled-components": "^7.0.5",
     "lint-staged": "^11.2.4",
     "prettier": "^2.4.1",
