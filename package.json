@@ -2,30 +2,31 @@
   "name": "beesaber2",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/jest": "^26.0.15",
-    "@types/node": "^12.0.0",
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
-    "typescript": "^4.1.2",
-    "web-vitals": "^1.0.1"
-  },
   "scripts": {
-    "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start": "react-scripts start",
+    "test": "jest"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-merge-commit": "jest TZ='UTC' --bail"
+    }
+  },
+  "lint-staged": {
+    "*.(js|jsx|ts|tsx|md|markdown|json|yml|yaml)": [
+      "yarn prettier --write"
+    ],
+    "*.(js|ts|tsx)": [
+      "yarn eslint --fix",
+      "yarn jest --bail --findRelatedTests"
+    ],
+    "*.scss": [
+      "yarn stylelint"
+    ],
+    "package.json": [
+      "yarn sort-package-json"
     ]
   },
   "browserslist": {
@@ -39,5 +40,40 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-is": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "styled-components": "^5.3.3",
+    "web-vitals": "^1.0.1"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^8.10.1",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "@types/jest": "^27.0.2",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/sass": "^1.16.1",
+    "@types/styled-components": "^5.1.15",
+    "husky": "^7.0.4",
+    "jest-styled-components": "^7.0.5",
+    "lint-staged": "^11.2.4",
+    "prettier": "^2.4.1",
+    "sort-package-json": "^1.52.0",
+    "stylelint": "^14.0.0",
+    "stylelint-order": "^5.0.0",
+    "stylelint-scss": "^4.0.0",
+    "typescript": "^4.1.2"
   }
 }

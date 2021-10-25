@@ -1,0 +1,12 @@
+# Build folders
+dist
+
+# Yarn files
+.yarn
+.pnp.*
+
+# We format our scss files using stylelint
+*.scss
+
+# Changelog is auto-generated
+CHANGELOG.md
