@@ -6,20 +6,17 @@ const name = 'notifications';
 
 const notificationsAction = prefixActionType(name);
 
-const addNotification = createAction(
-  notificationsAction('addNotification')
-);
+const addNotification = createAction(notificationsAction('addNotification'));
 
 type Notification = {
   notification: string;
-  typeOfNotification?: 'Created' | 'Deleted' | 'Updated' ;
+  typeOfNotification?: 'Created' | 'Deleted' | 'Updated';
   created?: string;
-}
+};
 
+type Notifications = Notification[];
 
-type State = Notification[];
-
-const initialState: State = []
+const initialState: Notifications = [];
 
 const slice = createSlice({
   name,
@@ -27,33 +24,29 @@ const slice = createSlice({
   reducers: {
     notificationAdded: (state, action) => {
       return [
-        ...state, {
+        ...state,
+        {
           notification: action.payload.notification,
           typeOfNotification: action.payload.typeOfNotification,
-          created: new Date().toISOString()
-        }
-      ]
+          created: new Date().toISOString(),
+        },
+      ];
     },
   },
 });
 
-console.log(slice.actions.notificationAdded('test'))
-
 // SELECTORS
-const selectNotifications = (state: State): Notification[] => state ;
+const selectNotifications = (state: Notifications): Notifications => state;
 
 // ACTIONS EXPORT
-export const { notificationAdded } =
-  slice.actions;
+export const { notificationAdded } = slice.actions;
 export { addNotification };
 
 // SELECTORS EXPORT
-export {
-  selectNotifications
-};
+export { selectNotifications };
 
 // REDUCER EXPORT
 export default slice.reducer;
 
 // TYPES EXPORT
-export type { State };
+export type { Notifications, Notification };
