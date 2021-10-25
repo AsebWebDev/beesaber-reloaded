@@ -1,5 +1,6 @@
 import axios from 'axios';
 import mongoose from 'mongoose';
+
 import errHandler from './errorHandler';
 
 const service = axios.create({
@@ -14,11 +15,11 @@ const validId = (id: string) => mongoose.Types.ObjectId.isValid(id);
 
 const userApi = {
   service,
-  getUserData(userId: string) {
+  async getUserData(userId: string) {
     if (validId(userId))
       return service
         .get('/user/' + userId)
-        .then((res) => console.log(res.data))
+        .then((res) => res.data)
         .catch(errHandler);
     else return Promise.resolve();
   },

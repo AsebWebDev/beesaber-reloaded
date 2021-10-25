@@ -1,4 +1,5 @@
 const path = require('path')
+
 require('dotenv').config({ path: path.join(__dirname, '.env') })
 
 const bodyParser = require('body-parser')
@@ -12,11 +13,13 @@ const session = require('express-session')
 const MongoStore = require('connect-mongo')(session)
 
 require('./configs/database')
+
 mongoose.set('useFindAndModify', false) // prevent deprecation warning of fineByIdAndUpdate()
 
 // const app_name = require('./package.json').name
 // const debug = require('debug')(`${app_name}:${path.basename(__filename).split('.')[0]}`)
 const app = express()
+
 app.use(nocache())
 app.use(cors({  // Set "Access-Control-Allow-Origin" header --> allow Google Auth Login
   origin: (origin, cb) => {
@@ -50,6 +53,7 @@ app.use('/api/user', require('./routes/user'))
 // For any routes that starts with "/api", catch 404 and forward to error handler
 app.use('/api/*', (req, res, next) => {
   let err = new Error('Not Found')
+
   err.status = 404
   next(err)
 })

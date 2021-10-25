@@ -1,8 +1,6 @@
-import reducer, {
-  selectNotifications,
-  Notification,
-  Notifications,
-} from './notificationsReducer';
+import reducer, { selectNotifications } from './notificationsReducer';
+
+import type { Notification, Notifications } from './notificationsReducer';
 
 describe('notifications reducer', () => {
   it('should return initialState', () => {
@@ -18,6 +16,7 @@ describe('selectors', () => {
   const exampleNotification: Notification = {
     notification: 'This is a Notification',
   };
+
   it('should select notifications', () => {
     const mockStore: Notifications = [exampleNotification];
 

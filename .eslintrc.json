@@ -1,0 +1,20 @@
+{
+  "extends": "./base.js",
+
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaFeatures": {
+        "jsx": true
+    }
+},
+
+  "rules": {
+    "import/no-commonjs": "off"
+  },
+
+  "settings": {
+    "jest": {
+      "version": 27
+    }
+  }
+}

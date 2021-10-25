@@ -1,8 +1,7 @@
 import type { AxiosError } from 'axios';
 
-const errHandler = (err: AxiosError) => {
-  if (err.response && err.response.data) {
-    console.error('API response', err.response.data);
+const errHandler = (err: AxiosError): void => {
+  if (err.response?.data !== undefined) {
     throw err.response.data.message;
   }
   throw err;

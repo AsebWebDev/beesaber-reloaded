@@ -9,12 +9,16 @@ const notificationsAction = prefixActionType(name);
 const addNotification = createAction(notificationsAction('addNotification'));
 
 type Notification = {
+  created?: string;
   notification: string;
   typeOfNotification?: 'Created' | 'Deleted' | 'Updated';
-  created?: string;
 };
 
 type Notifications = Notification[];
+
+type NotificationAction = {
+  payload: Notification;
+};
 
 const initialState: Notifications = [];
 
@@ -22,16 +26,14 @@ const slice = createSlice({
   name,
   initialState,
   reducers: {
-    notificationAdded: (state, action) => {
-      return [
-        ...state,
-        {
-          notification: action.payload.notification,
-          typeOfNotification: action.payload.typeOfNotification,
-          created: new Date().toISOString(),
-        },
-      ];
-    },
+    notificationAdded: (state, action: NotificationAction) => [
+      ...state,
+      {
+        notification: action.payload.notification,
+        typeOfNotification: action.payload.typeOfNotification,
+        created: new Date().toISOString(),
+      },
+    ],
   },
 });
 
@@ -49,4 +51,4 @@ export { selectNotifications };
 export default slice.reducer;
 
 // TYPES EXPORT
-export type { Notifications, Notification };
+export type { Notification, Notifications };

@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const mongoose = require('mongoose');
 const { isLoggedIn } = require('../middlewares')
@@ -10,6 +11,7 @@ router.post('/:id/', isLoggedIn, (req, res, next) => {
       .then(userDoc => {  
         if (!userDoc) {
           next(new Error("Could not find user."))
+
           return
         } 
         res.json(userDoc)
@@ -24,6 +26,7 @@ router.get('/:id/', isLoggedIn, (req, res, next) => {
     .then(userDoc => {  
       if (!userDoc) {
         next(new Error("Could not find user."))
+
         return
       } 
       res.json(userDoc)
@@ -40,6 +43,7 @@ router.post('/:id/bee/update', isLoggedIn, (req, res, next) => {
     .then(userDoc => {  
       if (!userDoc) {
         next(new Error("Could not find user."))
+
         return
       } 
       res.json(userDoc)
@@ -52,6 +56,7 @@ router.post('/:id/bee', isLoggedIn, (req, res, next) => {
   .then(userDoc => {  
     if (!userDoc) {
       next(new Error("Could not find user."))
+
       return
     } 
     res.json(userDoc)

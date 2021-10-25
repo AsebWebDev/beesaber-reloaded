@@ -1,7 +1,5 @@
 import React from 'react';
 
-const Dashboard = (): JSX.Element => {
-  return <div>Dashboard</div>;
-};
+const Dashboard = (): JSX.Element => <div>Dashboard</div>;
 
 export default Dashboard;

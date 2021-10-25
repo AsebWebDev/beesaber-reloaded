@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const Schema = mongoose.Schema;
 const userSettings = require('../configs/usersettings')
 
@@ -30,7 +31,7 @@ const userSchema = new Schema({
     default: []
   },
   scoreData: {
-    lastSync: String, //lastSync currently not used
+    lastSync: String, // lastSync currently not used
     scoresRecent: [],
     scoresTop: [],
     scoredSongsHashes: []
@@ -47,4 +48,5 @@ const userSchema = new Schema({
   });
 
 const User = mongoose.model('User', userSchema);
+
 module.exports = User;

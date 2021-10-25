@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const path = require('path')
+
 require('dotenv').config({ path: path.join(__dirname, '../.env') })
 
 const uri = process.env.DB_URI 
