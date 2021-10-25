@@ -1,5 +1,5 @@
 {
-  "ignoreFiles": "app/styles/vendor/**",
+  "ignoreFiles": "build/**",
   "plugins": ["stylelint-order", "stylelint-scss"],
   "rules": {
     "at-rule-empty-line-before": [

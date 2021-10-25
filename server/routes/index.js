@@ -1,7 +1,7 @@
 const express = require('express');
-const { isLoggedIn, isAdmin } = require('../middlewares')
+// const { isLoggedIn, isAdmin } = require('../middlewares')
 const router = express.Router();
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 
 // EXAMPLE
 // router.post('/checkheart', (req, res, next) => {

@@ -14,8 +14,8 @@ const MongoStore = require('connect-mongo')(session)
 require('./configs/database')
 mongoose.set('useFindAndModify', false) // prevent deprecation warning of fineByIdAndUpdate()
 
-const app_name = require('./package.json').name
-const debug = require('debug')(`${app_name}:${path.basename(__filename).split('.')[0]}`)
+// const app_name = require('./package.json').name
+// const debug = require('debug')(`${app_name}:${path.basename(__filename).split('.')[0]}`)
 const app = express()
 app.use(nocache())
 app.use(cors({  // Set "Access-Control-Allow-Origin" header --> allow Google Auth Login

@@ -6,29 +6,36 @@
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "start": "react-scripts start",
-    "test": "jest"
+    "test": "jest",
+    "lint:scss": "stylelint 'src/**/*.scss' --syntax scss",
+    "lint:scss:fix": "stylelint 'src/**/*.scss' --syntax scss --fix",
+    "lint:js": "eslint . --ext .js,.jsx",
+    "lint:js:fix": "yarn lint:js --fix"
+  },
+  "lint-staged": {
+    "ignore": ["node_modules", "dist", "package-lock.json"],
+    "linters": {
+      "src/**/*.(js|jsx|ts|tsx|md|markdown|json|yml|yaml)": [
+        "yarn prettier --write"
+      ],
+      "src/**/*.(js|ts|tsx)": [
+        "yarn eslint . --fix",
+        "yarn jest --bail --findRelatedTests",
+        "git add"
+      ],
+      "src/**/*.scss": [
+        "stylelint --syntax scss --fix", "git add"
+      ],
+      "package.json": [
+        "yarn sort-package-json"
+      ]
+    }
   },
   "husky": {
     "hooks": {
-      "commit": "lint-staged",
       "pre-commit": "lint-staged",
       "pre-merge-commit": "jest TZ='UTC' --bail"
     }
-  },
-  "lint-staged": {
-    "*.(js|jsx|ts|tsx|md|markdown|json|yml|yaml)": [
-      "yarn prettier --write"
-    ],
-    "*.(js|ts|tsx)": [
-      "yarn eslint --fix",
-      "yarn jest --bail --findRelatedTests"
-    ],
-    "*.scss": [
-      "yarn stylelint"
-    ],
-    "package.json": [
-      "yarn sort-package-json"
-    ]
   },
   "browserslist": {
     "production": [
