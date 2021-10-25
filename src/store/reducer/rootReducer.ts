@@ -1,9 +1,11 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
 import notifications from './notificationsReducer';
+import userData from './userDataReducer';
 
 const rootReducer = combineReducers({
-  notifications
+  notifications,
+  userData,
 });
 
 type RootState = ReturnType<typeof rootReducer>;
