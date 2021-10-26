@@ -58,9 +58,11 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.6.2",
     "axios": "^0.24.0",
+    "mdb-react-ui-kit": "^1.5.0",
     "mongoose": "^6.0.12",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-google-login": "^5.2.2",
     "react-is": "^17.0.2",
     "react-redux": "^7.2.5",
     "react-router-dom": "^5.3.0",
@@ -109,5 +111,9 @@
     "stylelint-scss": "^4.0.0",
     "ts-jest": "^27.0.7",
     "typescript": "^4.1.2"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
   }
 }
