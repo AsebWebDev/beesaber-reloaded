@@ -4,8 +4,8 @@ const router = express.Router()
 const User = require("../models/User")
 
 router.post("/googlelogin", (req, res, next) => {
-  const { googleId, username, profilePic } = req.body
-
+  const { googleId, profileObj } = req.body;
+  const { username, profilePic } = profileObj;
   User.findOne({ googleId })
     .then(userDoc => {
       if (!userDoc) {
@@ -15,7 +15,7 @@ router.post("/googlelogin", (req, res, next) => {
             req.logIn(userDoc, () => {
               res.json(newUser)
             })
-        }).catch(err => console.log(err))
+        }).catch(err => next(err))
       }
       if (userDoc) {
         req.logIn(userDoc, () => {
