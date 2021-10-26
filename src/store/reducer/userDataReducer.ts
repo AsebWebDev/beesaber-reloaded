@@ -6,7 +6,7 @@ const name = 'userData';
 
 const userDataActions = prefixActionType(name);
 
-const addNotification = createAction(userDataActions('updateUserData'));
+const updateUserData = createAction(userDataActions('updateUserData'));
 
 type UserData = {
   countryRank: number;
@@ -38,7 +38,7 @@ const selectUserData = (state: UserData): UserData => state;
 
 // ACTIONS EXPORT
 export const { userDataUpdated } = slice.actions;
-export { addNotification };
+export { updateUserData };
 
 // SELECTORS EXPORT
 export { selectUserData };
