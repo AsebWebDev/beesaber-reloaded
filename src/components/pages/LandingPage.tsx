@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { mediaQuery } from '../../tokens/definitions/layout';
 import tokens from '../../tokens/index';
 import BrandLogo from '../common/BrandLogo/BrandLogo';
+import GlowingText from '../common/GlowingText/GlowingText';
 import GoolgeOAuth from '../common/GoogleOAuth';
 
 const { blue, red } = tokens.color;
@@ -65,25 +66,11 @@ const BeeSaberTitle = styled.h1`
   }
 `;
 
-const BeeTitleRed = styled.span`
-  color: ${red.light};
-  text-shadow: ${red.main} -2px -1px 5px, ${red.main} 2px 1px 5px,
-    ${red.main} 0px 0px 10px, ${red.main} 0px 0px 15px, ${red.main} 0px 0px 20px,
-    ${red.main} 0px 0px 30px;
-`;
-
-const BeeTitleBlue = styled.span`
-  color: ${blue.light};
-  text-shadow: ${blue.main} -2px -1px 5px, ${blue.main} 2px 1px 5px,
-    ${blue.main} 0px 0px 10px, ${blue.main} 0px 0px 15px,
-    ${blue.main} 0px 0px 20px, ${blue.main} 0px 0px 30px;
-`;
-
 const LandingPage = (): JSX.Element => (
   <Container>
     <BeeSaberTitle>
-      <BeeTitleRed>Bee</BeeTitleRed>
-      <BeeTitleBlue>Saber</BeeTitleBlue>
+      <GlowingText titleColor={red}>Bee</GlowingText>
+      <GlowingText titleColor={blue}>Saber</GlowingText>
     </BeeSaberTitle>
     <Content>
       <BrandLogo />
