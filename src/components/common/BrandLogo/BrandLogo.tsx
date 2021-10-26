@@ -1,9 +1,9 @@
 import React from 'react';
-import tokens from 'src/tokens/index';
 import styled from 'styled-components';
 
 import { mediaQuery } from '../../../tokens/definitions/layout';
-import BrandLogoI from './BrandLogoI';
+import tokens from '../../../tokens/index';
+import BrandLogoI from './BrandLogoI/BrandLogoI';
 
 const Container = styled.div`
   position: relative;

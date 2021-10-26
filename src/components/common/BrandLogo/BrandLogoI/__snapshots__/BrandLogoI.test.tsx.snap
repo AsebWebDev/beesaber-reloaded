@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BrandLogoI should match the snapshot 1`] = `
+<div
+  class="sc-bdvvtL etKHLZ"
+>
+  <span
+    class="sc-gsDKAQ fDJHTz"
+  >
+    I
+  </span>
+</div>
+`;
