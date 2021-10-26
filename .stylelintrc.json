@@ -1,5 +1,6 @@
 {
   "ignoreFiles": "build/**",
+  "extends": "stylelint-config-standard-scss",
   "plugins": ["stylelint-order", "stylelint-scss"],
   "rules": {
     "at-rule-empty-line-before": [
@@ -190,7 +191,7 @@
     "selector-list-comma-space-after": "always-single-line",
     "selector-list-comma-space-before": "never",
     "selector-max-empty-lines": 0,
-    "selector-max-id": 0,
+    "selector-max-id": 1,
     "selector-no-vendor-prefix": true,
     "selector-pseudo-class-case": "lower",
     "selector-pseudo-class-no-unknown": [

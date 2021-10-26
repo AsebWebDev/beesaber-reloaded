@@ -5,3 +5,29 @@
     url('./tokens/definitions/neonTubes/NeonTubes2.otf') format('opentype'),
     url('./tokens/definitions/neonTubes/NeonTubes2.otf') format('truetype');
 }
+
+body {
+  background-color: #00111f;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+}
+
+#logo-honeycomb path {
+  fill: none;
+  stroke: #fffcdd;
+  stroke-linejoin: round;
+  stroke-width: 3.5;
+}
