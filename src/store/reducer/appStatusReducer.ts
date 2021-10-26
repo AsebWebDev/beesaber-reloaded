@@ -9,12 +9,15 @@ const name = 'appStatus';
 const appStatusActions = prefixActionType(name);
 
 const isLoggingIn = createAction(appStatusActions('isLoggingIn'));
+const isLoggedIn = createAction(appStatusActions('isLoggedIn'));
 
 type AppStatus = {
+  isLoggedIn: boolean;
   isLoggingIn: boolean;
 };
 
 const initialState: AppStatus = {
+  isLoggedIn: false,
   isLoggingIn: false,
 };
 
@@ -28,6 +31,12 @@ const slice = createSlice({
         isLoggingIn: action.payload,
       },
     }),
+    userIsLoggedIn: (state, action) => ({
+      ...state,
+      appStatus: {
+        isLoggedIn: action.payload,
+      },
+    }),
   },
 });
 
@@ -35,12 +44,15 @@ const slice = createSlice({
 const selectIsLoggingIn = (state: RootState): boolean =>
   state.appStatus.isLoggingIn;
 
+const selectIsLoggedIn = (state: RootState): boolean =>
+  state.appStatus.isLoggedIn;
+
 // ACTIONS EXPORT
-export const { userIsLogginIn } = slice.actions;
-export { isLoggingIn };
+export const { userIsLogginIn, userIsLoggedIn } = slice.actions;
+export { isLoggedIn, isLoggingIn };
 
 // SELECTORS EXPORT
-export { selectIsLoggingIn };
+export { selectIsLoggedIn, selectIsLoggingIn };
 
 // REDUCER EXPORT
 export default slice.reducer;
