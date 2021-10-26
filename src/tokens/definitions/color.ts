@@ -29,6 +29,8 @@ const yellow: ColorSet = {
   light: '#fffcdd',
 };
 
+export type { ColorSet, PageSet };
+
 export default {
   blue,
   page,
