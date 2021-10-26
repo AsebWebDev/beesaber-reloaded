@@ -1,8 +1,14 @@
 import type { AxiosError } from 'axios';
 
-const errHandler = (err: AxiosError): void => {
-  if (err.response?.data !== undefined) {
-    throw err.response.data.message;
+type ErrorBody = {
+  message: string;
+};
+
+const errHandler = (err: AxiosError): Error => {
+  if (err.response !== undefined) {
+    const data: ErrorBody = err.response.data;
+
+    throw new Error(data.message);
   }
   throw err;
 };
