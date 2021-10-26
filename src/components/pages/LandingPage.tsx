@@ -7,7 +7,7 @@ import { mediaQuery } from '../../tokens/definitions/layout';
 import tokens from '../../tokens/index';
 import BrandLogo from '../common/BrandLogo/BrandLogo';
 import GlowingText from '../common/GlowingText/GlowingText';
-import GoolgeOAuth from '../common/GoogleOAuth';
+import GoolgeOAuth from '../common/GoogleOAuth/GoogleOAuth';
 
 const { blue, red, yellow } = tokens.color;
 
