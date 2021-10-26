@@ -1,14 +1,38 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GlowingText should match the snapshot 1`] = `
-<span
-  class="sc-bdvvtL iTGPMb"
+exports[`GlowingText should match the snapshot when element is h1 1`] = `
+<h1
+  class="sc-bdvvtL djeFId"
 >
   Glowing Text
-</span>
+</h1>
 `;
 
-exports[`GlowingText should match the snapshot 2`] = `
+exports[`GlowingText should match the snapshot when element is h2 1`] = `
+<h2
+  class="sc-bdvvtL djeFId"
+>
+  Glowing Text
+</h2>
+`;
+
+exports[`GlowingText should match the snapshot when element is h2 2`] = `
+<h2
+  class="sc-bdvvtL djeFId"
+>
+  Glowing Text
+</h2>
+`;
+
+exports[`GlowingText should match the snapshot when element is p 1`] = `
+<p
+  class="sc-bdvvtL djeFId"
+>
+  Glowing Text
+</p>
+`;
+
+exports[`GlowingText should match the snapshot when element is span 1`] = `
 <span
   class="sc-bdvvtL djeFId"
 >
@@ -16,9 +40,33 @@ exports[`GlowingText should match the snapshot 2`] = `
 </span>
 `;
 
-exports[`GlowingText should match the snapshot 3`] = `
+exports[`GlowingText should match the snapshot when element is undefined 1`] = `
+<span
+  class="sc-bdvvtL djeFId"
+>
+  Glowing Text
+</span>
+`;
+
+exports[`GlowingText should match the snapshot when titlecolor is { main: '#ff0025', light: '#fff0f0', shadow: '#ff8d9e' } 1`] = `
+<span
+  class="sc-bdvvtL djeFId"
+>
+  Glowing Text
+</span>
+`;
+
+exports[`GlowingText should match the snapshot when titlecolor is { main: '#ffeb00', light: '#fffcdd' } 1`] = `
 <span
   class="sc-bdvvtL lfZOEg"
+>
+  Glowing Text
+</span>
+`;
+
+exports[`GlowingText should match the snapshot when titlecolor is { main: 'blue', light: '#edf5ff', shadow: '#7979ff' } 1`] = `
+<span
+  class="sc-bdvvtL iTGPMb"
 >
   Glowing Text
 </span>

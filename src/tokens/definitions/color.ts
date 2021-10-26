@@ -41,7 +41,7 @@ const createGlow = (color: ColorSet): string => `
 `;
 const allColorSetsArray = [blue, red, yellow];
 
-export { allColorSetsArray };
+export { allColorSetsArray, blue, red, yellow };
 
 export type { ColorSet, PageSet };
 
