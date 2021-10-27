@@ -1,7 +1,7 @@
 import axios from 'axios';
 import mongoose from 'mongoose';
 
-import googleApi from './googleApi';
+import authApi from './authApi';
 import userApi from './userApi';
 
 import type { AxiosError } from 'axios';
@@ -42,7 +42,7 @@ const errHandler = (err: PossibleErrors): Error => {
 const validId = (id: string) => mongoose.Types.ObjectId.isValid(id);
 
 const api = {
-  googleApi,
+  authApi,
   userApi,
 };
 

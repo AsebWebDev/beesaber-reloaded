@@ -10,7 +10,7 @@ type GoogleResponse = {
   };
 };
 
-const googleApi = {
+const authApi = {
   async googleLogin({ googleId, profileObj }: GoogleResponse) {
     return service
       .post<AxiosResponse>('/googlelogin', { googleId, profileObj })
@@ -22,7 +22,13 @@ const googleApi = {
       })
       .catch(errHandler);
   },
+
+  async logout() {
+    localStorage.removeItem('user');
+
+    return service.get('/logout');
+  },
 };
 
 export type { GoogleResponse };
-export default googleApi;
+export default authApi;

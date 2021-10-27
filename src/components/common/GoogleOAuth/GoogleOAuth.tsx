@@ -4,7 +4,7 @@ import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import styled from 'styled-components';
 
 import { errHandler } from '../../../api/api';
-import api from '../../../api/googleApi';
+import api from '../../../api/authApi';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
   selectIsLoggedIn,
@@ -30,18 +30,15 @@ const GoogleOAuth = (): JSX.Element | null => {
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
 
   const onSuccess = async (response: PossibleErrors) => {
-    console.log(response);
-
     dispatch(userIsLogginIn(true));
     try {
       if ('googleId' in response) {
         const { googleId, profileObj } = response;
         const userData = await api.googleLogin({ googleId, profileObj });
 
-        console.log(
-          '🚀 ~ file: GoogleOAuth.tsx ~ line 45 ~ userData',
-          userData
-        );
+        console.log('userData', userData);
+        // props.dispatch({ type: 'UPDATE_USER_DATA', userdata });
+        // props.dispatch({ type: 'LOGIN' });
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -52,7 +49,14 @@ const GoogleOAuth = (): JSX.Element | null => {
   };
 
   const onFailure = () => true;
-  const logout = () => true;
+  const logout = async () => {
+    await api.logout();
+    const userData = { username: null, profilePic: null };
+
+    console.log('userData', userData);
+    // dispatch({ type: 'UPDATE_USER_DATA', userdata });
+    // dispatch({ type: 'LOGOUT' });
+  };
 
   return (
     <Container>
