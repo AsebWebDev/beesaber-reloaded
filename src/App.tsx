@@ -1,5 +1,8 @@
+import 'react-toastify/dist/ReactToastify.css';
+
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 // import api from './api/api';
 // import Dashboard from './components/pages/Dashboard';
@@ -24,6 +27,7 @@ function App(): JSX.Element {
         <Route path="/myprofile" component={MyProfile} />
         <Route render={() => <h2>404</h2>} />
       </Switch>
+      <ToastContainer />
     </div>
   );
 }
