@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import colors from '../../../tokens/definitions/color';
+import colors, { allColorSetsObject } from '../../../tokens/definitions/color';
 
-import type { ColorSet } from '../../../tokens/definitions/color';
+import type { ColorSet, ColorStrings } from '../../../tokens/definitions/color';
 
 const Element = styled('span')<{ titleColor: ColorSet }>`
   ${({ titleColor }) => colors.createGlow(titleColor)}
@@ -14,7 +14,7 @@ type ElementType = 'h1' | 'h2' | 'h2' | 'p' | 'span';
 type Props = {
   as?: ElementType;
   children: React.ReactNode;
-  titleColor: ColorSet;
+  titleColor: ColorStrings;
 };
 
 const GlowingText = ({
@@ -22,7 +22,7 @@ const GlowingText = ({
   children,
   titleColor,
 }: Props): JSX.Element => (
-  <Element as={as} titleColor={titleColor}>
+  <Element as={as} titleColor={allColorSetsObject[titleColor]}>
     {children}
   </Element>
 );

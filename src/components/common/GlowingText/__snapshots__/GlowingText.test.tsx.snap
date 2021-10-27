@@ -108,7 +108,25 @@ exports[`GlowingText should match the snapshot when element is undefined 1`] = `
 </span>
 `;
 
-exports[`GlowingText should match the snapshot when titlecolor is { main: '#ff0025', light: '#fff0f0', shadow: '#ff8d9e' } 1`] = `
+exports[`GlowingText should match the snapshot when titlecolor is blue 1`] = `
+.c0 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+}
+
+<span
+  class="c0"
+>
+  Glowing Text
+</span>
+`;
+
+exports[`GlowingText should match the snapshot when titlecolor is red 1`] = `
 .c0 {
   color: #fff0f0;
   -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
@@ -126,7 +144,7 @@ exports[`GlowingText should match the snapshot when titlecolor is { main: '#ff00
 </span>
 `;
 
-exports[`GlowingText should match the snapshot when titlecolor is { main: '#ffeb00', light: '#fffcdd' } 1`] = `
+exports[`GlowingText should match the snapshot when titlecolor is yellow 1`] = `
 .c0 {
   color: #fffcdd;
   -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
@@ -135,24 +153,6 @@ exports[`GlowingText should match the snapshot when titlecolor is { main: '#ffeb
   -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: #ffeb00 -2px -1px 5px,#ffeb00 2px 1px 5px, #ffeb00 0px 0px 10px,#ffeb00 0px 0px 15px,#ffeb00 0px 0px 20px, #ffeb00 0px 0px 30px;
-}
-
-<span
-  class="c0"
->
-  Glowing Text
-</span>
-`;
-
-exports[`GlowingText should match the snapshot when titlecolor is { main: 'blue', light: '#edf5ff', shadow: '#7979ff' } 1`] = `
-.c0 {
-  color: #edf5ff;
-  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
-  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
-  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
-  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
-  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
-  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
 }
 
 <span

@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 
-import { allColorSetsArray, red } from '../../../tokens/definitions/color';
+import { colorStringsArray } from '../../../tokens/definitions/color';
 import GlowingText from './GlowingText';
 
 import type { ElementType } from './GlowingText';
 
 describe('GlowingText', () => {
-  it.each(allColorSetsArray)(
+  it.each(colorStringsArray)(
     'should match the snapshot when titlecolor is %s',
     (titleColor) => {
       const { container } = render(
@@ -22,7 +22,7 @@ describe('GlowingText', () => {
     'should match the snapshot when element is %s',
     (as: ElementType | undefined) => {
       const { container } = render(
-        <GlowingText as={as} titleColor={red}>
+        <GlowingText as={as} titleColor={'red'}>
           Glowing Text
         </GlowingText>
       );
