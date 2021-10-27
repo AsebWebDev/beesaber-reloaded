@@ -27,15 +27,11 @@ const slice = createSlice({
   reducers: {
     userIsLogginIn: (state, action) => ({
       ...state,
-      appStatus: {
-        isLoggingIn: action.payload,
-      },
+      isLoggingIn: action.payload,
     }),
     userIsLoggedIn: (state, action) => ({
       ...state,
-      appStatus: {
-        isLoggedIn: action.payload,
-      },
+      isLoggedIn: action.payload,
     }),
   },
 });
