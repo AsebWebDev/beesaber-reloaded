@@ -14,8 +14,9 @@ const Content = styled.div`
   align-items: center;
   justify-content: space-between;
   text-align: center;
-  width: 100%; 
-  font-size: 2rem;
+  flex-wrap: none;
+  width: 100%;
+  font-size: 1.5rem;
 
   ${mediaQuery.md} {
     flex-direction: row;
