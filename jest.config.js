@@ -1,14 +1,16 @@
 /* eslint-disable import/no-commonjs */
 const { pathsToModuleNameMapper } = require('ts-jest/utils');
 
-const { compilerOptions } = require('./tsconfig');
+const paths = {
+  "@/*": ["./src/*"]
+}
 
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
   testPathIgnorePatterns: ['dist'],
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
+  moduleNameMapper: pathsToModuleNameMapper(paths, {
     prefix: '<rootDir>/',
     '^img/': '<rootDir>/app/js/testing/__mocks__/fileMock.js',
     '^emoji-datasource/': '<rootDir>/app/js/testing/__mocks__/fileMock.js',
