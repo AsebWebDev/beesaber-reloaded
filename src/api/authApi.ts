@@ -11,7 +11,10 @@ type GoogleResponse = {
 };
 
 const authApi = {
-  async googleLogin({ googleId, profileObj }: GoogleResponse) {
+  async googleLogin({
+    googleId,
+    profileObj,
+  }: GoogleResponse): Promise<AxiosResponse | Error> {
     return service
       .post<AxiosResponse>('/googlelogin', { googleId, profileObj })
       .then((res) => {
@@ -23,7 +26,7 @@ const authApi = {
       .catch(errHandler);
   },
 
-  async logout() {
+  async logout(): Promise<AxiosResponse> {
     localStorage.removeItem('user');
 
     return service.get('/logout');

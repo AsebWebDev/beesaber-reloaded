@@ -39,7 +39,7 @@ const errHandler = (err: PossibleErrors): Error => {
   throw new Error('Unknown Error');
 };
 
-const validId = (id: string) => mongoose.Types.ObjectId.isValid(id);
+const validId = (id: string): boolean => mongoose.Types.ObjectId.isValid(id);
 
 const api = {
   authApi,
