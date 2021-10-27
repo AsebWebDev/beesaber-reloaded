@@ -4,24 +4,25 @@ import styled from 'styled-components';
 
 import { selectIsLoggingIn } from '../../store/reducer/appStatusReducer';
 import { mediaQuery } from '../../tokens/definitions/layout';
-import tokens from '../../tokens/index';
 import BrandLogo from '../common/BrandLogo/BrandLogo';
 import GlowingText from '../common/GlowingText/GlowingText';
 import GoolgeOAuth from '../common/GoogleOAuth/GoogleOAuth';
 
-const { blue, red, yellow } = tokens.color;
-
 const Content = styled.div`
-  ${mediaQuery.mobile} {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  width: 100%; 
+  font-size: 2rem;
+
+  ${mediaQuery.md} {
+    flex-direction: row;
   }
 
   ${mediaQuery.lg} {
-    width: 80%;
+    width: 90%;
   }
 
   ${mediaQuery.xl} {
@@ -70,18 +71,18 @@ const BeeSaberTitle = styled.h1`
 
 const LandingPage = (): JSX.Element => {
   const isLoggingIn = useSelector(selectIsLoggingIn);
-  const pleaseLoginText = 'Please login with your Google-Account';
+  const pleaseLoginText = 'Please login with your Google-Account:';
   const loggingInText = 'Logging you in ... wait for it ... ';
 
   return (
     <Container>
       <BeeSaberTitle>
-        <GlowingText titleColor={red}>Bee</GlowingText>
-        <GlowingText titleColor={blue}>Saber</GlowingText>
+        <GlowingText titleColor={'red'}>Bee</GlowingText>
+        <GlowingText titleColor={'blue'}>Saber</GlowingText>
       </BeeSaberTitle>
       <Content>
         <BrandLogo />
-        <GlowingText as="h2" titleColor={yellow}>
+        <GlowingText as="h2" titleColor={'yellow'}>
           {!isLoggingIn ? pleaseLoginText : loggingInText}
         </GlowingText>
         {!isLoggingIn && <GoolgeOAuth />}

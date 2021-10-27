@@ -1,6 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`NeonButton should match the snapshot 1`] = `
+.c2 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+}
+
 .c0 {
   display: -webkit-box;
   display: -webkit-flex;
@@ -141,7 +151,11 @@ exports[`NeonButton should match the snapshot 1`] = `
       class="fab fa-google"
     />
      
-    Button Text
+    <h1
+      class="c2"
+    >
+      Button Text
+    </h1>
   </div>
 </div>
 `;
