@@ -1,8 +1,8 @@
-// Utilities
-@import './tokens/definitions/scssVariables';
+// Import FontFace for Neon Tubes Font
+@import './tokens/definitions/neonTubes/importFontFace';
 
 body {
-  background-color: $bg-color;
+  background-color: #00111f;
   font-family:
     -apple-system,
     BlinkMacSystemFont,
