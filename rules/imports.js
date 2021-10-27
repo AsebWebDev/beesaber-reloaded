@@ -11,7 +11,9 @@ module.exports = {
     'import/no-named-as-default': 'error',
     'import/no-named-as-default-member': 'error',
     'import/no-named-default': 'error',
-    'import/no-unassigned-import': 'error',
+    "import/no-unassigned-import": ['error', {
+      "allowed": ["*.scss"]
+    }],
     'import/prefer-default-export': 'error',
     'simple-import-sort/imports': [
       'error',
