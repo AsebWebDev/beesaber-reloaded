@@ -1,6 +1,7 @@
 import { errHandler, service } from './api';
 
 import type { AxiosResponse } from 'axios';
+import type { UserData } from 'src/sharedTypes/UserData';
 
 type GoogleResponse = {
   googleId: string;
@@ -14,16 +15,21 @@ const authApi = {
   async googleLogin({
     googleId,
     profileObj,
-  }: GoogleResponse): Promise<AxiosResponse | Error> {
-    return service
-      .post<AxiosResponse>('/googlelogin', { googleId, profileObj })
-      .then((res) => {
-        // If we have localStorage.getItem('user') saved, the application will consider we are loggedin
-        localStorage.setItem('user', JSON.stringify(res.data));
+  }: GoogleResponse): Promise<UserData | undefined> {
+    try {
+      const { data }: AxiosResponse<UserData> = await service.post(
+        '/googlelogin',
+        { googleId, profileObj }
+      );
 
-        return res.data;
-      })
-      .catch(errHandler);
+      localStorage.setItem('user', JSON.stringify(data));
+
+      return await Promise.resolve(data);
+    } catch (err: unknown) {
+      errHandler(new Error());
+
+      return Promise.reject();
+    }
   },
 
   async logout(): Promise<AxiosResponse> {

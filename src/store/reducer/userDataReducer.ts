@@ -2,13 +2,16 @@ import { createAction, createSlice } from '@reduxjs/toolkit';
 
 import prefixActionType from '../helper/prefixActionType';
 
+import type { PayloadAction } from '@reduxjs/toolkit';
 import type { UserData } from '../../sharedTypes/UserData';
 
 const name = 'userData';
 
 const userDataActions = prefixActionType(name);
 
-const updateUserData = createAction(userDataActions('updateUserData'));
+const updateUserData = createAction<UserData | undefined>(
+  userDataActions('updateUserData')
+);
 
 const initialState: Record<string, unknown> | UserData = {};
 
@@ -16,9 +19,9 @@ const slice = createSlice({
   name,
   initialState,
   reducers: {
-    userDataUpdated: (state, action) => ({
+    userDataUpdated: (state, { payload }: PayloadAction<UserData>) => ({
       ...state,
-      userdata: action.payload,
+      ...payload,
     }),
   },
 });

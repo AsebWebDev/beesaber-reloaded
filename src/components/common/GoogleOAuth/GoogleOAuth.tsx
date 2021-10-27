@@ -1,6 +1,10 @@
 /* eslint-disable no-console */
 import React from 'react';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
+import {
+  // updateUserData,
+  userDataUpdated,
+} from 'src/store/reducer/userDataReducer';
 import styled from 'styled-components';
 
 import { errHandler } from '../../../api/api';
@@ -8,11 +12,13 @@ import api from '../../../api/authApi';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
   selectIsLoggedIn,
+  userIsLoggedIn,
   userIsLogginIn,
 } from '../../../store/reducer/appStatusReducer';
 import { mediaQuery } from '../../../tokens/definitions/layout';
 import NeonButton from '../NeonButton/NeonButton';
 
+// import type { UserData } from 'src/sharedTypes/UserData';
 import type { PossibleErrors } from '../../../api/api';
 
 const Container = styled.div`
@@ -36,9 +42,9 @@ const GoogleOAuth = (): JSX.Element | null => {
         const { googleId, profileObj } = response;
         const userData = await api.googleLogin({ googleId, profileObj });
 
-        console.log('userData', userData);
-        // props.dispatch({ type: 'UPDATE_USER_DATA', userdata });
-        // props.dispatch({ type: 'LOGIN' });
+        if (userData === undefined) return;
+        dispatch(userDataUpdated(userData));
+        dispatch(userIsLoggedIn(true));
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
