@@ -5,14 +5,16 @@ const { compilerOptions } = require('./tsconfig');
 
 module.exports = {
   preset: 'ts-jest',
-  testEnvironment: "jsdom",
+  testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
-  testPathIgnorePatterns: [
-    "dist"
-  ],
-  moduleNameMapper: {
-    ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
-    '^img/': '<rootDir>/src/testing/__mocks__/fileMock.js',
-    '\\.(css|less|scss)$': '<rootDir>/src/testing/__mocks__/styleMock.js',
+  testPathIgnorePatterns: ['dist'],
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
+    prefix: '<rootDir>/',
+    '^img/': '<rootDir>/app/js/testing/__mocks__/fileMock.js',
+    '^emoji-datasource/': '<rootDir>/app/js/testing/__mocks__/fileMock.js',
+  }),
+  transform: {
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+      '<rootDir>/src/testing/__mocks__/fileTransformer.js',
   },
 };

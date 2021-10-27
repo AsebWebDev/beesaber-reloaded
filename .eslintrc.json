@@ -5,13 +5,27 @@
     "sourceType": "module",
     "ecmaFeatures": {
         "jsx": true
-    }
+    },
+    "project": ["./tsconfig.json"]
 },
 
   "rules": {
-    "import/no-commonjs": "off"
+    "import/no-commonjs": "off",
+    "prettier/prettier": "off",
+    "import/no-unassigned-import": [
+      "error",
+      { "allow": ["**/*.scss", "**/*.css"] }
+    ]
   },
 
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": ["./tsconfig.json"] // Specify it only for TypeScript files
+      }
+    }
+  ],
   "settings": {
     "jest": {
       "version": 27
