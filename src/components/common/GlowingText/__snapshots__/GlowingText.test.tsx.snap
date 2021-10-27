@@ -1,72 +1,162 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`GlowingText should match the snapshot when element is h1 1`] = `
+.c0 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+}
+
 <h1
-  class="sc-bdvvtL djeFId"
+  class="c0"
 >
   Glowing Text
 </h1>
 `;
 
 exports[`GlowingText should match the snapshot when element is h2 1`] = `
+.c0 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+}
+
 <h2
-  class="sc-bdvvtL djeFId"
+  class="c0"
 >
   Glowing Text
 </h2>
 `;
 
 exports[`GlowingText should match the snapshot when element is h2 2`] = `
+.c0 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+}
+
 <h2
-  class="sc-bdvvtL djeFId"
+  class="c0"
 >
   Glowing Text
 </h2>
 `;
 
 exports[`GlowingText should match the snapshot when element is p 1`] = `
+.c0 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+}
+
 <p
-  class="sc-bdvvtL djeFId"
+  class="c0"
 >
   Glowing Text
 </p>
 `;
 
 exports[`GlowingText should match the snapshot when element is span 1`] = `
+.c0 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+}
+
 <span
-  class="sc-bdvvtL djeFId"
+  class="c0"
 >
   Glowing Text
 </span>
 `;
 
 exports[`GlowingText should match the snapshot when element is undefined 1`] = `
+.c0 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+}
+
 <span
-  class="sc-bdvvtL djeFId"
+  class="c0"
 >
   Glowing Text
 </span>
 `;
 
 exports[`GlowingText should match the snapshot when titlecolor is { main: '#ff0025', light: '#fff0f0', shadow: '#ff8d9e' } 1`] = `
+.c0 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+}
+
 <span
-  class="sc-bdvvtL djeFId"
+  class="c0"
 >
   Glowing Text
 </span>
 `;
 
 exports[`GlowingText should match the snapshot when titlecolor is { main: '#ffeb00', light: '#fffcdd' } 1`] = `
+.c0 {
+  color: #fffcdd;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ffeb00 -2px -1px 5px,#ffeb00 2px 1px 5px, #ffeb00 0px 0px 10px,#ffeb00 0px 0px 15px,#ffeb00 0px 0px 20px, #ffeb00 0px 0px 30px;
+}
+
 <span
-  class="sc-bdvvtL lfZOEg"
+  class="c0"
 >
   Glowing Text
 </span>
 `;
 
 exports[`GlowingText should match the snapshot when titlecolor is { main: 'blue', light: '#edf5ff', shadow: '#7979ff' } 1`] = `
+.c0 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+}
+
 <span
-  class="sc-bdvvtL iTGPMb"
+  class="c0"
 >
   Glowing Text
 </span>

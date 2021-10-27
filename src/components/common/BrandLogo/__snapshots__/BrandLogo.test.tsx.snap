@@ -1,59 +1,177 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`BrandLogo should match the snapshot 1`] = `
+.c1 {
+  font-family: 'NeonTubes2';
+}
+
+.c2 {
+  color: #fffcdd;
+  text-shadow: #ffeb00 -2px -1px 5px,#ffeb00 2px 1px 5px, #ffeb00 0px 0px 10px,#ffeb00 0px 0px 15px, #ffeb00 0px 0px 20px,#ffeb00 0px 0px 30px;
+}
+
+.c0 {
+  position: relative;
+  height: 150px;
+  width: 150px;
+  font-size: 80px;
+}
+
+.c0 div {
+  position: absolute;
+  -webkit-transform-origin: center;
+  -ms-transform-origin: center;
+  transform-origin: center;
+}
+
+.c0 div:first-child {
+  -webkit-transform: rotate(90deg) translate(-36px,-68px);
+  -ms-transform: rotate(90deg) translate(-36px,-68px);
+  transform: rotate(90deg) translate(-36px,-68px);
+  z-index: 5;
+}
+
+.c0 div:nth-child(2) {
+  -webkit-transform: rotate(150deg) translate(-103px,-49px);
+  -ms-transform: rotate(150deg) translate(-103px,-49px);
+  transform: rotate(150deg) translate(-103px,-49px);
+  z-index: 4;
+}
+
+.c0 div:nth-child(3) {
+  -webkit-transform: rotate(30deg) translate(120px,-19px);
+  -ms-transform: rotate(30deg) translate(120px,-19px);
+  transform: rotate(30deg) translate(120px,-19px);
+}
+
+.c0 div:nth-child(4) {
+  -webkit-transform: rotate(90deg) translate(70px,-68px);
+  -ms-transform: rotate(90deg) translate(70px,-68px);
+  transform: rotate(90deg) translate(70px,-68px);
+}
+
+.c0 div:nth-child(5) {
+  -webkit-transform: rotate(150deg) translate(2px,-49px);
+  -ms-transform: rotate(150deg) translate(2px,-49px);
+  transform: rotate(150deg) translate(2px,-49px);
+}
+
+.c0 div:nth-child(6) {
+  -webkit-transform: rotate(30deg) translate(15px,-20px);
+  -ms-transform: rotate(30deg) translate(15px,-20px);
+  transform: rotate(30deg) translate(15px,-20px);
+  z-index: 6;
+}
+
+.c0 .saber {
+  position: absolute;
+  height: 100%;
+  width: 3px;
+  top: 0%;
+  border-radius: 3px;
+}
+
+.c0 .saber.neon-red {
+  left: 49%;
+  -webkit-transform: rotate(30deg);
+  -ms-transform: rotate(30deg);
+  transform: rotate(30deg);
+  background-color: #fff0f0;
+  box-shadow: 0px 0px 8px 2px #ff8d9e, 0px 0px 12px 6px #ff0025;
+}
+
+.c0 .saber.neon-blue {
+  right: 49%;
+  -webkit-transform: rotate(-30deg);
+  -ms-transform: rotate(-30deg);
+  transform: rotate(-30deg);
+  background-color: #edf5ff;
+  box-shadow: 0px 0px 8px 2px #ff8d9e, 0px 0px 12px 6px #ff0025;
+}
+
+@media (max-width:575px) {
+  .c0 {
+    margin: 15px 0;
+  }
+}
+
+@media (min-width:576px) {
+  .c0 {
+    width: 50%;
+  }
+}
+
+@media (min-width:768px) {
+  .c0 {
+    width: 30%;
+  }
+}
+
+@media (min-width:1024px) {
+  .c0 {
+    width: 20%;
+  }
+}
+
+@media (min-width:1680px) {
+  .c0 {
+    width: 10%;
+  }
+}
+
 <div
-  class="sc-dkPtRN letjLb"
+  class="c0"
 >
   <div
-    class="sc-bdvvtL etKHLZ"
+    class="c1"
   >
     <span
-      class="sc-gsDKAQ fDJHTz"
+      class="c2"
     >
       I
     </span>
   </div>
   <div
-    class="sc-bdvvtL etKHLZ"
+    class="c1"
   >
     <span
-      class="sc-gsDKAQ fDJHTz"
+      class="c2"
     >
       I
     </span>
   </div>
   <div
-    class="sc-bdvvtL etKHLZ"
+    class="c1"
   >
     <span
-      class="sc-gsDKAQ fDJHTz"
+      class="c2"
     >
       I
     </span>
   </div>
   <div
-    class="sc-bdvvtL etKHLZ"
+    class="c1"
   >
     <span
-      class="sc-gsDKAQ fDJHTz"
+      class="c2"
     >
       I
     </span>
   </div>
   <div
-    class="sc-bdvvtL etKHLZ"
+    class="c1"
   >
     <span
-      class="sc-gsDKAQ fDJHTz"
+      class="c2"
     >
       I
     </span>
   </div>
   <div
-    class="sc-bdvvtL etKHLZ"
+    class="c1"
   >
     <span
-      class="sc-gsDKAQ fDJHTz"
+      class="c2"
     >
       I
     </span>

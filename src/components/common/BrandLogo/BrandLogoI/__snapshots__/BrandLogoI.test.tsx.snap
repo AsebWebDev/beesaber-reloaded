@@ -1,11 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`BrandLogoI should match the snapshot 1`] = `
+.c0 {
+  font-family: 'NeonTubes2';
+}
+
+.c1 {
+  color: #fffcdd;
+  text-shadow: #ffeb00 -2px -1px 5px,#ffeb00 2px 1px 5px, #ffeb00 0px 0px 10px,#ffeb00 0px 0px 15px, #ffeb00 0px 0px 20px,#ffeb00 0px 0px 30px;
+}
+
 <div
-  class="sc-bdvvtL etKHLZ"
+  class="c0"
 >
   <span
-    class="sc-gsDKAQ fDJHTz"
+    class="c1"
   >
     I
   </span>
