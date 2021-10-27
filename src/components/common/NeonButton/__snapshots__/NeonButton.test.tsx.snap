@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NeonButton should match the snapshot 1`] = `
+<div
+  id="neon-button"
+>
+  <div
+    id="button"
+  >
+    <span />
+    <span />
+    <span />
+    <span />
+    <i
+      class="fab fa-google"
+    />
+     
+    Button Text
+  </div>
+</div>
+`;
