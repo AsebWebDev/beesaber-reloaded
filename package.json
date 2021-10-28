@@ -69,6 +69,7 @@
     "react-scripts": "4.0.3",
     "react-toastify": "^8.0.3",
     "redux": "^4.1.1",
+    "redux-thunk": "^2.4.0",
     "sass": "^1.43.3",
     "styled-components": "^5.3.3",
     "web-vitals": "^1.0.1"
@@ -85,6 +86,7 @@
     "@types/react-dom": "^17.0.0",
     "@types/react-redux": "^7.1.20",
     "@types/react-router-dom": "^5.3.1",
+    "@types/redux-mock-store": "^1.0.3",
     "@types/sass": "^1.16.1",
     "@types/styled-components": "^5.1.15",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
@@ -105,6 +107,7 @@
     "postcss-scss": "^4.0.1",
     "prettier": "^2.4.1",
     "redux-devtools-extension": "^2.13.9",
+    "redux-mock-store": "^1.5.4",
     "sort-package-json": "^1.52.0",
     "stylelint": "^14.0.0",
     "stylelint-config-standard-scss": "^2.0.0",

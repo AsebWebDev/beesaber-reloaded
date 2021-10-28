@@ -1,0 +1,353 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GoogleOAuth should match snapshot when isLoggedIn=false 1`] = `
+.c3 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  margin: 0 10px;
+}
+
+.c1 body {
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  background: #00111f;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  font-family: 'consolas',sans-serif;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  margin: 0;
+  min-height: 100vh;
+  padding: 0;
+}
+
+.c2 {
+  color: rgb(0 0 255);
+  display: inline-block;
+  font-size: 20px;
+  -webkit-letter-spacing: 2px;
+  -moz-letter-spacing: 2px;
+  -ms-letter-spacing: 2px;
+  letter-spacing: 2px;
+  overflow: hidden;
+  padding: 5px 30px;
+  position: relative;
+  text-align: center;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  text-transform: uppercase;
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+}
+
+.c2:hover {
+  background: rgb(0 0 255);
+  box-shadow: 0 0 10px rgb(0 0 255),0 0 40px rgb(0 0 255), 0 0 80px rgb(0 0 255);
+  color: #fff0f0;
+  -webkit-transition-delay: 1s;
+  transition-delay: 1s;
+}
+
+.c2 span {
+  display: block;
+  position: absolute;
+}
+
+.c2 span:nth-child(1) {
+  background: linear-gradient(90deg,transparent,rgb(0 0 255));
+  height: 2px;
+  left: -100%;
+  top: 0;
+  width: 100%;
+}
+
+.c2 span:nth-child(2) {
+  background: linear-gradient(270deg,transparent,rgb(0 0 255));
+  bottom: 0;
+  height: 2px;
+  right: -100%;
+  width: 100%;
+}
+
+.c2 span:nth-child(3) {
+  background: linear-gradient(180deg,transparent,rgb(0 0 255));
+  height: 100%;
+  right: 0%;
+  top: -100%;
+  width: 2px;
+}
+
+.c2 span:nth-child(4) {
+  background: linear-gradient(360deg,transparent,rgb(0 0 255));
+  bottom: -100%;
+  height: 100%;
+  left: 0%;
+  width: 2px;
+}
+
+.c2:hover span:nth-child(1) {
+  left: 100%;
+  -webkit-transition: 1s;
+  transition: 1s;
+}
+
+.c2:hover span:nth-child(2) {
+  right: 100%;
+  -webkit-transition: 1s;
+  transition: 1s;
+  -webkit-transition-delay: 0.5s;
+  transition-delay: 0.5s;
+}
+
+.c2:hover span:nth-child(3) {
+  top: 100%;
+  -webkit-transition: 1s;
+  transition: 1s;
+  -webkit-transition-delay: 0.25s;
+  transition-delay: 0.25s;
+}
+
+.c2:hover span:nth-child(4) {
+  bottom: 100%;
+  -webkit-transition: 1s;
+  transition: 1s;
+  -webkit-transition-delay: 0.75s;
+  transition-delay: 0.75s;
+}
+
+@media (max-width:575px) {
+  .c0 {
+    margin-top: 20px;
+  }
+}
+
+<div>
+  <div
+    class="c0"
+  >
+    <span
+      role="button"
+    >
+      <div
+        class="c1"
+      >
+        <div
+          class="c2"
+        >
+          <span />
+          <span />
+          <span />
+          <span />
+          <i
+            class="fab fa-google"
+          />
+           
+          <h1
+            class="c3"
+          >
+            Login
+          </h1>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+`;
+
+exports[`GoogleOAuth should match snapshot when isLoggedIn=true 1`] = `
+.c3 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  margin: 0 10px;
+}
+
+.c1 body {
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  background: #00111f;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  font-family: 'consolas',sans-serif;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  margin: 0;
+  min-height: 100vh;
+  padding: 0;
+}
+
+.c2 {
+  color: rgb(0 0 255);
+  display: inline-block;
+  font-size: 20px;
+  -webkit-letter-spacing: 2px;
+  -moz-letter-spacing: 2px;
+  -ms-letter-spacing: 2px;
+  letter-spacing: 2px;
+  overflow: hidden;
+  padding: 5px 30px;
+  position: relative;
+  text-align: center;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  text-transform: uppercase;
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+}
+
+.c2:hover {
+  background: rgb(0 0 255);
+  box-shadow: 0 0 10px rgb(0 0 255),0 0 40px rgb(0 0 255), 0 0 80px rgb(0 0 255);
+  color: #fff0f0;
+  -webkit-transition-delay: 1s;
+  transition-delay: 1s;
+}
+
+.c2 span {
+  display: block;
+  position: absolute;
+}
+
+.c2 span:nth-child(1) {
+  background: linear-gradient(90deg,transparent,rgb(0 0 255));
+  height: 2px;
+  left: -100%;
+  top: 0;
+  width: 100%;
+}
+
+.c2 span:nth-child(2) {
+  background: linear-gradient(270deg,transparent,rgb(0 0 255));
+  bottom: 0;
+  height: 2px;
+  right: -100%;
+  width: 100%;
+}
+
+.c2 span:nth-child(3) {
+  background: linear-gradient(180deg,transparent,rgb(0 0 255));
+  height: 100%;
+  right: 0%;
+  top: -100%;
+  width: 2px;
+}
+
+.c2 span:nth-child(4) {
+  background: linear-gradient(360deg,transparent,rgb(0 0 255));
+  bottom: -100%;
+  height: 100%;
+  left: 0%;
+  width: 2px;
+}
+
+.c2:hover span:nth-child(1) {
+  left: 100%;
+  -webkit-transition: 1s;
+  transition: 1s;
+}
+
+.c2:hover span:nth-child(2) {
+  right: 100%;
+  -webkit-transition: 1s;
+  transition: 1s;
+  -webkit-transition-delay: 0.5s;
+  transition-delay: 0.5s;
+}
+
+.c2:hover span:nth-child(3) {
+  top: 100%;
+  -webkit-transition: 1s;
+  transition: 1s;
+  -webkit-transition-delay: 0.25s;
+  transition-delay: 0.25s;
+}
+
+.c2:hover span:nth-child(4) {
+  bottom: 100%;
+  -webkit-transition: 1s;
+  transition: 1s;
+  -webkit-transition-delay: 0.75s;
+  transition-delay: 0.75s;
+}
+
+@media (max-width:575px) {
+  .c0 {
+    margin-top: 20px;
+  }
+}
+
+<div>
+  <div
+    class="c0"
+  >
+    <span
+      role="button"
+    >
+      <div
+        class="c1"
+      >
+        <div
+          class="c2"
+        >
+          <span />
+          <span />
+          <span />
+          <span />
+          <i
+            class="fab fa-google"
+          />
+           
+          <h1
+            class="c3"
+          >
+            Logout
+          </h1>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+`;
