@@ -19,7 +19,7 @@ import {
   logoutProps,
 } from './authHandlers';
 
-import type { PossibleErrors } from '../../../api/api';
+import type { PossibleResponses } from '../../../api/api';
 
 const Container = styled.div`
   ${mediaQuery.mobile} {
@@ -34,7 +34,7 @@ const GoogleOAuth = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
 
-  const onSuccess = async (response: PossibleErrors) => {
+  const onSuccess = async (response: PossibleResponses) => {
     dispatch(userIsLogginIn(true));
     try {
       if ('googleId' in response) {

@@ -22,13 +22,13 @@ type ErrorBody = {
   message: string;
 };
 
-type PossibleErrors =
+type PossibleResponses =
   | AxiosError
   | Error
   | GoogleLoginResponse
   | GoogleLoginResponseOffline;
 
-const errHandler = (err: PossibleErrors): Error => {
+const errHandler = (err: PossibleResponses): Error => {
   let errorString = 'Unknown Error';
 
   if (axios.isAxiosError(err) && err.response !== undefined) {
@@ -47,7 +47,7 @@ const api = {
   userApi,
 };
 
-export type { PossibleErrors };
+export type { PossibleResponses };
 
 export { errHandler, service };
 
