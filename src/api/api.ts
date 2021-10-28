@@ -1,5 +1,6 @@
 import axios from 'axios';
 import mongoose from 'mongoose';
+import { toast } from 'react-toastify';
 
 import authApi from './authApi';
 import userApi from './userApi';
@@ -29,14 +30,17 @@ type PossibleErrors =
   | GoogleLoginResponseOffline;
 
 const errHandler = (err: PossibleErrors): Error => {
+  let errorString = 'Unknown Error';
+
   if (axios.isAxiosError(err) && err.response !== undefined) {
     const data: ErrorBody = err.response.data;
 
-    throw new Error(data.message);
+    errorString = data.message;
   }
-  if (err instanceof Error) throw new Error(err.message);
-  if (err.code !== undefined) throw new Error(err.code);
-  throw new Error('Unknown Error');
+  if (err instanceof Error) errorString = err.message;
+
+  toast.error(errorString);
+  throw new Error(errorString);
 };
 
 const validId = (id: string): boolean => mongoose.Types.ObjectId.isValid(id);

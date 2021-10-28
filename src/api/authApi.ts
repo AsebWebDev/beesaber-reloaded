@@ -15,7 +15,7 @@ const authApi = {
   async googleLogin({
     googleId,
     profileObj,
-  }: GoogleResponse): Promise<UserData | undefined> {
+  }: GoogleResponse): Promise<Record<string, never> | UserData> {
     try {
       const { data }: AxiosResponse<UserData> = await service.post(
         '/googlelogin',
@@ -28,7 +28,7 @@ const authApi = {
     } catch (err: unknown) {
       errHandler(new Error());
 
-      return Promise.reject();
+      return Promise.resolve({});
     }
   },
 

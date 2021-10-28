@@ -2,6 +2,7 @@ import { createAction, createSlice } from '@reduxjs/toolkit';
 
 import prefixActionType from '../helper/prefixActionType';
 
+import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 
 const name = 'appStatus';
@@ -25,13 +26,13 @@ const slice = createSlice({
   name,
   initialState,
   reducers: {
-    userIsLogginIn: (state, action) => ({
+    userIsLogginIn: (state, { payload }: PayloadAction<boolean>) => ({
       ...state,
-      isLoggingIn: action.payload,
+      isLoggingIn: payload,
     }),
-    userIsLoggedIn: (state, action) => ({
+    userIsLoggedIn: (state, { payload }: PayloadAction<boolean>) => ({
       ...state,
-      isLoggedIn: action.payload,
+      isLoggedIn: payload,
     }),
   },
 });

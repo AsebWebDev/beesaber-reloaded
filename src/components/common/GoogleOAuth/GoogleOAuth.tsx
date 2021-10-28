@@ -1,22 +1,25 @@
 /* eslint-disable no-console */
 import React from 'react';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
-import { toast } from 'react-toastify';
-import { userDataUpdated } from 'src/store/reducer/userDataReducer';
-import styled from 'styled-components';
-
-import { errHandler } from '../../../api/api';
-import api from '../../../api/authApi';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { errHandler } from 'src/api/api';
+import { useAppDispatch, useAppSelector } from 'src/store/hooks';
 import {
   selectIsLoggedIn,
   userIsLoggedIn,
   userIsLogginIn,
-} from '../../../store/reducer/appStatusReducer';
-import { mediaQuery } from '../../../tokens/definitions/layout';
-import NeonButton from '../NeonButton/NeonButton';
+} from 'src/store/reducer/appStatusReducer';
+import { userDataUpdated } from 'src/store/reducer/userDataReducer';
+import { mediaQuery } from 'src/tokens/definitions/layout';
+import styled from 'styled-components';
 
-import type { PossibleErrors } from '../../../api/api';
+import {
+  handleLogin,
+  handleLogout,
+  loginProps,
+  logoutProps,
+} from './authHandlers';
+
+import type { PossibleErrors } from 'src/api/api';
 
 const Container = styled.div`
   ${mediaQuery.mobile} {
@@ -28,7 +31,6 @@ const GoogleOAuth = (): JSX.Element | null => {
   const clientId = process.env.REACT_APP_GOOGLE_CLIENTID;
 
   if (clientId === undefined) return null;
-
   const dispatch = useAppDispatch();
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
 
@@ -36,10 +38,8 @@ const GoogleOAuth = (): JSX.Element | null => {
     dispatch(userIsLogginIn(true));
     try {
       if ('googleId' in response) {
-        const { googleId, profileObj } = response;
-        const userData = await api.googleLogin({ googleId, profileObj });
+        const userData = await handleLogin(response);
 
-        if (userData === undefined) return;
         dispatch(userDataUpdated(userData));
         dispatch(userIsLoggedIn(true));
       }
@@ -52,14 +52,20 @@ const GoogleOAuth = (): JSX.Element | null => {
   };
 
   const logout = async () => {
-    await api.logout();
-    dispatch(userIsLoggedIn(true));
-    dispatch(userDataUpdated({}));
+    try {
+      await handleLogout();
+      dispatch(userIsLoggedIn(false));
+      dispatch(userDataUpdated({}));
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        errHandler(error);
+      }
+    }
   };
 
   const onFailure = async () => {
     await logout();
-    toast.error('Google login failed');
+    errHandler(new Error('Google login failed'));
   };
 
   return (
@@ -67,27 +73,16 @@ const GoogleOAuth = (): JSX.Element | null => {
       {!isLoggedIn && (
         <GoogleLogin
           clientId={clientId}
-          render={(renderProps) => (
-            <span onClick={renderProps.onClick}>
-              <NeonButton text="Login" logo="google" />
-            </span>
-          )}
           onSuccess={onSuccess}
           onFailure={onFailure}
-          isSignedIn={true}
-          cookiePolicy={'single_host_origin'}
+          {...loginProps}
         />
       )}
-
       {isLoggedIn && (
         <GoogleLogout
           clientId={clientId}
-          render={(renderProps) => (
-            <span onClick={renderProps.onClick}>
-              <NeonButton text="Logout" logo="google" />
-            </span>
-          )}
           onLogoutSuccess={logout}
+          {...logoutProps}
         />
       )}
     </Container>
