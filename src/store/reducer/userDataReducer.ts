@@ -13,16 +13,13 @@ const updateUserData = createAction<UserData | undefined>(
   userDataActions('updateUserData')
 );
 
-const initialState: Record<string, unknown> | UserData = {};
+const initialState: UserData = {};
 
 const slice = createSlice({
   name,
   initialState,
   reducers: {
-    userDataUpdated: (
-      state,
-      { payload }: PayloadAction<Record<string, never> | UserData>
-    ) => ({
+    userDataUpdated: (state, { payload }: PayloadAction<UserData>) => ({
       ...state,
       ...payload,
     }),
