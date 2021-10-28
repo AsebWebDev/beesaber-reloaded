@@ -1,10 +1,8 @@
 /* eslint-disable no-console */
 import React from 'react';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
-import {
-  // updateUserData,
-  userDataUpdated,
-} from 'src/store/reducer/userDataReducer';
+import { toast } from 'react-toastify';
+import { userDataUpdated } from 'src/store/reducer/userDataReducer';
 import styled from 'styled-components';
 
 import { errHandler } from '../../../api/api';
@@ -18,7 +16,6 @@ import {
 import { mediaQuery } from '../../../tokens/definitions/layout';
 import NeonButton from '../NeonButton/NeonButton';
 
-// import type { UserData } from 'src/sharedTypes/UserData';
 import type { PossibleErrors } from '../../../api/api';
 
 const Container = styled.div`
@@ -54,14 +51,15 @@ const GoogleOAuth = (): JSX.Element | null => {
     dispatch(userIsLogginIn(false));
   };
 
-  const onFailure = () => true;
   const logout = async () => {
     await api.logout();
-    const userData = { username: null, profilePic: null };
+    dispatch(userIsLoggedIn(true));
+    dispatch(userDataUpdated({}));
+  };
 
-    console.log('userData', userData);
-    // dispatch({ type: 'UPDATE_USER_DATA', userdata });
-    // dispatch({ type: 'LOGOUT' });
+  const onFailure = async () => {
+    await logout();
+    toast.error('Google login failed');
   };
 
   return (

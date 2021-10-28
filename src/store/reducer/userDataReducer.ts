@@ -19,7 +19,10 @@ const slice = createSlice({
   name,
   initialState,
   reducers: {
-    userDataUpdated: (state, { payload }: PayloadAction<UserData>) => ({
+    userDataUpdated: (
+      state,
+      { payload }: PayloadAction<Record<string, never> | UserData>
+    ) => ({
       ...state,
       ...payload,
     }),
