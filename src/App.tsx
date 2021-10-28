@@ -27,7 +27,7 @@ function App(): JSX.Element {
         <Route path="/myprofile" component={MyProfile} />
         <Route render={() => <h2>404</h2>} />
       </Switch>
-      <ToastContainer />
+      <ToastContainer theme="dark" />
     </div>
   );
 }
