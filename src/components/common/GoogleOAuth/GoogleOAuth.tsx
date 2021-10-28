@@ -1,17 +1,17 @@
 /* eslint-disable no-console */
 import React from 'react';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
-import { errHandler } from 'src/api/api';
-import { useAppDispatch, useAppSelector } from 'src/store/hooks';
+import styled from 'styled-components';
+
+import { errHandler } from '../../../api/api';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
   selectIsLoggedIn,
   userIsLoggedIn,
   userIsLogginIn,
-} from 'src/store/reducer/appStatusReducer';
-import { userDataUpdated } from 'src/store/reducer/userDataReducer';
-import { mediaQuery } from 'src/tokens/definitions/layout';
-import styled from 'styled-components';
-
+} from '../../../store/reducer/appStatusReducer';
+import { userDataUpdated } from '../../../store/reducer/userDataReducer';
+import { mediaQuery } from '../../../tokens/definitions/layout';
 import {
   handleLogin,
   handleLogout,
@@ -19,7 +19,7 @@ import {
   logoutProps,
 } from './authHandlers';
 
-import type { PossibleErrors } from 'src/api/api';
+import type { PossibleErrors } from '../../../api/api';
 
 const Container = styled.div`
   ${mediaQuery.mobile} {
