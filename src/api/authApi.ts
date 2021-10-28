@@ -32,6 +32,10 @@ const authApi = {
     }
   },
 
+  async isValidMongoId(id: string): Promise<boolean> {
+    return service.post('/checkValidMongoId', { id });
+  },
+
   async logout(): Promise<AxiosResponse> {
     localStorage.removeItem('user');
 

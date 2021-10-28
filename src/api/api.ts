@@ -1,5 +1,4 @@
 import axios from 'axios';
-import mongoose from 'mongoose';
 import { toast } from 'react-toastify';
 
 import authApi from './authApi';
@@ -43,8 +42,6 @@ const errHandler = (err: PossibleErrors): Error => {
   throw new Error(errorString);
 };
 
-const validId = (id: string): boolean => mongoose.Types.ObjectId.isValid(id);
-
 const api = {
   authApi,
   userApi,
@@ -52,6 +49,6 @@ const api = {
 
 export type { PossibleErrors };
 
-export { errHandler, service, validId };
+export { errHandler, service };
 
 export default api;

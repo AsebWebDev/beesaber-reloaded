@@ -1,7 +1,12 @@
 const express = require("express")
+const mongoose = require('mongoose');
 // const passport = require('passport')
 const router = express.Router()
 const User = require("../models/User")
+
+router.post("/checkValidMongoId", (req, res, next) => {
+  mongoose.Types.ObjectId.isValid(req.body.id);
+})
 
 router.post("/googlelogin", (req, res, next) => {
   const { googleId, profileObj } = req.body;
