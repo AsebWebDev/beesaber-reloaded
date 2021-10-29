@@ -28,7 +28,7 @@ type PossibleResponses =
   | GoogleLoginResponse
   | GoogleLoginResponseOffline;
 
-const errHandler = (err: PossibleResponses): Error => {
+const errHandler = (err: PossibleResponses): string => {
   let errorString = 'Unknown Error';
 
   if (axios.isAxiosError(err) && err.response !== undefined) {
@@ -36,10 +36,13 @@ const errHandler = (err: PossibleResponses): Error => {
 
     errorString = data.message;
   }
-  if (err instanceof Error) errorString = err.message;
+  if (err instanceof Error) {
+    errorString = err.message;
+  }
 
   toast.error(errorString);
-  throw new Error(errorString);
+
+  return errorString;
 };
 
 const api = {
