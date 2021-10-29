@@ -2,6 +2,7 @@ import { errHandler, service } from './api';
 
 import type { AxiosResponse } from 'axios';
 import type { UserData } from 'src/sharedTypes/UserData';
+import type { PossibleResponses } from './api';
 
 type GoogleResponse = {
   googleId: string;
@@ -26,7 +27,7 @@ const authApi = {
 
       return await Promise.resolve(data);
     } catch (err: unknown) {
-      errHandler(new Error());
+      errHandler(err as PossibleResponses);
 
       return Promise.resolve({});
     }
