@@ -1,13 +1,14 @@
 {
   "extends": "./base.js",
-
   "parserOptions": {
+    "files": ["*.ts", "*.tsx"],
     "sourceType": "module",
     "ecmaFeatures": {
-        "jsx": true
+      "jsx": true
     },
     "project": ["./tsconfig.json"]
-},
+  },
+  "parser": "@typescript-eslint/parser",
 
   "rules": {
     "import/no-commonjs": "off",
@@ -17,15 +18,6 @@
       { "allow": ["**/*.scss", "**/*.css"] }
     ]
   },
-
-  "overrides": [
-    {
-      "files": ["*.ts", "*.tsx"],
-      "parserOptions": {
-        "project": ["./tsconfig.json"] // Specify it only for TypeScript files
-      }
-    }
-  ],
   "settings": {
     "jest": {
       "version": 27
