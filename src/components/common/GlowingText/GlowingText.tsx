@@ -7,6 +7,7 @@ import type { ColorSet, ColorStrings } from '../../../tokens/definitions/color';
 
 const Element = styled('span')<{ titleColor: ColorSet }>`
   ${({ titleColor }) => colors.createGlow(titleColor)}
+  font-family: 'NeonTubes2';
 `;
 
 type ElementType = 'h1' | 'h2' | 'h2' | 'p' | 'span';

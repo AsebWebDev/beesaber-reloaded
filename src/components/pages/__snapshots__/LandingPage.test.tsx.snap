@@ -97,6 +97,7 @@ exports[`LandingPage should match the snapshot when isLoggedIn is false 1`] = `
   -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+  font-family: 'NeonTubes2';
 }
 
 .c3 {
@@ -107,6 +108,7 @@ exports[`LandingPage should match the snapshot when isLoggedIn is false 1`] = `
   -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+  font-family: 'NeonTubes2';
 }
 
 .c8 {
@@ -117,6 +119,7 @@ exports[`LandingPage should match the snapshot when isLoggedIn is false 1`] = `
   -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: #ffeb00 -2px -1px 5px,#ffeb00 2px 1px 5px, #ffeb00 0px 0px 10px,#ffeb00 0px 0px 15px,#ffeb00 0px 0px 20px, #ffeb00 0px 0px 30px;
+  font-family: 'NeonTubes2';
 }
 
 .c4 {
@@ -440,6 +443,7 @@ exports[`LandingPage should match the snapshot when isLoggedIn is true 1`] = `
   -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+  font-family: 'NeonTubes2';
 }
 
 .c3 {
@@ -450,6 +454,7 @@ exports[`LandingPage should match the snapshot when isLoggedIn is true 1`] = `
   -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+  font-family: 'NeonTubes2';
 }
 
 .c8 {
@@ -460,6 +465,7 @@ exports[`LandingPage should match the snapshot when isLoggedIn is true 1`] = `
   -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: #ffeb00 -2px -1px 5px,#ffeb00 2px 1px 5px, #ffeb00 0px 0px 10px,#ffeb00 0px 0px 15px,#ffeb00 0px 0px 20px, #ffeb00 0px 0px 30px;
+  font-family: 'NeonTubes2';
 }
 
 .c4 {
