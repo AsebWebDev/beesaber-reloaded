@@ -4,6 +4,7 @@ import prefixActionType from '../helper/prefixActionType';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { UserData } from '../../sharedTypes/UserData';
+import type { RootState } from './rootReducer';
 
 const name = 'userData';
 
@@ -27,7 +28,7 @@ const slice = createSlice({
 });
 
 // SELECTORS
-const selectUserData = (state: UserData): UserData => state;
+const selectUserData = (state: RootState): UserData => state.userData;
 
 // ACTIONS EXPORT
 export const { userDataUpdated } = slice.actions;

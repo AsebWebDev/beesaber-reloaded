@@ -1,6 +1,7 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
+import exampleUserData from '../../testing/testData/exampleUserData';
 import reducer, { selectUserData, userDataUpdated } from './userDataReducer';
 
 import type { AppStatus } from 'src/store/reducer/appStatusReducer';
@@ -17,19 +18,7 @@ const appStatus: AppStatus = {
 const initialStore: RootState = {
   appStatus,
   notifications: [],
-  userData: {},
-};
-
-const exampleUserData: UserData = {
-  countryRank: 111,
-  county: 'Sweden',
-  googleId: '123',
-  password: 'myPassword',
-  profilePic: 'url',
-  rank: 42,
-  totalPlayCount: 42,
-  totalScore: 1312,
-  username: 'lovenotwar',
+  userData: exampleUserData,
 };
 
 const mockStore = configureMockStore(middlewares)(initialStore);
@@ -46,7 +35,7 @@ describe('userData reducer', () => {
 
 describe('selectors', () => {
   it('should select notifications', () => {
-    const userData = selectUserData(exampleUserData);
+    const userData = selectUserData(initialStore);
 
     expect(userData).toStrictEqual(exampleUserData);
   });
