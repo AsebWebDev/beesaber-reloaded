@@ -1,21 +1,10 @@
+import exampleUserData from '../testing/testData/exampleUserData';
 import api from './api';
 
 import type { UserData } from 'src/sharedTypes/UserData';
 import type { GoogleResponse } from './authApi';
 
 jest.mock('axios');
-
-const exampleUserData: UserData = {
-  countryRank: 111,
-  county: 'Sweden',
-  googleId: '123',
-  password: 'myPassword',
-  profilePic: 'url',
-  rank: 42,
-  totalPlayCount: 42,
-  totalScore: 1312,
-  username: 'lovenotwar',
-};
 
 const googleResponse: GoogleResponse = {
   googleId: '123',
