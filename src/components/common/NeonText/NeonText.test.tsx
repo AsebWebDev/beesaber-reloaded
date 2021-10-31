@@ -20,7 +20,7 @@ describe('NeonText', () => {
     }
   );
 
-  it.each(['h1', 'h2', 'h2', 'p', 'span', undefined] as const)(
+  it.each(['h1', 'h2', 'h3', 'p', 'span', undefined] as const)(
     'should match the snapshot when element is %s',
     (as: ElementType | undefined) => {
       const { container } = render(

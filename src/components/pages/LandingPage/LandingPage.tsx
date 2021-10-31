@@ -46,15 +46,17 @@ const Container = styled.div`
   }
 `;
 
-const BeeSaberTitle = styled.h1`
-  margin-top: 12%;
+const BeeSaberTitle = styled.div`
   text-align: center;
 
   ${mediaQuery.mobile} {
-    font-size: 4rem;
+    margin-top: 3%;
+    font-size: 3rem;
   }
 
   ${mediaQuery.sm} {
+    margin-top: 12%;
+
     margin-bottom: 20px;
     font-size: 8rem;
   }
@@ -65,7 +67,7 @@ const BeeSaberTitle = styled.h1`
   }
 
   ${mediaQuery.lg} {
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
     font-size: 12rem;
   }
 `;

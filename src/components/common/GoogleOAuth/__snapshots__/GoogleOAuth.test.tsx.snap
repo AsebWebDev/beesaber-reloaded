@@ -11,6 +11,7 @@ exports[`GoogleOAuth should match snapshot when isLoggedIn=false 1`] = `
   text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
   font-family: 'NeonTubes2';
   font-weight: 300;
+  margin: 0;
 }
 
 .c1 {
@@ -54,7 +55,7 @@ exports[`GoogleOAuth should match snapshot when isLoggedIn=false 1`] = `
   -ms-letter-spacing: 2px;
   letter-spacing: 2px;
   overflow: hidden;
-  padding: 5px 30px;
+  padding: 0 30px;
   position: relative;
   text-align: center;
   -webkit-text-decoration: none;
@@ -188,6 +189,7 @@ exports[`GoogleOAuth should match snapshot when isLoggedIn=true 1`] = `
   text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
   font-family: 'NeonTubes2';
   font-weight: 300;
+  margin: 0;
 }
 
 .c1 {
@@ -231,7 +233,7 @@ exports[`GoogleOAuth should match snapshot when isLoggedIn=true 1`] = `
   -ms-letter-spacing: 2px;
   letter-spacing: 2px;
   overflow: hidden;
-  padding: 5px 30px;
+  padding: 0 30px;
   position: relative;
   text-align: center;
   -webkit-text-decoration: none;

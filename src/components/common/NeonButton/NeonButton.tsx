@@ -33,7 +33,7 @@ const Button = styled.div`
   font-size: 20px;
   letter-spacing: 2px;
   overflow: hidden;
-  padding: 5px 30px;
+  padding: 0 30px;
   position: relative;
   text-align: center;
   text-decoration: none;

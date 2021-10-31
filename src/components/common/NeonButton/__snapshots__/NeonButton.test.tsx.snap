@@ -11,6 +11,7 @@ exports[`NeonButton should match the snapshot 1`] = `
   text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
   font-family: 'NeonTubes2';
   font-weight: 300;
+  margin: 0;
 }
 
 .c0 {
@@ -54,7 +55,7 @@ exports[`NeonButton should match the snapshot 1`] = `
   -ms-letter-spacing: 2px;
   letter-spacing: 2px;
   overflow: hidden;
-  padding: 5px 30px;
+  padding: 0 30px;
   position: relative;
   text-align: center;
   -webkit-text-decoration: none;
@@ -174,6 +175,7 @@ exports[`NeonButton should match the snapshot 2`] = `
   text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
   font-family: 'NeonTubes2';
   font-weight: 300;
+  margin: 0;
 }
 
 .c0 {
@@ -217,7 +219,7 @@ exports[`NeonButton should match the snapshot 2`] = `
   -ms-letter-spacing: 2px;
   letter-spacing: 2px;
   overflow: hidden;
-  padding: 5px 30px;
+  padding: 0 30px;
   position: relative;
   text-align: center;
   -webkit-text-decoration: none;
@@ -337,6 +339,7 @@ exports[`NeonButton should match the snapshot 3`] = `
   text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
   font-family: 'NeonTubes2';
   font-weight: 300;
+  margin: 0;
 }
 
 .c0 {
@@ -380,7 +383,7 @@ exports[`NeonButton should match the snapshot 3`] = `
   -ms-letter-spacing: 2px;
   letter-spacing: 2px;
   overflow: hidden;
-  padding: 5px 30px;
+  padding: 0 30px;
   position: relative;
   text-align: center;
   -webkit-text-decoration: none;
@@ -480,11 +483,11 @@ exports[`NeonButton should match the snapshot 3`] = `
       class="fab fa-google"
     />
      
-    <h2
+    <h3
       class="c2"
     >
       Button Text
-    </h2>
+    </h3>
   </div>
 </div>
 `;
@@ -500,6 +503,7 @@ exports[`NeonButton should match the snapshot 4`] = `
   text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
   font-family: 'NeonTubes2';
   font-weight: 300;
+  margin: 0;
 }
 
 .c0 {
@@ -543,7 +547,7 @@ exports[`NeonButton should match the snapshot 4`] = `
   -ms-letter-spacing: 2px;
   letter-spacing: 2px;
   overflow: hidden;
-  padding: 5px 30px;
+  padding: 0 30px;
   position: relative;
   text-align: center;
   -webkit-text-decoration: none;
@@ -663,6 +667,7 @@ exports[`NeonButton should match the snapshot 5`] = `
   text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
   font-family: 'NeonTubes2';
   font-weight: 300;
+  margin: 0;
 }
 
 .c0 {
@@ -706,7 +711,7 @@ exports[`NeonButton should match the snapshot 5`] = `
   -ms-letter-spacing: 2px;
   letter-spacing: 2px;
   overflow: hidden;
-  padding: 5px 30px;
+  padding: 0 30px;
   position: relative;
   text-align: center;
   -webkit-text-decoration: none;
@@ -826,6 +831,7 @@ exports[`NeonButton should match the snapshot 6`] = `
   text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
   font-family: 'NeonTubes2';
   font-weight: 300;
+  margin: 0;
 }
 
 .c0 {
@@ -869,7 +875,7 @@ exports[`NeonButton should match the snapshot 6`] = `
   -ms-letter-spacing: 2px;
   letter-spacing: 2px;
   overflow: hidden;
-  padding: 5px 30px;
+  padding: 0 30px;
   position: relative;
   text-align: center;
   -webkit-text-decoration: none;

@@ -12,9 +12,10 @@ const Element = styled('span')<{ glow: boolean; titleColor: ColorStrings }>`
       : `color: ${allColorSetsObject[titleColor].main};`}
   font-family: 'NeonTubes2';
   font-weight: 300;
+  margin: 0;
 `;
 
-type ElementType = 'h1' | 'h2' | 'h2' | 'p' | 'span';
+type ElementType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'p' | 'span';
 
 type Props = {
   as?: ElementType;

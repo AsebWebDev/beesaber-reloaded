@@ -15,6 +15,7 @@ exports[`BrandLogo should match the snapshot 1`] = `
   height: 150px;
   width: 150px;
   font-size: 80px;
+  margin-bottom: 1rem;
 }
 
 .c0 div {
@@ -87,36 +88,6 @@ exports[`BrandLogo should match the snapshot 1`] = `
   transform: rotate(-30deg);
   background-color: #edf5ff;
   box-shadow: 0px 0px 8px 2px #ff8d9e, 0px 0px 12px 6px #ff0025;
-}
-
-@media (max-width:575px) {
-  .c0 {
-    margin: 0.9375rem 0;
-  }
-}
-
-@media (min-width:576px) {
-  .c0 {
-    width: 50%;
-  }
-}
-
-@media (min-width:768px) {
-  .c0 {
-    width: 30%;
-  }
-}
-
-@media (min-width:1024px) {
-  .c0 {
-    width: 20%;
-  }
-}
-
-@media (min-width:1680px) {
-  .c0 {
-    width: 10%;
-  }
 }
 
 <div

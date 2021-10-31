@@ -1,9 +1,6 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-// import { Link } from 'react-router-dom';
-import { selectIsLoggedIn } from '../../../store/reducer/appStatusReducer';
 import BrandLogo from '../../common/BrandLogo/BrandLogo';
 import GoogleOAuth from '../../common/GoogleOAuth/GoogleOAuth';
 import NeonText from '../../common/NeonText/NeonText';
@@ -11,53 +8,85 @@ import NeonText from '../../common/NeonText/NeonText';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: flex-start;
   font-family: 'NeonTubes2';
-  padding: 25px 20px;
+  padding: 1rem;
+  height: 100%;
 `;
 
-const Menu = (): JSX.Element => {
-  const isLoggedIn = useSelector(selectIsLoggedIn);
+const MenuContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-bottom: 3rem;
+  justify-content: space-between;
+`;
 
-  // eslint-disable-next-line no-console
-  console.log('🚀 ~ file: Menu.tsx ~ line 12 ~ isLoggedIn', isLoggedIn);
+const MenuHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 3%;
+`;
 
-  return (
-    <Container>
-      <BrandLogo />
-      <div id="menu-main">
-        <div id="menu-head">
-          {/* <GoogleProfileData /> */}
+const MenuLink = styled(Link)`
+  display: flex;
+`;
+
+const MenuItems = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+`;
+
+const Title = styled.div`
+  display: flex;
+  font-size: 1.5rem;
+`;
+
+const Menu = (): JSX.Element => (
+  <Container>
+    <MenuContainer>
+      <MenuHeader>
+        <Title>
           <NeonText glow as="h1" titleColor="red">
             Bee
           </NeonText>
-          <br></br>
           <NeonText glow as="h1" titleColor="blue">
             Saber
           </NeonText>
-          <GoogleOAuth />
-        </div>
-        {/* {isLoggedIn && (
-          <div id="menu-points">
-            <Link to="/">
-              <span className="neon-red">Dashboard</span>
-            </Link>
-            <Link to="/myprofile">
-              <span className="neon-red">My</span>{' '}
-              <span className="neon-blue">Profile</span>
-            </Link>
-            <Link to="/myhive">
-              <span className="neon-red">My</span>{' '}
-              <span className="neon-blue">Hive</span>
-            </Link>
-          </div>
-        )} */}
-      </div>
-
-      {/* alternative logo made with svg: */}
-      {/* <svg className="logo"><use xlinkHref="#logo-honeycomb" /></svg> */}
-    </Container>
-  );
-};
+        </Title>
+        <BrandLogo />
+      </MenuHeader>
+      <MenuItems>
+        <MenuLink to="/">
+          <NeonText glow as="h1" titleColor="red">
+            Dashboard
+          </NeonText>
+        </MenuLink>
+        <MenuLink to="/myprofile">
+          <NeonText glow as="h1" titleColor="red">
+            My
+          </NeonText>
+          <NeonText glow as="h1" titleColor="blue">
+            Profile
+          </NeonText>
+        </MenuLink>
+        <MenuLink to="/myhive">
+          <NeonText glow as="h1" titleColor="red">
+            My
+          </NeonText>
+          <NeonText glow as="h1" titleColor="blue">
+            Hive
+          </NeonText>
+        </MenuLink>
+      </MenuItems>
+      <GoogleOAuth />
+    </MenuContainer>
+  </Container>
+);
 
 export default Menu;

@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { mediaQuery } from '../../../tokens/definitions/layout';
 import tokens from '../../../tokens/index';
 import BrandLogoI from './BrandLogoI/BrandLogoI';
 
@@ -10,26 +9,7 @@ const Container = styled.div`
   height: 150px;
   width: 150px;
   font-size: 80px;
-
-  ${mediaQuery.mobile} {
-    margin: 0.9375rem 0;
-  }
-
-  ${mediaQuery.sm} {
-    width: 50%;
-  }
-
-  ${mediaQuery.md} {
-    width: 30%;
-  }
-
-  ${mediaQuery.lg} {
-    width: 20%;
-  }
-
-  ${mediaQuery.xl} {
-    width: 10%;
-  }
+  margin-bottom: 1rem;
 
   div {
     position: absolute;

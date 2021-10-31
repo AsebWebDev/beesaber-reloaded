@@ -15,6 +15,7 @@ exports[`LandingPage should match the snapshot when isLoggingIn is false 1`] = `
   height: 150px;
   width: 150px;
   font-size: 80px;
+  margin-bottom: 1rem;
 }
 
 .c5 div {
@@ -99,6 +100,7 @@ exports[`LandingPage should match the snapshot when isLoggingIn is false 1`] = `
   text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
   font-family: 'NeonTubes2';
   font-weight: 300;
+  margin: 0;
 }
 
 .c3 {
@@ -111,12 +113,14 @@ exports[`LandingPage should match the snapshot when isLoggingIn is false 1`] = `
   text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
   font-family: 'NeonTubes2';
   font-weight: 300;
+  margin: 0;
 }
 
 .c8 {
   color: #ffeb00;
   font-family: 'NeonTubes2';
   font-weight: 300;
+  margin: 0;
 }
 
 .c4 {
@@ -161,38 +165,7 @@ exports[`LandingPage should match the snapshot when isLoggingIn is false 1`] = `
 }
 
 .c1 {
-  margin-top: 12%;
   text-align: center;
-}
-
-@media (max-width:575px) {
-  .c5 {
-    margin: 0.9375rem 0;
-  }
-}
-
-@media (min-width:576px) {
-  .c5 {
-    width: 50%;
-  }
-}
-
-@media (min-width:768px) {
-  .c5 {
-    width: 30%;
-  }
-}
-
-@media (min-width:1024px) {
-  .c5 {
-    width: 20%;
-  }
-}
-
-@media (min-width:1680px) {
-  .c5 {
-    width: 10%;
-  }
 }
 
 @media (min-width:768px) {
@@ -231,12 +204,14 @@ exports[`LandingPage should match the snapshot when isLoggingIn is false 1`] = `
 
 @media (max-width:575px) {
   .c1 {
-    font-size: 4rem;
+    margin-top: 3%;
+    font-size: 3rem;
   }
 }
 
 @media (min-width:576px) {
   .c1 {
+    margin-top: 12%;
     margin-bottom: 20px;
     font-size: 8rem;
   }
@@ -251,7 +226,7 @@ exports[`LandingPage should match the snapshot when isLoggingIn is false 1`] = `
 
 @media (min-width:1024px) {
   .c1 {
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
     font-size: 12rem;
   }
 }
@@ -259,7 +234,7 @@ exports[`LandingPage should match the snapshot when isLoggingIn is false 1`] = `
 <div
   class="c0"
 >
-  <h1
+  <div
     class="c1"
   >
     <span
@@ -272,7 +247,7 @@ exports[`LandingPage should match the snapshot when isLoggingIn is false 1`] = `
     >
       Saber
     </span>
-  </h1>
+  </div>
   <div
     class="c4"
   >
