@@ -1,5 +1,3 @@
-import React from 'react';
+const MyProfile = (): JSX.Element => <div>MyProfile</div>;
 
-const Dashboard = (): JSX.Element => <div>Dashboard</div>;
-
-export default Dashboard;
+export default MyProfile;
