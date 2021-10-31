@@ -10,6 +10,7 @@ exports[`GlowingText should match the snapshot when element is h1 1`] = `
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
   font-family: 'NeonTubes2';
+  font-weight: 300;
 }
 
 <h1
@@ -29,6 +30,7 @@ exports[`GlowingText should match the snapshot when element is h2 1`] = `
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
   font-family: 'NeonTubes2';
+  font-weight: 300;
 }
 
 <h2
@@ -48,6 +50,7 @@ exports[`GlowingText should match the snapshot when element is h2 2`] = `
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
   font-family: 'NeonTubes2';
+  font-weight: 300;
 }
 
 <h2
@@ -67,6 +70,7 @@ exports[`GlowingText should match the snapshot when element is p 1`] = `
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
   font-family: 'NeonTubes2';
+  font-weight: 300;
 }
 
 <p
@@ -86,6 +90,7 @@ exports[`GlowingText should match the snapshot when element is span 1`] = `
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
   font-family: 'NeonTubes2';
+  font-weight: 300;
 }
 
 <span
@@ -105,6 +110,7 @@ exports[`GlowingText should match the snapshot when element is undefined 1`] = `
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
   font-family: 'NeonTubes2';
+  font-weight: 300;
 }
 
 <span
@@ -124,6 +130,7 @@ exports[`GlowingText should match the snapshot when titlecolor is blue 1`] = `
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
   font-family: 'NeonTubes2';
+  font-weight: 300;
 }
 
 <span
@@ -143,6 +150,7 @@ exports[`GlowingText should match the snapshot when titlecolor is red 1`] = `
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
   font-family: 'NeonTubes2';
+  font-weight: 300;
 }
 
 <span
@@ -162,6 +170,7 @@ exports[`GlowingText should match the snapshot when titlecolor is yellow 1`] = `
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   text-shadow: #ffeb00 -2px -1px 5px,#ffeb00 2px 1px 5px, #ffeb00 0px 0px 10px,#ffeb00 0px 0px 15px,#ffeb00 0px 0px 20px, #ffeb00 0px 0px 30px;
   font-family: 'NeonTubes2';
+  font-weight: 300;
 }
 
 <span

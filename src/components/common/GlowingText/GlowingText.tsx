@@ -11,6 +11,7 @@ const Element = styled('span')<{ glow: boolean; titleColor: ColorStrings }>`
       ? colors.createGlow(allColorSetsObject[titleColor])
       : `color: ${allColorSetsObject[titleColor].main}`}
   font-family: 'NeonTubes2';
+  font-weight: 300;
 `;
 
 type ElementType = 'h1' | 'h2' | 'h2' | 'p' | 'span';
