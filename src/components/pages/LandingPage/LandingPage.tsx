@@ -87,7 +87,7 @@ const LandingPage = (): JSX.Element => {
       </BeeSaberTitle>
       <Content>
         <BrandLogo />
-        <NeonText glow as="h2" titleColor={'yellow'}>
+        <NeonText as="h2" titleColor={'yellow'}>
           {!isLoggingIn ? pleaseLoginText : loggingInText}
         </NeonText>
         {!isLoggingIn && <GoolgeOAuth />}
