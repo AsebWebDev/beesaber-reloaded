@@ -11,6 +11,26 @@ const Container = styled.div`
   width: 150px;
   font-size: 80px;
 
+  ${mediaQuery.mobile} {
+    margin: 0.9375rem 0;
+  }
+
+  ${mediaQuery.sm} {
+    width: 50%;
+  }
+
+  ${mediaQuery.md} {
+    width: 30%;
+  }
+
+  ${mediaQuery.lg} {
+    width: 20%;
+  }
+
+  ${mediaQuery.xl} {
+    width: 10%;
+  }
+
   div {
     position: absolute;
     transform-origin: center;
@@ -60,26 +80,6 @@ const Container = styled.div`
     box-shadow: 0px 0px 8px 2px ${tokens.color.red.shadow},
       0px 0px 12px 6px ${tokens.color.red.main};
   }
-
-  ${mediaQuery.mobile} {
-    margin: 15px 0;
-  }
-
-  ${mediaQuery.sm} {
-    width: 50%;
-  }
-
-  ${mediaQuery.md} {
-    width: 30%;
-  }
-
-  ${mediaQuery.lg} {
-    width: 20%;
-  }
-
-  ${mediaQuery.xl} {
-    width: 10%;
-  }
 `;
 
 const BrandLogo = (): JSX.Element => (
@@ -91,6 +91,8 @@ const BrandLogo = (): JSX.Element => (
     <BrandLogoI />
     <BrandLogoI />
     <BrandLogoI />
+    {/* alternative logo made with svg: */}
+    {/* <svg className="logo"><use xlinkHref="#logo-honeycomb" /></svg> */}
   </Container>
 );
 

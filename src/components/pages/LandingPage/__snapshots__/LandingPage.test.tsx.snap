@@ -167,7 +167,7 @@ exports[`LandingPage should match the snapshot when isLoggingIn is false 1`] = `
 
 @media (max-width:575px) {
   .c5 {
-    margin: 15px 0;
+    margin: 0.9375rem 0;
   }
 }
 

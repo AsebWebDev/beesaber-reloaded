@@ -91,7 +91,7 @@ exports[`BrandLogo should match the snapshot 1`] = `
 
 @media (max-width:575px) {
   .c0 {
-    margin: 15px 0;
+    margin: 0.9375rem 0;
   }
 }
 
