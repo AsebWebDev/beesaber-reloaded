@@ -32,4 +32,17 @@ describe('NeonText', () => {
       expect(container.firstChild).toMatchSnapshot();
     }
   );
+
+  it.each([true, false])(
+    'should match the snapshot when glow property is %s',
+    (glow) => {
+      const { container } = render(
+        <NeonText glow={glow} titleColor={'red'}>
+          Glowing Text
+        </NeonText>
+      );
+
+      expect(container.firstChild).toMatchSnapshot();
+    }
+  );
 });

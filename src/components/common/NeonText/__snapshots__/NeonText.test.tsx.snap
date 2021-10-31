@@ -120,6 +120,39 @@ exports[`NeonText should match the snapshot when element is undefined 1`] = `
 </span>
 `;
 
+exports[`NeonText should match the snapshot when glow property is false 1`] = `
+.c0 {
+  color: #ff0025 font-family:'NeonTubes2';
+  font-weight: 300;
+}
+
+<span
+  class="c0"
+>
+  Glowing Text
+</span>
+`;
+
+exports[`NeonText should match the snapshot when glow property is true 1`] = `
+.c0 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+}
+
+<span
+  class="c0"
+>
+  Glowing Text
+</span>
+`;
+
 exports[`NeonText should match the snapshot when titlecolor is blue 1`] = `
 .c0 {
   color: #edf5ff;
