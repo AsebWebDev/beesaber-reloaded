@@ -73,7 +73,7 @@ const BeeSaberTitle = styled.h1`
 const LandingPage = (): JSX.Element => {
   const isLoggingIn = useSelector(selectIsLoggingIn);
   const pleaseLoginText = 'Please login with your Google-Account:';
-  const loggingInText = 'Logging you in ... wait for it ... ';
+  const loggingInText = 'Logging you in... wait for it... ';
 
   return (
     <Container>
@@ -90,7 +90,7 @@ const LandingPage = (): JSX.Element => {
         <NeonText as="h2" titleColor={'yellow'}>
           {!isLoggingIn ? pleaseLoginText : loggingInText}
         </NeonText>
-        {!isLoggingIn && <GoolgeOAuth />}
+        <GoolgeOAuth />
       </Content>
     </Container>
   );

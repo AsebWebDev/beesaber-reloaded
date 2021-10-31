@@ -10,8 +10,8 @@ const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
 describe('LandingPage', () => {
-  it.each([false, true] as const)(
-    'should match the snapshot when isLoggedIn is %s',
+  it.each([[false, true]])(
+    'should match the snapshot when isLoggingIn is %s',
     (isLoggingIn) => {
       rootState.appStatus.isLoggingIn = isLoggingIn;
       const { container } = render(
