@@ -78,12 +78,16 @@ const LandingPage = (): JSX.Element => {
   return (
     <Container>
       <BeeSaberTitle>
-        <GlowingText titleColor={'red'}>Bee</GlowingText>
-        <GlowingText titleColor={'blue'}>Saber</GlowingText>
+        <GlowingText glow titleColor={'red'}>
+          Bee
+        </GlowingText>
+        <GlowingText glow titleColor={'blue'}>
+          Saber
+        </GlowingText>
       </BeeSaberTitle>
       <Content>
         <BrandLogo />
-        <GlowingText as="h2" titleColor={'yellow'}>
+        <GlowingText glow as="h2" titleColor={'yellow'}>
           {!isLoggingIn ? pleaseLoginText : loggingInText}
         </GlowingText>
         {!isLoggingIn && <GoolgeOAuth />}

@@ -28,11 +28,11 @@ const Menu = (): JSX.Element => {
       <div id="menu-main">
         <div id="menu-head">
           {/* <GoogleProfileData /> */}
-          <GlowingText as="h1" titleColor="red">
+          <GlowingText glow as="h1" titleColor="red">
             Bee
           </GlowingText>
           <br></br>
-          <GlowingText as="h1" titleColor="blue">
+          <GlowingText glow as="h1" titleColor="blue">
             Saber
           </GlowingText>
           <GoogleOAuth />

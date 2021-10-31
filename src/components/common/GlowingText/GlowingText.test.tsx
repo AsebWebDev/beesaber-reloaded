@@ -11,7 +11,9 @@ describe('GlowingText', () => {
     'should match the snapshot when titlecolor is %s',
     (titleColor) => {
       const { container } = render(
-        <GlowingText titleColor={titleColor}>Glowing Text</GlowingText>
+        <GlowingText glow titleColor={titleColor}>
+          Glowing Text
+        </GlowingText>
       );
 
       expect(container.firstChild).toMatchSnapshot();
@@ -22,7 +24,7 @@ describe('GlowingText', () => {
     'should match the snapshot when element is %s',
     (as: ElementType | undefined) => {
       const { container } = render(
-        <GlowingText as={as} titleColor={'red'}>
+        <GlowingText glow as={as} titleColor={'red'}>
           Glowing Text
         </GlowingText>
       );

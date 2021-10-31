@@ -115,7 +115,7 @@ const NeonButton = ({ logo, text }: Props): JSX.Element => (
       <span></span>
       <span></span>
       <MDBIcon fab icon={logo || ''} />{' '}
-      <GlowingText as={'h1'} titleColor={'blue'}>
+      <GlowingText glow as={'h1'} titleColor={'blue'}>
         {text}
       </GlowingText>
     </Button>
