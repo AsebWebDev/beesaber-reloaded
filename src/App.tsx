@@ -1,32 +1,19 @@
 import 'react-toastify/dist/ReactToastify.css';
 
-import React from 'react';
-import { Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
-// import api from './api/api';
-// import Dashboard from './components/pages/Dashboard';
-import LandingPage from './components/pages/LandingPage';
-import MyProfile from './components/pages/MyProfile';
+import MainContent from './components/pages/MainContent/MainContent';
+import Menu from './components/pages/Menu/Menu';
+import { useAppSelector } from './store/hooks';
+import { selectIsLoggedIn } from './store/reducer/appStatusReducer';
 
 function App(): JSX.Element {
-  // const isLoggedIn = true;
-  // const testUserId = '76561198333869741';
-
-  // api.userApi.getUserData(testUserId);
+  const isLoggedIn = useAppSelector(selectIsLoggedIn);
 
   return (
     <div className="App">
-      <Switch>
-        <Route
-          path="/"
-          exact
-          // component={isLoggedIn ? Dashboard : LandingPage}
-          component={LandingPage}
-        />
-        <Route path="/myprofile" component={MyProfile} />
-        <Route render={() => <h2>404</h2>} />
-      </Switch>
+      {isLoggedIn && <Menu />}
+      <MainContent />
       <ToastContainer theme="dark" />
     </div>
   );
