@@ -1,10 +1,12 @@
 import { MDBIcon } from 'mdb-react-ui-kit';
-import React from 'react';
 import styled from 'styled-components';
 
 import NeonText from '../NeonText/NeonText';
 
+import type { ElementType } from '../NeonText/NeonText';
+
 type Props = {
+  as?: ElementType;
   logo: string;
   text: string;
 };
@@ -107,7 +109,7 @@ const Button = styled.div`
   }
 `;
 
-const NeonButton = ({ logo, text }: Props): JSX.Element => (
+const NeonButton = ({ as, logo, text }: Props): JSX.Element => (
   <Container>
     <Button role="button">
       <span></span>
@@ -115,7 +117,7 @@ const NeonButton = ({ logo, text }: Props): JSX.Element => (
       <span></span>
       <span></span>
       <MDBIcon fab icon={logo || ''} />{' '}
-      <NeonText glow as={'h1'} titleColor={'blue'}>
+      <NeonText glow as={as} titleColor={'blue'}>
         {text}
       </NeonText>
     </Button>
