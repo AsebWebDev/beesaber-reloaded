@@ -2,7 +2,7 @@ import { MDBIcon } from 'mdb-react-ui-kit';
 import React from 'react';
 import styled from 'styled-components';
 
-import GlowingText from '../GlowingText/GlowingText';
+import NeonText from '../NeonText/NeonText';
 
 type Props = {
   logo: string;
@@ -115,9 +115,9 @@ const NeonButton = ({ logo, text }: Props): JSX.Element => (
       <span></span>
       <span></span>
       <MDBIcon fab icon={logo || ''} />{' '}
-      <GlowingText glow as={'h1'} titleColor={'blue'}>
+      <NeonText glow as={'h1'} titleColor={'blue'}>
         {text}
-      </GlowingText>
+      </NeonText>
     </Button>
   </Container>
 );

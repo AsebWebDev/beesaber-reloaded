@@ -5,8 +5,8 @@ import styled from 'styled-components';
 import { selectIsLoggingIn } from '../../../store/reducer/appStatusReducer';
 import { mediaQuery } from '../../../tokens/definitions/layout';
 import BrandLogo from '../../common/BrandLogo/BrandLogo';
-import GlowingText from '../../common/GlowingText/GlowingText';
 import GoolgeOAuth from '../../common/GoogleOAuth/GoogleOAuth';
+import NeonText from '../../common/NeonText/NeonText';
 
 const Content = styled.div`
   display: flex;
@@ -78,18 +78,18 @@ const LandingPage = (): JSX.Element => {
   return (
     <Container>
       <BeeSaberTitle>
-        <GlowingText glow titleColor={'red'}>
+        <NeonText glow titleColor={'red'}>
           Bee
-        </GlowingText>
-        <GlowingText glow titleColor={'blue'}>
+        </NeonText>
+        <NeonText glow titleColor={'blue'}>
           Saber
-        </GlowingText>
+        </NeonText>
       </BeeSaberTitle>
       <Content>
         <BrandLogo />
-        <GlowingText glow as="h2" titleColor={'yellow'}>
+        <NeonText glow as="h2" titleColor={'yellow'}>
           {!isLoggingIn ? pleaseLoginText : loggingInText}
-        </GlowingText>
+        </NeonText>
         {!isLoggingIn && <GoolgeOAuth />}
       </Content>
     </Container>

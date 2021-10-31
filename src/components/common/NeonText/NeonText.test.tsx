@@ -2,18 +2,18 @@ import { render } from '@testing-library/react';
 import React from 'react';
 
 import { colorStringsArray } from '../../../tokens/definitions/color';
-import GlowingText from './GlowingText';
+import NeonText from './NeonText';
 
-import type { ElementType } from './GlowingText';
+import type { ElementType } from './NeonText';
 
-describe('GlowingText', () => {
+describe('NeonText', () => {
   it.each(colorStringsArray)(
     'should match the snapshot when titlecolor is %s',
     (titleColor) => {
       const { container } = render(
-        <GlowingText glow titleColor={titleColor}>
+        <NeonText glow titleColor={titleColor}>
           Glowing Text
-        </GlowingText>
+        </NeonText>
       );
 
       expect(container.firstChild).toMatchSnapshot();
@@ -24,9 +24,9 @@ describe('GlowingText', () => {
     'should match the snapshot when element is %s',
     (as: ElementType | undefined) => {
       const { container } = render(
-        <GlowingText glow as={as} titleColor={'red'}>
+        <NeonText glow as={as} titleColor={'red'}>
           Glowing Text
-        </GlowingText>
+        </NeonText>
       );
 
       expect(container.firstChild).toMatchSnapshot();

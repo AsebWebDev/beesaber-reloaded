@@ -5,8 +5,8 @@ import styled from 'styled-components';
 // import { Link } from 'react-router-dom';
 import { selectIsLoggedIn } from '../../../store/reducer/appStatusReducer';
 import BrandLogo from '../../common/BrandLogo/BrandLogo';
-import GlowingText from '../../common/GlowingText/GlowingText';
 import GoogleOAuth from '../../common/GoogleOAuth/GoogleOAuth';
+import NeonText from '../../common/NeonText/NeonText';
 
 const Container = styled.div`
   display: flex;
@@ -28,13 +28,13 @@ const Menu = (): JSX.Element => {
       <div id="menu-main">
         <div id="menu-head">
           {/* <GoogleProfileData /> */}
-          <GlowingText glow as="h1" titleColor="red">
+          <NeonText glow as="h1" titleColor="red">
             Bee
-          </GlowingText>
+          </NeonText>
           <br></br>
-          <GlowingText glow as="h1" titleColor="blue">
+          <NeonText glow as="h1" titleColor="blue">
             Saber
-          </GlowingText>
+          </NeonText>
           <GoogleOAuth />
         </div>
         {/* {isLoggedIn && (

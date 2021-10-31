@@ -23,7 +23,7 @@ type Props = {
   titleColor: ColorStrings;
 };
 
-const GlowingText = ({
+const NeonText = ({
   as = 'span',
   children,
   glow = false,
@@ -36,4 +36,4 @@ const GlowingText = ({
 
 export type { ElementType };
 
-export default GlowingText;
+export default NeonText;
