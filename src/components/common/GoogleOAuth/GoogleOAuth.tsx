@@ -63,18 +63,13 @@ const GoogleOAuth = (): JSX.Element | null => {
     }
   };
 
-  const onFailure = async () => {
-    await logout();
-    errHandler(new Error('Google login failed'));
-  };
-
   return (
     <Container>
       {!isLoggedIn && (
         <GoogleLogin
           clientId={clientId}
           onSuccess={onSuccess}
-          onFailure={onFailure}
+          onFailure={() => errHandler(new Error('Google login failed'))}
           {...loginProps}
         />
       )}
