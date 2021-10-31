@@ -9,7 +9,7 @@ type Props = RenderPropsType & {
 };
 
 const NeonGoogleButton = ({ onClick, text }: Props): JSX.Element => (
-  <span role="button" onClick={onClick}>
+  <span onClick={onClick}>
     <NeonButton text={text} logo="google" />
   </span>
 );

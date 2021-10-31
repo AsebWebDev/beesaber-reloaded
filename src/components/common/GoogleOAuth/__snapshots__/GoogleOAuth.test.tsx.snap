@@ -149,14 +149,13 @@ exports[`GoogleOAuth should match snapshot when isLoggedIn=false 1`] = `
   <div
     class="c0"
   >
-    <span
-      role="button"
-    >
+    <span>
       <div
         class="c1"
       >
         <div
           class="c2"
+          role="button"
         >
           <span />
           <span />
@@ -327,14 +326,13 @@ exports[`GoogleOAuth should match snapshot when isLoggedIn=true 1`] = `
   <div
     class="c0"
   >
-    <span
-      role="button"
-    >
+    <span>
       <div
         class="c1"
       >
         <div
           class="c2"
+          role="button"
         >
           <span />
           <span />

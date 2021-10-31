@@ -144,6 +144,7 @@ exports[`NeonButton should match the snapshot 1`] = `
 >
   <div
     class="c1"
+    role="button"
   >
     <span />
     <span />

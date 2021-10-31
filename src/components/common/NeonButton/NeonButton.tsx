@@ -109,7 +109,7 @@ const Button = styled.div`
 
 const NeonButton = ({ logo, text }: Props): JSX.Element => (
   <Container>
-    <Button>
+    <Button role="button">
       <span></span>
       <span></span>
       <span></span>

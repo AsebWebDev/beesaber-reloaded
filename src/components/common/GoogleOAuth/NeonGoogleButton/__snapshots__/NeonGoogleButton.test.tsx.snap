@@ -139,14 +139,13 @@ exports[`NeonGoogleButton should match the snapshot 1`] = `
   transition-delay: 0.75s;
 }
 
-<span
-  role="button"
->
+<span>
   <div
     class="c0"
   >
     <div
       class="c1"
+      role="button"
     >
       <span />
       <span />
