@@ -2,15 +2,17 @@ import React from 'react';
 
 import NeonButton from '../../NeonButton/NeonButton';
 
+import type { ElementType } from '../../NeonText/NeonText';
 import type { RenderPropsType } from '../authHandlers';
 
 type Props = RenderPropsType & {
+  as?: ElementType;
   text: string;
 };
 
-const NeonGoogleButton = ({ onClick, text }: Props): JSX.Element => (
+const NeonGoogleButton = ({ as = 'h1', onClick, text }: Props): JSX.Element => (
   <span onClick={onClick}>
-    <NeonButton text={text} logo="google" />
+    <NeonButton as={as} text={text} logo="google" />
   </span>
 );
 
