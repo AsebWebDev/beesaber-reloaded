@@ -9,7 +9,7 @@ const Element = styled('span')<{ glow: boolean; titleColor: ColorStrings }>`
   ${({ titleColor, glow }) =>
     glow
       ? colors.createGlow(allColorSetsObject[titleColor])
-      : `color: ${allColorSetsObject[titleColor].main}`}
+      : `color: ${allColorSetsObject[titleColor].main};`}
   font-family: 'NeonTubes2';
   font-weight: 300;
 `;

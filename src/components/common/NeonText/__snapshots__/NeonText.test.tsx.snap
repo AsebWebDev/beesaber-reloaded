@@ -122,7 +122,8 @@ exports[`NeonText should match the snapshot when element is undefined 1`] = `
 
 exports[`NeonText should match the snapshot when glow property is false 1`] = `
 .c0 {
-  color: #ff0025 font-family:'NeonTubes2';
+  color: #ff0025;
+  font-family: 'NeonTubes2';
   font-weight: 300;
 }
 
