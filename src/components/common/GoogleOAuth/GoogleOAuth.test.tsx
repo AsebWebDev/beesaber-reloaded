@@ -5,8 +5,8 @@ import thunk from 'redux-thunk';
 
 import GoogleOAuth from './GoogleOAuth';
 
-import type { AppStatus } from 'src/store/reducer/appStatusReducer';
-import type { RootState } from 'src/store/store';
+import type { AppStatus } from '@/store/reducer/appStatusReducer';
+import type { RootState } from '@/store/store';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

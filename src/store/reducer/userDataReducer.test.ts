@@ -4,8 +4,8 @@ import thunk from 'redux-thunk';
 import exampleUserData from '../../testing/testData/exampleUserData';
 import reducer, { selectUserData, userDataUpdated } from './userDataReducer';
 
-import type { AppStatus } from 'src/store/reducer/appStatusReducer';
-import type { RootState } from 'src/store/store';
+import type { AppStatus } from '@/store/reducer/appStatusReducer';
+import type { RootState } from '@/store/store';
 import type { UserData } from '../../sharedTypes/UserData';
 
 const middlewares = [thunk];

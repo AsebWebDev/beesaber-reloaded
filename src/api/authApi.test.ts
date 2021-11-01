@@ -1,7 +1,7 @@
 import exampleUserData from '../testing/testData/exampleUserData';
 import api from './api';
 
-import type { UserData } from 'src/sharedTypes/UserData';
+import type { UserData } from '@/sharedTypes/UserData';
 import type { GoogleResponse } from './authApi';
 
 jest.mock('axios');
