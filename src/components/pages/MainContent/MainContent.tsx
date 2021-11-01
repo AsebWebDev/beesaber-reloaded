@@ -3,9 +3,10 @@ import styled from 'styled-components';
 
 import { useAppSelector } from '../../../store/hooks';
 import { selectIsLoggedIn } from '../../../store/reducer/appStatusReducer';
+import PrivateRoute from '../../tools/PrivateRoute/PrivateRoute';
 import Dashboard from '../Dashboard';
 import LandingPage from '../LandingPage/LandingPage';
-import MyProfile from '../MyProfile';
+import MyProfile from '../MyProfie/MyProfile';
 
 const Container = styled.div`
   width: 75%;
@@ -22,7 +23,7 @@ const MainContent = (): JSX.Element => {
           exact
           component={isLoggedIn ? Dashboard : LandingPage}
         />
-        <Route path="/myprofile" component={MyProfile} />
+        <PrivateRoute path="/myprofile" component={MyProfile} />
         <Route render={() => <h2>404</h2>} />
       </Switch>
     </Container>
