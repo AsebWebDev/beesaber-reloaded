@@ -3,7 +3,7 @@ import { createAction, createSlice } from '@reduxjs/toolkit';
 import prefixActionType from '../helper/prefixActionType';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { UserData } from '../../sharedTypes/UserData';
+import type { UserData } from '@/sharedTypes/UserData';
 import type { RootState } from './rootReducer';
 
 const name = 'userData';

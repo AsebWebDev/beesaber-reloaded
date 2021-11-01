@@ -1,8 +1,9 @@
-import exampleUserData from '../testing/testData/exampleUserData';
+import exampleUserData from '@/testing/testData/exampleUserData';
+
 import api from './api';
 
 import type { AxiosResponse } from 'axios';
-import type { UserData } from '../sharedTypes/UserData';
+import type { UserData } from '@/sharedTypes/UserData';
 
 jest.mock('axios');
 const fakeUserId = '12345';

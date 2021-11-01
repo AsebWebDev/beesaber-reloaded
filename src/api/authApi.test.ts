@@ -1,4 +1,5 @@
-import exampleUserData from '../testing/testData/exampleUserData';
+import exampleUserData from '@/testing/testData/exampleUserData';
+
 import api from './api';
 
 import type { UserData } from '@/sharedTypes/UserData';

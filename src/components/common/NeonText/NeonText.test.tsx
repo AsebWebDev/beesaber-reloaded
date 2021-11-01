@@ -1,7 +1,8 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 
-import { colorStringsArray } from '../../../tokens/definitions/color';
+import { colorStringsArray } from '@/tokens/definitions/color';
+
 import NeonText from './NeonText';
 
 import type { ElementType } from './NeonText';

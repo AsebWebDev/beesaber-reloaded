@@ -1,10 +1,11 @@
 import { toast } from 'react-toastify';
 
-import api from '../../../api/authApi';
+import api from '@/api/authApi';
+
 import NeonGoogleButton from './NeonGoogleButton/NeonGoogleButton';
 
 import type { GoogleLoginResponse } from 'react-google-login';
-import type { UserData } from '../../../sharedTypes/UserData';
+import type { UserData } from '@/sharedTypes/UserData';
 
 type RenderPropsType = {
   disabled?: boolean | undefined;

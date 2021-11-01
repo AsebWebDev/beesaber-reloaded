@@ -1,12 +1,13 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import exampleUserData from '../../testing/testData/exampleUserData';
+import exampleUserData from '@/testing/testData/exampleUserData';
+
 import reducer, { selectUserData, userDataUpdated } from './userDataReducer';
 
+import type { UserData } from '@/sharedTypes/UserData';
 import type { AppStatus } from '@/store/reducer/appStatusReducer';
 import type { RootState } from '@/store/store';
-import type { UserData } from '../../sharedTypes/UserData';
 
 const middlewares = [thunk];
 

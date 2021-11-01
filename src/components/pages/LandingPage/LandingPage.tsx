@@ -2,11 +2,11 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { selectIsLoggingIn } from '../../../store/reducer/appStatusReducer';
-import { mediaQuery } from '../../../tokens/definitions/layout';
-import BrandLogo from '../../common/BrandLogo/BrandLogo';
-import GoolgeOAuth from '../../common/GoogleOAuth/GoogleOAuth';
-import NeonText from '../../common/NeonText/NeonText';
+import BrandLogo from '@/components/common/BrandLogo/BrandLogo';
+import GoolgeOAuth from '@/components/common/GoogleOAuth/GoogleOAuth';
+import NeonText from '@/components/common/NeonText/NeonText';
+import { selectIsLoggingIn } from '@/store/reducer/appStatusReducer';
+import { mediaQuery } from '@/tokens/definitions/layout';
 
 const Content = styled.div`
   display: flex;

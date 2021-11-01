@@ -1,6 +1,6 @@
 import { Route, useHistory } from 'react-router-dom';
 
-import api from '../../../api/api';
+import api from '@/api/api';
 
 import type { ComponentType } from 'react';
 import type { StaticContext } from 'react-router';

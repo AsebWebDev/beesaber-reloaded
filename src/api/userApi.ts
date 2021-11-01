@@ -1,7 +1,7 @@
 import api, { errHandler, service } from './api';
 
 import type { AxiosResponse } from 'axios';
-import type { UserData } from '../sharedTypes/UserData';
+import type { UserData } from '@/sharedTypes/UserData';
 import type { PossibleResponses } from './api';
 
 const userApi = {

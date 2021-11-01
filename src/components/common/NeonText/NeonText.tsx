@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import colors, { allColorSetsObject } from '../../../tokens/definitions/color';
+import colors, { allColorSetsObject } from '@/tokens/definitions/color';
 
-import type { ColorStrings } from '../../../tokens/definitions/color';
+import type { ColorStrings } from '@/tokens/definitions/color';
 
 const Element = styled('span')<{ glow: boolean; titleColor: ColorStrings }>`
   ${({ titleColor, glow }) =>

@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-import BrandLogo from '../../common/BrandLogo/BrandLogo';
-import GoogleOAuth from '../../common/GoogleOAuth/GoogleOAuth';
-import NeonText from '../../common/NeonText/NeonText';
+import BrandLogo from '@/components/common/BrandLogo/BrandLogo';
+import GoogleOAuth from '@/components/common/GoogleOAuth/GoogleOAuth';
+import NeonText from '@/components/common/NeonText/NeonText';
 
 const Container = styled.div`
   display: flex;

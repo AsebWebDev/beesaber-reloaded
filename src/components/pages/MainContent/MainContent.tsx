@@ -1,9 +1,10 @@
 import { Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { useAppSelector } from '../../../store/hooks';
-import { selectIsLoggedIn } from '../../../store/reducer/appStatusReducer';
-import PrivateRoute from '../../tools/PrivateRoute/PrivateRoute';
+import PrivateRoute from '@/components/tools/PrivateRoute/PrivateRoute';
+import { useAppSelector } from '@/store/hooks';
+import { selectIsLoggedIn } from '@/store/reducer/appStatusReducer';
+
 import Dashboard from '../Dashboard';
 import LandingPage from '../LandingPage/LandingPage';
 import MyProfile from '../MyProfie/MyProfile';

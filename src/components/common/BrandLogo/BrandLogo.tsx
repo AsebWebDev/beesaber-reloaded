@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import tokens from '../../../tokens/index';
+import tokens from '@/tokens/index';
+
 import BrandLogoI from './BrandLogoI/BrandLogoI';
 
 const Container = styled.div`

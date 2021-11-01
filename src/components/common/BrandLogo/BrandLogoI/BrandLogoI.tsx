@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import tokens from '../../../../tokens/index';
+import tokens from '@/tokens/index';
 
 const yellow = tokens.color.yellow;
 

@@ -1,5 +1,5 @@
-import type { AppStatus } from '../../store/reducer/appStatusReducer';
-import type { RootState } from '../../store/store';
+import type { AppStatus } from '@/store/reducer/appStatusReducer';
+import type { RootState } from '@/store/store';
 
 const appStatus: AppStatus = {
   isLoggedIn: true,

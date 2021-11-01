@@ -3,15 +3,16 @@ import React from 'react';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import styled from 'styled-components';
 
-import { errHandler } from '../../../api/api';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { errHandler } from '@/api/api';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   selectIsLoggedIn,
   userIsLoggedIn,
   userIsLogginIn,
-} from '../../../store/reducer/appStatusReducer';
-import { userDataUpdated } from '../../../store/reducer/userDataReducer';
-import { mediaQuery } from '../../../tokens/definitions/layout';
+} from '@/store/reducer/appStatusReducer';
+import { userDataUpdated } from '@/store/reducer/userDataReducer';
+import { mediaQuery } from '@/tokens/definitions/layout';
+
 import {
   handleLogin,
   handleLogout,
@@ -19,7 +20,7 @@ import {
   logoutProps,
 } from './authHandlers';
 
-import type { PossibleResponses } from '../../../api/api';
+import type { PossibleResponses } from '@/api/api';
 
 const Container = styled.div`
   ${mediaQuery.mobile} {

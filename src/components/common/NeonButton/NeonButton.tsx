@@ -1,7 +1,7 @@
 import { MDBIcon } from 'mdb-react-ui-kit';
 import styled from 'styled-components';
 
-import NeonText from '../NeonText/NeonText';
+import NeonText from '@/components/common/NeonText/NeonText';
 
 import type { ElementType } from '../NeonText/NeonText';
 
