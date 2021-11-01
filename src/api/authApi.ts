@@ -33,6 +33,10 @@ const authApi = {
     }
   },
 
+  isLoggedIn(): boolean {
+    return localStorage.getItem('user') !== null; // app will consider user as logged in, when User exists in local Storage
+  },
+
   async isValidMongoId(id: string): Promise<boolean> {
     return service.post('/checkValidMongoId', { id });
   },
