@@ -1,16 +1,32 @@
 import { render, screen } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import React from 'react';
+import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
-
-import api from '@/api/api';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 
 import PrivateRoute from './PrivateRoute';
+
+import type { AppStatus } from '@/store/reducer/appStatusReducer';
+import type { RootState } from '@/store/store';
+
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
+
+const appStatus: AppStatus = {
+  isLoggedIn: true,
+  isLoggingIn: false,
+};
+
+const store: RootState = {
+  appStatus,
+  notifications: [],
+  userData: {},
+};
 
 describe('PrivateRoute', () => {
   const history = createMemoryHistory();
   const Component = <div>Test Component</div>;
-  const spy = jest.spyOn(api.authApi, 'isLoggedIn');
   let path: string;
 
   beforeEach(() => {
@@ -18,38 +34,33 @@ describe('PrivateRoute', () => {
     history.push(path);
   });
 
-  afterEach(() => {
-    spy.mockReset();
-  });
-
   it('should render component on given route when logged in', () => {
-    spy.mockReturnValue(true);
-
     render(
-      <Router history={history}>
-        <PrivateRoute path={path} component={() => Component} />
-      </Router>
+      <Provider store={mockStore(store)}>
+        <Router history={history}>
+          <PrivateRoute path={path} component={() => Component} />
+        </Router>
+      </Provider>
     );
 
     const component = screen.getByText('Test Component');
 
-    expect(spy).toBeCalledTimes(1);
     expect(history.location.pathname).toBe(path);
     expect(component).toBeInTheDocument();
   });
 
   it('should redirect to "/" when not logged in', () => {
-    spy.mockReturnValue(false);
-
+    store.appStatus.isLoggedIn = false;
     render(
-      <Router history={history}>
-        <PrivateRoute path={path} component={() => Component} />
-      </Router>
+      <Provider store={mockStore(store)}>
+        <Router history={history}>
+          <PrivateRoute path={path} component={() => Component} />
+        </Router>
+      </Provider>
     );
 
     const component = screen.queryByText('Test Component');
 
-    expect(spy).toBeCalledTimes(1);
     expect(history.location.pathname).toBe('/');
     expect(component).not.toBeInTheDocument();
   });

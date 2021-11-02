@@ -1,6 +1,7 @@
 import { Route, useHistory } from 'react-router-dom';
 
-import api from '@/api/api';
+import { useAppSelector } from '@/store/hooks';
+import { selectIsLoggedIn } from '@/store/reducer/appStatusReducer';
 
 import type { ComponentType } from 'react';
 import type { StaticContext } from 'react-router';
@@ -20,7 +21,7 @@ type Props = {
 };
 
 function PrivateRoute({ component, path }: Props): JSX.Element {
-  const isLoggedIn = api.authApi.isLoggedIn();
+  const isLoggedIn = useAppSelector(selectIsLoggedIn);
   const history = useHistory();
 
   if (!isLoggedIn) history.push('/');
