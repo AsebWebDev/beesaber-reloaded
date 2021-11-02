@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import BrandLogo from '@/components/common/BrandLogo/BrandLogo';
 import GoogleOAuth from '@/components/common/GoogleOAuth/GoogleOAuth';
 import NeonText from '@/components/common/NeonText/NeonText';
+import Divider from '@/components/tools/Divider/Divider';
+import useIsMobile from '@/sharedHooks/useIsMobile';
 
 const Container = styled.div`
   display: flex;
@@ -47,46 +49,51 @@ const Title = styled.div`
   font-size: 1.5rem;
 `;
 
-const Menu = (): JSX.Element => (
-  <Container>
-    <MenuContainer>
-      <MenuHeader>
-        <Title>
-          <NeonText glow as="h1" titleColor="red">
-            Bee
-          </NeonText>
-          <NeonText glow as="h1" titleColor="blue">
-            Saber
-          </NeonText>
-        </Title>
-        <BrandLogo />
-      </MenuHeader>
-      <MenuItems>
-        <MenuLink to="/">
-          <NeonText glow as="h1" titleColor="red">
-            Dashboard
-          </NeonText>
-        </MenuLink>
-        <MenuLink to="/myprofile">
-          <NeonText glow as="h1" titleColor="red">
-            My
-          </NeonText>
-          <NeonText glow as="h1" titleColor="blue">
-            Profile
-          </NeonText>
-        </MenuLink>
-        <MenuLink to="/myhive">
-          <NeonText glow as="h1" titleColor="red">
-            My
-          </NeonText>
-          <NeonText glow as="h1" titleColor="blue">
-            Hive
-          </NeonText>
-        </MenuLink>
-      </MenuItems>
-      <GoogleOAuth />
-    </MenuContainer>
-  </Container>
-);
+const Menu = (): JSX.Element => {
+  const { isMobile } = useIsMobile();
+
+  return (
+    <Container>
+      <MenuContainer>
+        <MenuHeader>
+          <Title>
+            <NeonText glow as="h1" titleColor="red">
+              Bee
+            </NeonText>
+            <NeonText glow as="h1" titleColor="blue">
+              Saber
+            </NeonText>
+          </Title>
+          <BrandLogo />
+        </MenuHeader>
+        <MenuItems>
+          <MenuLink to="/">
+            <NeonText glow as="h1" titleColor="red">
+              Dashboard
+            </NeonText>
+          </MenuLink>
+          <MenuLink to="/myprofile">
+            <NeonText glow as="h1" titleColor="red">
+              My
+            </NeonText>
+            <NeonText glow as="h1" titleColor="blue">
+              Profile
+            </NeonText>
+          </MenuLink>
+          <MenuLink to="/myhive">
+            <NeonText glow as="h1" titleColor="red">
+              My
+            </NeonText>
+            <NeonText glow as="h1" titleColor="blue">
+              Hive
+            </NeonText>
+          </MenuLink>
+        </MenuItems>
+        <GoogleOAuth />
+      </MenuContainer>
+      {isMobile && <Divider />}
+    </Container>
+  );
+};
 
 export default Menu;
