@@ -9,7 +9,7 @@ import type { ElementType } from '../NeonText/NeonText';
 const Container = styled.div`
   display: flex;
   gap: 0.5rem;
-  letter-spacing: 0.3rem;
+  letter-spacing: 0.1rem;
 `;
 
 type Props = {

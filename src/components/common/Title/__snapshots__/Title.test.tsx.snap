@@ -33,10 +33,10 @@ exports[`Title should match the snapshot when element is h1 1`] = `
   display: -ms-flexbox;
   display: flex;
   gap: 0.5rem;
-  -webkit-letter-spacing: 0.3rem;
-  -moz-letter-spacing: 0.3rem;
-  -ms-letter-spacing: 0.3rem;
-  letter-spacing: 0.3rem;
+  -webkit-letter-spacing: 0.1rem;
+  -moz-letter-spacing: 0.1rem;
+  -ms-letter-spacing: 0.1rem;
+  letter-spacing: 0.1rem;
 }
 
 <div
@@ -88,10 +88,10 @@ exports[`Title should match the snapshot when element is h2 1`] = `
   display: -ms-flexbox;
   display: flex;
   gap: 0.5rem;
-  -webkit-letter-spacing: 0.3rem;
-  -moz-letter-spacing: 0.3rem;
-  -ms-letter-spacing: 0.3rem;
-  letter-spacing: 0.3rem;
+  -webkit-letter-spacing: 0.1rem;
+  -moz-letter-spacing: 0.1rem;
+  -ms-letter-spacing: 0.1rem;
+  letter-spacing: 0.1rem;
 }
 
 <div
@@ -143,10 +143,10 @@ exports[`Title should match the snapshot when element is h3 1`] = `
   display: -ms-flexbox;
   display: flex;
   gap: 0.5rem;
-  -webkit-letter-spacing: 0.3rem;
-  -moz-letter-spacing: 0.3rem;
-  -ms-letter-spacing: 0.3rem;
-  letter-spacing: 0.3rem;
+  -webkit-letter-spacing: 0.1rem;
+  -moz-letter-spacing: 0.1rem;
+  -ms-letter-spacing: 0.1rem;
+  letter-spacing: 0.1rem;
 }
 
 <div
@@ -198,10 +198,10 @@ exports[`Title should match the snapshot when element is p 1`] = `
   display: -ms-flexbox;
   display: flex;
   gap: 0.5rem;
-  -webkit-letter-spacing: 0.3rem;
-  -moz-letter-spacing: 0.3rem;
-  -ms-letter-spacing: 0.3rem;
-  letter-spacing: 0.3rem;
+  -webkit-letter-spacing: 0.1rem;
+  -moz-letter-spacing: 0.1rem;
+  -ms-letter-spacing: 0.1rem;
+  letter-spacing: 0.1rem;
 }
 
 <div
@@ -253,10 +253,10 @@ exports[`Title should match the snapshot when element is span 1`] = `
   display: -ms-flexbox;
   display: flex;
   gap: 0.5rem;
-  -webkit-letter-spacing: 0.3rem;
-  -moz-letter-spacing: 0.3rem;
-  -ms-letter-spacing: 0.3rem;
-  letter-spacing: 0.3rem;
+  -webkit-letter-spacing: 0.1rem;
+  -moz-letter-spacing: 0.1rem;
+  -ms-letter-spacing: 0.1rem;
+  letter-spacing: 0.1rem;
 }
 
 <div
@@ -308,10 +308,10 @@ exports[`Title should match the snapshot when element is undefined 1`] = `
   display: -ms-flexbox;
   display: flex;
   gap: 0.5rem;
-  -webkit-letter-spacing: 0.3rem;
-  -moz-letter-spacing: 0.3rem;
-  -ms-letter-spacing: 0.3rem;
-  letter-spacing: 0.3rem;
+  -webkit-letter-spacing: 0.1rem;
+  -moz-letter-spacing: 0.1rem;
+  -ms-letter-spacing: 0.1rem;
+  letter-spacing: 0.1rem;
 }
 
 <div
