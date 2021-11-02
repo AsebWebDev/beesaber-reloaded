@@ -26,7 +26,7 @@ const mockStore = configureMockStore(middlewares)(initialStore);
 
 describe('userData reducer', () => {
   it('should return initialState', () => {
-    const initialState: UserData = {};
+    const initialState = {} as UserData;
 
     expect(reducer(undefined, { type: 'mockType' })).toStrictEqual(
       initialState

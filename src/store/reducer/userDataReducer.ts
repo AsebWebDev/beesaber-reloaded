@@ -14,7 +14,7 @@ const updateUserData = createAction<UserData | undefined>(
   userDataActions('updateUserData')
 );
 
-const initialState: UserData = {};
+const initialState = {} as UserData;
 
 const slice = createSlice({
   name,

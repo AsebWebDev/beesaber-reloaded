@@ -29,7 +29,7 @@ const authApi = {
     } catch (err: unknown) {
       errHandler(err as PossibleResponses);
 
-      return Promise.resolve({});
+      return Promise.resolve({} as UserData);
     }
   },
 

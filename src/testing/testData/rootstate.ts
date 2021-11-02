@@ -1,3 +1,4 @@
+import type { UserData } from '@/sharedTypes/UserData';
 import type { AppStatus } from '@/store/reducer/appStatusReducer';
 import type { RootState } from '@/store/store';
 
@@ -6,10 +7,12 @@ const appStatus: AppStatus = {
   isLoggingIn: false,
 };
 
+const userData = {} as UserData;
+
 const store: RootState = {
   appStatus,
   notifications: [],
-  userData: {},
+  userData,
 };
 
 export default store;

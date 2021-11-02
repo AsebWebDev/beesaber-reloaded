@@ -20,6 +20,7 @@ import {
 } from './authHandlers';
 
 import type { PossibleResponses } from '@/api/api';
+import type { UserData } from '@/sharedTypes/UserData';
 
 const Container = styled.div`
   ${mediaQuery.mobile} {
@@ -61,7 +62,8 @@ const GoogleOAuth = (): JSX.Element | null => {
         errHandler(error);
       }
     }
-    dispatch(userDataUpdated({}));
+
+    dispatch(userDataUpdated({} as UserData));
     dispatch(userIsLoggedIn(false));
   };
 

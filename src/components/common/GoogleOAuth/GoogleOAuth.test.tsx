@@ -5,6 +5,7 @@ import thunk from 'redux-thunk';
 
 import GoogleOAuth from './GoogleOAuth';
 
+import type { UserData } from '@/sharedTypes/UserData';
 import type { AppStatus } from '@/store/reducer/appStatusReducer';
 import type { RootState } from '@/store/store';
 
@@ -19,7 +20,7 @@ const appStatus: AppStatus = {
 const store: RootState = {
   appStatus,
   notifications: [],
-  userData: {},
+  userData: {} as UserData,
 };
 
 process.env.REACT_APP_GOOGLE_CLIENTID = 'fakeGoogleClientId';
