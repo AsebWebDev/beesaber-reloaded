@@ -2,26 +2,26 @@ import styled from 'styled-components';
 
 import tokens from '@/tokens/index';
 
-const Container = styled.div`
-  @keyframes ldio-do9usc7wgsf {
+const Container = styled.div<{ isBig: boolean }>`
+  ${({ isBig }) => `@keyframes ldio-do9usc7wgsf {
     0% {
-      top: 90px;
-      left: 90px;
+      top: ${isBig ? '5.625rem' : '2.8125rem'};
+      left: ${isBig ? '5.625rem' : '2.8125rem'};
       width: 0;
       height: 0;
       opacity: 1;
     }
     100% {
-      top: 15px;
-      left: 15px;
-      width: 150px;
-      height: 150px;
+      top: ${isBig ? '0.9375rem' : '0.4688rem'};
+      left: ${isBig ? '0.9375rem' : '0.4688rem'};
+      width: ${isBig ? '9.375rem' : '4.6875rem'};
+      height: ${isBig ? '9.375rem' : '4.6875rem'};
       opacity: 0;
     }
   }
   .ldio-do9usc7wgsf div {
     position: absolute;
-    border-width: 10px;
+    border-width: ${isBig ? '0.625rem' : '0.3125rem'};
     border-style: solid;
     opacity: 1;
     border-radius: 50%;
@@ -36,8 +36,8 @@ const Container = styled.div`
     animation-delay: -0.5s;
   }
   .loadingio-spinner-ripple-rt8n616prbh {
-    width: 200px;
-    height: 200px;
+    width: ${isBig ? '12.5rem' : '3.8125rem'};
+    height: ${isBig ? '12.5rem' : '3.8125rem'};
     display: inline-block;
     overflow: hidden;
     background: ${tokens.color.page.bgColor};
@@ -46,18 +46,23 @@ const Container = styled.div`
     width: 100%;
     height: 100%;
     position: relative;
-    transform: translateZ(0) scale(1);
+    transform: translateZ(0) scale(${isBig ? '1' : '0.61'});
     backface-visibility: hidden;
     transform-origin: 0 0; /* see note above */
   }
   .ldio-do9usc7wgsf div {
     box-sizing: content-box;
   }
+`}
 `;
 
-function SpinnerPulse(): JSX.Element {
+type Props = {
+  isBig?: boolean;
+};
+
+function SpinnerPulse({ isBig = false }: Props): JSX.Element {
   return (
-    <Container>
+    <Container isBig={isBig}>
       <div className="loadingio-spinner-ripple-rt8n616prbh">
         <div className="ldio-do9usc7wgsf">
           <div></div>
