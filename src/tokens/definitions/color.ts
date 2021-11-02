@@ -17,7 +17,7 @@ const page: PageSet = {
 };
 
 const blue: ColorSet = {
-  main: 'blue',
+  main: '#0000FF',
   light: '#edf5ff',
   shadow: '#7979ff',
 };

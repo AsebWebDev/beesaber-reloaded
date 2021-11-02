@@ -8,7 +8,7 @@ exports[`GoogleOAuth should match snapshot when isLoggedIn=false 1`] = `
   -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
-  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+  text-shadow: #0000FF -2px -1px 5px,#0000FF 2px 1px 5px, #0000FF 0px 0px 10px,#0000FF 0px 0px 15px,#0000FF 0px 0px 20px, #0000FF 0px 0px 30px;
   font-family: 'NeonTubes2';
   font-weight: 300;
   margin: 0;
@@ -186,7 +186,7 @@ exports[`GoogleOAuth should match snapshot when isLoggedIn=true 1`] = `
   -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
   transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
-  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+  text-shadow: #0000FF -2px -1px 5px,#0000FF 2px 1px 5px, #0000FF 0px 0px 10px,#0000FF 0px 0px 15px,#0000FF 0px 0px 20px, #0000FF 0px 0px 30px;
   font-family: 'NeonTubes2';
   font-weight: 300;
   margin: 0;
