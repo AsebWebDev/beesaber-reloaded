@@ -1,0 +1,89 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SpinnerWifi should match the snapshot 1`] = `
+.c0 .ldio-reyiqutdbqg div {
+  position: absolute;
+  -webkit-animation: ldio-reyiqutdbqg 1s linear infinite;
+  animation: ldio-reyiqutdbqg 1s linear infinite;
+  box-sizing: border-box !important;
+}
+
+.c0 .ldio-reyiqutdbqg div:nth-child(1) {
+  width: 44px;
+  height: 44px;
+  left: 34px;
+  top: 128px;
+  border-radius: 50%;
+  background: #ff0025;
+}
+
+.c0 .ldio-reyiqutdbqg div:nth-child(2) {
+  width: 66px;
+  height: 66px;
+  left: 56px;
+  top: 84px;
+  border-radius: 0 66px 0 0;
+  border: 20px solid #ff8d9e;
+  background: none;
+  -webkit-animation-delay: 0.1s;
+  animation-delay: 0.1s;
+  border-bottom: 0;
+  border-left: 0;
+}
+
+.c0 .ldio-reyiqutdbqg div:nth-child(3) {
+  width: 110px;
+  height: 110px;
+  left: 56px;
+  top: 40px;
+  border-radius: 0 110px 0 0;
+  border: 20px solid #fff0f0;
+  background: none;
+  -webkit-animation-delay: 0.2s;
+  animation-delay: 0.2s;
+  border-bottom: 0;
+  border-left: 0;
+}
+
+.c0 .loadingio-spinner-radio-5b7w2tupa5t {
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+  overflow: hidden;
+  background: #00111f;
+}
+
+.c0 .ldio-reyiqutdbqg {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  -webkit-transform: translateZ(0) scale(1);
+  -ms-transform: translateZ(0) scale(1);
+  transform: translateZ(0) scale(1);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  transform-origin: 0 0;
+}
+
+.c0 .ldio-reyiqutdbqg div {
+  box-sizing: content-box;
+}
+
+<div
+  class="c0"
+>
+  <div
+    class="loadingio-spinner-radio-5b7w2tupa5t"
+  >
+    <div
+      class="ldio-reyiqutdbqg"
+    >
+      <div />
+      <div />
+      <div />
+    </div>
+  </div>
+</div>
+`;

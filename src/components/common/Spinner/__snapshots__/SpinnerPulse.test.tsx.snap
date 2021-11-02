@@ -1,0 +1,66 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SpinnerPulse should match the snapshot 1`] = `
+.c0 .ldio-do9usc7wgsf div {
+  position: absolute;
+  border-width: 10px;
+  border-style: solid;
+  opacity: 1;
+  border-radius: 50%;
+  -webkit-animation: ldio-do9usc7wgsf 1s cubic-bezier(0,0.2,0.8,1) infinite;
+  animation: ldio-do9usc7wgsf 1s cubic-bezier(0,0.2,0.8,1) infinite;
+}
+
+.c0 .ldio-do9usc7wgsf div:nth-child(1) {
+  border-color: #ffeb00;
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+}
+
+.c0 .ldio-do9usc7wgsf div:nth-child(2) {
+  border-color: #0000FF;
+  -webkit-animation-delay: -0.5s;
+  animation-delay: -0.5s;
+}
+
+.c0 .loadingio-spinner-ripple-rt8n616prbh {
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+  overflow: hidden;
+  background: #00111f;
+}
+
+.c0 .ldio-do9usc7wgsf {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  -webkit-transform: translateZ(0) scale(1);
+  -ms-transform: translateZ(0) scale(1);
+  transform: translateZ(0) scale(1);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  transform-origin: 0 0;
+}
+
+.c0 .ldio-do9usc7wgsf div {
+  box-sizing: content-box;
+}
+
+<div
+  class="c0"
+>
+  <div
+    class="loadingio-spinner-ripple-rt8n616prbh"
+  >
+    <div
+      class="ldio-do9usc7wgsf"
+    >
+      <div />
+      <div />
+    </div>
+  </div>
+</div>
+`;
