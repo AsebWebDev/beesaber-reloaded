@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import BrandLogo from '@/components/common/BrandLogo/BrandLogo';
 import GoogleOAuth from '@/components/common/GoogleOAuth/GoogleOAuth';
-import NeonText from '@/components/common/NeonText/NeonText';
+import Title from '@/components/common/Title/Title';
 import Divider from '@/components/tools/Divider/Divider';
 import useIsMobile from '@/sharedHooks/useIsMobile';
 
@@ -44,11 +44,6 @@ const MenuItems = styled.div`
   height: 100%;
 `;
 
-const Title = styled.div`
-  display: flex;
-  font-size: 1.5rem;
-`;
-
 const Menu = (): JSX.Element => {
   const { isMobile } = useIsMobile();
 
@@ -56,37 +51,18 @@ const Menu = (): JSX.Element => {
     <Container>
       <MenuContainer>
         <MenuHeader>
-          <Title>
-            <NeonText glow as="h1" titleColor="red">
-              Bee
-            </NeonText>
-            <NeonText glow as="h1" titleColor="blue">
-              Saber
-            </NeonText>
-          </Title>
+          <Title>Bee Saber</Title>
           <BrandLogo />
         </MenuHeader>
         <MenuItems>
           <MenuLink to="/">
-            <NeonText glow as="h1" titleColor="red">
-              Dashboard
-            </NeonText>
+            <Title>Dashboard</Title>
           </MenuLink>
           <MenuLink to="/myprofile">
-            <NeonText glow as="h1" titleColor="red">
-              My
-            </NeonText>
-            <NeonText glow as="h1" titleColor="blue">
-              Profile
-            </NeonText>
+            <Title>My Profile</Title>
           </MenuLink>
           <MenuLink to="/myhive">
-            <NeonText glow as="h1" titleColor="red">
-              My
-            </NeonText>
-            <NeonText glow as="h1" titleColor="blue">
-              Hive
-            </NeonText>
+            <Title>My Hive</Title>
           </MenuLink>
         </MenuItems>
         <GoogleOAuth />
