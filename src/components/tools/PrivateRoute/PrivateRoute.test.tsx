@@ -7,6 +7,7 @@ import thunk from 'redux-thunk';
 
 import PrivateRoute from './PrivateRoute';
 
+import type { UserData } from '@/sharedTypes/UserData';
 import type { AppStatus } from '@/store/reducer/appStatusReducer';
 import type { RootState } from '@/store/store';
 
@@ -21,7 +22,7 @@ const appStatus: AppStatus = {
 const store: RootState = {
   appStatus,
   notifications: [],
-  userData: {},
+  userData: {} as UserData,
 };
 
 describe('PrivateRoute', () => {

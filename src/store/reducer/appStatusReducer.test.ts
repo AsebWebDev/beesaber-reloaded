@@ -8,6 +8,7 @@ import reducer, {
   userIsLogginIn,
 } from './appStatusReducer';
 
+import type { UserData } from '@/sharedTypes/UserData';
 import type { RootState } from '../store';
 import type { AppStatus } from './appStatusReducer';
 
@@ -19,7 +20,7 @@ const appStatus: AppStatus = {
 const initialStore: RootState = {
   appStatus,
   notifications: [],
-  userData: {},
+  userData: {} as UserData,
 };
 
 describe('appStatus reducer', () => {
