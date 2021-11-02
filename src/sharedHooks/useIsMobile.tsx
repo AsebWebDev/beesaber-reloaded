@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { mobileUserAgentsRegEx } from '@/testing/mobileUserAgents';
 
-export default function useIsMobile() {
+export default function useIsMobile(): { isMobile: boolean } {
   const [isMobile, setMobile] = useState(false);
 
   useEffect(() => {
