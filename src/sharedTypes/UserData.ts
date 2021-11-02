@@ -1,6 +1,6 @@
 import type Settings from './Settings';
 
-type BasicUserData = {
+export type UserData = {
   __v: number;
   _id: string;
   bees: unknown[];
@@ -10,6 +10,7 @@ type BasicUserData = {
   myIntersections: unknown[];
   myScoreSaberId: number | null;
   news: unknown[];
+  profilePic?: string;
   scoreData: {
     scoredSongsHashes: unknown[];
     scoresRecent: unknown[];
@@ -17,8 +18,5 @@ type BasicUserData = {
   };
   settings: Settings;
   updated_at: string;
+  username?: string;
 };
-
-export type { BasicUserData };
-
-export type UserData = BasicUserData | Record<string, unknown>;
