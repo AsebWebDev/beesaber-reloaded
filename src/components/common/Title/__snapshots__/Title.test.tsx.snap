@@ -1,0 +1,331 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Title should match the snapshot when element is h1 1`] = `
+.c1 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c2 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-letter-spacing: 0.3rem;
+  -moz-letter-spacing: 0.3rem;
+  -ms-letter-spacing: 0.3rem;
+  letter-spacing: 0.3rem;
+}
+
+<div
+  class="c0"
+>
+  <h1
+    class="c1"
+  >
+    Glowing
+  </h1>
+  <h1
+    class="c2"
+  >
+    Text
+  </h1>
+</div>
+`;
+
+exports[`Title should match the snapshot when element is h2 1`] = `
+.c1 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c2 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-letter-spacing: 0.3rem;
+  -moz-letter-spacing: 0.3rem;
+  -ms-letter-spacing: 0.3rem;
+  letter-spacing: 0.3rem;
+}
+
+<div
+  class="c0"
+>
+  <h2
+    class="c1"
+  >
+    Glowing
+  </h2>
+  <h2
+    class="c2"
+  >
+    Text
+  </h2>
+</div>
+`;
+
+exports[`Title should match the snapshot when element is h3 1`] = `
+.c1 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c2 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-letter-spacing: 0.3rem;
+  -moz-letter-spacing: 0.3rem;
+  -ms-letter-spacing: 0.3rem;
+  letter-spacing: 0.3rem;
+}
+
+<div
+  class="c0"
+>
+  <h3
+    class="c1"
+  >
+    Glowing
+  </h3>
+  <h3
+    class="c2"
+  >
+    Text
+  </h3>
+</div>
+`;
+
+exports[`Title should match the snapshot when element is p 1`] = `
+.c1 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c2 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-letter-spacing: 0.3rem;
+  -moz-letter-spacing: 0.3rem;
+  -ms-letter-spacing: 0.3rem;
+  letter-spacing: 0.3rem;
+}
+
+<div
+  class="c0"
+>
+  <p
+    class="c1"
+  >
+    Glowing
+  </p>
+  <p
+    class="c2"
+  >
+    Text
+  </p>
+</div>
+`;
+
+exports[`Title should match the snapshot when element is span 1`] = `
+.c1 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c2 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-letter-spacing: 0.3rem;
+  -moz-letter-spacing: 0.3rem;
+  -ms-letter-spacing: 0.3rem;
+  letter-spacing: 0.3rem;
+}
+
+<div
+  class="c0"
+>
+  <span
+    class="c1"
+  >
+    Glowing
+  </span>
+  <span
+    class="c2"
+  >
+    Text
+  </span>
+</div>
+`;
+
+exports[`Title should match the snapshot when element is undefined 1`] = `
+.c1 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c2 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: blue -2px -1px 5px,blue 2px 1px 5px, blue 0px 0px 10px,blue 0px 0px 15px,blue 0px 0px 20px, blue 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-letter-spacing: 0.3rem;
+  -moz-letter-spacing: 0.3rem;
+  -ms-letter-spacing: 0.3rem;
+  letter-spacing: 0.3rem;
+}
+
+<div
+  class="c0"
+>
+  <h1
+    class="c1"
+  >
+    Glowing
+  </h1>
+  <h1
+    class="c2"
+  >
+    Text
+  </h1>
+</div>
+`;
