@@ -1,3 +1,4 @@
+import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import './index.scss';
 
 import ReactDOM from 'react-dom';
