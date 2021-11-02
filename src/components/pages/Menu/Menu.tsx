@@ -6,14 +6,19 @@ import GoogleOAuth from '@/components/common/GoogleOAuth/GoogleOAuth';
 import Title from '@/components/common/Title/Title';
 import Divider from '@/components/tools/Divider/Divider';
 import useIsMobile from '@/sharedHooks/useIsMobile';
+import { mediaQuery } from '@/tokens/definitions/layout';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   font-family: 'NeonTubes2';
-  padding: 1rem;
+  padding: 1rem 1rem 0 1rem;
   height: 100%;
+
+  ${mediaQuery.sm} {
+    padding: 1rem;
+  }
 `;
 
 const MenuContainer = styled.div`
