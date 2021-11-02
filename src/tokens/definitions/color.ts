@@ -4,13 +4,13 @@ type ColorSet = {
   shadow?: string;
 };
 
-type ColorStrings = 'blue' | 'red' | 'yellow';
+type ColorStrings = 'blue' | 'red' | 'white' | 'yellow';
 
 type PageSet = {
   bgColor: string;
 };
 
-const colorStringsArray: ColorStrings[] = ['blue', 'red', 'yellow'];
+const colorStringsArray: ColorStrings[] = ['blue', 'red', 'white', 'yellow'];
 
 const page: PageSet = {
   bgColor: '#00111f',
@@ -28,6 +28,12 @@ const red: ColorSet = {
   shadow: '#ff8d9e',
 };
 
+const white: ColorSet = {
+  light: 'rgba(255, 255, 255, 0.7)',
+  main: 'rgba(255, 255, 255, 1)',
+  shadow: 'rgba(255, 255, 255, 0.3)',
+};
+
 const yellow: ColorSet = {
   main: '#ffeb00',
   light: '#fffcdd',
@@ -43,8 +49,8 @@ const createGlow = (color: ColorSet): string => `
     ${color.main} 0px 0px 10px, ${color.main} 0px 0px 15px, ${color.main} 0px 0px 20px,
     ${color.main} 0px 0px 30px;
 `;
-const allColorSetsArray = [blue, red, yellow];
-const allColorSetsObject = { blue, red, yellow };
+const allColorSetsArray = [blue, red, white, yellow];
+const allColorSetsObject = { blue, red, white, yellow };
 
 export {
   allColorSetsArray,
@@ -52,6 +58,7 @@ export {
   blue,
   colorStringsArray,
   red,
+  white,
   yellow,
 };
 
@@ -62,5 +69,6 @@ export default {
   createGlow,
   page,
   red,
+  white,
   yellow,
 };

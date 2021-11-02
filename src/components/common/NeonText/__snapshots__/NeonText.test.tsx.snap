@@ -204,6 +204,27 @@ exports[`NeonText should match the snapshot when titlecolor is red 1`] = `
 </span>
 `;
 
+exports[`NeonText should match the snapshot when titlecolor is white 1`] = `
+.c0 {
+  color: rgba(255,255,255,0.7);
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: rgba(255,255,255,1) -2px -1px 5px,rgba(255,255,255,1) 2px 1px 5px, rgba(255,255,255,1) 0px 0px 10px,rgba(255,255,255,1) 0px 0px 15px,rgba(255,255,255,1) 0px 0px 20px, rgba(255,255,255,1) 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+<span
+  class="c0"
+>
+  Glowing Text
+</span>
+`;
+
 exports[`NeonText should match the snapshot when titlecolor is yellow 1`] = `
 .c0 {
   color: #fffcdd;
