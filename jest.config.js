@@ -12,8 +12,8 @@ module.exports = {
   testPathIgnorePatterns: ['dist'],
   moduleNameMapper: pathsToModuleNameMapper(paths, {
     prefix: '<rootDir>/',
-    '^img/': '<rootDir>/app/js/testing/__mocks__/fileMock.js',
-    '^emoji-datasource/': '<rootDir>/app/js/testing/__mocks__/fileMock.js',
+    '^img/': '<rootDir>/src/testing/__mocks__/fileMock.js',
+    '^emoji-datasource/': '<rootDir>/src/testing/__mocks__/fileMock.js',
   }),
   transform: {
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
