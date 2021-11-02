@@ -10,6 +10,7 @@ import LandingPage from '../LandingPage/LandingPage';
 import MyProfile from '../MyProfie/MyProfile';
 
 const Container = styled.div`
+  padding-top: 1rem;
   width: 75%;
 `;
 
