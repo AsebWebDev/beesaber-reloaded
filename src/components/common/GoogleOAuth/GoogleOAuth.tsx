@@ -1,6 +1,5 @@
-/* eslint-disable no-console */
-import React from 'react';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { errHandler } from '@/api/api';
@@ -33,6 +32,7 @@ const GoogleOAuth = (): JSX.Element | null => {
 
   if (clientId === undefined) return null;
   const dispatch = useAppDispatch();
+  const history = useHistory();
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
 
   const onSuccess = async (response: PossibleResponses) => {
@@ -53,15 +53,16 @@ const GoogleOAuth = (): JSX.Element | null => {
   };
 
   const logout = async () => {
+    history.push('/');
     try {
       await handleLogout();
-      dispatch(userIsLoggedIn(false));
-      dispatch(userDataUpdated({}));
     } catch (error: unknown) {
       if (error instanceof Error) {
         errHandler(error);
       }
     }
+    dispatch(userDataUpdated({}));
+    dispatch(userIsLoggedIn(false));
   };
 
   return (
