@@ -8,7 +8,7 @@ export type UserData = {
   googleId: string;
   isAdmin: boolean;
   myIntersections: unknown[];
-  myScoreSaberId: number | null;
+  myScoreSaberId: string;
   news: unknown[];
   profilePic?: string;
   scoreData: {

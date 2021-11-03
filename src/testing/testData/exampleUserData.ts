@@ -10,7 +10,7 @@ const exampleUserData: UserData = {
   created_at: '',
   isAdmin: false,
   myIntersections: [],
-  myScoreSaberId: null,
+  myScoreSaberId: '',
   news: [],
   scoreData: {
     scoredSongsHashes: [],

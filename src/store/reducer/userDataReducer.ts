@@ -29,6 +29,8 @@ const slice = createSlice({
 
 // SELECTORS
 const selectUserData = (state: RootState): UserData => state.userData;
+const selectMyScoreSaberId = (state: RootState): string =>
+  state.userData.myScoreSaberId;
 
 // INITIAL STATE EXPORT
 export { initialState };
@@ -38,7 +40,7 @@ export const { userDataUpdated } = slice.actions;
 export { updateUserData };
 
 // SELECTORS EXPORT
-export { selectUserData };
+export { selectMyScoreSaberId, selectUserData };
 
 // REDUCER EXPORT
 export default slice.reducer;
