@@ -3,25 +3,12 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import GoogleOAuth from './GoogleOAuth';
+import initialState from '@/testing/testData/initialStates';
 
-import type { UserData } from '@/sharedTypes/UserData';
-import type { AppStatus } from '@/store/reducer/appStatusReducer';
-import type { RootState } from '@/store/store';
+import GoogleOAuth from './GoogleOAuth';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
-
-const appStatus: AppStatus = {
-  isLoggedIn: true,
-  isLoggingIn: false,
-};
-
-const store: RootState = {
-  appStatus,
-  notifications: [],
-  userData: {} as UserData,
-};
 
 process.env.REACT_APP_GOOGLE_CLIENTID = 'fakeGoogleClientId';
 
@@ -29,9 +16,9 @@ describe('GoogleOAuth', () => {
   it.each([true, false])(
     'should match snapshot when isLoggedIn=%s',
     (isLoggedIn) => {
-      store.appStatus.isLoggedIn = isLoggedIn;
+      initialState.appStatus.isLoggedIn = isLoggedIn;
       const { container } = render(
-        <Provider store={mockStore(store)}>
+        <Provider store={mockStore(initialState)}>
           <GoogleOAuth />
         </Provider>
       );

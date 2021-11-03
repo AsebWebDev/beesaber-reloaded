@@ -3,16 +3,22 @@ import type { AppStatus } from '@/store/reducer/appStatusReducer';
 import type { RootState } from '@/store/store';
 
 const appStatus: AppStatus = {
+  isFetchingData: {
+    status: false,
+    statusText: undefined,
+  },
   isLoggedIn: true,
   isLoggingIn: false,
 };
 
 const userData = {} as UserData;
 
-const store: RootState = {
+const initialState: RootState = {
   appStatus,
   notifications: [],
   userData,
 };
 
-export default store;
+export { appStatus,userData };
+
+export default initialState;

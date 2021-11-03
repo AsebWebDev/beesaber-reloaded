@@ -5,25 +5,12 @@ import { Router } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import PrivateRoute from './PrivateRoute';
+import initialState from '@/testing/testData/initialStates';
 
-import type { UserData } from '@/sharedTypes/UserData';
-import type { AppStatus } from '@/store/reducer/appStatusReducer';
-import type { RootState } from '@/store/store';
+import PrivateRoute from './PrivateRoute';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
-
-const appStatus: AppStatus = {
-  isLoggedIn: true,
-  isLoggingIn: false,
-};
-
-const store: RootState = {
-  appStatus,
-  notifications: [],
-  userData: {} as UserData,
-};
 
 describe('PrivateRoute', () => {
   const history = createMemoryHistory();
@@ -37,7 +24,7 @@ describe('PrivateRoute', () => {
 
   it('should render component on given route when logged in', () => {
     render(
-      <Provider store={mockStore(store)}>
+      <Provider store={mockStore(initialState)}>
         <Router history={history}>
           <PrivateRoute path={path} component={() => Component} />
         </Router>
@@ -51,9 +38,9 @@ describe('PrivateRoute', () => {
   });
 
   it('should redirect to "/" when not logged in', () => {
-    store.appStatus.isLoggedIn = false;
+    initialState.appStatus.isLoggedIn = false;
     render(
-      <Provider store={mockStore(store)}>
+      <Provider store={mockStore(initialState)}>
         <Router history={history}>
           <PrivateRoute path={path} component={() => Component} />
         </Router>
