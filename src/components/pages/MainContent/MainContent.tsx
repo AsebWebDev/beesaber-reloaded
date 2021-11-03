@@ -17,7 +17,6 @@ const Container = styled.div`
 
   ${mediaQuery.sm} {
     padding-top: 1rem;
-    width: 75%;
   }
 `;
 
@@ -25,6 +24,7 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-right: 1rem;
 `;
 
 const MainContent = (): JSX.Element => {
