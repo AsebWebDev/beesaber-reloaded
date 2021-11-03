@@ -5,7 +5,7 @@ import { Router } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import initialState from '@/testing/testData/initialStates';
+import { initialState } from '@/store/store';
 
 import PrivateRoute from './PrivateRoute';
 
@@ -23,6 +23,7 @@ describe('PrivateRoute', () => {
   });
 
   it('should render component on given route when logged in', () => {
+    initialState.appStatus.isLoggedIn = true;
     render(
       <Provider store={mockStore(initialState)}>
         <Router history={history}>

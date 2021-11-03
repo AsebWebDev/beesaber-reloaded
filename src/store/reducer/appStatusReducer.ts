@@ -65,6 +65,9 @@ const selectIsLoggingIn = (state: RootState): boolean =>
 const selectIsLoggedIn = (state: RootState): boolean =>
   state.appStatus.isLoggedIn;
 
+// INITIAL STATE EXPORT
+export { initialState };
+
 // ACTIONS EXPORT
 export const { userIsFetchingData, userIsLogginIn, userIsLoggedIn } =
   slice.actions;

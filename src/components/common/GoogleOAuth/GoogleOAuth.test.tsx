@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import initialState from '@/testing/testData/initialStates';
+import { initialState } from '@/store/store';
 
 import GoogleOAuth from './GoogleOAuth';
 

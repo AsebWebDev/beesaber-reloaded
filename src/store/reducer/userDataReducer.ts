@@ -30,6 +30,9 @@ const slice = createSlice({
 // SELECTORS
 const selectUserData = (state: RootState): UserData => state.userData;
 
+// INITIAL STATE EXPORT
+export { initialState };
+
 // ACTIONS EXPORT
 export const { userDataUpdated } = slice.actions;
 export { updateUserData };

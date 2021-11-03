@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import initialStates from '@/testing/testData/initialStates';
+import { initialState as store } from '@/store/store';
 
 import LandingPage from './LandingPage';
 
@@ -14,9 +14,9 @@ describe('LandingPage', () => {
   it.each([[false, true]])(
     'should match the snapshot when isLoggingIn is %s',
     (isLoggingIn) => {
-      initialStates.appStatus.isLoggingIn = isLoggingIn;
+      store.appStatus.isLoggingIn = isLoggingIn;
       const { container } = render(
-        <Provider store={mockStore(initialStates)}>
+        <Provider store={mockStore(store)}>
           <LandingPage />
         </Provider>
       );

@@ -40,6 +40,9 @@ const slice = createSlice({
 // SELECTORS
 const selectNotifications = (state: Notifications): Notifications => state;
 
+// INITIAL STATE EXPORT
+export { initialState };
+
 // ACTIONS EXPORT
 export const { notificationAdded } = slice.actions;
 export { addNotification };
