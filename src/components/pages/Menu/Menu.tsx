@@ -14,10 +14,11 @@ const Container = styled.div`
   justify-content: flex-start;
   font-family: 'NeonTubes2';
   padding: 1rem 1rem 0 1rem;
-  height: 100%;
+  min-height: 100vh;
 
   ${mediaQuery.sm} {
     padding: 1rem;
+    height: 100%;
   }
 `;
 
@@ -25,8 +26,12 @@ const MenuContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-bottom: 3rem;
   justify-content: space-between;
+  padding-bottom: 9rem;
+
+  ${mediaQuery.sm} {
+    padding-bottom: 3rem;
+  }
 `;
 
 const MenuHeader = styled.div`
