@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ScrollDownIndicator should match the snapshot 1`] = `
+.c0 {
+  position: relative;
+  width: 100%;
+}
+
+.c0::before {
+  -webkit-animation: bounce 1s ease infinite;
+  animation: bounce 1s ease infinite;
+  bottom: 4rem;
+  color: #fff;
+  content: '╲╱';
+  font-size: 2rem;
+  height: 1rem;
+  left: 50%;
+  -webkit-letter-spacing: -1px;
+  -moz-letter-spacing: -1px;
+  -ms-letter-spacing: -1px;
+  letter-spacing: -1px;
+  line-height: 4rem;
+  margin-left: -3rem;
+  opacity: 0.8;
+  position: absolute;
+  text-align: center;
+  width: 6rem;
+}
+
+<div
+  class="c0"
+/>
+`;
