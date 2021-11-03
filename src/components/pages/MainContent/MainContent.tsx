@@ -1,7 +1,6 @@
 import { Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 
-import Spinner from '@/components/common/Spinner/SpinnerPulse';
 import Dashboard from '@/components/pages/Dashboard';
 import LandingPage from '@/components/pages/LandingPage/LandingPage';
 import MyProfile from '@/components/pages/MyProfie/MyProfile';
@@ -10,7 +9,7 @@ import { useAppSelector } from '@/store/hooks';
 import { selectIsLoggedIn } from '@/store/reducer/appStatusReducer';
 import { mediaQuery } from '@/tokens/definitions/layout';
 
-import GoogleProfileData from './GoogleProfileData/GoogleProfileData';
+import Header from './Header/Header';
 
 const Container = styled.div`
   width: 100%;
@@ -20,24 +19,12 @@ const Container = styled.div`
   }
 `;
 
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-right: 1rem;
-`;
-
 const MainContent = (): JSX.Element => {
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
 
   return (
     <Container>
-      {isLoggedIn && (
-        <Header>
-          <GoogleProfileData />
-          <Spinner />
-        </Header>
-      )}
+      {isLoggedIn && <Header />}
       <Switch>
         <Route
           path="/"

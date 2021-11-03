@@ -1,0 +1,111 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Header should match the snapshot 1`] = `
+.c3 .ldio-do9usc7wgsf div {
+  position: absolute;
+  border-width: 0.3125rem;
+  border-style: solid;
+  opacity: 1;
+  border-radius: 50%;
+  -webkit-animation: ldio-do9usc7wgsf 1s cubic-bezier(0,0.2,0.8,1) infinite;
+  animation: ldio-do9usc7wgsf 1s cubic-bezier(0,0.2,0.8,1) infinite;
+}
+
+.c3 .ldio-do9usc7wgsf div:nth-child(1) {
+  border-color: #ffeb00;
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+}
+
+.c3 .ldio-do9usc7wgsf div:nth-child(2) {
+  border-color: #0000FF;
+  -webkit-animation-delay: -0.5s;
+  animation-delay: -0.5s;
+}
+
+.c3 .loadingio-spinner-ripple-rt8n616prbh {
+  width: 3.8125rem;
+  height: 3.8125rem;
+  display: inline-block;
+  overflow: hidden;
+  background: #00111f;
+}
+
+.c3 .ldio-do9usc7wgsf {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  -webkit-transform: translateZ(0) scale(0.61);
+  -ms-transform: translateZ(0) scale(0.61);
+  transform: translateZ(0) scale(0.61);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  transform-origin: 0 0;
+}
+
+.c3 .ldio-do9usc7wgsf div {
+  box-sizing: content-box;
+}
+
+.c1 {
+  max-height: 100px;
+  max-width: 100px;
+}
+
+.c2 {
+  border-radius: 1.5625rem;
+  margin-right: 1rem;
+  max-width: 3.125rem;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding-right: 2rem;
+}
+
+<div
+  class="c0"
+>
+  <div
+    class="c1"
+  >
+    <img
+      alt="profile pic"
+      class="c2"
+      id="profile-pic-sm"
+      referrerpolicy="no-referrer"
+      src="/public/imgs/m_bee.jpg"
+    />
+    <span>
+      test
+    </span>
+  </div>
+  <div
+    class="c3"
+  >
+    <div
+      class="loadingio-spinner-ripple-rt8n616prbh"
+    >
+      <div
+        class="ldio-do9usc7wgsf"
+      >
+        <div />
+        <div />
+      </div>
+    </div>
+  </div>
+</div>
+`;
