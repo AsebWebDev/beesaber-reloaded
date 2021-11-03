@@ -109,3 +109,51 @@ exports[`Header should match the snapshot 1`] = `
   </div>
 </div>
 `;
+
+exports[`Header should match the snapshot 2`] = `
+.c1 {
+  max-height: 100px;
+  max-width: 100px;
+}
+
+.c2 {
+  border-radius: 1.5625rem;
+  margin-right: 1rem;
+  max-width: 3.125rem;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding-right: 2rem;
+}
+
+<div
+  class="c0"
+>
+  <div
+    class="c1"
+  >
+    <img
+      alt="profile pic"
+      class="c2"
+      id="profile-pic-sm"
+      referrerpolicy="no-referrer"
+      src="/public/imgs/m_bee.jpg"
+    />
+    <span>
+      test
+    </span>
+  </div>
+</div>
+`;

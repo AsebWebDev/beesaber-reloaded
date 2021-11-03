@@ -9,7 +9,12 @@ import Header from './Header';
 const mockStore = configureMockStore();
 
 describe('Header', () => {
-  it('should match the snapshot', () => {
+  it.each([true, false])('should match the snapshot', (status) => {
+    store.appStatus.isFetchingData = {
+      status,
+      statusText: undefined,
+    };
+
     const { container } = render(
       <Provider store={mockStore(store)}>
         <Header />
@@ -18,6 +23,16 @@ describe('Header', () => {
 
     expect(container.firstChild).toMatchSnapshot();
   });
+
+  // it('should show spinner, when is fetching', () => {
+  //   render(
+  //     <Provider store={mockStore(store)}>
+  //       <Header />
+  //     </Provider>
+  //   );
+
+  //   expect(container.firstChild).toMatchSnapshot();
+  // });
 });
 
 test.todo('show / hide spinner when (no) fetch in progress');
