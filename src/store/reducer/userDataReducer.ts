@@ -10,7 +10,7 @@ const name = 'userData';
 
 const userDataActions = prefixActionType(name);
 
-const updateUserData = createAction<UserData | undefined>(
+const updateUserData = createAction<UserData | string>(
   userDataActions('updateUserData')
 );
 
@@ -29,6 +29,7 @@ const slice = createSlice({
 
 // SELECTORS
 const selectUserData = (state: RootState): UserData => state.userData;
+const selectUserId = (state: RootState): string => state.userData._id;
 const selectMyScoreSaberId = (state: RootState): string =>
   state.userData.myScoreSaberId;
 
@@ -40,7 +41,7 @@ export const { userDataUpdated } = slice.actions;
 export { updateUserData };
 
 // SELECTORS EXPORT
-export { selectMyScoreSaberId, selectUserData };
+export { selectMyScoreSaberId, selectUserData, selectUserId };
 
 // REDUCER EXPORT
 export default slice.reducer;

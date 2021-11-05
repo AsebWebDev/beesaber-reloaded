@@ -2,20 +2,12 @@ import exampleUserData from '@/testing/testData/exampleUserData';
 
 import api from './api';
 
-import type { AxiosResponse } from 'axios';
-import type { UserData } from '@/sharedTypes/UserData';
-
 jest.mock('axios');
 const fakeUserId = '12345';
 
 describe('userapi', () => {
   describe('getUserData', () => {
-    let spy:
-      | jest.Mock
-      | jest.SpyInstance<
-          Promise<AxiosResponse | Error | UserData | number | string>,
-          [userId: string]
-        >;
+    let spy: jest.Mock | jest.SpyInstance<Promise<unknown>, [userId: string]>;
 
     beforeEach(() => {
       spy = jest.fn();

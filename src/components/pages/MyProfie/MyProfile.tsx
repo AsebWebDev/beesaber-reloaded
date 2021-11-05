@@ -1,12 +1,19 @@
-/* eslint-disable no-console */
 import { MDBBtn, MDBIcon, MDBInput } from 'mdb-react-ui-kit';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
+import api, { errHandler } from '@/api/api';
 import Title from '@/components/common/Title/Title';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { userIsFetchingData } from '@/store/reducer/appStatusReducer';
-import { selectMyScoreSaberId } from '@/store/reducer/userDataReducer';
+import {
+  selectMyScoreSaberId,
+  selectUserId,
+  updateUserData,
+} from '@/store/reducer/userDataReducer';
+
+import type { PossibleResponses } from '@/api/api';
 
 const Container = styled.div`
   width: 100%;
@@ -23,24 +30,26 @@ const IdForm = styled.form`
 
 const MyProfile = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
-  const id = useAppSelector(selectMyScoreSaberId);
-  const [myScoreSaberId, setMyScoreSaberId] = useState(id);
+  const userId = useAppSelector(selectUserId);
+  const selectedScoreSaberId = useAppSelector(selectMyScoreSaberId);
+  const [myScoreSaberId, setMyScoreSaberId] = useState(selectedScoreSaberId);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setMyScoreSaberId(e.target.value);
 
-  const handleSave = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log(myScoreSaberId);
+    const userData = { myScoreSaberId };
+
     dispatch(userIsFetchingData({ status: true, statusText: 'Saving ID...' }));
-    // await api.getScoreSaberUserInfo(myScoreSaberId, 'id')
-    //     .then(async scoreSaberUserInfo => {
-    //         const userdata = { ...props.userdata, ...scoreSaberUserInfo, myScoreSaberId }
-    //         await api.saveUserData(props.userdata._id, userdata)
-    //         dispatch({ type: "UPDATE_USER_DATA", userdata })
-    //         await api.getlatestScore(userdata.myScoreSaberId)
-    //     })
-    //     .catch((err) => console.log(err))
+    try {
+      const updatedUserData = await api.userApi.saveUserData(userId, userData);
+
+      dispatch(updateUserData(updatedUserData));
+      toast.success('ID successfully saved');
+    } catch (err: unknown) {
+      errHandler(err as PossibleResponses);
+    }
     dispatch(userIsFetchingData({ status: false }));
   };
 
@@ -57,8 +66,15 @@ const MyProfile = (): JSX.Element | null => {
           validate="true"
           error="wrong"
           success="right"
+          value={myScoreSaberId}
         />
-        <MDBBtn onClick={handleSave} size="sm" outline color="secondary">
+        <MDBBtn
+          onClick={handleSave}
+          size="sm"
+          disabled={myScoreSaberId === selectedScoreSaberId}
+          outline
+          color="secondary"
+        >
           Save
           <MDBIcon far icon="paper-plane" className="ml-1" />
         </MDBBtn>
