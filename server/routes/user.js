@@ -7,7 +7,7 @@ const User = require("../models/User")
 
 router.post('/:id/', isLoggedIn, (req, res, next) => {
     if( mongoose.Types.ObjectId.isValid(req.params.id) ) {
-      User.findByIdAndUpdate(req.params.id, req.body)
+      User.findByIdAndUpdate(req.params.id, req.body, {new: true})
       .then(userDoc => {  
         if (!userDoc) {
           next(new Error("Could not find user."))
@@ -16,7 +16,7 @@ router.post('/:id/', isLoggedIn, (req, res, next) => {
         } 
         res.json(userDoc)
       }).catch(err => next(err))
-    } else next(new Error("Invalid Mongoos User ID"))
+    } else next(new Error("Invalid Mongoose User ID"))
     
 });
 
