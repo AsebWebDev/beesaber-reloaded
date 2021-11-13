@@ -4,10 +4,12 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
 import api, { errHandler } from '@/api/api';
+import ScoreBox from '@/components/common/ScoreBox/ScoreBox';
 import Title from '@/components/common/Title/Title';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { userIsFetchingData } from '@/store/reducer/appStatusReducer';
 import {
+  selectMyScoreData,
   selectMyScoreSaberId,
   selectUserId,
   updateUserData,
@@ -32,6 +34,7 @@ const MyProfile = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const selectedScoreSaberId = useAppSelector(selectMyScoreSaberId);
+  const scoredata = useAppSelector(selectMyScoreData);
   const [myScoreSaberId, setMyScoreSaberId] = useState(selectedScoreSaberId);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -79,6 +82,7 @@ const MyProfile = (): JSX.Element | null => {
           <MDBIcon far icon="paper-plane" className="ml-1" />
         </MDBBtn>
       </IdForm>
+      <ScoreBox scoredata={scoredata} />
     </Container>
   );
 };
