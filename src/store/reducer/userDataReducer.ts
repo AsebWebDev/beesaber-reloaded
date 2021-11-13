@@ -4,6 +4,7 @@ import prefixActionType from '../helper/prefixActionType';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { UserData } from '@/sharedTypes/UserData';
+import type { ScoreData } from '@/sharedTypes/UserScores';
 import type { RootState } from './rootReducer';
 
 const name = 'userData';
@@ -28,10 +29,12 @@ const slice = createSlice({
 });
 
 // SELECTORS
+const selectMyScoreData = (state: RootState): ScoreData =>
+  state.userData.scoreData;
+const selectMyScoreSaberId = (state: RootState): string | undefined =>
+  state.userData.myScoreSaberId;
 const selectUserData = (state: RootState): UserData => state.userData;
 const selectUserId = (state: RootState): string => state.userData._id;
-const selectMyScoreSaberId = (state: RootState): string =>
-  state.userData.myScoreSaberId;
 
 // INITIAL STATE EXPORT
 export { initialState };
@@ -41,7 +44,12 @@ export const { userDataUpdated } = slice.actions;
 export { updateUserData };
 
 // SELECTORS EXPORT
-export { selectMyScoreSaberId, selectUserData, selectUserId };
+export {
+  selectMyScoreData,
+  selectMyScoreSaberId,
+  selectUserData,
+  selectUserId,
+};
 
 // REDUCER EXPORT
 export default slice.reducer;
