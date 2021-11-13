@@ -35,6 +35,8 @@ const selectMyScoreSaberId = (state: RootState): string | undefined =>
   state.userData.myScoreSaberId;
 const selectUserData = (state: RootState): UserData => state.userData;
 const selectUserId = (state: RootState): string => state.userData._id;
+const selectUserName = (state: RootState): string | undefined =>
+  state.userData.username;
 
 // INITIAL STATE EXPORT
 export { initialState };
@@ -49,6 +51,7 @@ export {
   selectMyScoreSaberId,
   selectUserData,
   selectUserId,
+  selectUserName,
 };
 
 // REDUCER EXPORT
