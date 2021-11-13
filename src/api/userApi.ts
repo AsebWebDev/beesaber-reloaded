@@ -40,7 +40,7 @@ const doApiCall = async ({
 };
 
 const userApi = {
-  async getUserScores(id: string): Promise<UserScores> {
+  async getRecentUserScores(id: string): Promise<UserScores> {
     const url = parseGetRecentScoresUrl(id);
     const recentScores = await doApiCall({ url });
 
