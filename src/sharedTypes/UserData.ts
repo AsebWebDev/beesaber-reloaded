@@ -1,4 +1,6 @@
+import type { PlayerInfo, ScoreStats } from './ScoreSaberUserInfo';
 import type Settings from './Settings';
+import type { ScoreData, UserScores } from './UserScores';
 
 export type UserData = {
   __v: number;
@@ -8,15 +10,15 @@ export type UserData = {
   googleId: string;
   isAdmin: boolean;
   myIntersections: unknown[];
-  myScoreSaberId: string;
+  myScoreSaberId?: string;
   news: unknown[];
+  playerInfo?: PlayerInfo;
   profilePic?: string;
-  scoreData: {
-    scoredSongsHashes: unknown[];
-    scoresRecent: unknown[];
-    scoresTop: unknown[];
-  };
+  rank?: number;
+  scoreData: ScoreData;
+  scoreStats?: ScoreStats;
   settings: Settings;
   updated_at: string;
+  userScores?: UserScores;
   username?: string;
 };
