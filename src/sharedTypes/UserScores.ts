@@ -18,9 +18,14 @@ type Score = {
   weight: number;
 };
 
+type ScoreData = {
+  scoredSongsHashes: string[];
+  scoresRecent: Score[];
+  scoresTop: Score[];
+};
+
 type UserScores = {
   scores: Score[];
 };
 
-export type { Score };
-export default UserScores;
+export type { Score, ScoreData, UserScores };
