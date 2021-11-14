@@ -5,6 +5,7 @@ type Score = {
   levelAuthorName: string;
   maxScore: number;
   mods: string;
+  playedByHive?: boolean;
   pp: number;
   rank: number;
   score: number;
@@ -18,6 +19,8 @@ type Score = {
   weight: number;
 };
 
+type Scores = Score[];
+
 type ScoreData = {
   scoredSongsHashes: string[];
   scoresRecent: Score[];
@@ -25,7 +28,7 @@ type ScoreData = {
 };
 
 type UserScores = {
-  scores: Score[];
+  scores: Scores;
 };
 
-export type { Score, ScoreData, UserScores };
+export type { Score, ScoreData, Scores, UserScores };
