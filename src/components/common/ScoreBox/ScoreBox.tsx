@@ -1,17 +1,37 @@
-/* eslint-disable no-console */
-import { MDBContainer, MDBInput } from 'mdb-react-ui-kit';
-import React, { useState } from 'react';
+import {
+  MDBContainer,
+  MDBNavbar,
+  MDBNavbarItem,
+  MDBNavbarLink,
+  MDBSwitch,
+  MDBTabsContent,
+} from 'mdb-react-ui-kit';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import Title from '@/components/common/Title/Title';
-import { useAppSelector } from '@/store/hooks';
-import { selectUserName } from '@/store/reducer/userDataReducer';
+import Pagination from '@/components/common/Pagination/Pagination';
+import isInQuery from '@/helper/isInQuery';
 
-import type { ScoreData } from '@/sharedTypes';
+import ScoreHeader from './ScoreHeader/ScoreHeader';
+import ScoreTabs from './ScoreTabs/ScoreTabs';
 
-const Header = styled.div`
+import type { ScoreData, Scores } from '@/sharedTypes';
+
+const Container = styled(MDBContainer)`
+  // display: flex;
+  // flex-direction: column;
+`;
+
+const PaginationContainer = styled(Pagination)`
+  margin: auto;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const PaginationWrapper = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 type Props = {
@@ -19,29 +39,104 @@ type Props = {
 };
 
 function ScoreOverview({ scoredata }: Props): JSX.Element | null {
-  console.log('🚀 ~ scoredata', scoredata);
   const { scoresRecent } = scoredata;
 
   if (scoresRecent.length === 0) return null;
 
-  const username = useAppSelector(selectUserName);
+  const [activeItem, setActiveItem] = useState('1');
+
+  const [allScores, setAllScores] = useState<Scores>([]);
+  const [displayedScores, setDisplayedScores] = useState<Scores>([]);
+  const [isPlayedByHive, setIsPlayedByHive] = useState(false);
   const [query, setQuery] = useState('');
-  const title = username !== undefined ? username.toUpperCase() : 'MY SCORES';
+  const [pageLimit, setPageLimit] = useState(5);
+  const [offset, setOffset] = useState(5);
+  const totalScores = allScores.length;
+
+  const toggleTab = (tab: string) => {
+    if (activeItem !== tab) setActiveItem(tab);
+  };
+
+  type onPageChangedPayload = {
+    currentPage: number;
+    pageLimit: number;
+  };
+  // data comes from Pagination Component
+  const onPageChanged = (data: onPageChangedPayload) => {
+    const { currentPage, pageLimit: limit } = data;
+    const newOffset = (currentPage - 1) * limit;
+
+    setPageLimit(limit);
+    setOffset(newOffset);
+    setDisplayedScores(allScores.slice(offset, newOffset + limit));
+  };
+
+  useEffect(() => {
+    setDisplayedScores(allScores.slice(offset, offset + pageLimit));
+  }, [allScores, offset, pageLimit]);
+
+  useEffect(() => {
+    // 1 = Recent / 2 = Top
+    const scoreType = activeItem === '1' ? 'scoresRecent' : 'scoresTop';
+
+    setAllScores(
+      scoredata[scoreType].filter((item) =>
+        isPlayedByHive
+          ? isInQuery(item, query) && item.playedByHive
+          : isInQuery(item, query)
+      )
+    );
+  }, [scoredata, activeItem, query, isPlayedByHive]);
 
   return (
-    <MDBContainer>
-      <Header>
-        <Title as="h3">{title}</Title>
-        <MDBInput
-          label="Filter Songs..."
-          size="sm"
-          value={query}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setQuery(e.target.value)
-          }
-        />
-      </Header>
-    </MDBContainer>
+    <Container>
+      <ScoreHeader onChange={(e) => setQuery(e.target.value)} query={query} />
+      <MDBNavbar className="nav-tabs mt-4 ml-2 mr-2">
+        <MDBNavbarItem>
+          <MDBNavbarLink
+            link
+            to="#"
+            active={activeItem === '1'}
+            onClick={() => toggleTab('1')}
+            role="tab"
+          >
+            Recent
+          </MDBNavbarLink>
+        </MDBNavbarItem>
+        <MDBNavbarItem>
+          <MDBNavbarLink
+            link
+            to="#"
+            active={activeItem === '2'}
+            onClick={() => toggleTab('2')}
+            role="tab"
+          >
+            Top
+          </MDBNavbarLink>
+        </MDBNavbarItem>
+        <MDBNavbarItem>
+          <MDBSwitch
+            label="songs only shared by hive "
+            onToggleCallback={(isOn: boolean) => setIsPlayedByHive(isOn)}
+          />
+        </MDBNavbarItem>
+      </MDBNavbar>
+      <MDBTabsContent activeItem={activeItem}>
+        <ScoreTabs tabId={activeItem} scores={displayedScores} />
+        {/* // FIXME: Creat "No Scores Found Component" */}
+        {displayedScores.length === 0 && <div>TEST</div>}
+      </MDBTabsContent>
+      <PaginationContainer>
+        <PaginationWrapper>
+          <Pagination
+            totalScores={totalScores}
+            pageLimit={pageLimit}
+            pageNeighbours={1}
+            onPageChanged={onPageChanged}
+          />
+        </PaginationWrapper>
+      </PaginationContainer>
+    </Container>
   );
 }
 
