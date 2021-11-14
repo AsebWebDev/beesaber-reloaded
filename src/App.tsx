@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import 'react-toastify/dist/ReactToastify.css';
 
 import { useEffect } from 'react';
@@ -63,10 +62,6 @@ function App(): JSX.Element {
           scoresRecent
         );
 
-        console.log(
-          '🚀 ~ file: App.tsx ~ line 54 ~ fetchData ~ parsedData',
-          parsedData
-        );
         dispatch(userDataUpdated(parsedData));
       } catch (err: unknown) {
         errHandler(err as PossibleResponses);
