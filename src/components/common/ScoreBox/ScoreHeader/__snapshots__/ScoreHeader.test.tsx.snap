@@ -1,0 +1,175 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ScoreHeader should match the snapshot 1`] = `
+.c2 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-letter-spacing: 0.1rem;
+  -moz-letter-spacing: 0.1rem;
+  -ms-letter-spacing: 0.1rem;
+  letter-spacing: 0.1rem;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+<div
+  class="c0"
+>
+  <div
+    class="c1"
+  >
+    <h3
+      class="c2"
+    >
+      MYUSERNAME
+    </h3>
+  </div>
+  <div
+    class="form-outline"
+  >
+    <input
+      class="form-control active form-control-sm"
+      value="some query"
+    />
+    <label
+      class="form-label"
+    >
+      Filter Songs...
+    </label>
+    <div
+      class="form-notch"
+    >
+      <div
+        class="form-notch-leading"
+      />
+      <div
+        class="form-notch-middle"
+        style="width: 0px;"
+      />
+      <div
+        class="form-notch-trailing"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ScoreHeader should match the snapshot 2`] = `
+.c2 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c3 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #0000FF -2px -1px 5px,#0000FF 2px 1px 5px, #0000FF 0px 0px 10px,#0000FF 0px 0px 15px,#0000FF 0px 0px 20px, #0000FF 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-letter-spacing: 0.1rem;
+  -moz-letter-spacing: 0.1rem;
+  -ms-letter-spacing: 0.1rem;
+  letter-spacing: 0.1rem;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+<div
+  class="c0"
+>
+  <div
+    class="c1"
+  >
+    <h3
+      class="c2"
+    >
+      MY
+    </h3>
+    <h3
+      class="c3"
+    >
+      SCORES
+    </h3>
+  </div>
+  <div
+    class="form-outline"
+  >
+    <input
+      class="form-control active form-control-sm"
+      value="some query"
+    />
+    <label
+      class="form-label"
+    >
+      Filter Songs...
+    </label>
+    <div
+      class="form-notch"
+    >
+      <div
+        class="form-notch-leading"
+      />
+      <div
+        class="form-notch-middle"
+        style="width: 0px;"
+      />
+      <div
+        class="form-notch-trailing"
+      />
+    </div>
+  </div>
+</div>
+`;

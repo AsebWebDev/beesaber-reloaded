@@ -29,7 +29,7 @@ const slice = createSlice({
 });
 
 // SELECTORS
-const selectMyScoreData = (state: RootState): ScoreData =>
+const selectMyScoreData = (state: RootState): ScoreData | undefined =>
   state.userData.scoreData;
 const selectMyScoreSaberId = (state: RootState): string | undefined =>
   state.userData.myScoreSaberId;

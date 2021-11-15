@@ -32,9 +32,9 @@ const IdForm = styled.form`
 
 const MyProfile = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
+  const scoreData = useAppSelector(selectMyScoreData);
   const userId = useAppSelector(selectUserId);
   const selectedScoreSaberId = useAppSelector(selectMyScoreSaberId);
-  const scoredata = useAppSelector(selectMyScoreData);
   const [myScoreSaberId, setMyScoreSaberId] = useState(selectedScoreSaberId);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -82,7 +82,7 @@ const MyProfile = (): JSX.Element | null => {
           <MDBIcon far icon="paper-plane" className="ml-1" />
         </MDBBtn>
       </IdForm>
-      <ScoreBox scoredata={scoredata} />
+      <ScoreBox scoreData={scoreData} />
     </Container>
   );
 };

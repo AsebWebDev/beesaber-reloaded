@@ -15,7 +15,7 @@ export type UserData = {
   playerInfo?: PlayerInfo;
   profilePic?: string;
   rank?: number;
-  scoreData: ScoreData;
+  scoreData?: ScoreData;
   scoreStats?: ScoreStats;
   settings: Settings;
   updated_at: string;
