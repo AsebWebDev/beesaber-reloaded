@@ -15,14 +15,14 @@ import isInQuery from '@/helper/isInQuery';
 import ScoreHeader from './ScoreHeader/ScoreHeader';
 import ScoreTabs from './ScoreTabs/ScoreTabs';
 
-import type { ScoreData, Scores } from '@/sharedTypes';
+import type { Scores, UserData } from '@/sharedTypes';
 
 const Container = styled(MDBContainer)`
   // display: flex;
   // flex-direction: column;
 `;
 
-const PaginationContainer = styled(Pagination)`
+const PaginationContainer = styled.div`
   margin: auto;
   display: flex;
   align-items: center;
@@ -34,12 +34,12 @@ const PaginationWrapper = styled.div`
   align-items: center;
 `;
 
-type Props = {
-  scoredata: ScoreData;
-};
+type Props = Pick<UserData, 'scoreData'>;
 
-function ScoreOverview({ scoredata }: Props): JSX.Element | null {
-  const { scoresRecent } = scoredata;
+function ScoreBox({ scoreData }: Props): JSX.Element | null {
+  if (scoreData === undefined) return null;
+
+  const { scoresRecent } = scoreData;
 
   if (scoresRecent.length === 0) return null;
 
@@ -62,7 +62,7 @@ function ScoreOverview({ scoredata }: Props): JSX.Element | null {
     pageLimit: number;
   };
   // data comes from Pagination Component
-  const onPageChanged = (data: onPageChangedPayload) => {
+  const onPageChanged = (data: onPageChangedPayload): void => {
     const { currentPage, pageLimit: limit } = data;
     const newOffset = (currentPage - 1) * limit;
 
@@ -80,13 +80,13 @@ function ScoreOverview({ scoredata }: Props): JSX.Element | null {
     const scoreType = activeItem === '1' ? 'scoresRecent' : 'scoresTop';
 
     setAllScores(
-      scoredata[scoreType].filter((item) =>
+      scoreData[scoreType].filter((item) =>
         isPlayedByHive
           ? isInQuery(item, query) && item.playedByHive
           : isInQuery(item, query)
       )
     );
-  }, [scoredata, activeItem, query, isPlayedByHive]);
+  }, [scoreData, activeItem, query, isPlayedByHive]);
 
   return (
     <Container>
@@ -123,7 +123,7 @@ function ScoreOverview({ scoredata }: Props): JSX.Element | null {
       </MDBNavbar>
       <MDBTabsContent activeItem={activeItem}>
         <ScoreTabs tabId={activeItem} scores={displayedScores} />
-        {/* // FIXME: Creat "No Scores Found Component" */}
+        {/* // FIXME: Create "No Scores Found Component" */}
         {displayedScores.length === 0 && <div>TEST</div>}
       </MDBTabsContent>
       <PaginationContainer>
@@ -140,4 +140,4 @@ function ScoreOverview({ scoredata }: Props): JSX.Element | null {
   );
 }
 
-export default ScoreOverview;
+export default ScoreBox;
