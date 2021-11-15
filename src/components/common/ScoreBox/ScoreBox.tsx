@@ -37,13 +37,10 @@ const PaginationWrapper = styled.div`
 type Props = Pick<UserData, 'scoreData'>;
 
 function ScoreBox({ scoreData }: Props): JSX.Element | null {
-  if (scoreData === undefined) return null;
+  if (scoreData === undefined || scoreData.scoresRecent.length === 0)
+    return null;
 
-  const { scoresRecent } = scoreData;
-
-  if (scoresRecent.length === 0) return null;
-
-  const [activeItem, setActiveItem] = useState('1');
+  const [activeitem, setActiveItem] = useState('1');
 
   const [allScores, setAllScores] = useState<Scores>([]);
   const [displayedScores, setDisplayedScores] = useState<Scores>([]);
@@ -54,7 +51,7 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
   const totalScores = allScores.length;
 
   const toggleTab = (tab: string) => {
-    if (activeItem !== tab) setActiveItem(tab);
+    if (activeitem !== tab) setActiveItem(tab);
   };
 
   type onPageChangedPayload = {
@@ -77,7 +74,7 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
 
   useEffect(() => {
     // 1 = Recent / 2 = Top
-    const scoreType = activeItem === '1' ? 'scoresRecent' : 'scoresTop';
+    const scoreType = activeitem === '1' ? 'scoresRecent' : 'scoresTop';
 
     setAllScores(
       scoreData[scoreType].filter((item) =>
@@ -86,7 +83,7 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
           : isInQuery(item, query)
       )
     );
-  }, [scoreData, activeItem, query, isPlayedByHive]);
+  }, [scoreData, activeitem, query, isPlayedByHive]);
 
   return (
     <Container>
@@ -94,9 +91,9 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
       <MDBNavbar className="nav-tabs mt-4 ml-2 mr-2">
         <MDBNavbarItem>
           <MDBNavbarLink
-            link
+            // link
             to="#"
-            active={activeItem === '1'}
+            active={activeitem === '1'}
             onClick={() => toggleTab('1')}
             role="tab"
           >
@@ -105,9 +102,9 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
         </MDBNavbarItem>
         <MDBNavbarItem>
           <MDBNavbarLink
-            link
+            // link
             to="#"
-            active={activeItem === '2'}
+            active={activeitem === '2'}
             onClick={() => toggleTab('2')}
             role="tab"
           >
@@ -117,12 +114,12 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
         <MDBNavbarItem>
           <MDBSwitch
             label="songs only shared by hive "
-            onToggleCallback={(isOn: boolean) => setIsPlayedByHive(isOn)}
+            onChange={(isOn: boolean) => setIsPlayedByHive(isOn)}
           />
         </MDBNavbarItem>
       </MDBNavbar>
-      <MDBTabsContent activeItem={activeItem}>
-        <ScoreTabs tabId={activeItem} scores={displayedScores} />
+      <MDBTabsContent activeitem={activeitem}>
+        <ScoreTabs tabId={activeitem} scores={displayedScores} />
         {/* // FIXME: Create "No Scores Found Component" */}
         {displayedScores.length === 0 && <div>TEST</div>}
       </MDBTabsContent>
