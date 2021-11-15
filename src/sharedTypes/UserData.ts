@@ -8,6 +8,8 @@ export type UserData = {
   bees: unknown[];
   created_at: string;
   googleId: string;
+  googleImageUrl: string;
+  googleName: string;
   isAdmin: boolean;
   myIntersections: unknown[];
   myScoreSaberId?: string;

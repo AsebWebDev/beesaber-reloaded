@@ -2,6 +2,8 @@ import type { UserData } from '@/sharedTypes/UserData';
 
 const exampleUserData: UserData = {
   googleId: '123',
+  googleImageUrl: 'https://some-image.url',
+  googleName: 'Darth Vader',
   profilePic: 'url',
   username: 'lovenotwar',
   __v: 0,

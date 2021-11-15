@@ -7,6 +7,8 @@ const userSchema = new Schema({
   username: String,
   password: String,
   googleId: String,
+  googleImageUrl: String,
+  googleName: String,
   profilePic: String,
   totalPlayCount: Number,
   totalScore: Number,

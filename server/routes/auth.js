@@ -1,42 +1,44 @@
-const express = require("express")
+const express = require('express');
 const mongoose = require('mongoose');
 // const passport = require('passport')
-const router = express.Router()
-const User = require("../models/User")
+const router = express.Router();
+const User = require('../models/User');
 
-router.post("/checkValidMongoId", (req, res, next) => {
+router.post('/checkValidMongoId', (req, res, next) => {
   mongoose.Types.ObjectId.isValid(req.body.id);
-})
+});
 
-router.post("/googlelogin", (req, res, next) => {
+router.post('/googlelogin', (req, res, next) => {
   const { googleId, profileObj } = req.body;
-  const { username, profilePic } = profileObj;
+  const { name, imageUrl } = profileObj;
   User.findOne({ googleId })
-    .then(userDoc => {
+    .then((userDoc) => {
       if (!userDoc) {
-        console.log('No user in database')
-        new User({ username, googleId, profilePic }).save()
-        .then((newUser) => {
+        console.log('No user in database');
+        new User({ googleName: name, googleId, googleImageUrl: imageUrl })
+          .save()
+          .then((newUser) => {
             req.logIn(userDoc, () => {
-              res.json(newUser)
-            })
-        }).catch(err => next(err))
+              res.json(newUser);
+            });
+          })
+          .catch((err) => next(err));
       }
       if (userDoc) {
         req.logIn(userDoc, () => {
-          res.json(userDoc)
-        })
+          res.json(userDoc);
+        });
       }
     })
-    .catch(err => next(err))
-})
+    .catch((err) => next(err));
+});
 
-router.get("/logout", (req, res) => {
-  req.logout()
-  res.json({ message: 'You are out!' })
-})
+router.get('/logout', (req, res) => {
+  req.logout();
+  res.json({ message: 'You are out!' });
+});
 
-module.exports = router
+module.exports = router;
 
 // Bcrypt to encrypt passwords
 // const bcrypt = require("bcrypt")
