@@ -15,6 +15,7 @@ import {
   updateUserData,
 } from '@/store/reducer/userDataReducer';
 
+import type { ChangeEvent } from 'react';
 import type { PossibleResponses } from '@/api/api';
 
 const Container = styled.div`
@@ -35,9 +36,11 @@ const MyProfile = (): JSX.Element | null => {
   const scoreData = useAppSelector(selectMyScoreData);
   const userId = useAppSelector(selectUserId);
   const selectedScoreSaberId = useAppSelector(selectMyScoreSaberId);
-  const [myScoreSaberId, setMyScoreSaberId] = useState(selectedScoreSaberId);
+  const [myScoreSaberId, setMyScoreSaberId] = useState<string>(
+    selectedScoreSaberId !== undefined ? selectedScoreSaberId : ''
+  );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
     setMyScoreSaberId(e.target.value);
 
   const handleSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
