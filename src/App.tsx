@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import 'react-toastify/dist/ReactToastify.css';
 
 import { useEffect } from 'react';
@@ -45,7 +46,9 @@ function App(): JSX.Element {
   const userData = useAppSelector(selectUserData);
 
   useEffect(() => {
-    const fetchData = async (id: string): Promise<void> => {
+    const fetchData = async (id: string | null): Promise<void> => {
+      // TODO: redirect to MyProfile or show an info message CTA set ScoreSaberID
+      if (id === null) return;
       dispatch(
         userIsFetchingData({
           status: true,
