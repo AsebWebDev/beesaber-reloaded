@@ -1,7 +1,7 @@
-const createImageUrl = (fileName: string): string => {
+const createLocalImageUrl = (fileName: string): string => {
   const baseUrl = process.env.PUBLIC_URL ?? '/public';
 
   return `${baseUrl}/imgs/${fileName}`;
 };
 
-export default createImageUrl;
+export default createLocalImageUrl;

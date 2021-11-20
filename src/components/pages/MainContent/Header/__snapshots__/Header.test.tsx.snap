@@ -89,9 +89,7 @@ exports[`Header should match the snapshot 1`] = `
       referrerpolicy="no-referrer"
       src="/public/imgs/m_bee.jpg"
     />
-    <span>
-      test
-    </span>
+    <span />
   </div>
   <div
     class="c3"
@@ -151,9 +149,7 @@ exports[`Header should match the snapshot 2`] = `
       referrerpolicy="no-referrer"
       src="/public/imgs/m_bee.jpg"
     />
-    <span>
-      test
-    </span>
+    <span />
   </div>
 </div>
 `;

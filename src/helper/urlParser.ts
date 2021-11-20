@@ -1,19 +1,21 @@
 type UrlParser = (arg0: string, arg2?: string) => string;
 
+const baseUrl = 'https://new.scoresaber.com';
+
 const parseSongPicUrl: UrlParser = (hash) =>
-  `https://new.scoresaber.com/api/static/covers/${hash}.png`;
+  `${baseUrl}/api/static/covers/${hash}.png`;
 
 const parseFullPlayerQueryUrl: UrlParser = (query) =>
-  `https://new.scoresaber.com/api/player/${query}/full`;
+  `${baseUrl}/api/player/${query}/full`;
 
 const parsePlayerByNameQueryUrl: UrlParser = (query) =>
-  `https://new.scoresaber.com/api/players/by-name/${query}`;
+  `${baseUrl}/api/players/by-name/${query}`;
 
 const parseGetRecentScoresUrl: UrlParser = (currentId, count = '1') =>
-  `https://new.scoresaber.com/api/player/${currentId}/scores/recent/${count}`;
+  `${baseUrl}/api/player/${currentId}/scores/recent/${count}`;
 
-const parseAvatarUrl: UrlParser = (playerId) =>
-  `https://new.scoresaber.com/api/static/avatars/${playerId}.jpg`;
+const parseAvatarUrl: UrlParser = (profilePicUrl) =>
+  `${baseUrl + profilePicUrl}`;
 
 const parseNewsTitle: UrlParser = (type) => {
   switch (type) {

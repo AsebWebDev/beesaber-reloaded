@@ -1,6 +1,8 @@
+/* eslint-disable no-console */
 import styled from 'styled-components';
 
-import createImageUrl from '@/helper/createImageUrl';
+import createLocalImageUrl from '@/helper/createLocalImageUrl';
+import { parseAvatarUrl } from '@/helper/urlParser';
 import { useAppSelector } from '@/store/hooks';
 import { selectUserData } from '@/store/reducer/userDataReducer';
 
@@ -17,9 +19,11 @@ const Image = styled.img`
 
 function GoogleProfileData(): JSX.Element | null {
   const userData = useAppSelector(selectUserData);
-  const { profilePic, username = 'test' } = userData;
+  const { profilePic, username } = userData;
   const placeholderImage =
-    profilePic !== undefined ? profilePic : createImageUrl('m_bee.jpg');
+    profilePic !== undefined
+      ? parseAvatarUrl(profilePic)
+      : createLocalImageUrl('m_bee.jpg');
 
   return (
     <Container>
