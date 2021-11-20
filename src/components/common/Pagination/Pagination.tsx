@@ -93,7 +93,7 @@ const Pagination = ({
     Math.ceil(totalScores / pageLimit)
   );
 
-  if (totalPages === 1) return null;
+  if (totalPages < 2) return null;
 
   // pageNeighbours can be: 0, 1 or 2
   pageNeighbours = Math.max(0, Math.min(pageNeighbours, 2));
