@@ -83,7 +83,7 @@ function App(): JSX.Element {
       {isLoggedIn && <Menu />}
       {isMobile && <ScrollDownIndicator />}
       <MainContent />
-      <ToastContainer theme="dark" />
+      <ToastContainer theme="dark" pauseOnFocusLoss={false} />
     </Container>
   );
 }

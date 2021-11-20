@@ -3,7 +3,6 @@
 exports[`GoogleProfileData should match the snapshot 1`] = `
 .c0 {
   max-height: 100px;
-  max-width: 100px;
 }
 
 .c1 {

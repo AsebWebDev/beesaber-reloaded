@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import styled from 'styled-components';
 
 import createLocalImageUrl from '@/helper/createLocalImageUrl';
@@ -8,7 +7,6 @@ import { selectUserData } from '@/store/reducer/userDataReducer';
 
 const Container = styled.div`
   max-height: 100px;
-  max-width: 100px;
 `;
 
 const Image = styled.img`
