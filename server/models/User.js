@@ -26,7 +26,7 @@ const userSchema = new Schema({
   },
   myScoreSaberId: {
     type: String,
-    default: null
+    default: ''
   },
   news: {
     type: Array,
