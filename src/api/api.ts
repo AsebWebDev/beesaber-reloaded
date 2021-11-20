@@ -39,7 +39,7 @@ const errHandler = (err: PossibleResponses): string => {
     errorString = err.message;
   }
 
-  toast.error(errorString);
+  if (errorString.length > 0) toast.error(errorString);
 
   return errorString;
 };
