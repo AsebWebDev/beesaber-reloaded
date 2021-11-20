@@ -12,7 +12,7 @@ export type UserData = {
   googleName: string;
   isAdmin: boolean;
   myIntersections: unknown[];
-  myScoreSaberId?: string;
+  myScoreSaberId: string;
   news: unknown[];
   playerInfo?: PlayerInfo;
   profilePic?: string;

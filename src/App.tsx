@@ -46,9 +46,9 @@ function App(): JSX.Element {
   const userData = useAppSelector(selectUserData);
 
   useEffect(() => {
-    const fetchData = async (id: string | null): Promise<void> => {
+    const fetchData = async (id: string): Promise<void> => {
       // TODO: redirect to MyProfile or show an info message CTA set ScoreSaberID
-      if (id === null) return;
+      if (id.length === 0) return;
       dispatch(
         userIsFetchingData({
           status: true,
