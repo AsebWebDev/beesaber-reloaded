@@ -12,7 +12,7 @@ import {
   selectMyScoreData,
   selectMyScoreSaberId,
   selectUserId,
-  updateUserData,
+  userDataUpdated,
 } from '@/store/reducer/userDataReducer';
 
 import type { ChangeEvent } from 'react';
@@ -51,7 +51,7 @@ const MyProfile = (): JSX.Element | null => {
     try {
       const updatedUserData = await api.userApi.saveUserData(userId, userData);
 
-      dispatch(updateUserData(updatedUserData));
+      dispatch(userDataUpdated(updatedUserData));
       toast.success('ID successfully saved');
     } catch (err: unknown) {
       errHandler(err as PossibleResponses);

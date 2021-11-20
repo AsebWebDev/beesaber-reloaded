@@ -63,7 +63,7 @@ const userApi = {
   async saveUserData(
     userId: string,
     userdata: Partial<UserData>
-  ): Promise<UserData | string> {
+  ): Promise<UserData> {
     const url = `/user/${userId}`;
     const result = await doApiCall({ url, method: 'post', payload: userdata });
 

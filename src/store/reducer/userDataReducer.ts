@@ -1,6 +1,4 @@
-import { createAction, createSlice } from '@reduxjs/toolkit';
-
-import prefixActionType from '../helper/prefixActionType';
+import { createSlice } from '@reduxjs/toolkit';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { UserData } from '@/sharedTypes/UserData';
@@ -8,12 +6,6 @@ import type { ScoreData } from '@/sharedTypes/UserScores';
 import type { RootState } from './rootReducer';
 
 const name = 'userData';
-
-const userDataActions = prefixActionType(name);
-
-const updateUserData = createAction<UserData | string>(
-  userDataActions('updateUserData')
-);
 
 const initialState = {} as UserData;
 
@@ -43,7 +35,6 @@ export { initialState };
 
 // ACTIONS EXPORT
 export const { userDataUpdated } = slice.actions;
-export { updateUserData };
 
 // SELECTORS EXPORT
 export {
