@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import api, { errHandler } from '@/api/api';
 import ScoreBox from '@/components/common/ScoreBox/ScoreBox';
 import Title from '@/components/common/Title/Title';
+import verifyValidScoreSaberId from '@/helper/verifyValidScoreSaberId';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { userIsFetchingData } from '@/store/reducer/appStatusReducer';
 import {
@@ -49,6 +50,7 @@ const MyProfile = (): JSX.Element | null => {
 
     dispatch(userIsFetchingData({ status: true, statusText: 'Saving ID...' }));
     try {
+      await verifyValidScoreSaberId(myScoreSaberId);
       const updatedUserData = await api.userApi.saveUserData(userId, userData);
 
       dispatch(userDataUpdated(updatedUserData));
