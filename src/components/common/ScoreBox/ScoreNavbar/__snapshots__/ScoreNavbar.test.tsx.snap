@@ -1,0 +1,151 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ScoreNavbar should match the snapshot when activeitem is 1 1`] = `
+.c0 {
+  background-color: #162530;
+  list-style: none;
+  padding: 0 1rem;
+}
+
+.c0 .nav-link {
+  color: rgba(255,255,255,0.7);
+}
+
+.c0 .active {
+  background-color: rgba(255,255,255,0.7);
+  color: #00111f;
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+<nav
+  class="navbar c0"
+  role="navigation"
+>
+  <div
+    class="c1"
+  >
+    <li
+      class="nav-item"
+    >
+      <a
+        class="nav-link active"
+        data-test="nav-link"
+        role="tab"
+        to="#"
+      >
+        Recent
+      </a>
+    </li>
+    <li
+      class="nav-item"
+    >
+      <a
+        class="nav-link"
+        data-test="nav-link"
+        role="tab"
+        to="#"
+      >
+        Top
+      </a>
+    </li>
+  </div>
+  <li
+    class="nav-item"
+  >
+    <div
+      class="form-check form-switch"
+    >
+      <input
+        class="form-check-input"
+        type="checkbox"
+      />
+      <label
+        class="form-check-label"
+      >
+        songs only shared by hive 
+      </label>
+    </div>
+  </li>
+</nav>
+`;
+
+exports[`ScoreNavbar should match the snapshot when activeitem is 2 1`] = `
+.c0 {
+  background-color: #162530;
+  list-style: none;
+  padding: 0 1rem;
+}
+
+.c0 .nav-link {
+  color: rgba(255,255,255,0.7);
+}
+
+.c0 .active {
+  background-color: rgba(255,255,255,0.7);
+  color: #00111f;
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+<nav
+  class="navbar c0"
+  role="navigation"
+>
+  <div
+    class="c1"
+  >
+    <li
+      class="nav-item"
+    >
+      <a
+        class="nav-link"
+        data-test="nav-link"
+        role="tab"
+        to="#"
+      >
+        Recent
+      </a>
+    </li>
+    <li
+      class="nav-item"
+    >
+      <a
+        class="nav-link active"
+        data-test="nav-link"
+        role="tab"
+        to="#"
+      >
+        Top
+      </a>
+    </li>
+  </div>
+  <li
+    class="nav-item"
+  >
+    <div
+      class="form-check form-switch"
+    >
+      <input
+        class="form-check-input"
+        type="checkbox"
+      />
+      <label
+        class="form-check-label"
+      >
+        songs only shared by hive 
+      </label>
+    </div>
+  </li>
+</nav>
+`;
