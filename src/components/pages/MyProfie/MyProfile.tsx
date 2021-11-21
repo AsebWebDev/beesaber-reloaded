@@ -25,6 +25,7 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 2rem;
 `;
 
 const IdForm = styled.form`
@@ -63,7 +64,7 @@ const MyProfile = (): JSX.Element | null => {
 
   return (
     <Container>
-      <Title as="h1">My Profile</Title>
+      <Title as="h1">MyProfile</Title>
       <IdForm>
         <MDBInput
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)}
