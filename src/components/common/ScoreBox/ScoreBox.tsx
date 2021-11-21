@@ -1,11 +1,4 @@
-import {
-  MDBContainer,
-  MDBNavbar,
-  MDBNavbarItem,
-  MDBNavbarLink,
-  MDBSwitch,
-  MDBTabsContent,
-} from 'mdb-react-ui-kit';
+import { MDBContainer, MDBTabsContent } from 'mdb-react-ui-kit';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -13,6 +6,7 @@ import Pagination from '@/components/common/Pagination/Pagination';
 import isInQuery from '@/helper/isInQuery';
 
 import ScoreHeader from './ScoreHeader/ScoreHeader';
+import ScoreNavbar from './ScoreNavbar/ScoreNavbar';
 import ScoreTabs from './ScoreTabs/ScoreTabs';
 
 import type { Scores, UserData } from '@/sharedTypes';
@@ -88,40 +82,15 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
   return (
     <Container>
       <ScoreHeader onChange={(e) => setQuery(e.target.value)} query={query} />
-      <MDBNavbar className="nav-tabs mt-4 ml-2 mr-2">
-        <MDBNavbarItem>
-          <MDBNavbarLink
-            // link
-            to="#"
-            active={activeitem === '1'}
-            onClick={() => toggleTab('1')}
-            role="tab"
-          >
-            Recent
-          </MDBNavbarLink>
-        </MDBNavbarItem>
-        <MDBNavbarItem>
-          <MDBNavbarLink
-            // link
-            to="#"
-            active={activeitem === '2'}
-            onClick={() => toggleTab('2')}
-            role="tab"
-          >
-            Top
-          </MDBNavbarLink>
-        </MDBNavbarItem>
-        <MDBNavbarItem>
-          <MDBSwitch
-            label="songs only shared by hive "
-            onChange={(isOn: boolean) => setIsPlayedByHive(isOn)}
-          />
-        </MDBNavbarItem>
-      </MDBNavbar>
+      <ScoreNavbar
+        activeitem={activeitem}
+        setIsPlayedByHive={setIsPlayedByHive}
+        toggleTab={toggleTab}
+      />
       <MDBTabsContent activeitem={activeitem}>
         <ScoreTabs tabId={activeitem} scores={displayedScores} />
         {/* // FIXME: Create "No Scores Found Component" */}
-        {displayedScores.length === 0 && <div>TEST</div>}
+        {displayedScores.length === 0 && <div>No Scores Available</div>}
       </MDBTabsContent>
       <PaginationContainer>
         <PaginationWrapper>
