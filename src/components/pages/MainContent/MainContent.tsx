@@ -7,12 +7,21 @@ import MyProfile from '@/components/pages/MyProfie/MyProfile';
 import PrivateRoute from '@/components/tools/PrivateRoute/PrivateRoute';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsLoggedIn } from '@/store/reducer/appStatusReducer';
+import tokens from '@/tokens';
 import { mediaQuery } from '@/tokens/definitions/layout';
 
 import Header from './Header/Header';
 
 const Container = styled.div`
   width: 100%;
+
+  input {
+    color: ${tokens.color.white.main}!important;
+  }
+
+  label {
+    color: ${tokens.color.white.light}!important;
+  }
 
   ${mediaQuery.sm} {
     padding-top: 1rem;
