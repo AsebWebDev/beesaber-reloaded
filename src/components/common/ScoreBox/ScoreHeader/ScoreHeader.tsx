@@ -5,10 +5,18 @@ import styled from 'styled-components';
 import Title from '@/components/common/Title/Title';
 import { useAppSelector } from '@/store/hooks';
 import { selectUserName } from '@/store/reducer/userDataReducer';
+import tokens from '@/tokens';
 
 const Header = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  margin: 0;
+  color: ${tokens.color.blue.light};
+  label {
+    color: ${tokens.color.white.light}!important;
+  }
 `;
 
 type Props = {
