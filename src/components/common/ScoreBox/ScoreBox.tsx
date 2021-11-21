@@ -12,8 +12,10 @@ import ScoreTabs from './ScoreTabs/ScoreTabs';
 import type { Scores, UserData } from '@/sharedTypes';
 
 const Container = styled(MDBContainer)`
-  // display: flex;
-  // flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0;
 `;
 
 const PaginationContainer = styled.div`
