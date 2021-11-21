@@ -40,7 +40,7 @@ const Container = styled.div<{ isBig: boolean }>`
     height: ${isBig ? '12.5rem' : '3.8125rem'};
     display: inline-block;
     overflow: hidden;
-    background: ${tokens.color.page.bgColor};
+    background: ${tokens.color.page.bgColor.main};
   }
   .ldio-do9usc7wgsf {
     width: 100%;

@@ -7,13 +7,19 @@ type ColorSet = {
 type ColorStrings = 'blue' | 'red' | 'white' | 'yellow';
 
 type PageSet = {
-  bgColor: string;
+  bgColor: {
+    light: string;
+    main: string;
+  };
 };
 
 const colorStringsArray: ColorStrings[] = ['blue', 'red', 'white', 'yellow'];
 
 const page: PageSet = {
-  bgColor: '#00111f',
+  bgColor: {
+    light: '#162530',
+    main: '#00111f',
+  },
 };
 
 const blue: ColorSet = {
