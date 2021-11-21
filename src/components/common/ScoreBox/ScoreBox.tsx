@@ -36,15 +36,23 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
   if (scoreData === undefined || scoreData.scoresRecent.length === 0)
     return null;
 
-  const [activeitem, setActiveItem] = useState('1');
+  // SCORES
 
   const [allScores, setAllScores] = useState<Scores>([]);
   const [displayedScores, setDisplayedScores] = useState<Scores>([]);
-  const [isPlayedByHive, setIsPlayedByHive] = useState(false);
-  const [query, setQuery] = useState('');
+
+  // PAGINATION
+
+  const [activeitem, setActiveItem] = useState('1');
   const [pageLimit, setPageLimit] = useState(5);
   const [offset, setOffset] = useState(5);
   const totalScores = allScores.length;
+
+  // TOGGLE
+  const [isPlayedByHive, setIsPlayedByHive] = useState(false);
+
+  // SEARCH
+  const [query, setQuery] = useState('');
 
   const toggleTab = (tab: string) => {
     if (activeitem !== tab) setActiveItem(tab);
@@ -54,6 +62,7 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
     currentPage: number;
     pageLimit: number;
   };
+
   // data comes from Pagination Component
   const onPageChanged = (data: onPageChangedPayload): void => {
     const { currentPage, pageLimit: limit } = data;
