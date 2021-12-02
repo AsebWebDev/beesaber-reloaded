@@ -30,18 +30,21 @@ const PaginationWrapper = styled.div`
   align-items: center;
 `;
 
-type Props = Pick<UserData, 'scoreData'>;
+type onPageChangedPayload = {
+  currentPage: number;
+  pageLimit: number;
+};
+
+type Props = Required<Pick<UserData, 'scoreData'>>;
 
 function ScoreBox({ scoreData }: Props): JSX.Element | null {
-  if (scoreData === undefined || scoreData.scoresRecent.length === 0)
-    return null;
+  if (scoreData.scoresRecent.length === 0) return null;
+
   const [query, setQuery] = useState('');
   const [activeitem, setActiveItem] = useState('1');
   const [isPlayedByHive, setIsPlayedByHive] = useState(false);
   const [allScores, setAllScores] = useState<Scores>(scoreData.scoresRecent);
-  const [displayedScores, setDisplayedScores] = useState<Scores>(
-    scoreData.scoresRecent
-  );
+  const [displayedScores, setDisplayedScores] = useState<Scores>([]);
 
   const [pageLimit, setPageLimit] = useState(5);
   const [offset, setOffset] = useState(5);
@@ -49,11 +52,6 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
 
   const toggleTab = (tab: string) => {
     if (activeitem !== tab) setActiveItem(tab);
-  };
-
-  type onPageChangedPayload = {
-    currentPage: number;
-    pageLimit: number;
   };
 
   // data comes from Pagination Component

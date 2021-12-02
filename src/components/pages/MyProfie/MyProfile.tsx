@@ -88,7 +88,7 @@ const MyProfile = (): JSX.Element | null => {
           <MDBIcon far icon="paper-plane" className="ml-1" />
         </MDBBtn>
       </IdForm>
-      <ScoreBox scoreData={scoreData} />
+      {scoreData !== undefined && <ScoreBox scoreData={scoreData} />}
     </Container>
   );
 };
