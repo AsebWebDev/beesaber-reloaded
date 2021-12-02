@@ -17,11 +17,13 @@ const isInQuery = (score: Score, query: string): boolean => {
 const filterScores = (
   scores: Scores,
   query: string,
-  isPlayedByHive: boolean
+  filterByIsPlayedByHive: boolean
 ): Scores =>
   scores.filter((score) =>
-    isPlayedByHive
-      ? isInQuery(score, query) && score.playedByHive
+    filterByIsPlayedByHive
+      ? isInQuery(score, query) && score.playedByHive !== undefined
+        ? score.playedByHive
+        : false
       : isInQuery(score, query)
   );
 

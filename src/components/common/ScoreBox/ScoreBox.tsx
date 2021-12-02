@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { MDBContainer, MDBTabsContent } from 'mdb-react-ui-kit';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -47,7 +48,7 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
   const [displayedScores, setDisplayedScores] = useState<Scores>([]);
 
   const [pageLimit, setPageLimit] = useState(5);
-  const [offset, setOffset] = useState(5);
+  const [offset, setOffset] = useState(0);
   const totalScores = allScores.length;
 
   const toggleTab = (tab: string) => {
