@@ -1,6 +1,6 @@
 module.exports = {
   rules: {
-    'no-console': 'error',
+    'no-console': 'warn',
     'no-template-curly-in-string': 'error',
   },
 };
