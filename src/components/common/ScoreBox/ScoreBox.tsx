@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import Pagination from '@/components/common/Pagination/Pagination';
-import isInQuery from '@/helper/isInQuery';
+import filterScores from '@/helper/filterScores';
 
 import ScoreHeader from './ScoreHeader/ScoreHeader';
 import ScoreNavbar from './ScoreNavbar/ScoreNavbar';
@@ -35,24 +35,17 @@ type Props = Pick<UserData, 'scoreData'>;
 function ScoreBox({ scoreData }: Props): JSX.Element | null {
   if (scoreData === undefined || scoreData.scoresRecent.length === 0)
     return null;
-
-  // SCORES
-
-  const [allScores, setAllScores] = useState<Scores>([]);
-  const [displayedScores, setDisplayedScores] = useState<Scores>([]);
-
-  // PAGINATION
-
+  const [query, setQuery] = useState('');
   const [activeitem, setActiveItem] = useState('1');
+  const [isPlayedByHive, setIsPlayedByHive] = useState(false);
+  const [allScores, setAllScores] = useState<Scores>(scoreData.scoresRecent);
+  const [displayedScores, setDisplayedScores] = useState<Scores>(
+    scoreData.scoresRecent
+  );
+
   const [pageLimit, setPageLimit] = useState(5);
   const [offset, setOffset] = useState(5);
   const totalScores = allScores.length;
-
-  // TOGGLE
-  const [isPlayedByHive, setIsPlayedByHive] = useState(false);
-
-  // SEARCH
-  const [query, setQuery] = useState('');
 
   const toggleTab = (tab: string) => {
     if (activeitem !== tab) setActiveItem(tab);
@@ -78,17 +71,15 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
   }, [allScores, offset, pageLimit]);
 
   useEffect(() => {
-    // 1 = Recent / 2 = Top
     const scoreType = activeitem === '1' ? 'scoresRecent' : 'scoresTop';
-
-    setAllScores(
-      scoreData[scoreType].filter((item) =>
-        isPlayedByHive
-          ? isInQuery(item, query) && item.playedByHive
-          : isInQuery(item, query)
-      )
+    const filteredScores = filterScores(
+      scoreData[scoreType],
+      query,
+      isPlayedByHive
     );
-  }, [scoreData, activeitem, query, isPlayedByHive]);
+
+    setAllScores(filteredScores);
+  }, [query, isPlayedByHive]);
 
   return (
     <Container>

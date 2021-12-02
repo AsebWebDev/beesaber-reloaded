@@ -5,11 +5,15 @@ type Props = {
   scores: Scores;
   tabId: string;
 };
-const ScoreTabs = ({ scores, tabId }: Props): JSX.Element => {
-  console.log('🚀 ~ file: ScoreTabs.tsx ~ line 9 ~ ScoreTabs ~ scores', scores);
-  console.log('🚀 ~ file: ScoreTabs.tsx ~ line 7 ~ ScoreTabs ~ tabId', tabId);
-
-  return <div>ScoreTabs</div>;
-};
+const ScoreTabs = ({ scores, tabId }: Props): JSX.Element => (
+  <>
+    {scores.map((score, i) => (
+      <p key={i}>
+        {tabId}
+        {score.scoreId}
+      </p>
+    ))}
+  </>
+);
 
 export default ScoreTabs;

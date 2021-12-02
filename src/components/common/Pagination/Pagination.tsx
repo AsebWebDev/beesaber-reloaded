@@ -93,8 +93,6 @@ const Pagination = ({
     Math.ceil(totalScores / pageLimit)
   );
 
-  if (totalPages < 2) return null;
-
   // pageNeighbours can be: 0, 1 or 2
   pageNeighbours = Math.max(0, Math.min(pageNeighbours, 2));
 
@@ -139,6 +137,8 @@ const Pagination = ({
   useEffect(() => {
     setTotalPages(Math.ceil(totalScores / pageLimit));
   }, [totalScores]);
+
+  if (totalPages < 2) return null;
 
   return (
     <div id="pagination">

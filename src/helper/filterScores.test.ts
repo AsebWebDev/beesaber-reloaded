@@ -1,6 +1,6 @@
 import exampleUserScores from '@/testing/testData/exampleUserScores';
 
-import isInQuery from './isInQuery';
+import { isInQuery } from './filterScores';
 
 const score = exampleUserScores.scores[0];
 
@@ -22,4 +22,8 @@ describe('isInQuery', () => {
       expect(isInQuery(score, query)).toBe(result);
     }
   );
+});
+
+describe('filterScores', () => {
+  it.todo('should return filtered scores');
 });
