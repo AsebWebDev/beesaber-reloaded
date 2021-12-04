@@ -1,15 +1,15 @@
-import exampleUserScores from '@/testing/testData/exampleUserScores';
+import exampleScores from '@/testing/testData/exampleScores';
 
-import { isInQuery } from './filterScores';
-
-const score = exampleUserScores.scores[0];
-
-type Props = {
-  query: string;
-  result: boolean;
-};
+import { filterScores, isInQuery } from './filterScores';
 
 describe('isInQuery', () => {
+  const score = exampleScores[0];
+
+  type Props = {
+    query: string;
+    result: boolean;
+  };
+
   it.each`
     name              | authorName              | query      | result
     ${score.songName} | ${score.songAuthorName} | ${'begun'} | ${true}
@@ -25,5 +25,24 @@ describe('isInQuery', () => {
 });
 
 describe('filterScores', () => {
-  it.todo('should return filtered scores');
+  type Props = {
+    isPlayedByHive: boolean;
+    query: string;
+    result: number;
+  };
+
+  it.each`
+    isPlayedByHive | query            | result
+    ${false}       | ${'begun'}       | ${1}
+    ${false}       | ${'notInScores'} | ${0}
+    ${true}        | ${'Hive'}        | ${1}
+    ${true}        | ${''}            | ${2}
+  `(
+    'should return $result filtered scores when query is "$query" and isPlayedByHive is $isPlayedByHive',
+    ({ query, result, isPlayedByHive }: Props) => {
+      expect(filterScores(exampleScores, query, isPlayedByHive)).toHaveLength(
+        result
+      );
+    }
+  );
 });

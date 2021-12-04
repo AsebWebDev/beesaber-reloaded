@@ -27,6 +27,6 @@ const filterScores = (
       : isInQuery(score, query)
   );
 
-export { isInQuery };
+export { filterScores, isInQuery };
 
 export default filterScores;
