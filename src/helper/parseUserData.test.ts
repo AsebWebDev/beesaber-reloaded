@@ -1,11 +1,13 @@
+import exampleScores from '@/testing/testData/exampleScores';
 import exampleSSUserInfo from '@/testing/testData/exampleSSUserInfo';
 import exampleUserData from '@/testing/testData/exampleUserData';
-import exampleUserScores from '@/testing/testData/exampleUserScores';
 
 import parseUserData from './parseUserData';
 
 describe('parseUserData', () => {
   it('should parse correct UserData', () => {
+    const exampleUserScores = { scores: [exampleScores[0]] };
+
     const result = parseUserData(
       exampleUserData,
       exampleSSUserInfo,
