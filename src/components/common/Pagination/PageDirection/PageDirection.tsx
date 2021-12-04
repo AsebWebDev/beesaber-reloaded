@@ -1,4 +1,19 @@
 import React from 'react';
+import styled from 'styled-components';
+
+import colors from '@/tokens/definitions/color';
+
+const ListElement = styled.li`
+  font-size: 1rem;
+  font-weight: 900;
+  padding: 0.3rem;
+  text-align: center;
+`;
+
+const PageLink = styled.a.attrs({ href: '/#' })`
+  color: ${colors.page.bgColor.main};
+  padding: 0.3rem;
+`;
 
 type Props = {
   direction: 'Next' | 'Previous';
@@ -6,12 +21,12 @@ type Props = {
 };
 
 const PageDirection = ({ onClick, direction }: Props): JSX.Element => (
-  <li className="page-item">
-    <a className="page-link" href="/#" aria-label={direction} onClick={onClick}>
+  <ListElement>
+    <PageLink aria-label={direction} onClick={onClick}>
       <span aria-hidden="true">&laquo;</span>
-      <span className="sr-only">{direction}</span>
-    </a>
-  </li>
+      <span>{direction}</span>
+    </PageLink>
+  </ListElement>
 );
 
 export default PageDirection;

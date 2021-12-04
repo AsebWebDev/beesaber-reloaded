@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PageNumber should match the snapshot when isActive = false 1`] = `
+.c0 {
+  background-color: rgba(255,255,255,0.7);
+  font-size: 1rem;
+  font-weight: 900;
+  padding: 0.3rem;
+  text-align: center;
+}
+
+.c1 {
+  color: #00111f;
+  padding: 0.3rem;
+}
+
+<li
+  class="c0"
+>
+  <a
+    class="c1"
+    href="/#"
+  >
+    5
+  </a>
+</li>
+`;
+
+exports[`PageNumber should match the snapshot when isActive = true 1`] = `
+.c0 {
+  background-color: #ffeb00;
+  font-size: 1rem;
+  font-weight: 900;
+  padding: 0.3rem;
+  text-align: center;
+}
+
+.c1 {
+  color: #00111f;
+  padding: 0.3rem;
+}
+
+<li
+  class="c0"
+>
+  <a
+    class="c1"
+    href="/#"
+  >
+    5
+  </a>
+</li>
+`;

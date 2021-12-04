@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PageDirection should match the snapshot when direction is = Next 1`] = `
+.c0 {
+  font-size: 1rem;
+  font-weight: 900;
+  padding: 0.3rem;
+  text-align: center;
+}
+
+.c1 {
+  color: #00111f;
+  padding: 0.3rem;
+}
+
+<li
+  class="c0"
+>
+  <a
+    aria-label="Next"
+    class="c1"
+    href="/#"
+  >
+    <span
+      aria-hidden="true"
+    >
+      «
+    </span>
+    <span>
+      Next
+    </span>
+  </a>
+</li>
+`;
+
+exports[`PageDirection should match the snapshot when direction is = Previous 1`] = `
+.c0 {
+  font-size: 1rem;
+  font-weight: 900;
+  padding: 0.3rem;
+  text-align: center;
+}
+
+.c1 {
+  color: #00111f;
+  padding: 0.3rem;
+}
+
+<li
+  class="c0"
+>
+  <a
+    aria-label="Previous"
+    class="c1"
+    href="/#"
+  >
+    <span
+      aria-hidden="true"
+    >
+      «
+    </span>
+    <span>
+      Previous
+    </span>
+  </a>
+</li>
+`;

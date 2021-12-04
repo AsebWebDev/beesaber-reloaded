@@ -1,0 +1,241 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Pagination should match the snapshot after selecting a page 1`] = `
+.c3 {
+  font-size: 1rem;
+  font-weight: 900;
+  padding: 0.3rem;
+  text-align: center;
+}
+
+.c4 {
+  color: #00111f;
+  padding: 0.3rem;
+}
+
+.c5 {
+  background-color: #ffeb00;
+  font-size: 1rem;
+  font-weight: 900;
+  padding: 0.3rem;
+  text-align: center;
+}
+
+.c1 {
+  background-color: rgba(255,255,255,0.7);
+  font-size: 1rem;
+  font-weight: 900;
+  padding: 0.3rem;
+  text-align: center;
+}
+
+.c2 {
+  color: #00111f;
+  padding: 0.3rem;
+}
+
+.c0 {
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  list-style-type: none;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+<nav
+  class=""
+>
+  <ul
+    class="c0"
+  >
+    <li
+      class="c1"
+    >
+      <a
+        class="c2"
+        href="/#"
+      >
+        1
+      </a>
+    </li>
+    <li
+      class="c3"
+    >
+      <a
+        aria-label="Previous"
+        class="c4"
+        href="/#"
+      >
+        <span
+          aria-hidden="true"
+        >
+          «
+        </span>
+        <span>
+          Previous
+        </span>
+      </a>
+    </li>
+    <li
+      class="c5"
+    >
+      <a
+        class="c2"
+        href="/#"
+      >
+        3
+      </a>
+    </li>
+    <li
+      class="c3"
+    >
+      <a
+        aria-label="Next"
+        class="c4"
+        href="/#"
+      >
+        <span
+          aria-hidden="true"
+        >
+          «
+        </span>
+        <span>
+          Next
+        </span>
+      </a>
+    </li>
+    <li
+      class="c1"
+    >
+      <a
+        class="c2"
+        href="/#"
+      >
+        6
+      </a>
+    </li>
+  </ul>
+</nav>
+`;
+
+exports[`Pagination should match the snapshot on initial view 1`] = `
+.c4 {
+  font-size: 1rem;
+  font-weight: 900;
+  padding: 0.3rem;
+  text-align: center;
+}
+
+.c5 {
+  color: #00111f;
+  padding: 0.3rem;
+}
+
+.c1 {
+  background-color: #ffeb00;
+  font-size: 1rem;
+  font-weight: 900;
+  padding: 0.3rem;
+  text-align: center;
+}
+
+.c3 {
+  background-color: rgba(255,255,255,0.7);
+  font-size: 1rem;
+  font-weight: 900;
+  padding: 0.3rem;
+  text-align: center;
+}
+
+.c2 {
+  color: #00111f;
+  padding: 0.3rem;
+}
+
+.c0 {
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  list-style-type: none;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+<nav
+  class=""
+>
+  <ul
+    class="c0"
+  >
+    <li
+      class="c1"
+    >
+      <a
+        class="c2"
+        href="/#"
+      >
+        1
+      </a>
+    </li>
+    <li
+      class="c3"
+    >
+      <a
+        class="c2"
+        href="/#"
+      >
+        2
+      </a>
+    </li>
+    <li
+      class="c3"
+    >
+      <a
+        class="c2"
+        href="/#"
+      >
+        3
+      </a>
+    </li>
+    <li
+      class="c4"
+    >
+      <a
+        aria-label="Next"
+        class="c5"
+        href="/#"
+      >
+        <span
+          aria-hidden="true"
+        >
+          «
+        </span>
+        <span>
+          Next
+        </span>
+      </a>
+    </li>
+    <li
+      class="c3"
+    >
+      <a
+        class="c2"
+        href="/#"
+      >
+        6
+      </a>
+    </li>
+  </ul>
+</nav>
+`;

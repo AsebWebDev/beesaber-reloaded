@@ -20,16 +20,19 @@ type FetchPageNumbersProps = Required<
 > &
   Required<Pick<PaginationProps, 'pageNeighbours'>>;
 
+type Directions = typeof LEFT_PAGE | typeof RIGHT_PAGE;
+
+type PagesArray = Array<Directions | number>;
 const fetchPageNumbers = ({
   currentPage,
   pageNeighbours,
   totalPages,
-}: FetchPageNumbersProps): Array<number | string> => {
+}: FetchPageNumbersProps): PagesArray => {
   const totalNumbers = pageNeighbours * 2 + 3;
   const totalBlocks = totalNumbers + 2;
 
   if (totalPages > totalBlocks) {
-    let pages = [];
+    let pages: PagesArray = [];
 
     const leftBound = currentPage - pageNeighbours;
     const rightBound = currentPage + pageNeighbours;
@@ -66,5 +69,7 @@ const fetchPageNumbers = ({
 
   return range(1, totalPages);
 };
+
+export type { FetchPageNumbersProps as FetchPageNumbers, PagesArray };
 
 export default fetchPageNumbers;
