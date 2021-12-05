@@ -8,7 +8,7 @@ type Props = {
 const ScoreTabs = ({ scores, tabId }: Props): JSX.Element => (
   <>
     {scores.map((score, i) => (
-      <p key={i}>
+      <p key={`${tabId}${i}`}>
         {tabId}
         {score.scoreId}
       </p>

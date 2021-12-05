@@ -3,8 +3,10 @@ import userEvent from '@testing-library/user-event';
 
 import ScoreNavbar from './ScoreNavbar';
 
+import type { NavTabs } from '../ScoreBox';
+
 describe('ScoreNavbar', () => {
-  it.each(['1', '2'])(
+  it.each(['RECENT', 'TOP'] as const)(
     'should match the snapshot when activeitem is %s',
     (activeitem) => {
       const { container } = render(
@@ -21,11 +23,11 @@ describe('ScoreNavbar', () => {
 
   it.each`
     name        | activeitem
-    ${'Recent'} | ${'1'}
-    ${'Top'}    | ${'2'}
+    ${'Recent'} | ${'RECENT'}
+    ${'Top'}    | ${'TOP'}
   `(
     'should call toggleTab with $activeitem when $name is clicked',
-    ({ activeitem, name }: { activeitem: string; name: string }) => {
+    ({ activeitem, name }: { activeitem: NavTabs; name: string }) => {
       const mockedToggleTab = jest.fn();
 
       render(
@@ -49,7 +51,7 @@ describe('ScoreNavbar', () => {
 
     render(
       <ScoreNavbar
-        activeitem={'1'}
+        activeitem={'RECENT'}
         setIsPlayedByHive={mockedSetIsPlayedByHive}
         toggleTab={jest.fn()}
       />

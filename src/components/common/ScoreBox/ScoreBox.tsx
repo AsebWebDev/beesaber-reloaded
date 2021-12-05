@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { MDBContainer, MDBTabsContent } from 'mdb-react-ui-kit';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -6,6 +5,7 @@ import styled from 'styled-components';
 import Pagination from '@/components/common/Pagination/Pagination';
 import filterScores from '@/helper/filterScores';
 
+import NoScores from './NoScores/NoScores';
 import ScoreHeader from './ScoreHeader/ScoreHeader';
 import ScoreNavbar from './ScoreNavbar/ScoreNavbar';
 import ScoreTabs from './ScoreTabs/ScoreTabs';
@@ -36,22 +36,26 @@ type onPageChangedPayload = {
   pageLimit: number;
 };
 
+type NavTabs = 'RECENT' | 'TOP';
+
 type Props = Required<Pick<UserData, 'scoreData'>>;
 
 function ScoreBox({ scoreData }: Props): JSX.Element | null {
-  if (scoreData.scoresRecent.length === 0) return null;
+  const { scoresRecent } = scoreData;
+
+  if (scoresRecent.length === 0) return null;
 
   const [query, setQuery] = useState('');
-  const [activeitem, setActiveItem] = useState('1');
+  const [activeitem, setActiveItem] = useState<NavTabs>('RECENT');
   const [isPlayedByHive, setIsPlayedByHive] = useState(false);
-  const [allScores, setAllScores] = useState<Scores>(scoreData.scoresRecent);
+  const [allScores, setAllScores] = useState<Scores>(scoresRecent);
   const [displayedScores, setDisplayedScores] = useState<Scores>([]);
 
   const [pageLimit, setPageLimit] = useState(5);
   const [offset, setOffset] = useState(0);
   const totalScores = allScores.length;
 
-  const toggleTab = (tab: string) => {
+  const toggleTab = (tab: NavTabs) => {
     if (activeitem !== tab) setActiveItem(tab);
   };
 
@@ -70,7 +74,7 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
   }, [allScores, offset, pageLimit]);
 
   useEffect(() => {
-    const scoreType = activeitem === '1' ? 'scoresRecent' : 'scoresTop';
+    const scoreType = activeitem === 'RECENT' ? 'scoresRecent' : 'scoresTop';
     const filteredScores = filterScores(
       scoreData[scoreType],
       query,
@@ -90,8 +94,7 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
       />
       <MDBTabsContent activeitem={activeitem}>
         <ScoreTabs tabId={activeitem} scores={displayedScores} />
-        {/* // FIXME: Create "No Scores Found Component" */}
-        {displayedScores.length === 0 && <div>No Scores Available</div>}
+        {displayedScores.length === 0 && <NoScores />}
       </MDBTabsContent>
       <PaginationContainer>
         <PaginationWrapper>
@@ -106,5 +109,7 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
     </Container>
   );
 }
+
+export type { NavTabs };
 
 export default ScoreBox;

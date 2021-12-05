@@ -8,6 +8,8 @@ import styled from 'styled-components';
 
 import tokens from '@/tokens';
 
+import type { NavTabs } from '../ScoreBox';
+
 const NavBar = styled(MDBNavbar)`
   background-color: ${tokens.color.page.bgColor.light};
   list-style: none;
@@ -28,9 +30,9 @@ const NavigationItems = styled.div`
 `;
 
 type Props = {
-  activeitem: string;
+  activeitem: NavTabs;
   setIsPlayedByHive: (isOn: boolean) => void;
-  toggleTab: (id: string) => void;
+  toggleTab: (id: NavTabs) => void;
 };
 
 const ScoreNavbar = ({
@@ -43,8 +45,8 @@ const ScoreNavbar = ({
       <MDBNavbarItem>
         <MDBNavbarLink
           to="#"
-          active={activeitem === '1'}
-          onClick={() => toggleTab('1')}
+          active={activeitem === 'RECENT'}
+          onClick={() => toggleTab('RECENT')}
           role="tab"
         >
           Recent
@@ -53,8 +55,8 @@ const ScoreNavbar = ({
       <MDBNavbarItem>
         <MDBNavbarLink
           to="#"
-          active={activeitem === '2'}
-          onClick={() => toggleTab('2')}
+          active={activeitem === 'TOP'}
+          onClick={() => toggleTab('TOP')}
           role="tab"
         >
           Top

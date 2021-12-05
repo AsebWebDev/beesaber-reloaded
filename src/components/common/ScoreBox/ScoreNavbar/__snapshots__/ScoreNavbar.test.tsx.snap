@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ScoreNavbar should match the snapshot when activeitem is 1 1`] = `
+exports[`ScoreNavbar should match the snapshot when activeitem is RECENT 1`] = `
 .c0 {
   background-color: #162530;
   list-style: none;
@@ -75,7 +75,7 @@ exports[`ScoreNavbar should match the snapshot when activeitem is 1 1`] = `
 </nav>
 `;
 
-exports[`ScoreNavbar should match the snapshot when activeitem is 2 1`] = `
+exports[`ScoreNavbar should match the snapshot when activeitem is TOP 1`] = `
 .c0 {
   background-color: #162530;
   list-style: none;
