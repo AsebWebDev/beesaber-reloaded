@@ -1,5 +1,8 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
+import api from '@/api/services/api';
+import apiScoreSaber from '@/api/services/apiScoreSaber';
+
 import appStatus, {
   initialState as appStatusInitialState,
 } from './appStatusReducer';
@@ -14,6 +17,8 @@ const rootReducer = combineReducers({
   appStatus,
   notifications,
   userData,
+  [apiScoreSaber.reducerPath]: apiScoreSaber.reducer,
+  [api.reducerPath]: api.reducer,
 });
 
 const initialState: RootState = {
@@ -22,7 +27,10 @@ const initialState: RootState = {
   userData: { ...userDataInitialState },
 };
 
-type RootState = ReturnType<typeof rootReducer>;
+type RootState = Pick<
+  ReturnType<typeof rootReducer>,
+  'appStatus' | 'notifications' | 'userData'
+>;
 
 export { initialState };
 export default rootReducer;

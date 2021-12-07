@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { errHandler } from '@/api/api';
+import { useGoogleLoginMutation } from '@/api/services/apiAuth/apiAuth';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   selectIsLoggedIn,
@@ -12,14 +13,12 @@ import {
 import { userDataUpdated } from '@/store/reducer/userDataReducer';
 import { mediaQuery } from '@/tokens/definitions/layout';
 
-import {
-  handleLogin,
-  handleLogout,
-  loginProps,
-  logoutProps,
-} from './authHandlers';
+import { handleLogout, loginProps, logoutProps } from './authHandlers';
 
-import type { PossibleResponses } from '@/api/api';
+import type {
+  GoogleLoginResponse,
+  GoogleLoginResponseOffline,
+} from 'react-google-login';
 import type { UserData } from '@/sharedTypes/UserData';
 
 const Container = styled.div`
@@ -35,12 +34,17 @@ const GoogleOAuth = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
   const history = useHistory();
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
+  const [loginGoogle, { isLoading: isLoggingIn }] = useGoogleLoginMutation();
 
-  const onSuccess = async (response: PossibleResponses) => {
-    dispatch(userIsLogginIn(true));
+  const onSuccess = async (
+    response: GoogleLoginResponse | GoogleLoginResponseOffline
+  ) => {
+    dispatch(userIsLogginIn(isLoggingIn));
     try {
       if ('googleId' in response) {
-        const userData = await handleLogin(response);
+        const { googleId, profileObj } = response;
+
+        const userData = await loginGoogle({ googleId, profileObj }).unwrap();
 
         dispatch(userDataUpdated(userData));
         dispatch(userIsLoggedIn(true));
@@ -50,7 +54,7 @@ const GoogleOAuth = (): JSX.Element | null => {
         errHandler(error);
       }
     }
-    dispatch(userIsLogginIn(false));
+    dispatch(userIsLogginIn(isLoggingIn));
   };
 
   const logout = async () => {
@@ -62,7 +66,6 @@ const GoogleOAuth = (): JSX.Element | null => {
         errHandler(error);
       }
     }
-
     dispatch(userDataUpdated({} as UserData));
     dispatch(userIsLoggedIn(false));
   };
