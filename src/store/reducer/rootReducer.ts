@@ -3,15 +3,13 @@ import { combineReducers } from '@reduxjs/toolkit';
 import api from '@/api/services/api';
 import apiScoreSaber from '@/api/services/apiScoreSaber';
 
-import appStatus, {
-  initialState as appStatusInitialState,
-} from './appStatusReducer';
-import notifications, {
-  initialState as notificationsInitialState,
-} from './notificationsReducer';
-import userData, {
-  initialState as userDataInitialState,
-} from './userDataReducer';
+import appStatus from './appStatusReducer';
+import notifications from './notificationsReducer';
+import userData from './userDataReducer';
+
+import type store from '../store';
+
+type RootState = ReturnType<typeof store.getState>;
 
 const rootReducer = combineReducers({
   appStatus,
@@ -21,17 +19,5 @@ const rootReducer = combineReducers({
   [api.reducerPath]: api.reducer,
 });
 
-const initialState: RootState = {
-  appStatus: { ...appStatusInitialState },
-  notifications: { ...notificationsInitialState },
-  userData: { ...userDataInitialState },
-};
-
-type RootState = Pick<
-  ReturnType<typeof rootReducer>,
-  'appStatus' | 'notifications' | 'userData'
->;
-
-export { initialState };
 export default rootReducer;
 export type { RootState };

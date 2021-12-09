@@ -1,6 +1,7 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
+import { initialState as initialStore } from '../store';
 import reducer, {
   selectIsFetchingData,
   selectIsLoggedIn,
@@ -10,8 +11,6 @@ import reducer, {
   userIsLogginIn,
 } from './appStatusReducer';
 
-import type { UserData } from '@/sharedTypes/UserData';
-import type { RootState } from '../store';
 import type { AppStatus } from './appStatusReducer';
 
 const appStatus: AppStatus = {
@@ -21,12 +20,6 @@ const appStatus: AppStatus = {
   },
   isLoggedIn: false,
   isLoggingIn: false,
-};
-
-const initialStore: RootState = {
-  appStatus,
-  notifications: [],
-  userData: {} as UserData,
 };
 
 describe('appStatus reducer', () => {

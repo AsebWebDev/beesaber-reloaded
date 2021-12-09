@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-// initialize an empty api service that we'll inject endpoints into later as needed
+import baseInitialState from './baseInitialState';
+
 const apiScoreSaber = createApi({
   reducerPath: 'apiScoreSaber',
   baseQuery: fetchBaseQuery({
@@ -8,5 +9,11 @@ const apiScoreSaber = createApi({
   }),
   endpoints: () => ({}),
 });
+
+const initialState = Object.assign(baseInitialState, {
+  config: { reducerPath: apiScoreSaber.reducerPath },
+});
+
+export { initialState };
 
 export default apiScoreSaber;
