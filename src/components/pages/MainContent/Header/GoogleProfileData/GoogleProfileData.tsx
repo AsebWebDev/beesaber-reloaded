@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
-import createLocalImageUrl from '@/helper/createLocalImageUrl';
+import { useGetUserDataQuery } from '@/api/services/apiUser/apiUser';
 import { parseAvatarUrl } from '@/helper/urlParser';
 import { useAppSelector } from '@/store/hooks';
-import { selectUserData } from '@/store/reducer/userDataReducer';
+import { selectUserId } from '@/store/reducer/userDataReducer';
 
 const Container = styled.div`
   max-height: 100px;
@@ -16,12 +16,16 @@ const Image = styled.img`
 `;
 
 function GoogleProfileData(): JSX.Element | null {
-  const userData = useAppSelector(selectUserData);
-  const { profilePic, username } = userData;
+  const userId = useAppSelector(selectUserId);
+  const { data: userData } = useGetUserDataQuery(userId);
+
+  if (userData === undefined) return null;
+  const { profilePic, username, googleName, googleImageUrl } = userData;
+
   const placeholderImage =
-    profilePic !== undefined
-      ? parseAvatarUrl(profilePic)
-      : createLocalImageUrl('m_bee.jpg');
+    profilePic !== undefined ? parseAvatarUrl(profilePic) : googleImageUrl;
+
+  const name = username ?? googleName;
 
   return (
     <Container>
@@ -31,7 +35,7 @@ function GoogleProfileData(): JSX.Element | null {
         id="profile-pic-sm"
         alt="profile pic"
       />
-      <span>{username}</span>
+      <span>{name}</span>
     </Container>
   );
 }

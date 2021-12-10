@@ -1,8 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { UserData } from '@/sharedTypes/UserData';
-import type { ScoreData } from '@/sharedTypes/UserScores';
+import type { GoggleUserData, ScoreData, UserData } from '@/sharedTypes';
 import type { RootState } from './rootReducer';
 
 const name = 'userData';
@@ -13,7 +12,10 @@ const slice = createSlice({
   name,
   initialState,
   reducers: {
-    userDataUpdated: (state, { payload }: PayloadAction<UserData>) => ({
+    userDataUpdated: (
+      state,
+      { payload }: PayloadAction<GoggleUserData | UserData>
+    ) => ({
       ...state,
       ...payload,
     }),

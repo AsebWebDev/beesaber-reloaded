@@ -24,3 +24,7 @@ export type UserData = {
   userScores?: UserScores;
   username?: string;
 };
+export type GoggleUserData = Pick<
+  UserData,
+  '_id' | 'googleImageUrl' | 'googleName' | 'profilePic' | 'username'
+>;

@@ -1,6 +1,6 @@
 import api from '../api';
 
-import type { UserData } from '@/sharedTypes';
+import type { GoggleUserData } from '@/sharedTypes';
 
 type GooglePayload = {
   googleId: string;
@@ -16,11 +16,24 @@ type GooglePayload = {
 
 export const apiAuth = api.injectEndpoints({
   endpoints: (builder) => ({
-    googleLogin: builder.mutation<UserData, GooglePayload>({
+    googleLogin: builder.mutation<GoggleUserData, GooglePayload>({
       query: (payload) => ({
         url: `/googlelogin`,
         method: 'POST',
         body: payload,
+      }),
+      transformResponse: ({
+        _id,
+        profilePic,
+        username,
+        googleName,
+        googleImageUrl,
+      }) => ({
+        _id,
+        profilePic,
+        username,
+        googleName,
+        googleImageUrl,
       }),
     }),
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
