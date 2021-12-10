@@ -3,6 +3,7 @@ import { setupListeners } from '@reduxjs/toolkit/dist/query/react';
 
 import api, { initialState as apiInitialState } from '@/api/services/api';
 import { apiAuth } from '@/api/services/apiAuth/apiAuth';
+import { apiPlayer } from '@/api/services/apiPlayer/apiPlayer';
 import apiScoreSaber, {
   initialState as apiScoreSaberInitialState,
 } from '@/api/services/apiScoreSaber';
@@ -16,7 +17,11 @@ import { initialState as userDataInitialState } from './reducer/userDataReducer'
 const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiAuth.middleware, apiUser.middleware),
+    getDefaultMiddleware().concat(
+      apiAuth.middleware,
+      apiPlayer.middleware,
+      apiUser.middleware
+    ),
   devTools: true,
 });
 

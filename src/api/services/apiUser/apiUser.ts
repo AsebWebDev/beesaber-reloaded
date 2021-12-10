@@ -1,16 +1,13 @@
-import apiScoreSaber from '../apiScoreSaber';
+import api from '../api';
 
-import type { ScoreSaberUserInfo, UserScores } from '@/sharedTypes';
+import type { UserData } from '@/sharedTypes';
 
-export const apiUser = apiScoreSaber.injectEndpoints({
+export const apiUser = api.injectEndpoints({
   endpoints: (builder) => ({
-    getRecentScoresUrl: builder.query<UserScores, string>({
-      query: (id) => `/player/${id}/scores/recent/${1}`,
-    }),
-    getFullPlayer: builder.query<ScoreSaberUserInfo, string>({
-      query: (playerName) => `player/${playerName}/full`,
+    getUserData: builder.query<UserData, string>({
+      query: (userId) => `/user/${userId}`,
     }),
   }),
 });
 
-export const { useGetFullPlayerQuery, useGetRecentScoresUrlQuery } = apiUser;
+export const { useGetUserDataQuery } = apiUser;
