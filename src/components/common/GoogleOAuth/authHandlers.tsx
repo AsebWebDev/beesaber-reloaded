@@ -4,9 +4,6 @@ import api from '@/api/authApi';
 
 import NeonGoogleButton from './NeonGoogleButton/NeonGoogleButton';
 
-import type { GoogleLoginResponse } from 'react-google-login';
-import type { UserData } from '@/sharedTypes/UserData';
-
 type RenderPropsType = {
   disabled?: boolean | undefined;
   onClick: () => void;
@@ -26,22 +23,6 @@ const logoutProps = {
   ),
 };
 
-const handleLogin = async (
-  response: GoogleLoginResponse
-): Promise<UserData> => {
-  const { googleId, profileObj } = response;
-  const userData = await toast.promise<UserData>(
-    api.googleLogin({ googleId, profileObj }),
-    {
-      pending: 'Loggin you in ...',
-      success: 'You successfully logged in 👌',
-      error: 'There has been an issue logging you in 🤯',
-    }
-  );
-
-  return userData;
-};
-
 const handleLogout = async (): Promise<void> => {
   await toast.promise(api.logout(), {
     pending: 'Loggin you out ...',
@@ -52,4 +33,4 @@ const handleLogout = async (): Promise<void> => {
 
 export type { RenderPropsType };
 
-export { handleLogin, handleLogout, loginProps, logoutProps };
+export { handleLogout, loginProps, logoutProps };

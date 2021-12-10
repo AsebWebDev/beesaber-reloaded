@@ -23,7 +23,14 @@ export const apiAuth = api.injectEndpoints({
         body: payload,
       }),
     }),
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+    googleLogout: builder.mutation<undefined, void>({
+      query: () => ({
+        url: `/logout`,
+        method: 'POST',
+      }),
+    }),
   }),
 });
 
-export const { useGoogleLoginMutation } = apiAuth;
+export const { useGoogleLoginMutation, useGoogleLogoutMutation } = apiAuth;
