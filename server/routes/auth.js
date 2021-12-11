@@ -33,9 +33,7 @@ router.post('/googlelogin', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.post('/logout', (req, res) => {
-  req.logout();
-});
+router.post('/logout', (req, res) => res.sendStatus(200));
 
 module.exports = router;
 
