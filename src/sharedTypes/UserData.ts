@@ -20,11 +20,13 @@ export type UserData = {
   scoreData?: ScoreData;
   scoreStats?: ScoreStats;
   settings: Settings;
+  totalPlayCount?: number;
   updated_at: string;
   userScores?: UserScores;
   username?: string;
 };
-export type GoggleUserData = Pick<
+
+export type GoogleUserData = Pick<
   UserData,
   '_id' | 'googleImageUrl' | 'googleName' | 'profilePic' | 'username'
 >;

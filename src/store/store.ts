@@ -1,12 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/dist/query/react';
 
-import api, { initialState as apiInitialState } from '@/api/services/api';
+import { apiInitialState } from '@/api/services/api';
 import { apiAuth } from '@/api/services/apiAuth/apiAuth';
 import { apiPlayer } from '@/api/services/apiPlayer/apiPlayer';
-import apiScoreSaber, {
-  initialState as apiScoreSaberInitialState,
-} from '@/api/services/apiScoreSaber';
 import { apiUser } from '@/api/services/apiUser/apiUser';
 
 import { initialState as appStatusInitialState } from './reducer/appStatusReducer';
@@ -27,12 +24,11 @@ const store = configureStore({
 
 setupListeners(store.dispatch);
 
-const initialState: RootState = {
+const initialState = {
   appStatus: { ...appStatusInitialState },
   notifications: { ...notificationsInitialState },
   userData: { ...userDataInitialState },
-  [api.reducerPath]: { ...apiInitialState },
-  [apiScoreSaber.reducerPath]: { ...apiScoreSaberInitialState },
+  api: { ...apiInitialState },
 };
 
 export { initialState };

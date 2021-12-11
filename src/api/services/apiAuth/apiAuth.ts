@@ -1,6 +1,9 @@
 import api from '../api';
 
-import type { GoggleUserData } from '@/sharedTypes';
+import type { GoogleUserData } from '@/sharedTypes';
+
+const baseUrl =
+  process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:5001/api';
 
 type GooglePayload = {
   googleId: string;
@@ -16,9 +19,9 @@ type GooglePayload = {
 
 export const apiAuth = api.injectEndpoints({
   endpoints: (builder) => ({
-    googleLogin: builder.mutation<GoggleUserData, GooglePayload>({
+    googleLogin: builder.mutation<GoogleUserData, GooglePayload>({
       query: (payload) => ({
-        url: `/googlelogin`,
+        url: `${baseUrl}/googlelogin`,
         method: 'POST',
         body: payload,
       }),
@@ -39,9 +42,10 @@ export const apiAuth = api.injectEndpoints({
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     googleLogout: builder.mutation<undefined, void>({
       query: () => ({
-        url: `/logout`,
+        url: `${baseUrl}/logout`,
         method: 'POST',
       }),
+      invalidatesTags: ['UserData'],
     }),
   }),
 });

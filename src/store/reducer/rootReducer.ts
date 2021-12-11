@@ -1,7 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
 import api from '@/api/services/api';
-import apiScoreSaber from '@/api/services/apiScoreSaber';
 
 import appStatus from './appStatusReducer';
 import notifications from './notificationsReducer';
@@ -15,8 +14,7 @@ const rootReducer = combineReducers({
   appStatus,
   notifications,
   userData,
-  [apiScoreSaber.reducerPath]: apiScoreSaber.reducer,
-  [api.reducerPath]: api.reducer,
+  api: api.reducer,
 });
 
 export default rootReducer;

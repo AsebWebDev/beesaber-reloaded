@@ -1,22 +1,27 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import baseInitialState from './baseInitialState';
+const apiInitialState = {
+  queries: {},
+  mutations: {},
+  provided: {},
+  subscriptions: {},
+  config: {
+    online: true,
+    focused: true,
+    middlewareRegistered: true,
+    refetchOnFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMountOrArgChange: false,
+    keepUnusedDataFor: 0,
+  },
+};
 
 const api = createApi({
-  reducerPath: 'api',
-  baseQuery: fetchBaseQuery({
-    baseUrl:
-      process.env.NODE_ENV === 'production'
-        ? '/api'
-        : 'http://localhost:5000/api',
-  }),
+  tagTypes: ['UserData', 'Scores', 'ScoreSaberUserInfo'],
+  baseQuery: fetchBaseQuery({}),
   endpoints: () => ({}),
 });
 
-const initialState = Object.assign(baseInitialState, {
-  config: { reducerPath: api.reducerPath },
-});
-
-export { initialState };
+export { apiInitialState };
 
 export default api;

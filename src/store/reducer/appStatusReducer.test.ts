@@ -11,6 +11,7 @@ import reducer, {
   userIsLogginIn,
 } from './appStatusReducer';
 
+import type { RootState } from '../store';
 import type { AppStatus } from './appStatusReducer';
 
 const appStatus: AppStatus = {
@@ -31,7 +32,9 @@ describe('appStatus reducer', () => {
 describe('selector:', () => {
   describe('selectIsFetchingData', () => {
     it('should select isFetchingData', () => {
-      const selectedIsFetchingData = selectIsFetchingData(initialStore);
+      const selectedIsFetchingData = selectIsFetchingData(
+        initialStore as RootState
+      );
 
       expect(selectedIsFetchingData).toStrictEqual(appStatus.isFetchingData);
     });
@@ -39,7 +42,7 @@ describe('selector:', () => {
 
   describe('selectIsLoggedIn', () => {
     it('should select isLoggedIn', () => {
-      const selectedAppStatus = selectIsLoggedIn(initialStore);
+      const selectedAppStatus = selectIsLoggedIn(initialStore as RootState);
 
       expect(selectedAppStatus).toStrictEqual(appStatus.isLoggedIn);
     });
@@ -47,7 +50,7 @@ describe('selector:', () => {
 
   describe('selectIsLoggingIn', () => {
     it('should select isLoggingIn', () => {
-      const selectedAppStatus = selectIsLoggingIn(initialStore);
+      const selectedAppStatus = selectIsLoggingIn(initialStore as RootState);
 
       expect(selectedAppStatus).toStrictEqual(appStatus.isLoggingIn);
     });

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 

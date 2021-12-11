@@ -23,7 +23,7 @@ import type {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login';
-import type { GoggleUserData } from '@/sharedTypes';
+import type { GoogleUserData } from '@/sharedTypes';
 
 const Container = styled.div`
   ${mediaQuery.mobile} {
@@ -48,7 +48,7 @@ const GoogleOAuth = (): JSX.Element | null => {
     if ('googleId' in response) {
       const { googleId, profileObj } = response;
 
-      const userData = await toast.promise<GoggleUserData>(
+      const userData = await toast.promise<GoogleUserData>(
         loginGoogle({ googleId, profileObj }).unwrap(),
         {
           pending: 'Loggin you in ...',

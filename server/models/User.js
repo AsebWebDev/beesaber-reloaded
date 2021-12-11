@@ -32,6 +32,9 @@ const userSchema = new Schema({
     type: Array,
     default: []
   },
+  playerInfo: {
+    playerId: String,
+  },
   scoreData: {
     lastSync: String, // lastSync currently not used
     scoresRecent: [],
