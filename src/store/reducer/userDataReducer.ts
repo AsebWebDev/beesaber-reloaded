@@ -1,8 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { UserData } from '@/sharedTypes/UserData';
-import type { ScoreData } from '@/sharedTypes/UserScores';
+import type { GoogleUserData, ScoreData, UserData } from '@/sharedTypes';
 import type { RootState } from './rootReducer';
 
 const name = 'userData';
@@ -13,7 +12,14 @@ const slice = createSlice({
   name,
   initialState,
   reducers: {
-    userDataUpdated: (state, { payload }: PayloadAction<UserData>) => ({
+    userDataUpdated: (
+      state,
+      {
+        payload,
+      }: PayloadAction<
+        GoogleUserData | Pick<UserData, 'myScoreSaberId' | 'totalPlayCount'>
+      >
+    ): UserData => ({
       ...state,
       ...payload,
     }),
@@ -25,6 +31,8 @@ const selectMyScoreData = (state: RootState): ScoreData | undefined =>
   state.userData.scoreData;
 const selectMyScoreSaberId = (state: RootState): string | undefined =>
   state.userData.myScoreSaberId;
+const selectTotalPlayCount = (state: RootState): number | undefined =>
+  state.userData.totalPlayCount;
 const selectUserData = (state: RootState): UserData => state.userData;
 const selectUserId = (state: RootState): string => state.userData._id;
 const selectUserName = (state: RootState): string | undefined =>
@@ -40,6 +48,7 @@ export const { userDataUpdated } = slice.actions;
 export {
   selectMyScoreData,
   selectMyScoreSaberId,
+  selectTotalPlayCount,
   selectUserData,
   selectUserId,
   selectUserName,

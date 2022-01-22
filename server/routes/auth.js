@@ -33,10 +33,7 @@ router.post('/googlelogin', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.get('/logout', (req, res) => {
-  req.logout();
-  res.json({ message: 'You are out!' });
-});
+router.post('/logout', (req, res) => res.sendStatus(200));
 
 module.exports = router;
 

@@ -1,8 +1,13 @@
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import { useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
 import { errHandler } from '@/api/api';
+import {
+  useGoogleLoginMutation,
+  useGoogleLogoutMutation,
+} from '@/api/services/apiAuth/apiAuth';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   selectIsLoggedIn,
@@ -12,15 +17,13 @@ import {
 import { userDataUpdated } from '@/store/reducer/userDataReducer';
 import { mediaQuery } from '@/tokens/definitions/layout';
 
-import {
-  handleLogin,
-  handleLogout,
-  loginProps,
-  logoutProps,
-} from './authHandlers';
+import { loginProps, logoutProps } from './authHandlers';
 
-import type { PossibleResponses } from '@/api/api';
-import type { UserData } from '@/sharedTypes/UserData';
+import type {
+  GoogleLoginResponse,
+  GoogleLoginResponseOffline,
+} from 'react-google-login';
+import type { GoogleUserData } from '@/sharedTypes';
 
 const Container = styled.div`
   ${mediaQuery.mobile} {
@@ -35,36 +38,40 @@ const GoogleOAuth = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
   const history = useHistory();
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
+  const [loginGoogle, { isLoading: isLoggingIn }] = useGoogleLoginMutation();
+  const [logoutGoogle, { isSuccess }] = useGoogleLogoutMutation();
 
-  const onSuccess = async (response: PossibleResponses) => {
-    dispatch(userIsLogginIn(true));
-    try {
-      if ('googleId' in response) {
-        const userData = await handleLogin(response);
+  const onSuccess = async (
+    response: GoogleLoginResponse | GoogleLoginResponseOffline
+  ) => {
+    dispatch(userIsLogginIn(isLoggingIn));
+    if ('googleId' in response) {
+      const { googleId, profileObj } = response;
 
-        dispatch(userDataUpdated(userData));
-        dispatch(userIsLoggedIn(true));
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        errHandler(error);
-      }
+      const userData = await toast.promise<GoogleUserData>(
+        loginGoogle({ googleId, profileObj }).unwrap(),
+        {
+          pending: 'Loggin you in ...',
+          success: 'You successfully logged in 👌',
+          error: 'There has been an issue logging you in 🤯',
+        }
+      );
+
+      dispatch(userDataUpdated(userData));
+      dispatch(userIsLoggedIn(true));
     }
-    dispatch(userIsLogginIn(false));
+    dispatch(userIsLogginIn(isLoggingIn));
   };
 
   const logout = async () => {
     history.push('/');
-    try {
-      await handleLogout();
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        errHandler(error);
-      }
-    }
 
-    dispatch(userDataUpdated({} as UserData));
-    dispatch(userIsLoggedIn(false));
+    await toast.promise(logoutGoogle(), {
+      pending: 'Loggin you out ...',
+      success: 'You successfully logged out 👋',
+      error: 'There has been an issue logging you out 🤯',
+    });
+    dispatch(userIsLoggedIn(isSuccess));
   };
 
   return (

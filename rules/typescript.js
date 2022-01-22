@@ -77,7 +77,7 @@ module.exports = {
         '@typescript-eslint/no-unused-expressions': 'error',
         'no-unused-expressions': 'off',
         '@typescript-eslint/no-unused-vars': [
-          'error',
+          'warn',
           { ignoreRestSiblings: true },
         ],
         '@typescript-eslint/no-use-before-define': 'error',

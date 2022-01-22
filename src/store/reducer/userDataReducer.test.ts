@@ -7,6 +7,7 @@ import exampleUserData from '@/testing/testData/exampleUserData';
 import reducer, { selectUserData, userDataUpdated } from './userDataReducer';
 
 import type { UserData } from '@/sharedTypes/UserData';
+import type { RootState } from '@/store/store';
 
 const middlewares = [thunk];
 
@@ -25,7 +26,7 @@ describe('userData reducer', () => {
 describe('selectors', () => {
   initialStore.userData = exampleUserData;
   it('should select userData', () => {
-    const userData = selectUserData(initialStore);
+    const userData = selectUserData(initialStore as RootState);
 
     expect(userData).toStrictEqual(exampleUserData);
   });

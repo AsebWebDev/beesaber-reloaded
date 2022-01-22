@@ -20,11 +20,11 @@ type PlayerInfo = {
 };
 
 type ScoreStats = {
-  averageRankedAccuracy: number;
-  rankedPlayCount: number;
+  averageRankedAccuracy?: number;
+  rankedPlayCount?: number;
   totalPlayCount: number;
-  totalRankedScore: number;
-  totalScore: number;
+  totalRankedScore?: number;
+  totalScore?: number;
 };
 
 type ScoreSaberUserInfo = {

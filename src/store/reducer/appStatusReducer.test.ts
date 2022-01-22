@@ -1,6 +1,7 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
+import { initialState as initialStore } from '../store';
 import reducer, {
   selectIsFetchingData,
   selectIsLoggedIn,
@@ -10,7 +11,6 @@ import reducer, {
   userIsLogginIn,
 } from './appStatusReducer';
 
-import type { UserData } from '@/sharedTypes/UserData';
 import type { RootState } from '../store';
 import type { AppStatus } from './appStatusReducer';
 
@@ -23,12 +23,6 @@ const appStatus: AppStatus = {
   isLoggingIn: false,
 };
 
-const initialStore: RootState = {
-  appStatus,
-  notifications: [],
-  userData: {} as UserData,
-};
-
 describe('appStatus reducer', () => {
   it('should return initialState', () => {
     expect(reducer(undefined, { type: 'mockType' })).toStrictEqual(appStatus);
@@ -38,7 +32,9 @@ describe('appStatus reducer', () => {
 describe('selector:', () => {
   describe('selectIsFetchingData', () => {
     it('should select isFetchingData', () => {
-      const selectedIsFetchingData = selectIsFetchingData(initialStore);
+      const selectedIsFetchingData = selectIsFetchingData(
+        initialStore as RootState
+      );
 
       expect(selectedIsFetchingData).toStrictEqual(appStatus.isFetchingData);
     });
@@ -46,7 +42,7 @@ describe('selector:', () => {
 
   describe('selectIsLoggedIn', () => {
     it('should select isLoggedIn', () => {
-      const selectedAppStatus = selectIsLoggedIn(initialStore);
+      const selectedAppStatus = selectIsLoggedIn(initialStore as RootState);
 
       expect(selectedAppStatus).toStrictEqual(appStatus.isLoggedIn);
     });
@@ -54,7 +50,7 @@ describe('selector:', () => {
 
   describe('selectIsLoggingIn', () => {
     it('should select isLoggingIn', () => {
-      const selectedAppStatus = selectIsLoggingIn(initialStore);
+      const selectedAppStatus = selectIsLoggingIn(initialStore as RootState);
 
       expect(selectedAppStatus).toStrictEqual(appStatus.isLoggingIn);
     });
