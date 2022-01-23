@@ -28,5 +28,10 @@ export type UserData = {
 
 export type GoogleUserData = Pick<
   UserData,
-  '_id' | 'googleImageUrl' | 'googleName' | 'profilePic' | 'username'
+  | '_id'
+  | 'googleImageUrl'
+  | 'googleName'
+  | 'myScoreSaberId'
+  | 'profilePic'
+  | 'username'
 >;
