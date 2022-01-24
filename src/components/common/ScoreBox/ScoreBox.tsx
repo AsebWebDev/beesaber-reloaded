@@ -6,9 +6,9 @@ import Pagination from '@/components/common/Pagination/Pagination';
 import filterScores from '@/helper/filterScores';
 
 import NoScores from './NoScores/NoScores';
+import ScoreContent from './ScoreContent/ScoreContent';
 import ScoreHeader from './ScoreHeader/ScoreHeader';
 import ScoreNavbar from './ScoreNavbar/ScoreNavbar';
-import ScoreTabs from './ScoreTabs/ScoreTabs';
 
 import type { Scores, UserData } from '@/sharedTypes';
 
@@ -16,7 +16,7 @@ const Container = styled(MDBContainer)`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 0;
+  padding: 2rem;
 `;
 
 const PaginationContainer = styled.div`
@@ -86,14 +86,19 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
 
   return (
     <Container>
-      <ScoreHeader onChange={(e) => setQuery(e.target.value)} query={query} />
+      <ScoreHeader
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setQuery(e.target.value)
+        }
+        query={query}
+      />
       <ScoreNavbar
         activeitem={activeitem}
         setIsPlayedByHive={setIsPlayedByHive}
         toggleTab={toggleTab}
       />
       <MDBTabsContent activeitem={activeitem}>
-        <ScoreTabs tabId={activeitem} scores={displayedScores} />
+        <ScoreContent tabId={activeitem} scores={displayedScores} />
         {displayedScores.length === 0 && <NoScores />}
       </MDBTabsContent>
       <PaginationContainer>
