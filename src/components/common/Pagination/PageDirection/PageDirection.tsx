@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import colors from '@/tokens/definitions/color';
 
 const ListElement = styled.li`
+  background-color: ${colors.white.main}!important;
   font-size: 1rem;
   font-weight: 900;
   padding: 0.3rem;
@@ -23,7 +24,11 @@ type Props = {
 const PageDirection = ({ onClick, direction }: Props): JSX.Element => (
   <ListElement>
     <PageLink aria-label={direction} onClick={onClick}>
-      <span aria-hidden="true">&laquo;</span>
+      {direction === 'Previous' ? (
+        <span aria-hidden="true">&laquo;</span>
+      ) : (
+        <span aria-hidden="true">&raquo;</span>
+      )}
       <span>{direction}</span>
     </PageLink>
   </ListElement>
