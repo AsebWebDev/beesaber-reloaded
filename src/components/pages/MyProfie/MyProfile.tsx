@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 
-import { useGetUserDataQuery } from '@/api/services/apiUser/apiUser';
-import ScoreBox from '@/components/common/ScoreBox2/ScoreBox';
+import ScoreBox from '@/components/common/ScoreBox/ScoreBox';
 import Title from '@/components/common/Title/Title';
+import useBuildScoreData from '@/sharedHooks/useBuildScoreData';
 import { useAppSelector } from '@/store/hooks';
-import { selectUserId } from '@/store/reducer/userDataReducer';
+import { selectMyScoreSaberId } from '@/store/reducer/userDataReducer';
 
 import IdInput from './IdInput/IdInput';
 
@@ -18,15 +18,14 @@ const Container = styled.div`
 `;
 
 const MyProfile = (): JSX.Element => {
-  const userId = useAppSelector(selectUserId);
-  const { data: userDataResult } = useGetUserDataQuery(userId);
-  const myScoreSaberId = userDataResult?.myScoreSaberId;
+  const myScoreSaberId = useAppSelector(selectMyScoreSaberId);
+  const scoreData = useBuildScoreData(myScoreSaberId, 10);
 
   return (
     <Container>
       <Title as="h1">MyProfile</Title>
       <IdInput />
-      {myScoreSaberId !== undefined && <ScoreBox id={myScoreSaberId} />}
+      {scoreData !== undefined && <ScoreBox scoreData={scoreData} />}
     </Container>
   );
 };

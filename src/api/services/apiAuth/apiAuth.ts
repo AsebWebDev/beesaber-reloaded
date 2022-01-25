@@ -27,16 +27,18 @@ export const apiAuth = api.injectEndpoints({
       }),
       transformResponse: ({
         _id,
+        googleImageUrl,
+        googleName,
+        myScoreSaberId,
         profilePic,
         username,
-        googleName,
-        googleImageUrl,
       }) => ({
         _id,
+        googleImageUrl,
+        googleName,
+        myScoreSaberId,
         profilePic,
         username,
-        googleName,
-        googleImageUrl,
       }),
     }),
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type

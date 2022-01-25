@@ -2,6 +2,7 @@
 
 exports[`PageDirection should match the snapshot when direction is = Next 1`] = `
 .c0 {
+  background-color: rgba(255,255,255,1)!important;
   font-size: 1rem;
   font-weight: 900;
   padding: 0.3rem;
@@ -24,7 +25,7 @@ exports[`PageDirection should match the snapshot when direction is = Next 1`] = 
     <span
       aria-hidden="true"
     >
-      «
+      »
     </span>
     <span>
       Next
@@ -35,6 +36,7 @@ exports[`PageDirection should match the snapshot when direction is = Next 1`] = 
 
 exports[`PageDirection should match the snapshot when direction is = Previous 1`] = `
 .c0 {
+  background-color: rgba(255,255,255,1)!important;
   font-size: 1rem;
   font-weight: 900;
   padding: 0.3rem;

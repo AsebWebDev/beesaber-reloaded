@@ -2,6 +2,7 @@
 
 exports[`Pagination should match the snapshot after selecting a page 1`] = `
 .c3 {
+  background-color: rgba(255,255,255,1)!important;
   font-size: 1rem;
   font-weight: 900;
   padding: 0.3rem;
@@ -103,7 +104,7 @@ exports[`Pagination should match the snapshot after selecting a page 1`] = `
         <span
           aria-hidden="true"
         >
-          «
+          »
         </span>
         <span>
           Next
@@ -126,6 +127,7 @@ exports[`Pagination should match the snapshot after selecting a page 1`] = `
 
 exports[`Pagination should match the snapshot on initial view 1`] = `
 .c4 {
+  background-color: rgba(255,255,255,1)!important;
   font-size: 1rem;
   font-weight: 900;
   padding: 0.3rem;
@@ -219,7 +221,7 @@ exports[`Pagination should match the snapshot on initial view 1`] = `
         <span
           aria-hidden="true"
         >
-          «
+          »
         </span>
         <span>
           Next

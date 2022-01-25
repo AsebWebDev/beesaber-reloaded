@@ -15,7 +15,11 @@ import type { ScoreData } from '@/sharedTypes';
  * @returns {ScoreData} score data object with recent scores, top scores and a list of
  * score hashes
  */
-const useBuildScoreData = (id: string, threshold?: number): ScoreData => {
+const useBuildScoreData = (
+  id?: string,
+  threshold?: number
+): ScoreData | undefined => {
+  if (id === undefined) return undefined;
   const dispatch = useAppDispatch();
   const [isFetching, setIsFetching] = useState(false);
   const [scoreData, setScoreData] = useState<ScoreData>({
