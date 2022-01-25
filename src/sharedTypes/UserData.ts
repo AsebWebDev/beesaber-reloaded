@@ -2,10 +2,15 @@ import type { PlayerInfo, ScoreStats } from './ScoreSaberUserInfo';
 import type Settings from './Settings';
 import type { ScoreData, UserScores } from './UserScores';
 
+export type Bee = {
+  playerName: string;
+  scoreData: ScoreData;
+};
+
 export type UserData = {
   __v: number;
   _id: string;
-  bees: unknown[];
+  bees: Bee[];
   created_at: string;
   googleId: string;
   googleImageUrl: string;
