@@ -150,30 +150,28 @@ exports[`GoogleOAuth should match snapshot when isLoggedIn=false 1`] = `
   <div
     class="c0"
   >
-    <span>
+    <div
+      class="c1"
+    >
       <div
-        class="c1"
+        class="c2"
+        role="button"
       >
-        <div
-          class="c2"
-          role="button"
+        <span />
+        <span />
+        <span />
+        <span />
+        <i
+          class="fab fa-google"
+        />
+         
+        <h1
+          class="c3"
         >
-          <span />
-          <span />
-          <span />
-          <span />
-          <i
-            class="fab fa-google"
-          />
-           
-          <h1
-            class="c3"
-          >
-            Login
-          </h1>
-        </div>
+          Login
+        </h1>
       </div>
-    </span>
+    </div>
   </div>
 </div>
 `;
@@ -328,30 +326,28 @@ exports[`GoogleOAuth should match snapshot when isLoggedIn=true 1`] = `
   <div
     class="c0"
   >
-    <span>
+    <div
+      class="c1"
+    >
       <div
-        class="c1"
+        class="c2"
+        role="button"
       >
-        <div
-          class="c2"
-          role="button"
+        <span />
+        <span />
+        <span />
+        <span />
+        <i
+          class="fab fa-google"
+        />
+         
+        <h1
+          class="c3"
         >
-          <span />
-          <span />
-          <span />
-          <span />
-          <i
-            class="fab fa-google"
-          />
-           
-          <h1
-            class="c3"
-          >
-            Logout
-          </h1>
-        </div>
+          Logout
+        </h1>
       </div>
-    </span>
+    </div>
   </div>
 </div>
 `;

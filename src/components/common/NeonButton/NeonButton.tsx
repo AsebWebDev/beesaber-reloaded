@@ -7,7 +7,9 @@ import type { ElementType } from '../NeonText/NeonText';
 
 type Props = {
   as?: ElementType;
+  className?: string;
   logo?: string;
+  onClick: () => void;
   text: string;
 };
 
@@ -109,9 +111,15 @@ const Button = styled.div`
   }
 `;
 
-const NeonButton = ({ as, logo, text }: Props): JSX.Element => (
-  <Container>
-    <Button role="button">
+const NeonButton = ({
+  as,
+  className,
+  logo,
+  onClick,
+  text,
+}: Props): JSX.Element => (
+  <Container className={className}>
+    <Button role="button" onClick={onClick}>
       <span></span>
       <span></span>
       <span></span>

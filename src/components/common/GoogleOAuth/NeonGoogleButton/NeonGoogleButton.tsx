@@ -11,9 +11,7 @@ type Props = RenderPropsType & {
 };
 
 const NeonGoogleButton = ({ as = 'h1', onClick, text }: Props): JSX.Element => (
-  <span onClick={onClick}>
-    <NeonButton as={as} text={text} logo="google" />
-  </span>
+  <NeonButton as={as} text={text} logo="google" onClick={onClick} />
 );
 
 export default NeonGoogleButton;
