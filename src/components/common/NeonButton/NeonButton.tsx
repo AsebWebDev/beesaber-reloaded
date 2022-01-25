@@ -7,7 +7,7 @@ import type { ElementType } from '../NeonText/NeonText';
 
 type Props = {
   as?: ElementType;
-  logo: string;
+  logo?: string;
   text: string;
 };
 
@@ -116,7 +116,7 @@ const NeonButton = ({ as, logo, text }: Props): JSX.Element => (
       <span></span>
       <span></span>
       <span></span>
-      <MDBIcon fab icon={logo || ''} />{' '}
+      <MDBIcon fab icon={logo ?? ''} />{' '}
       <NeonText glow as={as} titleColor={'blue'}>
         {text}
       </NeonText>

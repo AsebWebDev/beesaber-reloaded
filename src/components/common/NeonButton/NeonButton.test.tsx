@@ -13,4 +13,10 @@ describe('NeonButton', () => {
       expect(container.firstChild).toMatchSnapshot();
     }
   );
+
+  it('should match the snapshot, when no logo is provided', () => {
+    const { container } = render(<NeonButton as={'p'} text={'Button Text'} />);
+
+    expect(container.firstChild).toMatchSnapshot();
+  });
 });
