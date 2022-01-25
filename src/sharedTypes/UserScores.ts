@@ -3,8 +3,12 @@ type Bee = {
   myScore: number;
 };
 
+type Difficulty = 1 | 3 | 5 | 7 | 9;
+
+type DifficultyName = 'Easy' | 'Expert' | 'Expert+' | 'Hard' | 'Normal';
+
 type Score = {
-  difficulty: number;
+  difficulty: Difficulty;
   difficultyRaw: string;
   leaderboardId: number;
   levelAuthorName: string;
@@ -37,4 +41,11 @@ type UserScores = {
   scores: Scores;
 };
 
-export type { Score, ScoreData, Scores, UserScores };
+export type {
+  Difficulty,
+  DifficultyName,
+  Score,
+  ScoreData,
+  Scores,
+  UserScores,
+};

@@ -2,11 +2,11 @@ import { formatDistance, subDays } from 'date-fns';
 import { MDBBadge, MDBIcon, MDBTooltip } from 'mdb-react-ui-kit';
 import styled from 'styled-components';
 
+import DiffTag from '@/components/common/DiffTag/DiffTag';
 import { parseSongPicUrl } from '@/helper/urlParser';
 import tokens from '@/tokens';
 
 import type { Score } from '@/sharedTypes';
-// import DiffTags from "../../DiffTag";
 // import HighscoreTable from "./HighscoreTable";
 
 const Badge = styled(MDBBadge)`
@@ -31,13 +31,25 @@ type Props = {
 };
 
 function HighScoresForOneSong({ highscore }: Props): JSX.Element | null {
+  const {
+    difficulty,
+    levelAuthorName,
+    playedBy,
+    playedByHive,
+    rank,
+    score,
+    songAuthorName,
+    songHash,
+    songName,
+    timeSet,
+  } = highscore;
   const logid = (scoreId: string) => console.log('scoreId: !', scoreId);
 
   let scoreColorClass = '';
 
-  if (highscore.playedByHive === true && highscore.playedBy !== undefined) {
+  if (playedByHive === true && playedBy !== undefined) {
     scoreColorClass =
-      highscore.playedBy.filter((bee) => bee.myScore < bee.beeScore).length > 0
+      playedBy.filter((bee) => bee.myScore < bee.beeScore).length > 0
         ? 'played-by-hive-lost'
         : 'played-by-hive-won';
   }
@@ -45,16 +57,13 @@ function HighScoresForOneSong({ highscore }: Props): JSX.Element | null {
   return (
     <tr className={scoreColorClass}>
       <td>
-        <Badge>{highscore.rank}</Badge>
+        <Badge>{rank}</Badge>
       </td>
       <td>
         <SongData>
-          {/* <DiffTags diff={highscore.difficulty} /> */}
-          <Img
-            src={parseSongPicUrl(highscore.songHash)}
-            alt={`Cover of ${highscore.songName}`}
-          />
-          {highscore.playedByHive === true && (
+          <DiffTag difficulty={difficulty} />
+          <Img src={parseSongPicUrl(songHash)} alt={`Cover of ${songName}`} />
+          {playedByHive === true && (
             <MDBTooltip domElement clickable tag="span" placement="top">
               <span>
                 <MDBIcon far icon="handshake" />
@@ -69,7 +78,7 @@ function HighScoresForOneSong({ highscore }: Props): JSX.Element | null {
                     </tr>
                   </thead>
                   <tbody id="bees">
-                    {/* {highscore.playedBy.map((bee, i) => (
+                    {/* {playedBy.map((bee, i) => (
                       <HighscoreTable bee={bee} key={i} />
                     ))} */}
                   </tbody>
@@ -77,18 +86,18 @@ function HighScoresForOneSong({ highscore }: Props): JSX.Element | null {
               </div>
             </MDBTooltip>
           )}
-          <MDBBadge onClick={() => logid(highscore.songHash)} color="dark">
-            {highscore.songAuthorName} - {highscore.songName}
-            <span className="greyed-out"> by {highscore.levelAuthorName}</span>
+          <MDBBadge onClick={() => logid(songHash)} color="dark">
+            {songAuthorName} - {songName}
+            <span className="greyed-out"> by {levelAuthorName}</span>
           </MDBBadge>
         </SongData>
       </td>
       <td>
-        <MDBBadge id="badge-light">{highscore.score}</MDBBadge>
+        <MDBBadge id="badge-light">{score}</MDBBadge>
       </td>
       <td className="time">
         <b className="card-link">
-          {formatDistance(subDays(new Date(), 3), new Date(highscore.timeSet), {
+          {formatDistance(subDays(new Date(), 3), new Date(timeSet), {
             addSuffix: true,
           })}
         </b>
