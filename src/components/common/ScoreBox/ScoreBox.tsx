@@ -10,7 +10,7 @@ import ScoreContent from './ScoreContent/ScoreContent';
 import ScoreHeader from './ScoreHeader/ScoreHeader';
 import ScoreNavbar from './ScoreNavbar/ScoreNavbar';
 
-import type { Scores, UserData } from '@/sharedTypes';
+import type { Bee, Scores, UserData } from '@/sharedTypes';
 
 const Container = styled(MDBContainer)`
   display: flex;
@@ -38,9 +38,11 @@ type onPageChangedPayload = {
 
 type NavTabs = 'RECENT' | 'TOP';
 
-type Props = Required<Pick<UserData, 'scoreData'>>;
+type Props = Required<Pick<UserData, 'scoreData'>> & {
+  bee?: Bee;
+};
 
-function ScoreBox({ scoreData }: Props): JSX.Element | null {
+function ScoreBox({ bee, scoreData }: Props): JSX.Element | null {
   const { scoresRecent } = scoreData;
 
   if (scoresRecent.length === 0) return null;
@@ -87,6 +89,7 @@ function ScoreBox({ scoreData }: Props): JSX.Element | null {
   return (
     <Container>
       <ScoreHeader
+        bee={bee}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setQuery(e.target.value)
         }
