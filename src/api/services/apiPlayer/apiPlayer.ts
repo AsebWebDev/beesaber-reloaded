@@ -21,6 +21,7 @@ export const apiPlayer = api.injectEndpoints({
       query: (name) => `${baseUrl}/players/by-name/${name}`,
       transformResponse: (response: { players: PlayerInfo[] }) =>
         response.players,
+      providesTags: ['PlayerInfo'],
     }),
   }),
 });
