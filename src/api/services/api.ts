@@ -17,7 +17,7 @@ const apiInitialState = {
 };
 
 const api = createApi({
-  tagTypes: ['UserData', 'Scores', 'ScoreSaberUserInfo'],
+  tagTypes: ['UserData', 'PlayerInfo', 'Scores', 'ScoreSaberUserInfo'],
   baseQuery: fetchBaseQuery({}),
   endpoints: () => ({}),
 });
