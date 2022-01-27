@@ -17,18 +17,11 @@ import {
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import {
-  useGetFullPlayerQuery,
-  useGetPlayersByNameQuery,
-} from '@/api/services/apiPlayer/apiPlayer';
-import { useGetUserDataQuery } from '@/api/services/apiUser/apiUser';
 import NeonText from '@/components/common/NeonText/NeonText';
 import Spinner from '@/components/common/Spinner/SpinnerPulse';
-import useDebounce from '@/sharedHooks/useDebounce';
-import { useAppSelector } from '@/store/hooks';
-import { selectUserId } from '@/store/reducer/userDataReducer';
 import tokens from '@/tokens';
 
+import useQueryForPlayers from './useQueryForPlayers';
 import UserInfo from './UserInfo/UserInfo';
 
 import type { PlayerInfo } from '@/sharedTypes/ScoreSaberUserInfo';
@@ -47,84 +40,33 @@ type Props = {
 type Tab = '1' | '2';
 
 const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
-  const userId = useAppSelector(selectUserId);
-  const { data: userData } = useGetUserDataQuery(userId);
+  const [selectedPlayer, setSelectedPlayer] = useState<PlayerInfo | null>(null);
 
-  if (userData === undefined) return null;
-  const { bees, myScoreSaberId } = userData;
+  console.log(
+    '🚀 ~ file: AddBeeModal.tsx ~ line 44 ~ selectedPlayer',
+    selectedPlayer
+  );
   const [activeItem, setActiveItem] = useState<Tab>('1');
+  const searchBy = activeItem === '1' ? 'id' : 'name';
   const [query, setQuery] = useState('');
-  const [foundUser, setFoundUser] = useState<PlayerInfo | null>(null);
-  const [foundUsers, setFoundUsers] = useState<PlayerInfo[] | null>(null);
-  const [userAlreadyAdded, setUserAlreadyAdded] = useState(false);
-  const [thatIsYou, setThatIsYou] = useState(false);
-  const debouncedSearchQuery = useDebounce(query, 600);
-  const {
-    data: playersByName,
-    isFetching: isFetchingQueryByName,
-    error: errorByName,
-  } = useGetPlayersByNameQuery(debouncedSearchQuery);
-  const {
-    data: playerById,
-    isFetching: isFetchingQueryById,
-    error: errorById,
-  } = useGetFullPlayerQuery(debouncedSearchQuery);
-  const showSpinner = isFetchingQueryByName || isFetchingQueryById;
-
-  const cleanUp = () => {
-    setFoundUser(null);
-    setFoundUsers(null);
-    setUserAlreadyAdded(false);
-    setThatIsYou(false);
-  };
+  const { foundUsers, showSpinner, thatIsYou, userAlreadyAdded } =
+    useQueryForPlayers({ query, searchBy });
 
   useEffect(() => {
-    cleanUp();
-    const players = activeItem === '1' ? playerById?.playerInfo : playersByName;
-
-    if (players === undefined) return;
-
-    // If result is an array, multiple Users have been found...
-    if (Array.isArray(players) && players.length > 1) setFoundUsers(players);
-    // If result is an array of 1 element, only one user has been found...
-    if (Array.isArray(players) && players.length === 1)
-      setFoundUser(players[0]);
-    // If result is not an array (searching by ID) only one user had been found...
-    if (!Array.isArray(players)) setFoundUser(players);
-  }, [playerById, playersByName]);
-
-  useEffect(() => {
-    const searchHasError =
-      (activeItem === '1' && errorById !== undefined) ||
-      (activeItem === '2' && errorByName !== undefined);
-
-    if (searchHasError) {
-      setFoundUser(null);
-      setFoundUsers(null);
-    }
-  }, [errorById, errorByName]);
-
-  useEffect(() => {
-    if (foundUser !== null) setThatIsYou(foundUser.playerId === myScoreSaberId);
-  }, [foundUser]);
-
-  useEffect(() => {
-    // check if user alread exists in bees list
-    if (foundUser && bees.length > 0)
-      setUserAlreadyAdded(
-        bees.some((item) => item.playerId === foundUser.playerId)
-      );
-  }, [foundUser, bees]);
+    if (foundUsers !== null && foundUsers.length === 1)
+      setSelectedPlayer(foundUsers[0]);
+    else setSelectedPlayer(null);
+  }, [foundUsers]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setQuery(e.target.value);
 
   const handleChose = (player: PlayerInfo) => {
-    setFoundUser(player);
-    setFoundUsers(null);
+    console.log('handle chose: ', player);
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
+    console.log('selected player is', selectedPlayer);
     // if (!userAlreadyAdded) {
     //     let userdata = {}
     //     setProcessing({status: true, statusText: 'Adding ' + foundUser.playerName + ' to your hive' })
@@ -149,7 +91,6 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
 
   const switchTab = (tab: Tab) => {
     setQuery('');
-    cleanUp();
     if (activeItem !== tab) setActiveItem(tab);
   };
 
@@ -206,23 +147,16 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
                     success="right"
                   />
                 </MDBTabsPane>
-                {/* {foundUser && <UserInfo userInfoData={foundUser}/>} */}
-                {/* {foundUser?.playerName} */}
-                {/* {foundUsers?.map(user => <UserInfo userInfoData={user} handleChose={handleChose}/>)} */}
-                <UserInfo
-                  foundUsers={foundUser !== null ? [foundUser] : foundUsers}
-                  handleChose={handleChose}
-                />
-                {/* {foundUsers?.map((user) => user.playerName)} */}
+                <UserInfo foundUsers={foundUsers} handleChose={handleChose} />
               </MDBTabsContent>
             </MDBModalBody>
 
             {/* /// Show Buttons OR Status bar /// */}
             {!showSpinner && (
               <MDBModalFooter>
-                {foundUser && !userAlreadyAdded && !thatIsYou && (
+                {selectedPlayer !== null && !userAlreadyAdded && !thatIsYou && (
                   <MDBBtn color="success" onClick={handleSave}>
-                    Add {foundUser.playerName}
+                    Add {selectedPlayer.playerName}
                   </MDBBtn>
                 )}
                 <MDBBtn color="danger" onClick={toggleModal}>
