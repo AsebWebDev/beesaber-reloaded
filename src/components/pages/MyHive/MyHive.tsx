@@ -10,7 +10,8 @@ import { useAppSelector } from '@/store/hooks';
 import { selectIsLoggedIn } from '@/store/reducer/appStatusReducer';
 import { selectUserId } from '@/store/reducer/userDataReducer';
 
-// import AddBeeModal from '../AddBeeModal';
+import AddBeeModal from './AddBeeModal/AddBeeModal';
+
 // import UserInfo from '../UserInfo';
 import type { Bee } from '@/sharedTypes';
 
@@ -46,6 +47,7 @@ const MyHive = (): JSX.Element | null => {
 
   const { bees } = userData;
   const [modal, setModal] = useState(false);
+
   const [currentBee, setCurrentBee] = useState<Bee | null>(null);
   const beesExists = bees.length > 0;
   const toggleModal = () => setModal(!modal);
@@ -75,7 +77,7 @@ const MyHive = (): JSX.Element | null => {
       </div>
 
       {/* // MODAL ADD beeS //  */}
-      {/* {modal && <AddBeeModal toggleModal={toggleModal} />} */}
+      {modal && <AddBeeModal toggleModal={toggleModal} />}
     </Container>
   );
 };
