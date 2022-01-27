@@ -8,9 +8,6 @@ import {
   MDBModalDialog,
   MDBModalFooter,
   MDBModalHeader,
-  MDBNavbar,
-  MDBNavbarItem,
-  MDBNavbarLink,
   MDBTabs,
   MDBTabsContent,
   MDBTabsItem,
@@ -20,30 +17,31 @@ import {
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+import {
+  useGetFullPlayerQuery,
+  useGetPlayersByNameQuery,
+} from '@/api/services/apiPlayer/apiPlayer';
 import { useGetUserDataQuery } from '@/api/services/apiUser/apiUser';
+import NeonText from '@/components/common/NeonText/NeonText';
+import Spinner from '@/components/common/Spinner/SpinnerPulse';
+import useDebounce from '@/sharedHooks/useDebounce';
 import { useAppSelector } from '@/store/hooks';
 import { selectUserId } from '@/store/reducer/userDataReducer';
 import tokens from '@/tokens';
 
-import type { Bee, UserData } from '@/sharedTypes';
+import UserInfo from './UserInfo/UserInfo';
+
+import type { PlayerInfo } from '@/sharedTypes/ScoreSaberUserInfo';
 
 const ModalContent = styled(MDBModalContent)`
   background-color: ${tokens.color.page.bgColor.light};
   color: ${tokens.color.white.main};
+  margin-top: 10rem;
+  width: fit-content;
 `;
-
-// import { newNotification } from '../actioncreators'
-// import UserInfo from './UserInfo.jsx';
-// import Spinner from './Spinner';
-// import Message from './Message';
 
 type Props = {
   toggleModal: () => void;
-};
-
-type Processing = {
-  status: boolean;
-  statusText: string | null;
 };
 
 type Tab = '1' | '2';
@@ -53,17 +51,62 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
   const { data: userData } = useGetUserDataQuery(userId);
 
   if (userData === undefined) return null;
-  const { bees } = userData;
+  const { bees, myScoreSaberId } = userData;
   const [activeItem, setActiveItem] = useState<Tab>('1');
   const [query, setQuery] = useState('');
-  const [foundUser, setFoundUser] = useState<Bee | null>(null);
-  const [foundUsers, setFoundUsers] = useState<Bee[] | null>(null);
+  const [foundUser, setFoundUser] = useState<PlayerInfo | null>(null);
+  const [foundUsers, setFoundUsers] = useState<PlayerInfo[] | null>(null);
   const [userAlreadyAdded, setUserAlreadyAdded] = useState(false);
-  const [processing, setProcessing] = useState<Processing>({
-    status: false,
-    statusText: null,
-  });
   const [thatIsYou, setThatIsYou] = useState(false);
+  const debouncedSearchQuery = useDebounce(query, 600);
+  const {
+    data: playersByName,
+    isFetching: isFetchingQueryByName,
+    error: errorByName,
+  } = useGetPlayersByNameQuery(debouncedSearchQuery);
+  const {
+    data: playerById,
+    isFetching: isFetchingQueryById,
+    error: errorById,
+  } = useGetFullPlayerQuery(debouncedSearchQuery);
+  const showSpinner = isFetchingQueryByName || isFetchingQueryById;
+
+  const cleanUp = () => {
+    setFoundUser(null);
+    setFoundUsers(null);
+    setUserAlreadyAdded(false);
+    setThatIsYou(false);
+  };
+
+  useEffect(() => {
+    cleanUp();
+    const players = activeItem === '1' ? playerById?.playerInfo : playersByName;
+
+    if (players === undefined) return;
+
+    // If result is an array, multiple Users have been found...
+    if (Array.isArray(players) && players.length > 1) setFoundUsers(players);
+    // If result is an array of 1 element, only one user has been found...
+    if (Array.isArray(players) && players.length === 1)
+      setFoundUser(players[0]);
+    // If result is not an array (searching by ID) only one user had been found...
+    if (!Array.isArray(players)) setFoundUser(players);
+  }, [playerById, playersByName]);
+
+  useEffect(() => {
+    const searchHasError =
+      (activeItem === '1' && errorById !== undefined) ||
+      (activeItem === '2' && errorByName !== undefined);
+
+    if (searchHasError) {
+      setFoundUser(null);
+      setFoundUsers(null);
+    }
+  }, [errorById, errorByName]);
+
+  useEffect(() => {
+    if (foundUser !== null) setThatIsYou(foundUser.playerId === myScoreSaberId);
+  }, [foundUser]);
 
   useEffect(() => {
     // check if user alread exists in bees list
@@ -73,48 +116,11 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
       );
   }, [foundUser, bees]);
 
-  const cleanUp = () => {
-    setFoundUser(null);
-    setFoundUsers(null);
-    setUserAlreadyAdded(false);
-    setThatIsYou(false);
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setQuery(e.target.value);
 
-  const handleSearch = () => {
-    cleanUp();
-    // const mode = activeItem === '1' ? 'id' : 'username';
-
-    setProcessing({ status: true, statusText: 'Searching...' });
-    // await api.getScoreSaberUserInfo(query, mode)
-    //     .then(result => {
-    //         if (!result) {
-    //             dispatch(newNotification({text: "Sorry, user could not be found."}))
-    //             return
-    //         }
-    //         if (Array.isArray(result)) {
-    // If result is an array, multiple Users have been found...
-    //             if (result.length === 1) setFoundUser(result[0])
-    // If array only has one item, set it as single found user
-    //             else setFoundUsers(result)
-    // else add all found users to foundUsers in state
-    //         } else {
-    //             setFoundUser(result)
-    // If its not an array, only one user is found and can be added to foundUser
-    //             setThatIsYou(result.playerId === userdata.myScoreSaberId)   // check, if you found yourself
-    //         }
-    //     }).catch(err => dispatch(newNotification({text: err.message ? err.message : err})))
-    setProcessing({ status: false, statusText: null });
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleSearch();
-  };
-
-  const handleChose = (bee: Bee) => {
-    setFoundUser(bee);
+  const handleChose = (player: PlayerInfo) => {
+    setFoundUser(player);
     setFoundUsers(null);
   };
 
@@ -148,92 +154,94 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
   };
 
   return (
-    <div id="addbeesmodal">
-      <MDBContainer>
-        <MDBModal staticBackdrop show={true}>
-          <MDBModalDialog>
-            <ModalContent>
-              <MDBModalHeader>Add a new Bee</MDBModalHeader>
-              <MDBModalBody>
-                <MDBTabs className="mb-3">
-                  <MDBTabsItem>
-                    <MDBTabsLink
-                      onClick={() => switchTab('1')}
-                      active={activeItem === '1'}
-                    >
-                      Search by Id
-                    </MDBTabsLink>
-                  </MDBTabsItem>
-                  <MDBTabsItem>
-                    <MDBTabsLink
-                      onClick={() => switchTab('2')}
-                      active={activeItem === '2'}
-                    >
-                      Search by Username
-                    </MDBTabsLink>
-                  </MDBTabsItem>
-                </MDBTabs>
+    <MDBContainer>
+      <MDBModal staticBackdrop show={true}>
+        <MDBModalDialog>
+          <ModalContent>
+            <MDBModalHeader>Add a new Bee</MDBModalHeader>
+            <MDBModalBody>
+              <MDBTabs className="mb-3">
+                <MDBTabsItem>
+                  <MDBTabsLink
+                    onClick={() => switchTab('1')}
+                    active={activeItem === '1'}
+                  >
+                    Search by Id
+                  </MDBTabsLink>
+                </MDBTabsItem>
+                <MDBTabsItem>
+                  <MDBTabsLink
+                    onClick={() => switchTab('2')}
+                    active={activeItem === '2'}
+                  >
+                    Search by Username
+                  </MDBTabsLink>
+                </MDBTabsItem>
+              </MDBTabs>
 
-                <MDBTabsContent>
-                  <MDBTabsPane show={activeItem === '1'}>
-                    <MDBInput
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        handleChange(e)
-                      }
-                      value={query}
-                      label="Search ID"
-                      icon="hashtag"
-                      type="number"
-                      error="wrong"
-                      success="right"
-                      onKeyPress={handleKeyPress}
-                    />
-                  </MDBTabsPane>
-                  <MDBTabsPane show={activeItem === '2'}>
-                    <MDBInput
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        handleChange(e)
-                      }
-                      value={query}
-                      label="Search Username"
-                      icon="user"
-                      type="text"
-                      error="wrong"
-                      success="right"
-                      onKeyPress={handleKeyPress}
-                    />
-                  </MDBTabsPane>
-                </MDBTabsContent>
-              </MDBModalBody>
+              <MDBTabsContent>
+                <MDBTabsPane show={activeItem === '1'}>
+                  <MDBInput
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleChange(e)
+                    }
+                    value={query}
+                    label="Search ID"
+                    icon="hashtag"
+                    type="number"
+                    error="wrong"
+                    success="right"
+                  />
+                </MDBTabsPane>
+                <MDBTabsPane show={activeItem === '2'}>
+                  <MDBInput
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleChange(e)
+                    }
+                    value={query}
+                    label="Search Username"
+                    icon="user"
+                    type="text"
+                    error="wrong"
+                    success="right"
+                  />
+                </MDBTabsPane>
+                {/* {foundUser && <UserInfo userInfoData={foundUser}/>} */}
+                {/* {foundUser?.playerName} */}
+                {/* {foundUsers?.map(user => <UserInfo userInfoData={user} handleChose={handleChose}/>)} */}
+                <UserInfo
+                  foundUsers={foundUser !== null ? [foundUser] : foundUsers}
+                  handleChose={handleChose}
+                />
+                {/* {foundUsers?.map((user) => user.playerName)} */}
+              </MDBTabsContent>
+            </MDBModalBody>
 
-              {/* /// Show Buttons OR Status bar /// */}
-              {!processing.status && (
-                <MDBModalFooter>
-                  {query !== '' && (
-                    <MDBBtn color="primary" onClick={handleSearch}>
-                      Search
-                    </MDBBtn>
-                  )}
-                  <MDBBtn color="secondary" onClick={toggleModal}>
-                    Close
+            {/* /// Show Buttons OR Status bar /// */}
+            {!showSpinner && (
+              <MDBModalFooter>
+                {foundUser && !userAlreadyAdded && !thatIsYou && (
+                  <MDBBtn color="success" onClick={handleSave}>
+                    Add {foundUser.playerName}
                   </MDBBtn>
-                  {foundUser && !userAlreadyAdded && !thatIsYou && (
-                    <MDBBtn color="success" onClick={handleSave}>
-                      Add {foundUser.playerName}
-                    </MDBBtn>
-                  )}
-                </MDBModalFooter>
-              )}
-              {processing.status && (
-                <MDBModalFooter>
-                  {/* {processing.status && <Spinner text={processing.statusText}/>} */}
-                </MDBModalFooter>
-              )}
-            </ModalContent>
-          </MDBModalDialog>
-        </MDBModal>
-      </MDBContainer>
-    </div>
+                )}
+                <MDBBtn color="danger" onClick={toggleModal}>
+                  Close
+                </MDBBtn>
+              </MDBModalFooter>
+            )}
+            {showSpinner && (
+              <MDBModalFooter>
+                <NeonText glow as={'h2'} titleColor={'blue'}>
+                  Searching...
+                </NeonText>
+                <Spinner />
+              </MDBModalFooter>
+            )}
+          </ModalContent>
+        </MDBModalDialog>
+      </MDBModal>
+    </MDBContainer>
   );
 };
 
