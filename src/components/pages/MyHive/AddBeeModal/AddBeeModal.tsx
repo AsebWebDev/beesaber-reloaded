@@ -15,15 +15,24 @@ import {
   MDBTabsPane,
 } from 'mdb-react-ui-kit';
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
+import {
+  useGetUserDataQuery,
+  useUpdateUserDataMutation,
+} from '@/api/services/apiUser/apiUser';
+import getAllScores from '@/api/services/helper/getAllScores';
 import NeonText from '@/components/common/NeonText/NeonText';
 import Spinner from '@/components/common/Spinner/SpinnerPulse';
+import { useAppSelector } from '@/store/hooks';
+import { selectUserId } from '@/store/reducer/userDataReducer';
 import tokens from '@/tokens';
 
 import useQueryForPlayers from './useQueryForPlayers';
 import UserInfo from './UserInfo/UserInfo';
 
+import type { Bee } from '@/sharedTypes';
 import type { PlayerInfo } from '@/sharedTypes/ScoreSaberUserInfo';
 
 const ModalContent = styled(MDBModalContent)`
@@ -40,53 +49,70 @@ type Props = {
 type Tab = '1' | '2';
 
 const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
-  const [selectedPlayer, setSelectedPlayer] = useState<PlayerInfo | null>(null);
-
-  console.log(
-    '🚀 ~ file: AddBeeModal.tsx ~ line 44 ~ selectedPlayer',
-    selectedPlayer
-  );
   const [activeItem, setActiveItem] = useState<Tab>('1');
-  const searchBy = activeItem === '1' ? 'id' : 'name';
   const [query, setQuery] = useState('');
+  const [selectedPlayer, setSelectedPlayer] = useState<
+    PlayerInfo | undefined
+  >();
+  const [beeToAdd, setBeeToAdd] = useState<Bee | undefined>();
+  const searchBy = activeItem === '1' ? 'id' : 'name';
+  const [updateUser] = useUpdateUserDataMutation();
+  const userId = useAppSelector(selectUserId);
+  const { data: userData } = useGetUserDataQuery(userId);
+
   const { foundUsers, showSpinner, thatIsYou, userAlreadyAdded } =
     useQueryForPlayers({ query, searchBy });
 
   useEffect(() => {
     if (foundUsers !== null && foundUsers.length === 1)
       setSelectedPlayer(foundUsers[0]);
-    else setSelectedPlayer(null);
+    else {
+      setBeeToAdd(undefined);
+      setSelectedPlayer(undefined);
+    }
   }, [foundUsers]);
+
+  useEffect(() => {
+    if (selectedPlayer === undefined) return;
+    const { playerId, playerName } = selectedPlayer;
+    const buildBee = async () => {
+      const scoreData = await getAllScores(playerId);
+
+      setBeeToAdd({
+        playerId,
+        playerName,
+        scoreData,
+      });
+    };
+
+    void buildBee();
+  }, [selectedPlayer]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setQuery(e.target.value);
 
   const handleSelect = (player: PlayerInfo) => {
-    setSelectedPlayer(player === selectedPlayer ? null : player);
+    // select or toggle off player
+    setSelectedPlayer(player === selectedPlayer ? undefined : player);
+    setBeeToAdd(undefined);
   };
 
-  const handleSave = () => {
-    console.log('selected player is', selectedPlayer);
-    // if (!userAlreadyAdded) {
-    //     let userdata = {}
-    //     setProcessing({status: true, statusText: 'Adding ' + foundUser.playerName + ' to your hive' })
-    //     // If the found user is coming from an array (more than one user found, one needs
-    // to be picked of the Array on UI) there is
-    //     // only few data coming from the api, so we need complete user data
-    //     if (!foundUser.hasOwnProperty('totalPlayCount'))
-    //     await api.getScoreSaberUserInfo(foundUser.playerId, 'id')
-    //         .then( ScoreSaberUserInfo => userdata = { ...userdata, ...ScoreSaberUserInfo } )
-    //     // Get scores from the found user to the userdata and finally save it to the database
-    //     await api.getScores(foundUser.playerId).then((scoreData) => {
-    //         userdata = { ...userdata, ...foundUser, scoreData }
-    //         api.saveBee(props.userdata._id, userdata)
-    //             .then(userdata => dispatch({ type: "UPDATE_USER_DATA", userdata }))
-    //     }).catch(err => dispatch(newNotification({text: err.message ? err.message : err})))
-    //     dispatch(newNotification({text: "User " + foundUser.playerName + " successfully added."}))
-    //     setProcessing({status: false, statusText: null })
-    //     setQuery('')
-    //     cleanUp()
-    // } else dispatch(newNotification({text: "Sorry, user is already in you hive."}))
+  const handleSave = async () => {
+    if (userAlreadyAdded || userData === undefined || beeToAdd === undefined)
+      return;
+
+    await toast.promise(
+      updateUser({
+        userId,
+        userData: { bees: [...userData.bees, beeToAdd] },
+      }),
+      {
+        pending: `Saving ${beeToAdd.playerName}...`,
+        success: `user ${beeToAdd.playerName} has been saved 👌`,
+        error: `There has been an issue saving ${beeToAdd.playerName} 🤯`,
+      }
+    );
+    setQuery('');
   };
 
   const switchTab = (tab: Tab) => {
@@ -157,10 +183,13 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
             {/* /// Show Buttons OR Status bar /// */}
             {!showSpinner && (
               <MDBModalFooter>
-                {selectedPlayer !== null && !userAlreadyAdded && !thatIsYou && (
+                {beeToAdd !== undefined && !userAlreadyAdded && !thatIsYou && (
                   <MDBBtn color="success" onClick={handleSave}>
-                    Add {selectedPlayer.playerName}
+                    Add {beeToAdd.playerName}
                   </MDBBtn>
+                )}
+                {beeToAdd === undefined && selectedPlayer !== undefined && (
+                  <Spinner />
                 )}
                 <MDBBtn color="danger" onClick={toggleModal}>
                   Close

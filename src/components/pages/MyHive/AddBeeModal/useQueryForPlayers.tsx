@@ -45,21 +45,20 @@ const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
   const showSpinner = isFetchingQueryByName || isFetchingQueryById;
 
   useEffect(() => {
-    if (foundUsers !== null && foundUsers.length === 1)
-      setThatIsYou(foundUsers[0].playerId === userData?.myScoreSaberId);
-  }, [foundUsers]);
-
-  useEffect(() => {
-    // check if user alread exists in bees list
     if (
       foundUsers !== null &&
       foundUsers.length === 1 &&
       userData !== undefined &&
       userData.bees.length > 0
-    )
+    ) {
+      setThatIsYou(foundUsers[0].playerId === userData.myScoreSaberId);
       setUserAlreadyAdded(
         userData.bees.some((item) => item.playerId === foundUsers[0].playerId)
       );
+    } else {
+      setThatIsYou(false);
+      setUserAlreadyAdded(false);
+    }
   }, [foundUsers, userData]);
 
   useEffect(() => {

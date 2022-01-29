@@ -61,7 +61,8 @@ function UserInfo({ foundUsers, handleSelect }: Props): JSX.Element | null {
                 user={user}
                 key={user.playerId}
                 handleSelect={handleSelect}
-                isAlreadyAdded={isAlreadyAdded || users.length === 1}
+                isAlreadyAdded={isAlreadyAdded}
+                isOnlyResult={users.length === 1}
               />
             );
           })}

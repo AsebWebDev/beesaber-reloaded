@@ -18,13 +18,15 @@ const Avatar = styled.img`
 type Props = {
   handleSelect?: (user: PlayerInfo) => void;
   isAlreadyAdded: boolean;
+  isOnlyResult: boolean;
   user: PlayerInfo;
 };
 
 function OneUser({
-  isAlreadyAdded,
-  user,
   handleSelect,
+  isAlreadyAdded,
+  isOnlyResult,
+  user,
 }: Props): JSX.Element | null {
   const { rank, country, playerId, playerName, avatar } = user;
   const url =
@@ -43,11 +45,11 @@ function OneUser({
       <td>{rank}</td>
       <td>{country}</td>
       <td>
-        {handleSelect !== undefined && (
+        {handleSelect !== undefined && !isAlreadyAdded && (
           <MDBIcon
             onClick={() => handleSelect(user)}
             fas
-            icon={isAlreadyAdded ? 'minus-circle' : 'plus-circle'}
+            icon={isOnlyResult ? 'minus-circle' : 'plus-circle'}
           />
         )}
       </td>
