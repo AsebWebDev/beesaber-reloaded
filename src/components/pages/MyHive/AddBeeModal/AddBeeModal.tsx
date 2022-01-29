@@ -61,8 +61,8 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setQuery(e.target.value);
 
-  const handleChose = (player: PlayerInfo) => {
-    console.log('handle chose: ', player);
+  const handleSelect = (player: PlayerInfo) => {
+    setSelectedPlayer(player === selectedPlayer ? null : player);
   };
 
   const handleSave = () => {
@@ -147,7 +147,10 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
                     success="right"
                   />
                 </MDBTabsPane>
-                <UserInfo foundUsers={foundUsers} handleChose={handleChose} />
+                <UserInfo
+                  foundUsers={selectedPlayer ?? foundUsers}
+                  handleSelect={handleSelect}
+                />
               </MDBTabsContent>
             </MDBModalBody>
 

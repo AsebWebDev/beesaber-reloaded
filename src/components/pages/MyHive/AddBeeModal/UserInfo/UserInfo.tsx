@@ -25,16 +25,19 @@ const TableHead = styled(MDBTableHead)`
 `;
 
 type Props = {
-  foundUsers: PlayerInfo[] | null;
-  handleChose?: (userInfoData: PlayerInfo) => void;
+  foundUsers: PlayerInfo | PlayerInfo[] | null;
+  handleSelect?: (userInfoData: PlayerInfo) => void;
 };
 
-function UserInfo({ foundUsers, handleChose }: Props): JSX.Element | null {
+function UserInfo({ foundUsers, handleSelect }: Props): JSX.Element | null {
   if (foundUsers === null) return null;
   const userId = useAppSelector(selectUserId);
   const { data: userData } = useGetUserDataQuery(userId);
 
   if (userData === undefined) return null;
+
+  // When input is not an array it is one single user --> parse to Array for mapping
+  const users = Array.isArray(foundUsers) ? foundUsers : [foundUsers];
 
   return (
     <Container>
@@ -48,7 +51,7 @@ function UserInfo({ foundUsers, handleChose }: Props): JSX.Element | null {
           </tr>
         </TableHead>
         <TableBody>
-          {foundUsers.map((user) => {
+          {users.map((user) => {
             const isAlreadyAdded = userData.bees.some(
               (item) => item.playerId === user.playerId
             );
@@ -57,8 +60,8 @@ function UserInfo({ foundUsers, handleChose }: Props): JSX.Element | null {
               <OneUser
                 user={user}
                 key={user.playerId}
-                handleChose={handleChose}
-                isAlreadyAdded={isAlreadyAdded || foundUsers.length === 1}
+                handleSelect={handleSelect}
+                isAlreadyAdded={isAlreadyAdded || users.length === 1}
               />
             );
           })}

@@ -51,7 +51,7 @@ const MyHive = (): JSX.Element | null => {
   const [currentBee, setCurrentBee] = useState<Bee | null>(null);
   const beesExists = bees.length > 0;
   const toggleModal = () => setModal(!modal);
-  const handleChose = (bee: Bee) => setCurrentBee(bee);
+  const handleSelect = (bee: Bee) => setCurrentBee(bee);
 
   return (
     <Container>
@@ -62,7 +62,7 @@ const MyHive = (): JSX.Element | null => {
           <div
             key={i}
             className="one-userinfo"
-            onClick={() => handleChose(bee)}
+            onClick={() => handleSelect(bee)}
           >
             {/* <UserInfo key={i} userInfoData={bee} /> */}
           </div>
