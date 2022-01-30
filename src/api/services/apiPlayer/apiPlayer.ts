@@ -1,6 +1,7 @@
 import api from '../api';
 
 import type { Scores, ScoreSaberUserInfo, UserScores } from '@/sharedTypes';
+import type { PlayerInfo } from '@/sharedTypes/ScoreSaberUserInfo';
 
 const baseUrl = 'https://new.scoresaber.com/api';
 
@@ -16,7 +17,17 @@ export const apiPlayer = api.injectEndpoints({
       query: (id) => `${baseUrl}/player/${id}/full`,
       providesTags: ['ScoreSaberUserInfo'],
     }),
+    getPlayersByName: builder.query<PlayerInfo[], string>({
+      query: (name) => `${baseUrl}/players/by-name/${name}`,
+      transformResponse: (response: { players: PlayerInfo[] }) =>
+        response.players,
+      providesTags: ['PlayerInfo'],
+    }),
   }),
 });
 
-export const { useGetFullPlayerQuery, useGetRecentScoresUrlQuery } = apiPlayer;
+export const {
+  useGetFullPlayerQuery,
+  useGetPlayersByNameQuery,
+  useGetRecentScoresUrlQuery,
+} = apiPlayer;

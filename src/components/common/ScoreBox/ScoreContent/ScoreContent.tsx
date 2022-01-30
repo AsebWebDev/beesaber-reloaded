@@ -25,7 +25,7 @@ const ScoreContent = ({ scores }: Props): JSX.Element => (
   <MDBTable>
     <TableHead>
       <tr>
-        <th scope="col">Rang</th>
+        <th scope="col">Rank</th>
         <th scope="col">Song</th>
         <th scope="col">Score</th>
         <th scope="col">Time</th>

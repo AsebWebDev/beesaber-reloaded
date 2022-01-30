@@ -13,6 +13,7 @@
     "lint:scss": "stylelint 'src/**/*.scss' --syntax scss",
     "lint:scss:fix": "stylelint 'src/**/*.scss' --syntax scss --fix",
     "prepare": "husky install",
+    "server": "cd server && yarn run dev",
     "start": "craco start",
     "test": "jest --watch"
   },

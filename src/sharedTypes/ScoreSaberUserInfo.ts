@@ -8,7 +8,7 @@ type PlayerInfo = {
   badges: Badge[];
   banned: number;
   country: string; // could potentially be a union type of country codes
-  countryRank: number;
+  countryRank?: number;
   history: string;
   inactive: number;
   permissions: number;

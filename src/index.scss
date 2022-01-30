@@ -26,3 +26,8 @@ body {
   stroke-linejoin: round;
   stroke-width: 3.5;
 }
+
+// overwrites the standard MDBReact link color
+a {
+  color: #ff0025 !important; // yellow-main
+}

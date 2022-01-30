@@ -7,10 +7,23 @@ describe('NeonButton', () => {
     'should match the snapshot',
     (as) => {
       const { container } = render(
-        <NeonButton as={as} logo={'google'} text={'Button Text'} />
+        <NeonButton
+          as={as}
+          logo={'google'}
+          onClick={jest.fn()}
+          text={'Button Text'}
+        />
       );
 
       expect(container.firstChild).toMatchSnapshot();
     }
   );
+
+  it('should match the snapshot, when no logo is provided', () => {
+    const { container } = render(
+      <NeonButton as={'p'} onClick={jest.fn()} text={'Button Text'} />
+    );
+
+    expect(container.firstChild).toMatchSnapshot();
+  });
 });

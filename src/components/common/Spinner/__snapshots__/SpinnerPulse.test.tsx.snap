@@ -28,7 +28,7 @@ exports[`SpinnerPulse should match the snapshot when isBig is false 1`] = `
   height: 3.8125rem;
   display: inline-block;
   overflow: hidden;
-  background: #00111f;
+  background: transparent;
 }
 
 .c0 .ldio-do9usc7wgsf {
@@ -93,7 +93,7 @@ exports[`SpinnerPulse should match the snapshot when isBig is true 1`] = `
   height: 12.5rem;
   display: inline-block;
   overflow: hidden;
-  background: #00111f;
+  background: transparent;
 }
 
 .c0 .ldio-do9usc7wgsf {
