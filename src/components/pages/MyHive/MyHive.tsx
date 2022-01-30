@@ -64,7 +64,7 @@ const MyHive = (): JSX.Element | null => {
             className="one-userinfo"
             onClick={() => handleSelect(bee)}
           >
-            {/* <UserInfo key={i} userInfoData={bee} /> */}
+            {/* <UserInfo key={i} playerInfoData={bee} /> */}
           </div>
         ))}
         {!beesExists && <p>No bees yet</p>}

@@ -30,4 +30,36 @@ const exampleSSUserInfo: ScoreSaberUserInfo = {
   },
 };
 
+const anotherExampleSSUserInfo: ScoreSaberUserInfo = {
+  playerInfo: {
+    avatar: '/api/static/avatars/76561198333869741.jpg',
+    badges: [],
+    banned: 0,
+    country: 'UK',
+    countryRank: 22,
+    history: '1,1,',
+    inactive: 0,
+    permissions: 2,
+    playerId: '765611983338693333',
+    playerName: 'darthVader ',
+    pp: 15449.6,
+    rank: 1222,
+    role: 'Destruction Team',
+  },
+  scoreStats: {
+    averageRankedAccuracy: 87.32369830061569,
+    rankedPlayCount: 76,
+    totalPlayCount: 318,
+    totalRankedScore: 1091614,
+    totalScore: 42308506,
+  },
+};
+
+const examplePlayerInfos = [
+  exampleSSUserInfo.playerInfo,
+  anotherExampleSSUserInfo.playerInfo,
+];
+
+export { examplePlayerInfos };
+
 export default exampleSSUserInfo;

@@ -22,7 +22,7 @@ type Props = {
   difficulty: Difficulty;
 };
 
-const DiffTag = ({ difficulty }: Props) => {
+const DiffTag = ({ difficulty }: Props): JSX.Element => {
   let badgeColor: BadgeColor;
   let badgeText: DifficultyName | 'Oops';
 

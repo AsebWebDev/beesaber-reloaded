@@ -10,17 +10,19 @@
     "eject": "craco eject",
     "lint:js": "eslint . --ext .js,.jsx",
     "lint:js:fix": "yarn lint:js --fix",
-    "lint:scss": "stylelint 'src/**/*.scss' --syntax scss",
-    "lint:scss:fix": "stylelint 'src/**/*.scss' --syntax scss --fix",
+    "lint:scss": "stylelint 'src/**/*.scss' scss",
+    "lint:scss:fix": "stylelint 'src/**/*.scss' scss --fix",
+    "msw": "cross-env REACT_APP_MSW='enabled' craco start",
     "prepare": "husky install",
     "server": "cd server && yarn run dev",
     "start": "craco start",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "testmsw": "cross-env REACT_APP_MSW='enabled' jest --watch"
   },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "pre-merge-commit": "jest TZ='UTC' --bail"
+      "pre-merge-commit": "cross-env REACT_APP_MSW='enabled' jest TZ='UTC' --bail"
     }
   },
   "lint-staged": {
@@ -79,13 +81,15 @@
     "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.17.4",
+    "@babel/preset-typescript": "^7.16.7",
     "@testing-library/dom": "^8.10.1",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.1.0",
     "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "^12.1.10",
     "@types/eslint": "^7.2.6",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.5.1",
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
@@ -96,7 +100,9 @@
     "@types/styled-components": "^5.1.15",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
     "@typescript-eslint/parser": "^4.15.0",
+    "babel-jest": "^27.4.0",
     "craco-alias": "^3.0.1",
+    "cross-env": "^7.0.3",
     "eslint": "^7.17.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^24.3.5",
@@ -106,10 +112,11 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "husky": "^7.0.4",
-    "jest": "^27.3.1",
+    "jest": "^27.5.1",
     "jest-styled-components": "^7.0.5",
     "jest-useragent-mock": "^0.1.1",
     "lint-staged": "^11.2.4",
+    "msw": "^0.36.8",
     "postcss": "^8.3.11",
     "postcss-scss": "^4.0.1",
     "prettier": "^2.4.1",
@@ -120,11 +127,14 @@
     "stylelint-config-standard-scss": "^2.0.0",
     "stylelint-order": "^5.0.0",
     "stylelint-scss": "^4.0.0",
-    "ts-jest": "^27.0.7",
+    "ts-jest": "^27.1.3",
     "typescript": "^4.1.2"
   },
   "engines": {
     "node": ">=14.0.0",
     "npm": ">=6.0.0"
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }

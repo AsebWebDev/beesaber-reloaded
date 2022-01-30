@@ -8,12 +8,23 @@ import { MemoryRouter as Router } from 'react-router-dom';
 import store from '@/store/store';
 
 import App from './App';
+import worker from './mocks/browser';
 
-ReactDOM.render(
-  <Provider store={store}>
-    <Router>
-      <App />
-    </Router>
-  </Provider>,
-  document.getElementById('root')
-);
+async function prepareWorkers(): Promise<void> {
+  if (process.env.REACT_APP_MSW === 'enabled') {
+    await worker.start();
+    // eslint-disable-next-line no-console
+    console.log('MSW Worker started');
+  }
+}
+
+void prepareWorkers().then(() => {
+  ReactDOM.render(
+    <Provider store={store}>
+      <Router>
+        <App />
+      </Router>
+    </Provider>,
+    document.getElementById('root')
+  );
+});

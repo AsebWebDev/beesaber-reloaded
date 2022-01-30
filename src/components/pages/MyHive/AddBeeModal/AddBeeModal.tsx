@@ -29,8 +29,8 @@ import { useAppSelector } from '@/store/hooks';
 import { selectUserId } from '@/store/reducer/userDataReducer';
 import tokens from '@/tokens';
 
+import FoundPlayersList from './FoundPlayersList/FoundPlayersList';
 import useQueryForPlayers from './useQueryForPlayers';
-import UserInfo from './UserInfo/UserInfo';
 
 import type { Bee } from '@/sharedTypes';
 import type { PlayerInfo } from '@/sharedTypes/ScoreSaberUserInfo';
@@ -60,17 +60,17 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
   const userId = useAppSelector(selectUserId);
   const { data: userData } = useGetUserDataQuery(userId);
 
-  const { foundUsers, showSpinner, thatIsYou, userAlreadyAdded } =
+  const { foundPlayers, showSpinner, thatIsYou, userAlreadyAdded } =
     useQueryForPlayers({ query, searchBy });
 
   useEffect(() => {
-    if (foundUsers !== null && foundUsers.length === 1)
-      setSelectedPlayer(foundUsers[0]);
+    if (foundPlayers !== null && foundPlayers.length === 1)
+      setSelectedPlayer(foundPlayers[0]);
     else {
       setBeeToAdd(undefined);
       setSelectedPlayer(undefined);
     }
-  }, [foundUsers]);
+  }, [foundPlayers]);
 
   useEffect(() => {
     if (selectedPlayer === undefined) return;
@@ -173,8 +173,8 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
                     success="right"
                   />
                 </MDBTabsPane>
-                <UserInfo
-                  foundUsers={selectedPlayer ?? foundUsers}
+                <FoundPlayersList
+                  foundPlayers={selectedPlayer ?? foundPlayers}
                   handleSelect={handleSelect}
                 />
               </MDBTabsContent>
@@ -191,6 +191,8 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
                 {beeToAdd === undefined && selectedPlayer !== undefined && (
                   <Spinner />
                 )}
+                {/* TODO: Add Proper That is you feedback */}
+                {thatIsYou && <p>That is you</p>}
                 <MDBBtn color="danger" onClick={toggleModal}>
                   Close
                 </MDBBtn>

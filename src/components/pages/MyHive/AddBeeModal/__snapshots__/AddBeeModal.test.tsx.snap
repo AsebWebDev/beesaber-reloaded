@@ -1,0 +1,151 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AddBeeModal should match snapshot 1`] = `
+.c0 {
+  background-color: #162530;
+  color: rgba(255,255,255,1);
+  margin-top: 10rem;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+<div
+  class="container"
+>
+  <div
+    class="modal fade show"
+    style="display: block;"
+  >
+    <div
+      class="modal-dialog"
+    >
+      <div
+        class="modal-content c0"
+      >
+        <div
+          class="modal-header"
+        >
+          Add a new Bee
+        </div>
+        <div
+          class="modal-body"
+        >
+          <ul
+            class="nav nav-tabs mb-3"
+          >
+            <li
+              class="nav-item"
+              role="presentation"
+              style="cursor: pointer;"
+            >
+              <a
+                class="nav-link active"
+              >
+                Search by Id
+              </a>
+            </li>
+            <li
+              class="nav-item"
+              role="presentation"
+              style="cursor: pointer;"
+            >
+              <a
+                class="nav-link"
+              >
+                Search by Username
+              </a>
+            </li>
+          </ul>
+          <div
+            class="tab-content"
+          >
+            <div
+              class="tab-pane fade active"
+              role="tabpanel"
+            >
+              <div
+                class="form-outline"
+              >
+                <input
+                  class="form-control"
+                  error="wrong"
+                  icon="hashtag"
+                  success="right"
+                  type="number"
+                  value=""
+                />
+                <label
+                  class="form-label"
+                >
+                  Search ID
+                </label>
+                <div
+                  class="form-notch"
+                >
+                  <div
+                    class="form-notch-leading"
+                  />
+                  <div
+                    class="form-notch-middle"
+                    style="width: 0px;"
+                  />
+                  <div
+                    class="form-notch-trailing"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="tab-pane fade"
+              role="tabpanel"
+            >
+              <div
+                class="form-outline"
+              >
+                <input
+                  class="form-control"
+                  error="wrong"
+                  icon="user"
+                  success="right"
+                  type="text"
+                  value=""
+                />
+                <label
+                  class="form-label"
+                >
+                  Search Username
+                </label>
+                <div
+                  class="form-notch"
+                >
+                  <div
+                    class="form-notch-leading"
+                  />
+                  <div
+                    class="form-notch-middle"
+                    style="width: 0px;"
+                  />
+                  <div
+                    class="form-notch-trailing"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="modal-footer"
+        >
+          <button
+            class="ripple ripple-surface btn btn-danger"
+            role="button"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

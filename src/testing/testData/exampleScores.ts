@@ -1,4 +1,6 @@
-import type { Scores } from '@/sharedTypes';
+import { calcScoreHashed, calcTopScores } from '@/helper/calcScores';
+
+import type { ScoreData, Scores } from '@/sharedTypes';
 
 const exampleScores: Scores = [
   {
@@ -10,10 +12,10 @@ const exampleScores: Scores = [
     mods: '',
     pp: 0,
     rank: 2,
-    score: 595436,
+    score: 1000,
     scoreId: 63279149,
     songAuthorName: 'Starset',
-    songHash: '32C3A0E1FEE9FD589B795941B6D79AFE8061D30C',
+    songHash: '32C3A0E1FEE9FD589B795941B6D79AFE8061D30A',
     songName: 'It has Begun',
     songSubName: '',
     timeSet: '2021-11-12T02:11:52.000Z',
@@ -30,7 +32,7 @@ const exampleScores: Scores = [
     playedByHive: true,
     pp: 0,
     rank: 2,
-    score: 595436,
+    score: 3000,
     scoreId: 63279149,
     songAuthorName: 'SongPlayedByHive',
     songHash: '32C3A0E1FEE9FD589B795941B6D79AFE8061D30C',
@@ -50,10 +52,10 @@ const exampleScores: Scores = [
     playedByHive: true,
     pp: 0,
     rank: 2,
-    score: 595436,
+    score: 2000,
     scoreId: 63279149,
     songAuthorName: 'Stray from the Path',
-    songHash: '32C3A0E1FEE9FD589B795941B6D79AFE8061D30C',
+    songHash: '32C3A0E1FEE9FD589B795941B6D79AFE8061D30B',
     songName: 'Let us make a deal',
     songSubName: '',
     timeSet: '2021-11-12T02:11:52.000Z',
@@ -61,5 +63,13 @@ const exampleScores: Scores = [
     weight: 0,
   },
 ];
+
+const exampleScoreData: ScoreData = {
+  scoredSongsHashes: calcScoreHashed(exampleScores),
+  scoresRecent: exampleScores,
+  scoresTop: calcTopScores(exampleScores),
+};
+
+export { exampleScoreData };
 
 export default exampleScores;
