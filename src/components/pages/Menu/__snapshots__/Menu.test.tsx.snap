@@ -1,0 +1,727 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`components/pages/Menu should match snapshot when isMobile is falsew 1`] = `
+.c7 {
+  font-family: 'NeonTubes2';
+}
+
+.c8 {
+  color: #fffcdd;
+  text-shadow: #ffeb00 -2px -1px 5px,#ffeb00 2px 1px 5px, #ffeb00 0px 0px 10px,#ffeb00 0px 0px 15px, #ffeb00 0px 0px 20px,#ffeb00 0px 0px 30px;
+}
+
+.c6 {
+  position: relative;
+  height: 150px;
+  width: 150px;
+  font-size: 80px;
+  margin-bottom: 1rem;
+}
+
+.c6 div {
+  position: absolute;
+  -webkit-transform-origin: center;
+  -ms-transform-origin: center;
+  transform-origin: center;
+}
+
+.c6 div:first-child {
+  -webkit-transform: rotate(90deg) translate(-36px,-68px);
+  -ms-transform: rotate(90deg) translate(-36px,-68px);
+  transform: rotate(90deg) translate(-36px,-68px);
+  z-index: 5;
+}
+
+.c6 div:nth-child(2) {
+  -webkit-transform: rotate(150deg) translate(-103px,-49px);
+  -ms-transform: rotate(150deg) translate(-103px,-49px);
+  transform: rotate(150deg) translate(-103px,-49px);
+  z-index: 4;
+}
+
+.c6 div:nth-child(3) {
+  -webkit-transform: rotate(30deg) translate(120px,-19px);
+  -ms-transform: rotate(30deg) translate(120px,-19px);
+  transform: rotate(30deg) translate(120px,-19px);
+}
+
+.c6 div:nth-child(4) {
+  -webkit-transform: rotate(90deg) translate(70px,-68px);
+  -ms-transform: rotate(90deg) translate(70px,-68px);
+  transform: rotate(90deg) translate(70px,-68px);
+}
+
+.c6 div:nth-child(5) {
+  -webkit-transform: rotate(150deg) translate(2px,-49px);
+  -ms-transform: rotate(150deg) translate(2px,-49px);
+  transform: rotate(150deg) translate(2px,-49px);
+}
+
+.c6 div:nth-child(6) {
+  -webkit-transform: rotate(30deg) translate(15px,-20px);
+  -ms-transform: rotate(30deg) translate(15px,-20px);
+  transform: rotate(30deg) translate(15px,-20px);
+  z-index: 6;
+}
+
+.c6 .saber {
+  position: absolute;
+  height: 100%;
+  width: 3px;
+  top: 0%;
+  border-radius: 3px;
+}
+
+.c6 .saber.neon-red {
+  left: 49%;
+  -webkit-transform: rotate(30deg);
+  -ms-transform: rotate(30deg);
+  transform: rotate(30deg);
+  background-color: #fff0f0;
+  box-shadow: 0px 0px 8px 2px #ff8d9e, 0px 0px 12px 6px #ff0025;
+}
+
+.c6 .saber.neon-blue {
+  right: 49%;
+  -webkit-transform: rotate(-30deg);
+  -ms-transform: rotate(-30deg);
+  transform: rotate(-30deg);
+  background-color: #edf5ff;
+  box-shadow: 0px 0px 8px 2px #ff8d9e, 0px 0px 12px 6px #ff0025;
+}
+
+.c4 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c5 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #0000FF -2px -1px 5px,#0000FF 2px 1px 5px, #0000FF 0px 0px 10px,#0000FF 0px 0px 15px,#0000FF 0px 0px 20px, #0000FF 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-letter-spacing: 0.1rem;
+  -moz-letter-spacing: 0.1rem;
+  -ms-letter-spacing: 0.1rem;
+  letter-spacing: 0.1rem;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  font-family: 'NeonTubes2';
+  padding: 1rem 1rem 0 1rem;
+  min-height: 100vh;
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  height: 100%;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  padding-bottom: 9rem;
+}
+
+.c2 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: space-evenly;
+  -webkit-justify-content: space-evenly;
+  -ms-flex-pack: space-evenly;
+  justify-content: space-evenly;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 3%;
+}
+
+.c10 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.c9 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 100%;
+}
+
+@media (min-width:576px) {
+  .c0 {
+    padding: 1rem;
+    height: 100%;
+  }
+}
+
+@media (min-width:576px) {
+  .c1 {
+    padding-bottom: 3rem;
+  }
+}
+
+<div
+  class="c0"
+>
+  <div
+    class="c1"
+  >
+    <div
+      class="c2"
+    >
+      <div
+        class="c3"
+      >
+        <h1
+          class="c4"
+        >
+          Bee
+        </h1>
+        <h1
+          class="c5"
+        >
+          Saber
+        </h1>
+      </div>
+      <div
+        class="c6"
+      >
+        <div
+          class="c7"
+        >
+          <span
+            class="c8"
+          >
+            I
+          </span>
+        </div>
+        <div
+          class="c7"
+        >
+          <span
+            class="c8"
+          >
+            I
+          </span>
+        </div>
+        <div
+          class="c7"
+        >
+          <span
+            class="c8"
+          >
+            I
+          </span>
+        </div>
+        <div
+          class="c7"
+        >
+          <span
+            class="c8"
+          >
+            I
+          </span>
+        </div>
+        <div
+          class="c7"
+        >
+          <span
+            class="c8"
+          >
+            I
+          </span>
+        </div>
+        <div
+          class="c7"
+        >
+          <span
+            class="c8"
+          >
+            I
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="c9"
+    >
+      <a
+        class="c10"
+        href="/"
+      >
+        <div
+          class="c3"
+        >
+          <h1
+            class="c4"
+          >
+            Dashboard
+          </h1>
+        </div>
+      </a>
+      <a
+        class="c10"
+        href="/myprofile"
+      >
+        <div
+          class="c3"
+        >
+          <h1
+            class="c4"
+          >
+            My
+          </h1>
+          <h1
+            class="c5"
+          >
+            Profile
+          </h1>
+        </div>
+      </a>
+      <a
+        class="c10"
+        href="/myhive"
+      >
+        <div
+          class="c3"
+        >
+          <h1
+            class="c4"
+          >
+            My
+          </h1>
+          <h1
+            class="c5"
+          >
+            Hive
+          </h1>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`components/pages/Menu should match snapshot when isMobile is truew 1`] = `
+.c7 {
+  font-family: 'NeonTubes2';
+}
+
+.c8 {
+  color: #fffcdd;
+  text-shadow: #ffeb00 -2px -1px 5px,#ffeb00 2px 1px 5px, #ffeb00 0px 0px 10px,#ffeb00 0px 0px 15px, #ffeb00 0px 0px 20px,#ffeb00 0px 0px 30px;
+}
+
+.c6 {
+  position: relative;
+  height: 150px;
+  width: 150px;
+  font-size: 80px;
+  margin-bottom: 1rem;
+}
+
+.c6 div {
+  position: absolute;
+  -webkit-transform-origin: center;
+  -ms-transform-origin: center;
+  transform-origin: center;
+}
+
+.c6 div:first-child {
+  -webkit-transform: rotate(90deg) translate(-36px,-68px);
+  -ms-transform: rotate(90deg) translate(-36px,-68px);
+  transform: rotate(90deg) translate(-36px,-68px);
+  z-index: 5;
+}
+
+.c6 div:nth-child(2) {
+  -webkit-transform: rotate(150deg) translate(-103px,-49px);
+  -ms-transform: rotate(150deg) translate(-103px,-49px);
+  transform: rotate(150deg) translate(-103px,-49px);
+  z-index: 4;
+}
+
+.c6 div:nth-child(3) {
+  -webkit-transform: rotate(30deg) translate(120px,-19px);
+  -ms-transform: rotate(30deg) translate(120px,-19px);
+  transform: rotate(30deg) translate(120px,-19px);
+}
+
+.c6 div:nth-child(4) {
+  -webkit-transform: rotate(90deg) translate(70px,-68px);
+  -ms-transform: rotate(90deg) translate(70px,-68px);
+  transform: rotate(90deg) translate(70px,-68px);
+}
+
+.c6 div:nth-child(5) {
+  -webkit-transform: rotate(150deg) translate(2px,-49px);
+  -ms-transform: rotate(150deg) translate(2px,-49px);
+  transform: rotate(150deg) translate(2px,-49px);
+}
+
+.c6 div:nth-child(6) {
+  -webkit-transform: rotate(30deg) translate(15px,-20px);
+  -ms-transform: rotate(30deg) translate(15px,-20px);
+  transform: rotate(30deg) translate(15px,-20px);
+  z-index: 6;
+}
+
+.c6 .saber {
+  position: absolute;
+  height: 100%;
+  width: 3px;
+  top: 0%;
+  border-radius: 3px;
+}
+
+.c6 .saber.neon-red {
+  left: 49%;
+  -webkit-transform: rotate(30deg);
+  -ms-transform: rotate(30deg);
+  transform: rotate(30deg);
+  background-color: #fff0f0;
+  box-shadow: 0px 0px 8px 2px #ff8d9e, 0px 0px 12px 6px #ff0025;
+}
+
+.c6 .saber.neon-blue {
+  right: 49%;
+  -webkit-transform: rotate(-30deg);
+  -ms-transform: rotate(-30deg);
+  transform: rotate(-30deg);
+  background-color: #edf5ff;
+  box-shadow: 0px 0px 8px 2px #ff8d9e, 0px 0px 12px 6px #ff0025;
+}
+
+.c4 {
+  color: #fff0f0;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #ff0025 -2px -1px 5px,#ff0025 2px 1px 5px, #ff0025 0px 0px 10px,#ff0025 0px 0px 15px,#ff0025 0px 0px 20px, #ff0025 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c5 {
+  color: #edf5ff;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -moz-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -o-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  -webkit-transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  transition: color 0.6s ease-out,text-shadow 0.6s ease-out;
+  text-shadow: #0000FF -2px -1px 5px,#0000FF 2px 1px 5px, #0000FF 0px 0px 10px,#0000FF 0px 0px 15px,#0000FF 0px 0px 20px, #0000FF 0px 0px 30px;
+  font-family: 'NeonTubes2';
+  font-weight: 300;
+  margin: 0;
+}
+
+.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-letter-spacing: 0.1rem;
+  -moz-letter-spacing: 0.1rem;
+  -ms-letter-spacing: 0.1rem;
+  letter-spacing: 0.1rem;
+}
+
+.c11 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(255,255,255,0.7);
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  font-family: 'NeonTubes2';
+  padding: 1rem 1rem 0 1rem;
+  min-height: 100vh;
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  height: 100%;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  padding-bottom: 9rem;
+}
+
+.c2 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: space-evenly;
+  -webkit-justify-content: space-evenly;
+  -ms-flex-pack: space-evenly;
+  justify-content: space-evenly;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 3%;
+}
+
+.c10 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.c9 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 100%;
+}
+
+@media (min-width:576px) {
+  .c0 {
+    padding: 1rem;
+    height: 100%;
+  }
+}
+
+@media (min-width:576px) {
+  .c1 {
+    padding-bottom: 3rem;
+  }
+}
+
+<div
+  class="c0"
+>
+  <div
+    class="c1"
+  >
+    <div
+      class="c2"
+    >
+      <div
+        class="c3"
+      >
+        <h1
+          class="c4"
+        >
+          Bee
+        </h1>
+        <h1
+          class="c5"
+        >
+          Saber
+        </h1>
+      </div>
+      <div
+        class="c6"
+      >
+        <div
+          class="c7"
+        >
+          <span
+            class="c8"
+          >
+            I
+          </span>
+        </div>
+        <div
+          class="c7"
+        >
+          <span
+            class="c8"
+          >
+            I
+          </span>
+        </div>
+        <div
+          class="c7"
+        >
+          <span
+            class="c8"
+          >
+            I
+          </span>
+        </div>
+        <div
+          class="c7"
+        >
+          <span
+            class="c8"
+          >
+            I
+          </span>
+        </div>
+        <div
+          class="c7"
+        >
+          <span
+            class="c8"
+          >
+            I
+          </span>
+        </div>
+        <div
+          class="c7"
+        >
+          <span
+            class="c8"
+          >
+            I
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="c9"
+    >
+      <a
+        class="c10"
+        href="/"
+      >
+        <div
+          class="c3"
+        >
+          <h1
+            class="c4"
+          >
+            Dashboard
+          </h1>
+        </div>
+      </a>
+      <a
+        class="c10"
+        href="/myprofile"
+      >
+        <div
+          class="c3"
+        >
+          <h1
+            class="c4"
+          >
+            My
+          </h1>
+          <h1
+            class="c5"
+          >
+            Profile
+          </h1>
+        </div>
+      </a>
+      <a
+        class="c10"
+        href="/myhive"
+      >
+        <div
+          class="c3"
+        >
+          <h1
+            class="c4"
+          >
+            My
+          </h1>
+          <h1
+            class="c5"
+          >
+            Hive
+          </h1>
+        </div>
+      </a>
+    </div>
+  </div>
+  <hr
+    class="c11"
+  />
+</div>
+`;
