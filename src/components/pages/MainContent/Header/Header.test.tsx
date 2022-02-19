@@ -1,25 +1,28 @@
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 
-import store from '@/store/store';
+import * as hooks from '@/sharedHooks/useLoadingState';
+import { initialState as initialStore } from '@/store/store';
 
 import Header from './Header';
 
-const mockStore = configureMockStore();
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
 
 describe('Header', () => {
   // it.each([true, false])('should match the snapshot', (status) => {
-  //   const extendedStore = Object.assign(store, {
-  //     appStatus: {
-  //       isFetchingData: {
-  //         status,
-  //         statusText: undefined,
-  //       },
+  // const extendedStore = Object.assign(store, {
+  //   appStatus: {
+  //     isFetchingData: {
+  //       status,
+  //       statusText: undefined,
   //     },
-  //     userData: {
-  //       _id: '2141234124',
-  //     },
+  //   },
+  //   userData: {
+  //     _id: '2141234124',
+  //   },
   //   });
   //   const { container } = render(
   //     <Provider store={mockStore(extendedStore)}>
@@ -28,15 +31,24 @@ describe('Header', () => {
   //   );
   //   expect(container.firstChild).toMatchSnapshot();
   // });
-  // it('should show spinner, when is fetching', () => {
-  //   render(
-  //     <Provider store={mockStore(store)}>
-  //       <Header />
-  //     </Provider>
-  //   );
-  //   expect(container.firstChild).toMatchSnapshot();
-  // });
-});
+  it.each([true, false])(
+    'should match snapshot, when is component is fetching=%s',
+    (isFetching) => {
+      const extendedStore = Object.assign(initialStore, {
+        userData: {
+          _id: '2141234124',
+        },
+      });
 
-test.todo('show / hide spinner when (no) fetch in progress');
-test.todo('match snapshot spinner true/false');
+      jest.spyOn(hooks, 'default').mockReturnValue(isFetching);
+
+      const { container } = render(
+        <Provider store={mockStore(extendedStore)}>
+          <Header />
+        </Provider>
+      );
+
+      expect(container.firstChild).toMatchSnapshot();
+    }
+  );
+});

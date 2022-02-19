@@ -6,7 +6,7 @@ import { useAppSelector } from '@/store/hooks';
 import { selectUserId } from '@/store/reducer/userDataReducer';
 import tokens from '@/tokens';
 
-import OneUser from './OneUser/OneUser';
+import OnePlayer from './OnePlayer/OnePlayer';
 
 import type { PlayerInfo } from '@/sharedTypes/ScoreSaberUserInfo';
 
@@ -25,22 +25,25 @@ const TableHead = styled(MDBTableHead)`
 `;
 
 type Props = {
-  foundUsers: PlayerInfo | PlayerInfo[] | null;
-  handleSelect?: (userInfoData: PlayerInfo) => void;
+  foundPlayers: PlayerInfo | PlayerInfo[] | null;
+  handleSelect?: (playerInfo: PlayerInfo) => void;
 };
 
-function UserInfo({ foundUsers, handleSelect }: Props): JSX.Element | null {
-  if (foundUsers === null) return null;
+function FoundPlayersList({
+  foundPlayers,
+  handleSelect,
+}: Props): JSX.Element | null {
+  if (foundPlayers === null) return null;
   const userId = useAppSelector(selectUserId);
   const { data: userData } = useGetUserDataQuery(userId);
 
   if (userData === undefined) return null;
 
   // When input is not an array it is one single user --> parse to Array for mapping
-  const users = Array.isArray(foundUsers) ? foundUsers : [foundUsers];
+  const players = Array.isArray(foundPlayers) ? foundPlayers : [foundPlayers];
 
   return (
-    <Container>
+    <Container data-testid="found-players-list">
       <MDBTable>
         <TableHead>
           <tr>
@@ -51,18 +54,18 @@ function UserInfo({ foundUsers, handleSelect }: Props): JSX.Element | null {
           </tr>
         </TableHead>
         <TableBody>
-          {users.map((user) => {
+          {players.map((player) => {
             const isAlreadyAdded = userData.bees.some(
-              (item) => item.playerId === user.playerId
+              (item) => item.playerId === player.playerId
             );
 
             return (
-              <OneUser
-                user={user}
-                key={user.playerId}
+              <OnePlayer
+                player={player}
+                key={player.playerId}
                 handleSelect={handleSelect}
                 isAlreadyAdded={isAlreadyAdded}
-                isOnlyResult={users.length === 1}
+                isOnlyResult={players.length === 1}
               />
             );
           })}
@@ -72,4 +75,4 @@ function UserInfo({ foundUsers, handleSelect }: Props): JSX.Element | null {
   );
 }
 
-export default UserInfo;
+export default FoundPlayersList;

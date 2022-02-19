@@ -19,16 +19,16 @@ type Props = {
   handleSelect?: (user: PlayerInfo) => void;
   isAlreadyAdded: boolean;
   isOnlyResult: boolean;
-  user: PlayerInfo;
+  player: PlayerInfo;
 };
 
-function OneUser({
+function OnePlayer({
   handleSelect,
   isAlreadyAdded,
   isOnlyResult,
-  user,
+  player,
 }: Props): JSX.Element | null {
-  const { rank, country, playerId, playerName, avatar } = user;
+  const { rank, country, playerId, playerName, avatar } = player;
   const url =
     avatar === '/images/steam.png' || avatar === '/images/oculus.png'
       ? createLocalImageUrl('bee.jpg')
@@ -47,7 +47,8 @@ function OneUser({
       <td>
         {handleSelect !== undefined && !isAlreadyAdded && (
           <MDBIcon
-            onClick={() => handleSelect(user)}
+            data-testid="select-icon"
+            onClick={() => handleSelect(player)}
             fas
             icon={isOnlyResult ? 'minus-circle' : 'plus-circle'}
           />
@@ -57,4 +58,4 @@ function OneUser({
   );
 }
 
-export default OneUser;
+export default OnePlayer;

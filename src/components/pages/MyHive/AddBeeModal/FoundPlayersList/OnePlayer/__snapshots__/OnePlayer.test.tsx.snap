@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OnePlayer should match snapshot for multiple found player(s) 1`] = `
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.c1 {
+  margin-right: 1rem;
+  max-width: 2rem;
+}
+
+<tr>
+  <td>
+    <div
+      class="c0"
+    >
+      <img
+        alt="Avatar of player cerret"
+        class="c1"
+        src="https://new.scoresaber.com/api/static/avatars/76561198333869741.jpg"
+      />
+      cerret
+    </div>
+  </td>
+  <td>
+    1
+  </td>
+  <td>
+    US
+  </td>
+  <td>
+    <i
+      class="fas fa-minus-circle"
+      data-testid="select-icon"
+    />
+  </td>
+</tr>
+`;
+
+exports[`OnePlayer should match snapshot for one found player(s) 1`] = `
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.c1 {
+  margin-right: 1rem;
+  max-width: 2rem;
+}
+
+<tr>
+  <td>
+    <div
+      class="c0"
+    >
+      <img
+        alt="Avatar of player cerret"
+        class="c1"
+        src="https://new.scoresaber.com/api/static/avatars/76561198333869741.jpg"
+      />
+      cerret
+    </div>
+  </td>
+  <td>
+    1
+  </td>
+  <td>
+    US
+  </td>
+  <td>
+    <i
+      class="fas fa-minus-circle"
+      data-testid="select-icon"
+    />
+  </td>
+</tr>
+`;

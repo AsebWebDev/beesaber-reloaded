@@ -7,7 +7,7 @@ const exampleUserData: UserData = {
   profilePic: 'url',
   username: 'lovenotwar',
   __v: 0,
-  _id: '',
+  _id: '123456789',
   bees: [],
   created_at: '',
   isAdmin: false,

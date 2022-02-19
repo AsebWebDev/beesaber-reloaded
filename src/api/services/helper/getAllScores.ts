@@ -1,19 +1,9 @@
 /* eslint-disable no-console */
 import { apiPlayer } from '@/api/services/apiPlayer/apiPlayer';
+import { calcScoreHashed, calcTopScores } from '@/helper/calcScores';
 import store from '@/store/store';
 
 import type { ScoreData, Scores } from '@/sharedTypes';
-
-const calcTopScores = (scoresRecent: Scores): Scores =>
-  [...scoresRecent].sort((a, b) => b.score - a.score);
-
-const calcScoreHashed = (scoresRecent: Scores): string[] => {
-  const scoredSongsHashes: string[] = [];
-
-  scoresRecent.forEach((element) => scoredSongsHashes.push(element.songHash));
-
-  return scoredSongsHashes;
-};
 
 type Props = {
   array?: Scores;

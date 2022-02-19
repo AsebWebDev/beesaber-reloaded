@@ -17,7 +17,7 @@ type Props = {
 };
 
 type ReturnType = {
-  foundUsers: PlayerInfo[] | null;
+  foundPlayers: PlayerInfo[] | null;
   showSpinner: boolean;
   thatIsYou: boolean;
   userAlreadyAdded: boolean;
@@ -26,7 +26,7 @@ type ReturnType = {
 const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
   const userId = useAppSelector(selectUserId);
   const { data: userData } = useGetUserDataQuery(userId);
-  const [foundUsers, setFoundUsers] = useState<PlayerInfo[] | null>(null);
+  const [foundPlayers, setfoundPlayers] = useState<PlayerInfo[] | null>(null);
   const [thatIsYou, setThatIsYou] = useState(false);
   const [userAlreadyAdded, setUserAlreadyAdded] = useState(false);
   const debouncedSearchQuery = useDebounce(query, 600);
@@ -46,20 +46,20 @@ const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
 
   useEffect(() => {
     if (
-      foundUsers !== null &&
-      foundUsers.length === 1 &&
+      foundPlayers !== null &&
+      foundPlayers.length === 1 &&
       userData !== undefined &&
       userData.bees.length > 0
     ) {
-      setThatIsYou(foundUsers[0].playerId === userData.myScoreSaberId);
+      setThatIsYou(foundPlayers[0].playerId === userData.myScoreSaberId);
       setUserAlreadyAdded(
-        userData.bees.some((item) => item.playerId === foundUsers[0].playerId)
+        userData.bees.some((item) => item.playerId === foundPlayers[0].playerId)
       );
     } else {
       setThatIsYou(false);
       setUserAlreadyAdded(false);
     }
-  }, [foundUsers, userData]);
+  }, [foundPlayers, userData]);
 
   useEffect(() => {
     const searchHasError =
@@ -67,7 +67,7 @@ const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
       (searchBy === 'name' && errorByName !== undefined);
 
     if (searchHasError) {
-      setFoundUsers(null);
+      setfoundPlayers(null);
     }
   }, [errorById, errorByName]);
 
@@ -77,15 +77,15 @@ const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
     if (players === undefined) return;
 
     // If result is an array, multiple Users have been found...
-    if (Array.isArray(players) && players.length > 1) setFoundUsers(players);
+    if (Array.isArray(players) && players.length > 1) setfoundPlayers(players);
     // If result is an array of 1 element, only one user has been found...
     if (Array.isArray(players) && players.length === 1)
-      setFoundUsers([players[0]]);
+      setfoundPlayers([players[0]]);
     // If result is not an array (searching by ID) only one user had been found...
-    if (!Array.isArray(players)) setFoundUsers([players]);
+    if (!Array.isArray(players)) setfoundPlayers([players]);
   }, [playerById, playersByName]);
 
-  return { foundUsers, showSpinner, thatIsYou, userAlreadyAdded };
+  return { foundPlayers, showSpinner, thatIsYou, userAlreadyAdded };
 };
 
 export default useQueryForPlayers;
