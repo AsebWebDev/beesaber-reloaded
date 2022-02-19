@@ -1,0 +1,86 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`components/common/DiffTag should match snapshot when diffiultiy is 1 1`] = `
+.c0 {
+  margin: 1px 2px 1px 2px;
+  max-height: 20px;
+  max-width: -webkit-fit-content;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+  min-width: 50px;
+}
+
+<span
+  class="c0 badge badge-success"
+>
+  Easy
+</span>
+`;
+
+exports[`components/common/DiffTag should match snapshot when diffiultiy is 3 1`] = `
+.c0 {
+  margin: 1px 2px 1px 2px;
+  max-height: 20px;
+  max-width: -webkit-fit-content;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+  min-width: 50px;
+}
+
+<span
+  class="c0 badge badge-primary"
+>
+  Normal
+</span>
+`;
+
+exports[`components/common/DiffTag should match snapshot when diffiultiy is 5 1`] = `
+.c0 {
+  margin: 1px 2px 1px 2px;
+  max-height: 20px;
+  max-width: -webkit-fit-content;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+  min-width: 50px;
+}
+
+<span
+  class="c0 badge badge-warning"
+>
+  Hard
+</span>
+`;
+
+exports[`components/common/DiffTag should match snapshot when diffiultiy is 7 1`] = `
+.c0 {
+  margin: 1px 2px 1px 2px;
+  max-height: 20px;
+  max-width: -webkit-fit-content;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+  min-width: 50px;
+}
+
+<span
+  class="c0 badge badge-secondary"
+>
+  Expert
+</span>
+`;
+
+exports[`components/common/DiffTag should match snapshot when diffiultiy is 9 1`] = `
+.c0 {
+  margin: 1px 2px 1px 2px;
+  max-height: 20px;
+  max-width: -webkit-fit-content;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+  min-width: 50px;
+}
+
+<span
+  class="c0 badge badge-danger"
+>
+  Expert+
+</span>
+`;
