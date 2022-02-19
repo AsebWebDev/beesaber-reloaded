@@ -78,7 +78,7 @@ const LandingPage = (): JSX.Element => {
   const loggingInText = 'Logging you in... wait for it... ';
 
   return (
-    <Container>
+    <Container data-testid="landing-page">
       <BeeSaberTitle>
         <NeonText glow titleColor={'red'}>
           Bee

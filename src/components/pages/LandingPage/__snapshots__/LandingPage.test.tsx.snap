@@ -233,6 +233,7 @@ exports[`LandingPage should match the snapshot when isLoggingIn is false 1`] = `
 
 <div
   class="c0"
+  data-testid="landing-page"
 >
   <div
     class="c1"
