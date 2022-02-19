@@ -12,25 +12,6 @@ const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
 describe('Header', () => {
-  // it.each([true, false])('should match the snapshot', (status) => {
-  // const extendedStore = Object.assign(store, {
-  //   appStatus: {
-  //     isFetchingData: {
-  //       status,
-  //       statusText: undefined,
-  //     },
-  //   },
-  //   userData: {
-  //     _id: '2141234124',
-  //   },
-  //   });
-  //   const { container } = render(
-  //     <Provider store={mockStore(extendedStore)}>
-  //       <Header />
-  //     </Provider>
-  //   );
-  //   expect(container.firstChild).toMatchSnapshot();
-  // });
   it.each([true, false])(
     'should match snapshot, when is component is fetching=%s',
     (isFetching) => {
