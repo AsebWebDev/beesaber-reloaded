@@ -1,0 +1,310 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`components/common/ScoreContent/ should match snapshot 1`] = `
+.c4 {
+  margin: 1px 2px 1px 2px;
+  max-height: 20px;
+  max-width: -webkit-fit-content;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+  min-width: 50px;
+}
+
+.c2 {
+  color: #00111f!important;
+  min-width: 30px;
+}
+
+.c5 {
+  max-width: 50px;
+  max-height: 30px;
+  border-radius: 20px;
+}
+
+.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.c0 {
+  color: #ffeb00;
+}
+
+.c1 {
+  color: rgba(255,255,255,1);
+}
+
+<table
+  class="table"
+>
+  <thead
+    class="c0"
+  >
+    <tr>
+      <th
+        scope="col"
+      >
+        Rank
+      </th>
+      <th
+        scope="col"
+      >
+        Song
+      </th>
+      <th
+        scope="col"
+      >
+        Score
+      </th>
+      <th
+        scope="col"
+      >
+        Time
+      </th>
+    </tr>
+  </thead>
+  <tbody
+    class="c1"
+  >
+    <tr
+      class=""
+      data-testid="highscore-for-one-song"
+    >
+      <td>
+        <span
+          class="badge bg-primary c2"
+        >
+          2
+        </span>
+      </td>
+      <td>
+        <div
+          class="c3"
+        >
+          <span
+            class="c4 badge badge-danger"
+          >
+            Expert+
+          </span>
+          <img
+            alt="Cover of It has Begun"
+            class="c5"
+            src="https://new.scoresaber.com/api/static/covers/32C3A0E1FEE9FD589B795941B6D79AFE8061D30A.png"
+          />
+          <span
+            class="badge bg-dark"
+          >
+            Starset
+             - 
+            It has Begun
+            <span
+              class="greyed-out"
+            >
+               by 
+              Joshabi
+            </span>
+          </span>
+        </div>
+      </td>
+      <td>
+        <span
+          class="badge bg-primary"
+          id="badge-light"
+        >
+          1000
+        </span>
+      </td>
+      <td
+        class="time"
+      >
+        <b
+          class="card-link"
+        >
+          in 3 months
+        </b>
+      </td>
+    </tr>
+    <tr
+      class=""
+      data-testid="highscore-for-one-song"
+    >
+      <td>
+        <span
+          class="badge bg-primary c2"
+        >
+          2
+        </span>
+      </td>
+      <td>
+        <div
+          class="c3"
+        >
+          <span
+            class="c4 badge badge-danger"
+          >
+            Expert+
+          </span>
+          <img
+            alt="Cover of SongPlayedByHive"
+            class="c5"
+            src="https://new.scoresaber.com/api/static/covers/32C3A0E1FEE9FD589B795941B6D79AFE8061D30C.png"
+          />
+          <span>
+            <span>
+              <i
+                class="far fa-handshake"
+              />
+            </span>
+            <div
+              class="also-played-by"
+            >
+              <table>
+                <thead>
+                  <tr>
+                    <th>
+                      Bee
+                    </th>
+                    <th>
+                      Score
+                    </th>
+                    <th>
+                      My Score
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="bees"
+                />
+              </table>
+            </div>
+          </span>
+          <span
+            class="badge bg-dark"
+          >
+            SongPlayedByHive
+             - 
+            SongPlayedByHive
+            <span
+              class="greyed-out"
+            >
+               by 
+              Joshabi
+            </span>
+          </span>
+        </div>
+      </td>
+      <td>
+        <span
+          class="badge bg-primary"
+          id="badge-light"
+        >
+          3000
+        </span>
+      </td>
+      <td
+        class="time"
+      >
+        <b
+          class="card-link"
+        >
+          in 3 months
+        </b>
+      </td>
+    </tr>
+    <tr
+      class="played-by-hive-won"
+      data-testid="highscore-for-one-song"
+    >
+      <td>
+        <span
+          class="badge bg-primary c2"
+        >
+          2
+        </span>
+      </td>
+      <td>
+        <div
+          class="c3"
+        >
+          <span
+            class="c4 badge badge-danger"
+          >
+            Expert+
+          </span>
+          <img
+            alt="Cover of Let us make a deal"
+            class="c5"
+            src="https://new.scoresaber.com/api/static/covers/32C3A0E1FEE9FD589B795941B6D79AFE8061D30B.png"
+          />
+          <span>
+            <span>
+              <i
+                class="far fa-handshake"
+              />
+            </span>
+            <div
+              class="also-played-by"
+            >
+              <table>
+                <thead>
+                  <tr>
+                    <th>
+                      Bee
+                    </th>
+                    <th>
+                      Score
+                    </th>
+                    <th>
+                      My Score
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="bees"
+                />
+              </table>
+            </div>
+          </span>
+          <span
+            class="badge bg-dark"
+          >
+            Stray from the Path
+             - 
+            Let us make a deal
+            <span
+              class="greyed-out"
+            >
+               by 
+              Joshabi
+            </span>
+          </span>
+        </div>
+      </td>
+      <td>
+        <span
+          class="badge bg-primary"
+          id="badge-light"
+        >
+          2000
+        </span>
+      </td>
+      <td
+        class="time"
+      >
+        <b
+          class="card-link"
+        >
+          in 3 months
+        </b>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
