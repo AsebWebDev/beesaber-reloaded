@@ -46,6 +46,7 @@ type UserScores = {
 export type {
   Difficulty,
   DifficultyName,
+  PlayedBy,
   Score,
   ScoreData,
   Scores,

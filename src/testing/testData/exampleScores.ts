@@ -1,6 +1,14 @@
 import { calcScoreHashed, calcTopScores } from '@/helper/calcScores';
 
 import type { ScoreData, Scores } from '@/sharedTypes';
+import type { PlayedBy } from '@/sharedTypes/UserScores';
+
+const examplePlayedBy: PlayedBy = {
+  playerId: '12345',
+  playerName: 'examplePlayer',
+  myScore: 3000,
+  beeScore: 2000,
+};
 
 const exampleScores: Scores = [
   {
@@ -49,6 +57,7 @@ const exampleScores: Scores = [
     levelAuthorName: 'Joshabi',
     maxScore: 0,
     mods: '',
+    playedBy: [examplePlayedBy],
     playedByHive: true,
     pp: 0,
     rank: 2,

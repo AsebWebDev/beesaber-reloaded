@@ -37,6 +37,14 @@ Array [
     "levelAuthorName": "Joshabi",
     "maxScore": 0,
     "mods": "",
+    "playedBy": Array [
+      Object {
+        "beeScore": 2000,
+        "myScore": 3000,
+        "playerId": "12345",
+        "playerName": "examplePlayer",
+      },
+    ],
     "playedByHive": true,
     "pp": 0,
     "rank": 2,
