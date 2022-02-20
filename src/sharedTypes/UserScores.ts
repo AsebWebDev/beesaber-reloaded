@@ -1,11 +1,13 @@
-type Bee = {
-  beeScore: number;
-  myScore: number;
-};
-
 type Difficulty = 1 | 3 | 5 | 7 | 9;
 
 type DifficultyName = 'Easy' | 'Expert' | 'Expert+' | 'Hard' | 'Normal';
+
+type PlayedBy = {
+  beeScore: number;
+  myScore: number;
+  playerId: string;
+  playerName: string;
+};
 
 type Score = {
   difficulty: Difficulty;
@@ -14,7 +16,7 @@ type Score = {
   levelAuthorName: string;
   maxScore: number;
   mods: string;
-  playedBy?: Bee[];
+  playedBy?: PlayedBy[];
   playedByHive?: boolean;
   pp: number;
   rank: number;

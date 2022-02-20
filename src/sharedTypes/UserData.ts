@@ -1,12 +1,7 @@
+import type { Bee } from './Bee';
 import type { PlayerInfo, ScoreStats } from './ScoreSaberUserInfo';
 import type Settings from './Settings';
 import type { ScoreData, UserScores } from './UserScores';
-
-export type Bee = {
-  playerId: string;
-  playerName: string;
-  scoreData: ScoreData;
-};
 
 export type UserData = {
   __v: number;
