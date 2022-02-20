@@ -10,7 +10,7 @@ import type { Score } from '@/sharedTypes';
 // import HighscoreTable from "./HighscoreTable";
 
 const Badge = styled(MDBBadge)`
-  color: ${tokens.color.page.bgColor}!important;
+  color: ${tokens.color.page.bgColor.main}!important;
   min-width: 30px;
 `;
 
@@ -56,7 +56,11 @@ function HighScoresForOneSong({ highscore }: Props): JSX.Element | null {
   }
 
   return (
-    <tr key={scoreId} className={scoreColorClass}>
+    <tr
+      key={scoreId}
+      className={scoreColorClass}
+      data-testid={'highscore-for-one-song'}
+    >
       <td>
         <Badge>{rank}</Badge>
       </td>
