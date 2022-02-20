@@ -18,7 +18,6 @@ const TableBody = styled(MDBTableBody)`
 
 type Props = {
   scores: Scores;
-  tabId: string;
 };
 
 const ScoreContent = ({ scores }: Props): JSX.Element => (

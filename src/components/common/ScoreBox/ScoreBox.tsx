@@ -101,7 +101,7 @@ function ScoreBox({ bee, scoreData }: Props): JSX.Element | null {
         toggleTab={toggleTab}
       />
       <MDBTabsContent activeitem={activeitem}>
-        <ScoreContent tabId={activeitem} scores={displayedScores} />
+        <ScoreContent scores={displayedScores} />
         {displayedScores.length === 0 && <NoScores />}
       </MDBTabsContent>
       <PaginationContainer>
