@@ -19,6 +19,7 @@ const Container = styled.div`
 
 const MyProfile = (): JSX.Element => {
   const myScoreSaberId = useAppSelector(selectMyScoreSaberId);
+  // FIXME: Remove 10 threshold
   const scoreData = useBuildScoreData(myScoreSaberId, 10);
 
   return (
