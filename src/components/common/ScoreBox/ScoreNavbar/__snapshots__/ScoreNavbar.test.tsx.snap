@@ -68,7 +68,7 @@ exports[`ScoreNavbar should match the snapshot when activeitem is RECENT 1`] = `
       <label
         class="form-check-label"
       >
-        songs only shared by hive 
+        songs only shared by hive
       </label>
     </div>
   </li>
@@ -143,7 +143,7 @@ exports[`ScoreNavbar should match the snapshot when activeitem is TOP 1`] = `
       <label
         class="form-check-label"
       >
-        songs only shared by hive 
+        songs only shared by hive
       </label>
     </div>
   </li>

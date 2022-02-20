@@ -65,7 +65,7 @@ const ScoreNavbar = ({
     </NavigationItems>
     <MDBNavbarItem>
       <MDBSwitch
-        label="songs only shared by hive "
+        label="songs only shared by hive"
         onChange={(e: { target: { checked: boolean } }) =>
           setIsPlayedByHive(e.target.checked)
         }
