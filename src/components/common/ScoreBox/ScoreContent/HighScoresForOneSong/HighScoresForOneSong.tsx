@@ -38,12 +38,13 @@ function HighScoresForOneSong({ highscore }: Props): JSX.Element | null {
     playedByHive,
     rank,
     score,
+    scoreId,
     songAuthorName,
     songHash,
     songName,
     timeSet,
   } = highscore;
-  const logid = (scoreId: string) => console.log('scoreId: !', scoreId);
+  const logid = (id: string) => console.log('id: !', id);
 
   let scoreColorClass = '';
 
@@ -55,7 +56,7 @@ function HighScoresForOneSong({ highscore }: Props): JSX.Element | null {
   }
 
   return (
-    <tr className={scoreColorClass}>
+    <tr key={scoreId} className={scoreColorClass}>
       <td>
         <Badge>{rank}</Badge>
       </td>
