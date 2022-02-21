@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { useGetUserDataQuery } from '@/api/services/apiUser/apiUser';
+import BeeTag from '@/components/common/BeeTag/BeeTag';
 import NeonButtonBase from '@/components/common/NeonButton/NeonButton';
 import ScoreBox from '@/components/common/ScoreBox/ScoreBox';
 import Title from '@/components/common/Title/Title';
@@ -34,6 +35,11 @@ const NeonButton = styled(NeonButtonBase)`
   }
 `;
 
+const MyHiveBees = styled.div`
+  display: flex;
+  gap: 1rem;
+`;
+
 const MyHive = (): JSX.Element | null => {
   const history = useHistory();
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
@@ -58,18 +64,12 @@ const MyHive = (): JSX.Element | null => {
     <Container>
       <Title as="h1">MyHive</Title>
       <NeonButton text="Add a Bee" onClick={toggleModal} />
-      <div id="myhive-bees">
+      <MyHiveBees>
         {bees.map((bee) => (
-          <div
-            key={`${bee.playerId}${bee.playerName}`}
-            onClick={() => handleSelect(bee)}
-          >
-            {/* <UserInfo key={i} playerInfoData={bee} /> */}
-            {bee.playerName}
-          </div>
+          <BeeTag bee={bee} handleSelect={handleSelect} />
         ))}
         {!beesExists && <p>No bees yet</p>}
-      </div>
+      </MyHiveBees>
 
       <div id="current-scores">
         {currentBee !== null && (
