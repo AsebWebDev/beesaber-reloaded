@@ -84,7 +84,7 @@ function ScoreBox({ bee, scoreData }: Props): JSX.Element | null {
     );
 
     setAllScores(filteredScores);
-  }, [query, isPlayedByHive, activeItem]);
+  }, [query, isPlayedByHive, activeItem, scoreData]);
 
   return (
     <Container>
