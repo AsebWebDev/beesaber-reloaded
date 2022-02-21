@@ -59,13 +59,13 @@ const MyHive = (): JSX.Element | null => {
       <Title as="h1">MyHive</Title>
       <NeonButton text="Add a Bee" onClick={toggleModal} />
       <div id="myhive-bees">
-        {bees.map((bee, i) => (
+        {bees.map((bee) => (
           <div
-            key={i}
-            className="one-userinfo"
+            key={`${bee.playerId}${bee.playerName}`}
             onClick={() => handleSelect(bee)}
           >
             {/* <UserInfo key={i} playerInfoData={bee} /> */}
+            {bee.playerName}
           </div>
         ))}
         {!beesExists && <p>No bees yet</p>}
