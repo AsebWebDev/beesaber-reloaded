@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import { skipToken } from '@reduxjs/toolkit/dist/query/react';
 import { MDBBtn, MDBIcon, MDBInput } from 'mdb-react-ui-kit';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -25,7 +26,7 @@ const IdForm = styled.form`
 
 const IdInput = (): JSX.Element | null => {
   const userId = useAppSelector(selectUserId);
-  const { data: userDataResult } = useGetUserDataQuery(userId);
+  const { data: userDataResult } = useGetUserDataQuery(userId ?? skipToken);
   const [updateUser] = useUpdateUserDataMutation();
   const myScoreSaberId = userDataResult?.myScoreSaberId;
 
@@ -40,6 +41,7 @@ const IdInput = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
   const handleSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (userId === undefined) return;
 
     dispatch(userIsFetchingData({ status: true, statusText: 'Saving ID...' }));
     try {

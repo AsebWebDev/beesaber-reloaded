@@ -1,3 +1,4 @@
+import { skipToken } from '@reduxjs/toolkit/dist/query/react';
 import styled from 'styled-components';
 
 import { useGetUserDataQuery } from '@/api/services/apiUser/apiUser';
@@ -17,7 +18,7 @@ const Image = styled.img`
 
 function GoogleProfileData(): JSX.Element | null {
   const userId = useAppSelector(selectUserId);
-  const { data: userData } = useGetUserDataQuery(userId);
+  const { data: userData } = useGetUserDataQuery(userId ?? skipToken);
 
   if (userData === undefined) return null;
   const { profilePic, username, googleName, googleImageUrl } = userData;

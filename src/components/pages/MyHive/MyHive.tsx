@@ -1,3 +1,4 @@
+import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -37,7 +38,7 @@ const MyHive = (): JSX.Element | null => {
   const history = useHistory();
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
   const userId = useAppSelector(selectUserId);
-  const { data: userData } = useGetUserDataQuery(userId);
+  const { data: userData } = useGetUserDataQuery(userId ?? skipToken);
 
   if (!isLoggedIn || userData === undefined) {
     history.push('/'); // Redirect to the main page

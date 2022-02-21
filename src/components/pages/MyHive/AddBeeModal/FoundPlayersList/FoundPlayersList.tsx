@@ -1,3 +1,4 @@
+import { skipToken } from '@reduxjs/toolkit/dist/query/react';
 import { MDBTable, MDBTableBody, MDBTableHead } from 'mdb-react-ui-kit';
 import styled from 'styled-components';
 
@@ -35,7 +36,7 @@ function FoundPlayersList({
 }: Props): JSX.Element | null {
   if (foundPlayers === null) return null;
   const userId = useAppSelector(selectUserId);
-  const { data: userData } = useGetUserDataQuery(userId);
+  const { data: userData } = useGetUserDataQuery(userId ?? skipToken);
 
   if (userData === undefined) return null;
 

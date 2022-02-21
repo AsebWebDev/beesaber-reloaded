@@ -34,7 +34,8 @@ const selectMyScoreSaberId = (state: RootState): string | undefined =>
 const selectTotalPlayCount = (state: RootState): number | undefined =>
   state.userData.totalPlayCount;
 const selectUserData = (state: RootState): UserData => state.userData;
-const selectUserId = (state: RootState): string => state.userData._id;
+const selectUserId = (state: RootState): string | undefined =>
+  state.userData._id;
 const selectUserName = (state: RootState): string | undefined =>
   state.userData.username;
 

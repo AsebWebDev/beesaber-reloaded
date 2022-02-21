@@ -1,3 +1,4 @@
+import { skipToken } from '@reduxjs/toolkit/dist/query/react';
 import {
   MDBBtn,
   MDBContainer,
@@ -58,7 +59,7 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
   const searchBy = activeItem === '1' ? 'id' : 'name';
   const [updateUser] = useUpdateUserDataMutation();
   const userId = useAppSelector(selectUserId);
-  const { data: userData } = useGetUserDataQuery(userId);
+  const { data: userData } = useGetUserDataQuery(userId ?? skipToken);
 
   const { foundPlayers, showSpinner, thatIsYou, userAlreadyAdded } =
     useQueryForPlayers({ query, searchBy });
@@ -98,7 +99,12 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
   };
 
   const handleSave = async () => {
-    if (userAlreadyAdded || userData === undefined || beeToAdd === undefined)
+    if (
+      userAlreadyAdded ||
+      userData === undefined ||
+      beeToAdd === undefined ||
+      userId === undefined
+    )
       return;
 
     await toast.promise(

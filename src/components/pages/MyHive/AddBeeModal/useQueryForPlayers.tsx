@@ -1,3 +1,4 @@
+import { skipToken } from '@reduxjs/toolkit/dist/query/react';
 import { useEffect, useState } from 'react';
 
 import {
@@ -25,7 +26,7 @@ type ReturnType = {
 
 const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
   const userId = useAppSelector(selectUserId);
-  const { data: userData } = useGetUserDataQuery(userId);
+  const { data: userData } = useGetUserDataQuery(userId ?? skipToken);
   const [foundPlayers, setfoundPlayers] = useState<PlayerInfo[] | null>(null);
   const [thatIsYou, setThatIsYou] = useState(false);
   const [userAlreadyAdded, setUserAlreadyAdded] = useState(false);
