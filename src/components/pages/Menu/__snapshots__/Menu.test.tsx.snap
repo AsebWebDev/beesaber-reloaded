@@ -218,6 +218,7 @@ exports[`components/pages/Menu should match snapshot when isMobile is falsew 1`]
 
 <div
   class="c0"
+  data-testid="menu"
 >
   <div
     class="c1"
@@ -583,6 +584,7 @@ exports[`components/pages/Menu should match snapshot when isMobile is truew 1`] 
 
 <div
   class="c0"
+  data-testid="menu"
 >
   <div
     class="c1"

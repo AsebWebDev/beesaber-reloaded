@@ -34,7 +34,7 @@ const ScrollDownIndicator = (): JSX.Element | null => {
 
   if (isScrollingDown) return null;
 
-  return <Indicator />;
+  return <Indicator data-testid={'indicator'} />;
 };
 
 export default ScrollDownIndicator;

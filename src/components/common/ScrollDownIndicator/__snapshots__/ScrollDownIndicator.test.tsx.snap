@@ -29,5 +29,6 @@ exports[`ScrollDownIndicator should match the snapshot 1`] = `
 
 <div
   class="c0"
+  data-testid="indicator"
 />
 `;

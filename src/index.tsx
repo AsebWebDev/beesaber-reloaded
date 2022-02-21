@@ -4,6 +4,7 @@ import './index.scss';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { MemoryRouter as Router } from 'react-router-dom';
+import { injectStyle } from 'react-toastify/dist/inject-style';
 
 import store from '@/store/store';
 
@@ -19,6 +20,8 @@ async function prepareWorkers(): Promise<void> {
 }
 
 void prepareWorkers().then(() => {
+  injectStyle(); // import Toastify CSS without webpack css loader
+
   ReactDOM.render(
     <Provider store={store}>
       <Router>

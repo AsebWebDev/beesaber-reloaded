@@ -58,7 +58,7 @@ const Menu = (): JSX.Element => {
   const { isMobile } = useIsMobile();
 
   return (
-    <Container>
+    <Container data-testid={'menu'}>
       <MenuContainer>
         <MenuHeader>
           <Title>Bee Saber</Title>
