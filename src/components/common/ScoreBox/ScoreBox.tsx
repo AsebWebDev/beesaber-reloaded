@@ -48,7 +48,7 @@ function ScoreBox({ bee, scoreData }: Props): JSX.Element | null {
   if (scoresRecent.length === 0) return null;
 
   const [query, setQuery] = useState('');
-  const [activeitem, setActiveItem] = useState<NavTabs>('RECENT');
+  const [activeItem, setActiveItem] = useState<NavTabs>('RECENT');
   const [isPlayedByHive, setIsPlayedByHive] = useState(false);
   const [allScores, setAllScores] = useState<Scores>(scoresRecent);
   const [displayedScores, setDisplayedScores] = useState<Scores>([]);
@@ -58,7 +58,7 @@ function ScoreBox({ bee, scoreData }: Props): JSX.Element | null {
   const totalScores = allScores.length;
 
   const toggleTab = (tab: NavTabs) => {
-    if (activeitem !== tab) setActiveItem(tab);
+    if (activeItem !== tab) setActiveItem(tab);
   };
 
   // data comes from Pagination Component
@@ -76,7 +76,7 @@ function ScoreBox({ bee, scoreData }: Props): JSX.Element | null {
   }, [allScores, offset, pageLimit]);
 
   useEffect(() => {
-    const scoreType = activeitem === 'RECENT' ? 'scoresRecent' : 'scoresTop';
+    const scoreType = activeItem === 'RECENT' ? 'scoresRecent' : 'scoresTop';
     const filteredScores = filterScores(
       scoreData[scoreType],
       query,
@@ -84,7 +84,7 @@ function ScoreBox({ bee, scoreData }: Props): JSX.Element | null {
     );
 
     setAllScores(filteredScores);
-  }, [query, isPlayedByHive]);
+  }, [query, isPlayedByHive, activeItem]);
 
   return (
     <Container>
@@ -96,11 +96,11 @@ function ScoreBox({ bee, scoreData }: Props): JSX.Element | null {
         query={query}
       />
       <ScoreNavbar
-        activeitem={activeitem}
+        activeItem={activeItem}
         setIsPlayedByHive={setIsPlayedByHive}
         toggleTab={toggleTab}
       />
-      <MDBTabsContent activeitem={activeitem}>
+      <MDBTabsContent activeItem={activeItem}>
         <ScoreContent scores={displayedScores} />
         {displayedScores.length === 0 && <NoScores />}
       </MDBTabsContent>

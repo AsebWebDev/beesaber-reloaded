@@ -7,11 +7,11 @@ import type { NavTabs } from '../ScoreBox';
 
 describe('ScoreNavbar', () => {
   it.each(['RECENT', 'TOP'] as const)(
-    'should match the snapshot when activeitem is %s',
-    (activeitem) => {
+    'should match the snapshot when activeItem is %s',
+    (activeItem) => {
       const { container } = render(
         <ScoreNavbar
-          activeitem={activeitem}
+          activeItem={activeItem}
           setIsPlayedByHive={jest.fn()}
           toggleTab={jest.fn()}
         />
@@ -22,17 +22,17 @@ describe('ScoreNavbar', () => {
   );
 
   it.each`
-    name        | activeitem
+    name        | activeItem
     ${'Recent'} | ${'RECENT'}
     ${'Top'}    | ${'TOP'}
   `(
-    'should call toggleTab with $activeitem when $name is clicked',
-    ({ activeitem, name }: { activeitem: NavTabs; name: string }) => {
+    'should call toggleTab with $activeItem when $name is clicked',
+    ({ activeItem, name }: { activeItem: NavTabs; name: string }) => {
       const mockedToggleTab = jest.fn();
 
       render(
         <ScoreNavbar
-          activeitem={activeitem}
+          activeItem={activeItem}
           setIsPlayedByHive={jest.fn()}
           toggleTab={mockedToggleTab}
         />
@@ -42,7 +42,7 @@ describe('ScoreNavbar', () => {
 
       userEvent.click(item);
       expect(mockedToggleTab).toHaveBeenCalledTimes(1);
-      expect(mockedToggleTab).toHaveBeenCalledWith(activeitem);
+      expect(mockedToggleTab).toHaveBeenCalledWith(activeItem);
     }
   );
 
@@ -51,7 +51,7 @@ describe('ScoreNavbar', () => {
 
     render(
       <ScoreNavbar
-        activeitem={'RECENT'}
+        activeItem={'RECENT'}
         setIsPlayedByHive={mockedSetIsPlayedByHive}
         toggleTab={jest.fn()}
       />

@@ -30,13 +30,13 @@ const NavigationItems = styled.div`
 `;
 
 type Props = {
-  activeitem: NavTabs;
+  activeItem: NavTabs;
   setIsPlayedByHive: (isOn: boolean) => void;
   toggleTab: (id: NavTabs) => void;
 };
 
 const ScoreNavbar = ({
-  activeitem,
+  activeItem,
   setIsPlayedByHive,
   toggleTab,
 }: Props): JSX.Element => (
@@ -45,7 +45,7 @@ const ScoreNavbar = ({
       <MDBNavbarItem>
         <MDBNavbarLink
           to="#"
-          active={activeitem === 'RECENT'}
+          active={activeItem === 'RECENT'}
           onClick={() => toggleTab('RECENT')}
           role="tab"
         >
@@ -55,7 +55,7 @@ const ScoreNavbar = ({
       <MDBNavbarItem>
         <MDBNavbarLink
           to="#"
-          active={activeitem === 'TOP'}
+          active={activeItem === 'TOP'}
           onClick={() => toggleTab('TOP')}
           role="tab"
         >
