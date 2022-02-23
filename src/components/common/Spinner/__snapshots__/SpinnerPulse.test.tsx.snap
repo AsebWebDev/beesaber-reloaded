@@ -51,6 +51,7 @@ exports[`SpinnerPulse should match the snapshot when isBig is false 1`] = `
 
 <div
   class="c0"
+  data-testid="loading-spinner"
 >
   <div
     class="loadingio-spinner-ripple-rt8n616prbh"
@@ -116,6 +117,7 @@ exports[`SpinnerPulse should match the snapshot when isBig is true 1`] = `
 
 <div
   class="c0"
+  data-testid="loading-spinner"
 >
   <div
     class="loadingio-spinner-ripple-rt8n616prbh"

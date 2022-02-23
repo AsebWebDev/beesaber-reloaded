@@ -62,7 +62,7 @@ type Props = {
 
 function SpinnerPulse({ isBig = false }: Props): JSX.Element {
   return (
-    <Container isBig={isBig}>
+    <Container isBig={isBig} data-testid="loading-spinner">
       <div className="loadingio-spinner-ripple-rt8n616prbh">
         <div className="ldio-do9usc7wgsf">
           <div></div>

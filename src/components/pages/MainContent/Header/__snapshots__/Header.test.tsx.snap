@@ -84,6 +84,7 @@ exports[`Header should match snapshot, when is component is fetching=true 1`] = 
 >
   <div
     class="c1"
+    data-testid="loading-spinner"
   >
     <div
       class="loadingio-spinner-ripple-rt8n616prbh"
