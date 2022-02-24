@@ -159,6 +159,7 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
                       handleChange(e)
                     }
                     value={query}
+                    aria-label="Search ID"
                     label="Search ID"
                     icon="hashtag"
                     type="number"
@@ -172,6 +173,7 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
                       handleChange(e)
                     }
                     value={query}
+                    aria-label="Search Username"
                     label="Search Username"
                     icon="user"
                     type="text"

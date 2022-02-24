@@ -68,6 +68,7 @@ exports[`AddBeeModal should match snapshot 1`] = `
                 class="form-outline"
               >
                 <input
+                  aria-label="Search ID"
                   class="form-control"
                   error="wrong"
                   icon="hashtag"
@@ -104,6 +105,7 @@ exports[`AddBeeModal should match snapshot 1`] = `
                 class="form-outline"
               >
                 <input
+                  aria-label="Search Username"
                   class="form-control"
                   error="wrong"
                   icon="user"
