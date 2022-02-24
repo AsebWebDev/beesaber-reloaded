@@ -27,7 +27,7 @@ const handlers = [
     (req, res, ctx) => {
       console.log('handle scoresabe: ', req.params.id);
 
-      return res(ctx.status(200), ctx.json(exampleUserData));
+      return res(ctx.status(200), ctx.json(exampleSSUserInfo));
     }
   ),
 ];
