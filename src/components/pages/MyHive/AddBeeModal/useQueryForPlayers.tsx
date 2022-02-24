@@ -27,7 +27,7 @@ type ReturnType = {
 const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
   const userId = useAppSelector(selectUserId);
   const { data: userData } = useGetUserDataQuery(userId ?? skipToken);
-  const [foundPlayers, setfoundPlayers] = useState<PlayerInfo[] | null>(null);
+  const [foundPlayers, setFoundPlayers] = useState<PlayerInfo[] | null>(null);
   const [thatIsYou, setThatIsYou] = useState(false);
   const [userAlreadyAdded, setUserAlreadyAdded] = useState(false);
   const debouncedSearchQuery = useDebounce(query, 600);
@@ -36,12 +36,12 @@ const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
     data: playersByName,
     isFetching: isFetchingQueryByName,
     error: errorByName,
-  } = useGetPlayersByNameQuery(debouncedSearchQuery);
+  } = useGetPlayersByNameQuery(debouncedSearchQuery ?? skipToken);
   const {
     data: playerById,
     isFetching: isFetchingQueryById,
     error: errorById,
-  } = useGetFullPlayerQuery(debouncedSearchQuery);
+  } = useGetFullPlayerQuery(debouncedSearchQuery ?? skipToken);
 
   const showSpinner = isFetchingQueryByName || isFetchingQueryById;
 
@@ -68,7 +68,7 @@ const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
       (searchBy === 'name' && errorByName !== undefined);
 
     if (searchHasError) {
-      setfoundPlayers(null);
+      setFoundPlayers(null);
     }
   }, [errorById, errorByName]);
 
@@ -78,12 +78,12 @@ const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
     if (players === undefined) return;
 
     // If result is an array, multiple Users have been found...
-    if (Array.isArray(players) && players.length > 1) setfoundPlayers(players);
+    if (Array.isArray(players) && players.length > 1) setFoundPlayers(players);
     // If result is an array of 1 element, only one user has been found...
     if (Array.isArray(players) && players.length === 1)
-      setfoundPlayers([players[0]]);
+      setFoundPlayers([players[0]]);
     // If result is not an array (searching by ID) only one user had been found...
-    if (!Array.isArray(players)) setfoundPlayers([players]);
+    if (!Array.isArray(players)) setFoundPlayers([players]);
   }, [playerById, playersByName]);
 
   return { foundPlayers, showSpinner, thatIsYou, userAlreadyAdded };

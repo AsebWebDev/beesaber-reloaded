@@ -1,6 +1,9 @@
 import React from 'react';
 
-export default function useDebounce(value: string, delay = 500): string {
+export default function useDebounce(
+  value: string,
+  delay = 500
+): string | undefined {
   const [debouncedValue, setDebouncedValue] = React.useState(value);
 
   React.useEffect(() => {
@@ -14,5 +17,5 @@ export default function useDebounce(value: string, delay = 500): string {
     };
   }, [value, delay]);
 
-  return debouncedValue;
+  return debouncedValue !== '' ? debouncedValue : undefined;
 }
