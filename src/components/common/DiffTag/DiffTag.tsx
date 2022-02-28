@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import type BadgeColor from '@/sharedTypes/BadgeColor';
 import type { Difficulty, DifficultyName } from '@/sharedTypes/UserScores';
 
 const Tag = styled.span`
@@ -9,14 +10,6 @@ const Tag = styled.span`
   max-width: fit-content;
   min-width: 50px;
 `;
-
-type BadgeColor =
-  | 'danger'
-  | 'default'
-  | 'primary'
-  | 'secondary'
-  | 'success'
-  | 'warning';
 
 type Props = {
   difficulty: Difficulty;

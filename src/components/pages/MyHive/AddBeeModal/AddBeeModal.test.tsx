@@ -160,7 +160,9 @@ describe('AddBeeModal', () => {
         <AddBeeModal toggleModal={jest.fn()} />
       </Provider>
     );
-    const feedback = screen.getByText('That is you');
+    const feedback = screen.getByText(
+      'You found yourself! What a noble goal in life, but not helping you on Beesaber ;)'
+    );
 
     expect(feedback).toBeInTheDocument();
   });

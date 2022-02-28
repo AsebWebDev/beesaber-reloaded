@@ -24,6 +24,7 @@ import {
   useUpdateUserDataMutation,
 } from '@/api/services/apiUser/apiUser';
 import getAllScores from '@/api/services/helper/getAllScores';
+import Alert from '@/components/common/Message/Message';
 import NeonText from '@/components/common/NeonText/NeonText';
 import Spinner from '@/components/common/Spinner/SpinnerPulse';
 import { useAppSelector } from '@/store/hooks';
@@ -199,8 +200,14 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
                 {beeToAdd === undefined && selectedPlayer !== undefined && (
                   <Spinner />
                 )}
-                {/* TODO: Add Proper That is you feedback */}
-                {thatIsYou && <p>That is you</p>}
+                {thatIsYou && (
+                  <Alert
+                    text={
+                      'You found yourself! What a noble goal in life, but not helping you on Beesaber ;)'
+                    }
+                    type={'primary'}
+                  />
+                )}
                 <MDBBtn color="danger" onClick={toggleModal}>
                   Close
                 </MDBBtn>
