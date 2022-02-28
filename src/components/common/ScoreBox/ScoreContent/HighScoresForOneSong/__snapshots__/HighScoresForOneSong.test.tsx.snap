@@ -87,7 +87,7 @@ exports[`components/common/ScoreBox/ScoreContent/HighScoresForOneSong should mat
     <b
       class="card-link"
     >
-      in 3 months
+      in 16 days
     </b>
   </td>
 </tr>
@@ -209,7 +209,7 @@ exports[`components/common/ScoreBox/ScoreContent/HighScoresForOneSong should mat
     <b
       class="card-link"
     >
-      in 3 months
+      in 4 months
     </b>
   </td>
 </tr>
