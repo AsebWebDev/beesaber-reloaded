@@ -100,7 +100,7 @@ function ScoreBox({ bee, scoreData }: Props): JSX.Element | null {
         setIsPlayedByHive={setIsPlayedByHive}
         toggleTab={toggleTab}
       />
-      <MDBTabsContent activeItem={activeItem}>
+      <MDBTabsContent activeitem={activeItem}>
         <ScoreContent scores={displayedScores} />
         {displayedScores.length === 0 && <NoScores />}
       </MDBTabsContent>
