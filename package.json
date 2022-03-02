@@ -16,8 +16,8 @@
     "prepare": "husky install",
     "server": "cd server && yarn run dev",
     "start": "craco start",
-    "test": "jest --watch",
-    "testmsw": "cross-env REACT_APP_MSW='enabled' jest --watch"
+    "test": "cross-env REACT_APP_MSW='enabled' jest --watch",
+    "test:live": "jest --watch"
   },
   "husky": {
     "hooks": {

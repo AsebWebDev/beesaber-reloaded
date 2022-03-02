@@ -40,12 +40,8 @@ describe('IdInput', () => {
     expect(saveButton).toBeInTheDocument();
     await waitFor(() => {
       // FIXME: Test for proper backend request
-      console.log(
-        '🚀 ~ file: IdInput.test.tsx ~ line 31 ~ it ~ actions',
-        actions
-      );
 
-      expect(actions).toHaveLength(4);
+      expect(actions).toHaveLength(5);
     });
   });
 

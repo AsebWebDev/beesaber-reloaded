@@ -1,5 +1,6 @@
 import api from '../api/api';
 
+// TODO: Use RTKQ endpoint isValidMongoId
 const verifyValidScoreSaberId = async (id: string): Promise<void> => {
   try {
     await api.userApi.getRecentUserScores(id);

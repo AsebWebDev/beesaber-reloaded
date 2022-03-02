@@ -1,6 +1,7 @@
 import { toast } from 'react-toastify';
 
-import api from '@/api/authApi';
+import { apiAuth } from '@/api/services/apiAuth/apiAuth';
+import store from '@/store/store';
 
 import NeonGoogleButton from './NeonGoogleButton/NeonGoogleButton';
 
@@ -24,7 +25,7 @@ const logoutProps = {
 };
 
 const handleLogout = async (): Promise<void> => {
-  await toast.promise(api.logout(), {
+  await toast.promise(store.dispatch(apiAuth.endpoints.logout.initiate()), {
     pending: 'Loggin you out ...',
     success: 'You successfully logged out 👌',
     error: 'There has been an issue logging you out 🤯',

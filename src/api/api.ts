@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-import authApi from './authApi';
 import userApi from './userApi';
 
 import type { AxiosError } from 'axios';
@@ -45,7 +44,6 @@ const errHandler = (err: PossibleResponses): string => {
 };
 
 const api = {
-  authApi,
   userApi,
 };
 

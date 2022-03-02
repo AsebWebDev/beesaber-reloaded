@@ -1,21 +1,10 @@
+/* eslint-disable @typescript-eslint/no-invalid-void-type */
 import api from '../api';
 
-import type { GoogleUserData } from '@/sharedTypes';
+import type { GooglePayload, GoogleUserData } from '@/sharedTypes';
 
 const baseUrl =
   process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:5001/api';
-
-type GooglePayload = {
-  googleId: string;
-  profileObj: {
-    email: string;
-    familyName: string;
-    givenName: string;
-    googleId: string;
-    imageUrl: string;
-    name: string;
-  };
-};
 
 export const apiAuth = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -41,7 +30,6 @@ export const apiAuth = api.injectEndpoints({
         username,
       }),
     }),
-    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     googleLogout: builder.mutation<undefined, void>({
       query: () => ({
         url: `${baseUrl}/logout`,
@@ -49,7 +37,28 @@ export const apiAuth = api.injectEndpoints({
       }),
       invalidatesTags: ['UserData'],
     }),
+    // TODO: Turn into get request
+    isValidMongoId: builder.mutation<string, boolean>({
+      query: (id) => ({
+        url: `${baseUrl}/checkValidMongoId`,
+        method: 'POST',
+        body: id,
+      }),
+    }),
+    logout: builder.query<undefined, void>({
+      query: () => ({
+        url: `${baseUrl}/logout`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useGoogleLoginMutation, useGoogleLogoutMutation } = apiAuth;
+export const {
+  useGoogleLoginMutation,
+  useGoogleLogoutMutation,
+  useIsValidMongoIdMutation,
+  useLogoutQuery,
+} = apiAuth;
+
+export default apiAuth;
