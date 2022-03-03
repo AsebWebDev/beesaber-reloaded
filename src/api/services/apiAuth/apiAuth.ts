@@ -38,7 +38,7 @@ export const apiAuth = api.injectEndpoints({
       invalidatesTags: ['UserData'],
     }),
     // TODO: Turn into get request
-    isValidMongoId: builder.mutation<string, boolean>({
+    isValidMongoId: builder.mutation<boolean, string>({
       query: (id) => ({
         url: `${baseUrl}/checkValidMongoId`,
         method: 'POST',
