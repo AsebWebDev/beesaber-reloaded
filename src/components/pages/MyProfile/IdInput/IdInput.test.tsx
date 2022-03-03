@@ -41,7 +41,7 @@ describe('IdInput', () => {
     await waitFor(() => {
       // FIXME: Test for proper backend request
 
-      expect(actions).toHaveLength(5);
+      expect(actions).toHaveLength(6);
     });
   });
 

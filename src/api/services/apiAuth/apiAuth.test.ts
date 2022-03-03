@@ -1,5 +1,3 @@
-import { rest } from 'msw';
-
 import store from '@/store/store';
 import {
   exampleGooglePayLoad,
@@ -17,8 +15,15 @@ describe('api/services/apiAuth/apiAuth.ts', () => {
 
       expect(response).toStrictEqual({ data: exampleGoogleUserData });
     });
+  });
 
-    // FIXME: mock error with MSW
-    it.todo('return empty object when call failed');
+  describe('isValidMongoId', () => {
+    it('return true when id is valid', async () => {
+      const response = await store.dispatch(
+        apiAuth.endpoints.isValidMongoId.initiate('1234')
+      );
+
+      expect(response).toStrictEqual({ data: true });
+    });
   });
 });
