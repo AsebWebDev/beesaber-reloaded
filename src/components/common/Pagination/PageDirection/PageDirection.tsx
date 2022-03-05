@@ -18,7 +18,7 @@ const PageLink = styled.a.attrs({ href: '/#' })`
 
 type Props = {
   direction: 'Next' | 'Previous';
-  onClick: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
+  onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
 const PageDirection = ({ onClick, direction }: Props): JSX.Element => (

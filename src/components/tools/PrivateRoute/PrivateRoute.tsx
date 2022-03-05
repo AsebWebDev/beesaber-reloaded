@@ -4,19 +4,12 @@ import { useAppSelector } from '@/store/hooks';
 import { selectIsLoggedIn } from '@/store/reducer/appStatusReducer';
 
 import type { ComponentType } from 'react';
-import type { StaticContext } from 'react-router';
 import type { RouteComponentProps } from 'react-router-dom';
 
 type Props = {
   component:
-    | ComponentType<
-        RouteComponentProps<
-          Record<string, string | undefined>,
-          StaticContext,
-          unknown
-        >
-      >
-    | ComponentType<JSX.Element>;
+    | ComponentType<JSX.Element>
+    | ComponentType<RouteComponentProps<Record<string, string | undefined>>>;
   path: string;
 };
 
