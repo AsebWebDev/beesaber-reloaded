@@ -7,7 +7,10 @@ const baseUrl = 'https://new.scoresaber.com/api';
 
 export const apiPlayer = api.injectEndpoints({
   endpoints: (builder) => ({
-    getRecentScoresUrl: builder.query<Scores, { count: number; id: string }>({
+    getRecentScores: builder.query<
+      Scores,
+      { count: number | undefined; id: string }
+    >({
       query: ({ id, count = 1 }) =>
         `${baseUrl}/player/${id}/scores/recent/${count}`,
       transformResponse: (response: UserScores) => response.scores,
@@ -29,5 +32,7 @@ export const apiPlayer = api.injectEndpoints({
 export const {
   useGetFullPlayerQuery,
   useGetPlayersByNameQuery,
-  useGetRecentScoresUrlQuery,
+  useGetRecentScoresQuery,
 } = apiPlayer;
+
+export default apiPlayer;

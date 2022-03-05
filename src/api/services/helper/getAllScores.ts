@@ -27,7 +27,7 @@ const getRecentScores = async ({
   threshold,
 }: Props): Promise<Scores> => {
   const dispatchedPromise = store.dispatch(
-    apiPlayer.endpoints.getRecentScoresUrl.initiate({ id, count })
+    apiPlayer.endpoints.getRecentScores.initiate({ id, count })
   );
   const { data: response } = await dispatchedPromise;
 

@@ -40,24 +40,11 @@ const doApiCall = async ({
 };
 
 const userApi = {
-  async getRecentUserScores(id: string): Promise<UserScores> {
-    const url = parseGetRecentScoresUrl(id);
-    const recentScores = await doApiCall({ url });
-
-    return recentScores as UserScores;
-  },
   async getSSUserInfo(id: string): Promise<ScoreSaberUserInfo> {
     const url = parseFullPlayerQueryUrl(id);
     const result = await doApiCall({ url });
 
     return result as ScoreSaberUserInfo;
-  },
-
-  async getUserData(userId: string): Promise<UserData> {
-    const url = `/user/${userId}`;
-    const result = await doApiCall({ url });
-
-    return result as UserData;
   },
 
   async saveUserData(
