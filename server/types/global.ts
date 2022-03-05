@@ -6,3 +6,5 @@ interface ErrnoException extends Error {
   stack?: string;
   status?: number;
 }
+
+export { ErrnoException };

@@ -2,7 +2,7 @@
 
 import http from 'http';
 import app from '../app';
-
+import type { ErrnoException } from '../types/global';
 const server = http.createServer(app);
 
 server.on('error', (error: ErrnoException) => {

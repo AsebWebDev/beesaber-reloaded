@@ -14,6 +14,7 @@ import indexRoutes from './routes/index';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/user';
 import './configs/database';
+import type { ErrnoException } from './types/global';
 
 const MongoStore = connectMongo(session);
 
@@ -45,6 +46,8 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
+passport(app);
+
 // Enable authentication using session + passport
 app.use(
   session({
@@ -54,7 +57,6 @@ app.use(
     store: new MongoStore({ mongooseConnection: mongoose.connection }),
   })
 );
-passport(app);
 
 // ===================
 //     R O U T E S

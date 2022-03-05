@@ -8,7 +8,7 @@
     "debug": "DEBUG=server:* nodemon ./bin/www",
     "dev": "nodemon ./bin/www",
     "prestart": "yarn build",
-    "start": "node ./bin/www",
+    "start": "ts-node ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -26,7 +26,8 @@
     "nocache": "^2.1.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "serve-favicon": "^2.5.0"
+    "serve-favicon": "^2.5.0",
+    "ts-node": "^10.6.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
