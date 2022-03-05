@@ -1,6 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
-import api from '@/api/services/api';
+import api from '@/api/api';
 
 import appStatus from './appStatusReducer';
 import notifications from './notificationsReducer';

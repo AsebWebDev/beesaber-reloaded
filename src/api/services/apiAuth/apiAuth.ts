@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-invalid-void-type */
-import api from '../api';
+import api from '@/api/api';
 
 import type { GooglePayload, GoogleUserData } from '@/sharedTypes';
 

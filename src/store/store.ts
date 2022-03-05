@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/dist/query/react';
 
-import { apiInitialState } from '@/api/services/api';
+import { apiInitialState } from '@/api/api';
 import { apiAuth } from '@/api/services/apiAuth/apiAuth';
 import { apiPlayer } from '@/api/services/apiPlayer/apiPlayer';
 import { apiUser } from '@/api/services/apiUser/apiUser';
