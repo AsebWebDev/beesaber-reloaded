@@ -1,8 +1,8 @@
-const express = require('express');
-const mongoose = require('mongoose');
-// const passport = require('passport')
+import express from 'express';
+import mongoose from 'mongoose';
+import User from '../models/User';
+
 const router = express.Router();
-const User = require('../models/User');
 
 router.post('/checkValidMongoId', (req, res, next) => {
   mongoose.Types.ObjectId.isValid(req.body.id);
@@ -12,17 +12,17 @@ router.post('/googlelogin', (req, res, next) => {
   const { googleId, profileObj } = req.body;
   const { name, imageUrl } = profileObj;
   User.findOne({ googleId })
-    .then((userDoc) => {
+    .then((userDoc: Express.User) => {
       if (!userDoc) {
         console.log('No user in database');
         new User({ googleName: name, googleId, googleImageUrl: imageUrl })
           .save()
-          .then((newUser) => {
+          .then((newUser: Express.User) => {
             req.logIn(userDoc, () => {
               res.json(newUser);
             });
           })
-          .catch((err) => next(err));
+          .catch((err: unknown) => next(err));
       }
       if (userDoc) {
         req.logIn(userDoc, () => {
@@ -30,15 +30,16 @@ router.post('/googlelogin', (req, res, next) => {
         });
       }
     })
-    .catch((err) => next(err));
+    .catch((err: unknown) => next(err));
 });
 
 router.post('/logout', (req, res) => res.sendStatus(200));
 
-module.exports = router;
+export default router;
 
 // Bcrypt to encrypt passwords
-// const bcrypt = require("bcrypt")
+// import passport from 'passport';
+// import bcrypt from 'bcrypt'
 // const bcryptSalt = 10
 
 // router.post("/login", (req, res, next) => {

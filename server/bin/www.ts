@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 
-const http = require('http');
+import http from 'http';
+import app from '../app';
 
-let app = require('../app');
+const server = http.createServer(app);
 
-let server = http.createServer(app);
-
-server.on('error', error => {
+server.on('error', (error: ErrnoException) => {
   if (error.syscall !== 'listen') {
-    throw error
+    throw error;
   }
 
   // handle specific listen errors with friendly messages
@@ -26,7 +25,7 @@ server.on('error', error => {
   }
 });
 
-if (!process.env.PORT) process.env.PORT = 5001;
+if (!process.env.PORT) process.env.PORT = '5001';
 
 server.listen(process.env.PORT, () => {
   console.log(`Listening on http://localhost:${process.env.PORT}`);
