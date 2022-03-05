@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 
 import Message from './Message';
 
-import type BadgeColor from '@/sharedTypes/BadgeColor';
+import type BadgeColor from '@/../sharedTypes/BadgeColor';
 
 describe('components/common/Message', () => {
   it.each(['danger', 'default', 'primary', 'secondary', 'success', 'warning'])(

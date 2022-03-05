@@ -1,4 +1,4 @@
-import type { Score, Scores } from '@/sharedTypes';
+import type { Score, Scores } from '@/../sharedTypes';
 
 const isInQuery = (score: Score, query: string): boolean => {
   if (query === '') return true;

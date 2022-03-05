@@ -1,6 +1,6 @@
 import { exampleScoreData } from '@/testing/testData/exampleScores';
 
-import type { Bee } from '@/sharedTypes/Bee';
+import type { Bee } from '@/../sharedTypes/Bee';
 
 const exampleBee: Bee = {
   playerId: '34365656',

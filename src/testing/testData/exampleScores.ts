@@ -1,7 +1,7 @@
 import { calcScoreHashed, calcTopScores } from '@/helper/calcScores';
 
-import type { ScoreData, Scores } from '@/sharedTypes';
-import type { PlayedBy } from '@/sharedTypes/UserScores';
+import type { ScoreData, Scores } from '@/../sharedTypes';
+import type { PlayedBy } from '@/../sharedTypes/UserScores';
 
 const examplePlayedBy: PlayedBy = {
   playerId: '12345',

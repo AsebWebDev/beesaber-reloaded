@@ -1,4 +1,4 @@
-import type ScoreSaberUserInfo from '@/sharedTypes/ScoreSaberUserInfo';
+import type ScoreSaberUserInfo from '@/../sharedTypes/ScoreSaberUserInfo';
 
 const exampleSSUserInfo: ScoreSaberUserInfo = {
   playerInfo: {

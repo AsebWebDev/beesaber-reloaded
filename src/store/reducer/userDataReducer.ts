@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { GoogleUserData, ScoreData, UserData } from '@/sharedTypes';
+import type { GoogleUserData, ScoreData, UserData } from '@/../sharedTypes';
 import type { RootState } from './rootReducer';
 
 const name = 'userData';

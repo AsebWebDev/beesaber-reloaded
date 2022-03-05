@@ -1,5 +1,10 @@
-import type { Score, ScoreData, UserScores } from '@/sharedTypes/UserScores';
-import type { ScoreSaberUserInfo, UserData } from '../sharedTypes';
+import type {
+  Score,
+  ScoreData,
+  ScoreSaberUserInfo,
+  UserData,
+  UserScores,
+} from '../../sharedTypes';
 
 const parseUserData = (
   userData: UserData,

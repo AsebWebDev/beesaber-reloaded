@@ -1,4 +1,4 @@
-import type { UserData } from '@/sharedTypes/UserData';
+import type { UserData } from '@/../sharedTypes/UserData';
 
 const exampleUserData: UserData = {
   googleId: '123',

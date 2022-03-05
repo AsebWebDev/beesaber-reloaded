@@ -6,7 +6,7 @@ import getAllScores from '@/api/services/helper/getAllScores';
 import { useAppDispatch } from '@/store/hooks';
 import { userIsFetchingData } from '@/store/reducer/appStatusReducer';
 
-import type { ScoreData } from '@/sharedTypes';
+import type { ScoreData } from '@/../sharedTypes';
 
 /**
  * Fetch and parse all score data of a user

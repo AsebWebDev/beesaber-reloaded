@@ -34,8 +34,8 @@ import tokens from '@/tokens';
 import FoundPlayersList from './FoundPlayersList/FoundPlayersList';
 import useQueryForPlayers from './useQueryForPlayers';
 
-import type { Bee } from '@/sharedTypes';
-import type { PlayerInfo } from '@/sharedTypes/ScoreSaberUserInfo';
+import type { Bee } from '@/../sharedTypes';
+import type { PlayerInfo } from '@/../sharedTypes/ScoreSaberUserInfo';
 
 const ModalContent = styled(MDBModalContent)`
   background-color: ${tokens.color.page.bgColor.light};

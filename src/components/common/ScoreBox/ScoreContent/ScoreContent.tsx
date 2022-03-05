@@ -6,7 +6,7 @@ import tokens from '@/tokens';
 
 import HighScoresForOneSong from './HighScoresForOneSong/HighScoresForOneSong';
 
-import type { Scores } from '@/sharedTypes';
+import type { Scores } from '@/../sharedTypes';
 
 const TableHead = styled(MDBTableHead)`
   color: ${tokens.color.yellow.main};

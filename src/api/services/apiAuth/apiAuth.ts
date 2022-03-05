@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-invalid-void-type */
 import api from '@/api/api';
 
-import type { GooglePayload, GoogleUserData } from '@/sharedTypes';
+import type { GooglePayload, GoogleUserData } from '@/../sharedTypes';
 
 const baseUrl =
   process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:5001/api';

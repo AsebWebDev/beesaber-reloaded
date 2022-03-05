@@ -6,7 +6,7 @@ import exampleUserData from '@/testing/testData/exampleUserData';
 
 import reducer, { selectUserData, userDataUpdated } from './userDataReducer';
 
-import type { UserData } from '@/sharedTypes/UserData';
+import type { UserData } from '@/../sharedTypes/UserData';
 import type { RootState } from '@/store/store';
 
 const middlewares = [thunk];

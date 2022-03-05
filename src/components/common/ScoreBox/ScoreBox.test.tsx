@@ -9,7 +9,7 @@ import { exampleScoreData } from '@/testing/testData/exampleScores';
 
 import ScoreBox from './ScoreBox';
 
-import type { Score } from '@/sharedTypes';
+import type { Score } from '@/../sharedTypes';
 
 const mockStore = configureMockStore();
 

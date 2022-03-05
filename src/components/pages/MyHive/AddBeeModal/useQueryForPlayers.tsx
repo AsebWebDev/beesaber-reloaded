@@ -10,7 +10,7 @@ import useDebounce from '@/sharedHooks/useDebounce';
 import { useAppSelector } from '@/store/hooks';
 import { selectUserId } from '@/store/reducer/userDataReducer';
 
-import type { PlayerInfo } from '@/sharedTypes/ScoreSaberUserInfo';
+import type { PlayerInfo } from '@/../sharedTypes/ScoreSaberUserInfo';
 
 type Props = {
   query: string;

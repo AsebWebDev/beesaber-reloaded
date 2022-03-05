@@ -1,6 +1,6 @@
 import api from '@/api/api';
 
-import type { UserData } from '@/sharedTypes';
+import type { UserData } from '@/../sharedTypes';
 
 const baseUrl =
   process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:5001/api';

@@ -6,7 +6,7 @@ import DiffTag from '@/components/common/DiffTag/DiffTag';
 import { parseSongPicUrl } from '@/helper/urlParser';
 import tokens from '@/tokens';
 
-import type { Score } from '@/sharedTypes';
+import type { Score } from '@/../sharedTypes';
 // import HighscoreTable from "./HighscoreTable";
 
 const Badge = styled(MDBBadge)`

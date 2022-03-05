@@ -10,7 +10,7 @@ import ScoreContent from './ScoreContent/ScoreContent';
 import ScoreHeader from './ScoreHeader/ScoreHeader';
 import ScoreNavbar from './ScoreNavbar/ScoreNavbar';
 
-import type { Bee, Scores, UserData } from '@/sharedTypes';
+import type { Bee, Scores, UserData } from '@/../sharedTypes';
 
 const Container = styled(MDBContainer)`
   display: flex;

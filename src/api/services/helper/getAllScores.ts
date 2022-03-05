@@ -3,7 +3,7 @@ import { apiPlayer } from '@/api/services/apiPlayer/apiPlayer';
 import { calcScoreHashed, calcTopScores } from '@/helper/calcScores';
 import store from '@/store/store';
 
-import type { ScoreData, Scores } from '@/sharedTypes';
+import type { ScoreData, Scores } from '@/../sharedTypes';
 
 type Props = {
   array?: Scores;

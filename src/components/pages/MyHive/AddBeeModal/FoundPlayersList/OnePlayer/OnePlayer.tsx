@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import createLocalImageUrl from '@/helper/createLocalImageUrl';
 import { parseAvatarUrl } from '@/helper/urlParser';
 
-import type { PlayerInfo } from '@/sharedTypes/ScoreSaberUserInfo';
+import type { PlayerInfo } from '@/../sharedTypes/ScoreSaberUserInfo';
 
 const Player = styled.div`
   display: flex;

@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import type BadgeColor from '@/sharedTypes/BadgeColor';
-import type { Difficulty, DifficultyName } from '@/sharedTypes/UserScores';
+import type BadgeColor from '@/../sharedTypes/BadgeColor';
+import type { Difficulty, DifficultyName } from '@/../sharedTypes/UserScores';
 
 const Tag = styled.span`
   margin: 1px 2px 1px 2px;

@@ -4,7 +4,7 @@ import exampleScores from '@/testing/testData/exampleScores';
 
 import HighScoresForOneSong from './HighScoresForOneSong';
 
-import type { Score } from '@/sharedTypes';
+import type { Score } from '@/../sharedTypes';
 
 describe('components/common/ScoreBox/ScoreContent/HighScoresForOneSong', () => {
   const highscore = exampleScores[0];

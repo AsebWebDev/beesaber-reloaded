@@ -1,7 +1,7 @@
 import api from '@/api/api';
 
-import type { Scores, ScoreSaberUserInfo, UserScores } from '@/sharedTypes';
-import type { PlayerInfo } from '@/sharedTypes/ScoreSaberUserInfo';
+import type { Scores, ScoreSaberUserInfo, UserScores } from '@/../sharedTypes';
+import type { PlayerInfo } from '@/../sharedTypes/ScoreSaberUserInfo';
 
 const baseUrl = 'https://new.scoresaber.com/api';
 

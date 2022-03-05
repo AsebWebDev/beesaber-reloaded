@@ -1,4 +1,4 @@
-import type { Scores } from '@/sharedTypes';
+import type { Scores } from '@/../sharedTypes';
 
 const calcTopScores = (scoresRecent: Scores): Scores =>
   [...scoresRecent].sort((a, b) => b.score - a.score);

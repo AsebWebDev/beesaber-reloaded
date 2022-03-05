@@ -1,4 +1,4 @@
-import type BadgeColor from '@/sharedTypes/BadgeColor';
+import type BadgeColor from '@/../sharedTypes/BadgeColor';
 
 type Props = {
   text: string;

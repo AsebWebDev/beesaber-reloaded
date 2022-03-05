@@ -7,7 +7,7 @@ import { useAppSelector } from '@/store/hooks';
 import { selectUserName } from '@/store/reducer/userDataReducer';
 import tokens from '@/tokens';
 
-import type { Bee } from '@/sharedTypes';
+import type { Bee } from '@/../sharedTypes';
 
 const Header = styled.div`
   display: flex;

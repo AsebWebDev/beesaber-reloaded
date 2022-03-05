@@ -14,7 +14,7 @@ import { selectUserId } from '@/store/reducer/userDataReducer';
 import AddBeeModal from './AddBeeModal/AddBeeModal';
 
 // import UserInfo from '../UserInfo';
-import type { Bee } from '@/sharedTypes';
+import type { Bee } from '@/../sharedTypes';
 
 const Container = styled.div`
   width: 100%;

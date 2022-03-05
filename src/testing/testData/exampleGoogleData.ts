@@ -1,4 +1,4 @@
-import type { GooglePayload, GoogleUserData } from '@/sharedTypes';
+import type { GooglePayload, GoogleUserData } from '@/../sharedTypes';
 
 const exampleGooglePayLoad: GooglePayload = {
   googleId: '111222333',

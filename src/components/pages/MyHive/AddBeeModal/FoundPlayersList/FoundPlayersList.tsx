@@ -9,7 +9,7 @@ import tokens from '@/tokens';
 
 import OnePlayer from './OnePlayer/OnePlayer';
 
-import type { PlayerInfo } from '@/sharedTypes/ScoreSaberUserInfo';
+import type { PlayerInfo } from '@/../sharedTypes/ScoreSaberUserInfo';
 
 const Container = styled.div`
   display: flex;

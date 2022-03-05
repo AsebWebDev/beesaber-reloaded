@@ -23,7 +23,7 @@ import type {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login';
-import type { GoogleUserData } from '@/sharedTypes';
+import type { GoogleUserData } from '@/../sharedTypes';
 
 const Container = styled.div`
   ${mediaQuery.mobile} {

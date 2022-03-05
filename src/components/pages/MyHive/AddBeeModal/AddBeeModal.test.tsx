@@ -15,8 +15,8 @@ import exampleSSUserInfo, {
 import AddBeeModal from './AddBeeModal';
 import * as useQueryForPlayers from './useQueryForPlayers';
 
-import type { ScoreData } from '@/sharedTypes';
-import type { PlayerInfo } from '@/sharedTypes/ScoreSaberUserInfo';
+import type { ScoreData } from '@/../sharedTypes';
+import type { PlayerInfo } from '@/../sharedTypes/ScoreSaberUserInfo';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
