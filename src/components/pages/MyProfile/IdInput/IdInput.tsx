@@ -30,10 +30,8 @@ const IdInput = (): JSX.Element | null => {
   const [updateUser] = useUpdateUserDataMutation();
   const myScoreSaberId = userDataResult?.myScoreSaberId;
 
-  const [idInput, setIdInput] = useState<string>(
-    myScoreSaberId !== undefined ? myScoreSaberId : ''
-  );
-  const { data: fullPlayer } = useGetFullPlayerQuery(idInput);
+  const [idInput, setIdInput] = useState<string | undefined>(myScoreSaberId);
+  const { data: fullPlayer } = useGetFullPlayerQuery(idInput ?? skipToken);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
     setIdInput(e.target.value);
@@ -41,7 +39,7 @@ const IdInput = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
   const handleSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (userId === undefined) return;
+    if (userId === undefined || idInput === undefined) return;
 
     dispatch(userIsFetchingData({ status: true, statusText: 'Saving ID...' }));
     try {
