@@ -41,6 +41,9 @@ const NeonButton = styled(NeonButtonBase)`
 const MyHiveBees = styled.div`
   display: flex;
   gap: 1rem;
+  padding: 0 7rem;
+  flex-wrap: wrap;
+  width: 100%;
 `;
 
 const MyHive = (): JSX.Element | null => {
