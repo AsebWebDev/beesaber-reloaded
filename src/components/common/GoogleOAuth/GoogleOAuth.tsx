@@ -79,6 +79,8 @@ const GoogleOAuth = (): JSX.Element | null => {
       {!isLoggedIn && (
         <GoogleLogin
           clientId={clientId}
+          // react-google-login does not work with this rule:
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onSuccess={onSuccess}
           onFailure={() => errHandler(new Error('Google login failed'))}
           {...loginProps}
@@ -87,6 +89,8 @@ const GoogleOAuth = (): JSX.Element | null => {
       {isLoggedIn && (
         <GoogleLogout
           clientId={clientId}
+          // react-google-login does not work with this rule:
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onLogoutSuccess={logout}
           {...logoutProps}
         />

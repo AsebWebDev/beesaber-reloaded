@@ -4,8 +4,8 @@ import User from '../models/User';
 
 const router = express.Router();
 
-router.post('/checkValidMongoId', (req, res, next) => {
-  mongoose.Types.ObjectId.isValid(req.body.id);
+router.get('/checkValidMongoId/:id', (req, res, next) => {
+  mongoose.Types.ObjectId.isValid(req.params.id);
 });
 
 router.post('/googlelogin', (req, res, next) => {

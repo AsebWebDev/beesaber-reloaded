@@ -37,12 +37,10 @@ export const apiAuth = api.injectEndpoints({
       }),
       invalidatesTags: ['UserData'],
     }),
-    // TODO: Turn into get request
-    isValidMongoId: builder.mutation<boolean, string>({
+    isValidMongoId: builder.query<boolean, string>({
       query: (id) => ({
-        url: `${baseUrl}/checkValidMongoId`,
-        method: 'POST',
-        body: id,
+        url: `${baseUrl}/checkValidMongoId/${id}`,
+        method: 'GET',
       }),
     }),
     logout: builder.query<undefined, void>({
@@ -57,7 +55,7 @@ export const apiAuth = api.injectEndpoints({
 export const {
   useGoogleLoginMutation,
   useGoogleLogoutMutation,
-  useIsValidMongoIdMutation,
+  useIsValidMongoIdQuery,
   useLogoutQuery,
 } = apiAuth;
 

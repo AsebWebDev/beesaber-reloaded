@@ -23,7 +23,7 @@ describe('api/services/apiAuth/apiAuth.ts', () => {
         apiAuth.endpoints.isValidMongoId.initiate('1234')
       );
 
-      expect(response).toStrictEqual({ data: true });
+      expect(response.data).toStrictEqual(true);
     });
   });
 });

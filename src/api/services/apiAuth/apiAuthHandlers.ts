@@ -14,7 +14,7 @@ const handlers = [
   ),
 
   // isValidMongoId
-  rest.post('http://localhost:5001/api/checkValidMongoId', (req, res, ctx) =>
+  rest.get('http://localhost:5001/api/checkValidMongoId/:id', (req, res, ctx) =>
     res(ctx.status(200), ctx.json(true))
   ),
 ];
