@@ -22,9 +22,15 @@ type Props = {
   bee: Bee;
   handleDelete: (bee: Bee) => Promise<void>;
   handleSelect: (bee: Bee) => void;
+  isSelected: boolean;
 };
 
-const BeeTag = ({ bee, handleDelete, handleSelect }: Props): JSX.Element => {
+const BeeTag = ({
+  bee,
+  handleDelete,
+  handleSelect,
+  isSelected,
+}: Props): JSX.Element => {
   const { playerName } = bee;
 
   const tooltipContent = <p>{bee.playerId}</p>;
@@ -41,7 +47,7 @@ const BeeTag = ({ bee, handleDelete, handleSelect }: Props): JSX.Element => {
       onClick={() => handleSelect(bee)}
     >
       <MDBTooltip tag="span" title={tooltipContent}>
-        <MDBBadge color="warning">
+        <MDBBadge color={isSelected ? 'info' : 'warning'}>
           <BeeIcon className="fab fa-forumbee" aria-hidden="true" />
           {playerName}
           <TrashIcon className="fas fa-trash" onClick={handelDeleteClick} />
