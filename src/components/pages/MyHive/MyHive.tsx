@@ -62,7 +62,7 @@ const MyHive = (): JSX.Element | null => {
   const { bees } = userData;
   const [modal, setModal] = useState(false);
 
-  const [currentBee, setCurrentBee] = useState<Bee | null>(null);
+  const [currentBee, setCurrentBee] = useState<Bee | null>(bees[0]);
   const beesExists = bees.length > 0;
   const toggleModal = () => setModal(!modal);
   const handleSelect = (bee: Bee) => setCurrentBee(bee);
@@ -97,6 +97,7 @@ const MyHive = (): JSX.Element | null => {
             bee={bee}
             handleSelect={handleSelect}
             handleDelete={handleDelete}
+            isSelected={currentBee?.playerId === bee.playerId}
           />
         ))}
         {!beesExists && <p>No bees yet</p>}
