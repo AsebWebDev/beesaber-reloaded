@@ -15,7 +15,7 @@ import {
   MDBTabsLink,
   MDBTabsPane,
 } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
@@ -64,6 +64,20 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
 
   const { foundPlayers, showSpinner, thatIsYou, userAlreadyAdded } =
     useQueryForPlayers({ query, searchBy });
+
+  const handleEscKey = useCallback((event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      toggleModal();
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleEscKey, false);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey, false);
+    };
+  }, []);
 
   useEffect(() => {
     if (foundPlayers !== null && foundPlayers.length === 1)
@@ -115,11 +129,12 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
       }),
       {
         pending: `Saving ${beeToAdd.playerName}...`,
-        success: `user ${beeToAdd.playerName} has been saved 👌`,
+        success: `Player ${beeToAdd.playerName} has been saved 👌`,
         error: `There has been an issue saving ${beeToAdd.playerName} 🤯`,
       }
     );
     setQuery('');
+    setSelectedPlayer(undefined);
   };
 
   const switchTab = (tab: Tab) => {

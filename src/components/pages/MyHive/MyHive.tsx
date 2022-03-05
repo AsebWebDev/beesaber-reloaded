@@ -1,9 +1,13 @@
 import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
-import { useGetUserDataQuery } from '@/api/services/apiUser/apiUser';
+import {
+  useGetUserDataQuery,
+  useUpdateUserDataMutation,
+} from '@/api/services/apiUser/apiUser';
 import BeeTag from '@/components/common/BeeTag/BeeTag';
 import NeonButtonBase from '@/components/common/NeonButton/NeonButton';
 import ScoreBox from '@/components/common/ScoreBox/ScoreBox';
@@ -14,7 +18,6 @@ import { selectUserId } from '@/store/reducer/userDataReducer';
 
 import AddBeeModal from './AddBeeModal/AddBeeModal';
 
-// import UserInfo from '../UserInfo';
 import type { Bee } from '@/../sharedTypes';
 
 const Container = styled.div`
@@ -45,8 +48,9 @@ const MyHive = (): JSX.Element | null => {
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
   const userId = useAppSelector(selectUserId);
   const { data: userData } = useGetUserDataQuery(userId ?? skipToken);
+  const [updateUser] = useUpdateUserDataMutation();
 
-  if (!isLoggedIn || userData === undefined) {
+  if (!isLoggedIn || userData === undefined || userId === undefined) {
     history.push('/'); // Redirect to the main page
 
     return null;
@@ -59,6 +63,25 @@ const MyHive = (): JSX.Element | null => {
   const beesExists = bees.length > 0;
   const toggleModal = () => setModal(!modal);
   const handleSelect = (bee: Bee) => setCurrentBee(bee);
+  const handleDelete = async (beeToDelete: Bee) => {
+    const newBees = bees.filter(
+      (bee: Bee) => bee.playerId !== beeToDelete.playerId
+    );
+
+    await toast.promise(
+      updateUser({
+        userId,
+        userData: { bees: newBees },
+      }),
+      {
+        pending: `Deleting ${beeToDelete.playerName}...`,
+        success: `Your Bee ${beeToDelete.playerName} has been deleted. 👋`,
+        error: `There has been an issue deleting ${beeToDelete.playerName} 🤯`,
+      }
+    );
+
+    setCurrentBee(bees[0]);
+  };
 
   return (
     <Container>
@@ -66,7 +89,12 @@ const MyHive = (): JSX.Element | null => {
       <NeonButton text="Add a Bee" onClick={toggleModal} />
       <MyHiveBees>
         {bees.map((bee) => (
-          <BeeTag bee={bee} handleSelect={handleSelect} />
+          <BeeTag
+            key={bee.playerId}
+            bee={bee}
+            handleSelect={handleSelect}
+            handleDelete={handleDelete}
+          />
         ))}
         {!beesExists && <p>No bees yet</p>}
       </MyHiveBees>
