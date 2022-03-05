@@ -50,7 +50,12 @@ const BeeTag = ({
         <MDBBadge color={isSelected ? 'info' : 'warning'}>
           <BeeIcon className="fab fa-forumbee" aria-hidden="true" />
           {playerName}
-          <TrashIcon className="fas fa-trash" onClick={handelDeleteClick} />
+
+          <TrashIcon
+            className="fas fa-trash"
+            onClick={handelDeleteClick}
+            aria-label={`delete ${playerName}`}
+          />
         </MDBBadge>
       </MDBTooltip>
     </span>

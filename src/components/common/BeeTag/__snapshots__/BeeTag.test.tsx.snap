@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`component/common/BeeTag should match snapshot 1`] = `
+.c0 {
+  padding-right: 0.5rem;
+}
+
+.c1 {
+  padding-left: 0.5rem;
+}
+
+.c1:hover {
+  color: #ff0025;
+  cursor: pointer;
+}
+
+<span>
+  <span>
+    <span
+      class="badge bg-warning"
+    >
+      <i
+        aria-hidden="true"
+        class="c0 fab fa-forumbee"
+      />
+      example Bee
+      <a
+        aria-label="delete example Bee"
+        class="c1 fas fa-trash"
+      />
+    </span>
+  </span>
+</span>
+`;
+
+exports[`component/common/BeeTag should match snapshot 2`] = `
+.c0 {
+  padding-right: 0.5rem;
+}
+
+.c1 {
+  padding-left: 0.5rem;
+}
+
+.c1:hover {
+  color: #ff0025;
+  cursor: pointer;
+}
+
+<span>
+  <span>
+    <span
+      class="badge bg-info"
+    >
+      <i
+        aria-hidden="true"
+        class="c0 fab fa-forumbee"
+      />
+      example Bee
+      <a
+        aria-label="delete example Bee"
+        class="c1 fas fa-trash"
+      />
+    </span>
+  </span>
+</span>
+`;
