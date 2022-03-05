@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
-import { errHandler } from '@/api/api';
+import errHandler from '@/api/errHandler';
 import { useGetFullPlayerQuery } from '@/api/services/apiPlayer/apiPlayer';
 import {
   useGetUserDataQuery,
@@ -17,7 +17,7 @@ import { userIsFetchingData } from '@/store/reducer/appStatusReducer';
 import { selectUserId, userDataUpdated } from '@/store/reducer/userDataReducer';
 
 import type { ChangeEvent } from 'react';
-import type { PossibleResponses } from '@/api/api';
+import type { PossibleResponses } from '@/api/errHandler';
 
 const IdForm = styled.form`
   display: flex;

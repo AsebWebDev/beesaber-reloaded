@@ -4,7 +4,7 @@
 
 import axios from 'axios';
 
-import { errHandler } from './api';
+import errHandler from './errHandler';
 
 import type { AxiosError } from 'axios';
 

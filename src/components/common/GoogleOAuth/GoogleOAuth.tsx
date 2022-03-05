@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
-import { errHandler } from '@/api/api';
+import errHandler from '@/api/errHandler';
 import {
   useGoogleLoginMutation,
   useGoogleLogoutMutation,

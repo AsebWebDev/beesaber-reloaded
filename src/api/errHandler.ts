@@ -1,20 +1,11 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-import userApi from './userApi';
-
 import type { AxiosError } from 'axios';
 import type {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login';
-
-const service = axios.create({
-  baseURL:
-    process.env.NODE_ENV === 'production'
-      ? '/api'
-      : 'http://localhost:5001/api',
-});
 
 type ErrorBody = {
   message: string;
@@ -43,12 +34,6 @@ const errHandler = (err: PossibleResponses): string => {
   return errorString;
 };
 
-const api = {
-  userApi,
-};
-
 export type { PossibleResponses };
 
-export { errHandler, service };
-
-export default api;
+export default errHandler;
