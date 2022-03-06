@@ -49,13 +49,16 @@ const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
     if (
       foundPlayers !== null &&
       foundPlayers.length === 1 &&
-      userData !== undefined &&
-      userData.bees.length > 0
+      userData !== undefined
     ) {
       setThatIsYou(foundPlayers[0].playerId === userData.myScoreSaberId);
-      setUserAlreadyAdded(
-        userData.bees.some((item) => item.playerId === foundPlayers[0].playerId)
-      );
+
+      if (userData.bees.length > 0)
+        setUserAlreadyAdded(
+          userData.bees.some(
+            (item) => item.playerId === foundPlayers[0].playerId
+          )
+        );
     } else {
       setThatIsYou(false);
       setUserAlreadyAdded(false);
