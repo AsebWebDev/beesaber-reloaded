@@ -33,37 +33,44 @@ describe('OnePlayer', () => {
     }
   );
 
-  it.each`
-    amount        | isOnlyResult | icon
-    ${'one'}      | ${true}      | ${'minus'}
-    ${'multiple'} | ${false}     | ${'plus'}
-  `(
-    'should show $icon icon, when $amount player(s) found',
-    ({
-      icon,
-      isOnlyResult,
-    }: {
-      icon: 'minus' | 'plus';
-      isOnlyResult: boolean;
-    }) => {
-      render(
-        <table>
-          <tbody>
-            <OnePlayer
-              handleSelect={jest.fn()}
-              player={player}
-              isAlreadyAdded={false}
-              isOnlyResult={isOnlyResult}
-            />
-          </tbody>
-        </table>
-      );
+  it('should show icon, when multiple players are found', () => {
+    render(
+      <table>
+        <tbody>
+          <OnePlayer
+            handleSelect={jest.fn()}
+            player={player}
+            isAlreadyAdded={false}
+            isOnlyResult={false}
+          />
+        </tbody>
+      </table>
+    );
 
-      const selectableIcon = screen.getByTestId('select-icon');
+    const selectableIcon = screen.queryByTestId('select-icon');
 
-      expect(selectableIcon).toHaveClass(`fa-${icon}-circle`);
-    }
-  );
+    expect(selectableIcon).toBeInTheDocument();
+  });
+
+  it('should hide icon, when only one player is found', () => {
+    render(
+      <table>
+        <tbody>
+          <OnePlayer
+            handleSelect={jest.fn()}
+            player={player}
+            isAlreadyAdded={false}
+            isOnlyResult={true}
+          />
+        </tbody>
+      </table>
+    );
+
+    const selectableIcon = screen.queryByTestId('select-icon');
+
+    expect(selectableIcon).not.toBeInTheDocument();
+  });
+
   it('should hide icon, when player is already added', () => {
     render(
       <table>

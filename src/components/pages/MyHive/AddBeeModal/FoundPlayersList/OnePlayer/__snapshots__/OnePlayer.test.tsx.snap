@@ -32,12 +32,7 @@ exports[`OnePlayer should match snapshot for multiple found player(s) 1`] = `
   <td>
     US
   </td>
-  <td>
-    <i
-      class="fas fa-minus-circle"
-      data-testid="select-icon"
-    />
-  </td>
+  <td />
 </tr>
 `;
 
@@ -73,11 +68,6 @@ exports[`OnePlayer should match snapshot for one found player(s) 1`] = `
   <td>
     US
   </td>
-  <td>
-    <i
-      class="fas fa-minus-circle"
-      data-testid="select-icon"
-    />
-  </td>
+  <td />
 </tr>
 `;

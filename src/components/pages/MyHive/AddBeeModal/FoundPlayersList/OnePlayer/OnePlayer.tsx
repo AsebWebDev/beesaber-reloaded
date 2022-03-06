@@ -45,12 +45,12 @@ function OnePlayer({
       <td>{rank}</td>
       <td>{country}</td>
       <td>
-        {handleSelect !== undefined && !isAlreadyAdded && (
+        {handleSelect !== undefined && !isAlreadyAdded && !isOnlyResult && (
           <MDBIcon
             data-testid="select-icon"
             onClick={() => handleSelect(player)}
             fas
-            icon={isOnlyResult ? 'minus-circle' : 'plus-circle'}
+            icon={'plus-circle'}
           />
         )}
       </td>
