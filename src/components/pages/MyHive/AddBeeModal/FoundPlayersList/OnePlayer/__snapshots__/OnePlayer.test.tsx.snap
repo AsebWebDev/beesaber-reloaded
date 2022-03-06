@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`OnePlayer should match snapshot for multiple found player(s) 1`] = `
+.c1 {
+  margin-right: 1rem;
+  max-width: 2rem;
+}
+
 .c0 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-}
-
-.c1 {
-  margin-right: 1rem;
-  max-width: 2rem;
 }
 
 <tr>
@@ -37,16 +37,16 @@ exports[`OnePlayer should match snapshot for multiple found player(s) 1`] = `
 `;
 
 exports[`OnePlayer should match snapshot for one found player(s) 1`] = `
+.c1 {
+  margin-right: 1rem;
+  max-width: 2rem;
+}
+
 .c0 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-}
-
-.c1 {
-  margin-right: 1rem;
-  max-width: 2rem;
 }
 
 <tr>

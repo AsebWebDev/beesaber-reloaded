@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`components/common/Avatar should match snapshot 1`] = `
+.c0 {
+  margin-right: 1rem;
+  max-width: 2rem;
+}
+
+<img
+  alt="Avatar of player example Bee"
+  class="c0"
+  src="https://new.scoresaber.comsomeAvatarString"
+/>
+`;

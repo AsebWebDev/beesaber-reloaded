@@ -90,37 +90,6 @@ describe('OnePlayer', () => {
     expect(lastCell).toBeNull();
   });
 
-  it.each`
-    avatar           | avatarLink
-    ${'not present'} | ${undefined}
-    ${'oculus'}      | ${'/images/oculus.png'}
-    ${'steam'}       | ${'/images/steam.png'}
-  `(
-    'should show avatar placeholder, when avatar is $avatar',
-    (avatarLink: string) => {
-      const mockedPlayer = { ...player, avatar: avatarLink };
-
-      render(
-        <table>
-          <tbody>
-            <OnePlayer
-              handleSelect={jest.fn()}
-              player={mockedPlayer}
-              isAlreadyAdded={false}
-              isOnlyResult={false}
-            />
-          </tbody>
-        </table>
-      );
-
-      const avatar = screen.getByRole('img', {
-        name: `Avatar of player ${mockedPlayer.playerName}`,
-      }) as HTMLImageElement;
-
-      expect(avatar.src).toContain(`https://new.scoresaber.com${avatarLink}`);
-    }
-  );
-
   it('should call handleSelect, when icon clicked', () => {
     const mockHandleSelect = jest.fn();
 

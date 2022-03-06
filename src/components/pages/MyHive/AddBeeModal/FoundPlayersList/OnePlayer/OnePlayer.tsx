@@ -1,18 +1,12 @@
 import { MDBIcon } from 'mdb-react-ui-kit';
 import styled from 'styled-components';
 
-import createLocalImageUrl from '@/helper/createLocalImageUrl';
-import { parseAvatarUrl } from '@/helper/urlParser';
+import Avatar from '@/components/common/Avatar/Avatar';
 
 import type { PlayerInfo } from '@/../sharedTypes/ScoreSaberUserInfo';
 
 const Player = styled.div`
   display: flex;
-`;
-
-const Avatar = styled.img`
-  margin-right: 1rem;
-  max-width: 2rem;
 `;
 
 type Props = {
@@ -29,16 +23,12 @@ function OnePlayer({
   player,
 }: Props): JSX.Element | null {
   const { rank, country, playerId, playerName, avatar } = player;
-  const url =
-    avatar === '/images/steam.png' || avatar === '/images/oculus.png'
-      ? createLocalImageUrl('bee.jpg')
-      : parseAvatarUrl(avatar);
 
   return (
     <tr key={playerId}>
       <td>
         <Player>
-          <Avatar src={url} alt={`Avatar of player ${playerName}`} />
+          <Avatar avatar={avatar} playerName={playerName} />
           {playerName}
         </Player>
       </td>
