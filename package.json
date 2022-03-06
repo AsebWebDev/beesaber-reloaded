@@ -120,6 +120,7 @@
     "postcss": "^8.3.11",
     "postcss-scss": "^4.0.1",
     "prettier": "^2.4.1",
+    "react-country-flag": "^3.0.2",
     "redux-devtools-extension": "^2.13.9",
     "redux-mock-store": "^1.5.4",
     "sort-package-json": "^1.52.0",

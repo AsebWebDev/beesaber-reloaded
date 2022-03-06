@@ -26,8 +26,12 @@ exports[`components/common/BeeTag/Tooltip should match snapshot 1`] = `
   />
   example Bee
   <br />
-  en
-  <br />
+  <span
+    role="img"
+    style="display: inline-block; font-size: 1em; line-height: 1em; vertical-align: middle;"
+  >
+    🇪🇳
+  </span>
   4000
   <br />
 </span>

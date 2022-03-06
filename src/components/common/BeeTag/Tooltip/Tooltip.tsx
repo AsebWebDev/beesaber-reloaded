@@ -1,3 +1,4 @@
+import Flag from 'react-country-flag';
 import styled from 'styled-components';
 
 import Avatar from '@/components/common/Avatar/Avatar';
@@ -21,8 +22,7 @@ const Tooltip = ({ bee }: Props): JSX.Element => {
       <Avatar avatar={avatar} playerName={playerName} />
       {playerName}
       <br />
-      {country}
-      <br />
+      <Flag countryCode={country} />
       {rank}
       <br />
     </Container>
