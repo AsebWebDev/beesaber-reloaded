@@ -90,13 +90,16 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
 
   useEffect(() => {
     if (selectedPlayer === undefined) return;
-    const { playerId, playerName } = selectedPlayer;
+    const { avatar, playerId, playerName, rank, country } = selectedPlayer;
     const buildBee = async () => {
       const scoreData = await getAllScores(playerId);
 
       setBeeToAdd({
+        avatar,
+        country,
         playerId,
         playerName,
+        rank,
         scoreData,
       });
     };
@@ -135,6 +138,7 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
     );
     setQuery('');
     setSelectedPlayer(undefined);
+    setBeeToAdd(undefined);
   };
 
   const switchTab = (tab: Tab) => {

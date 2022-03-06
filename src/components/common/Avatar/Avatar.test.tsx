@@ -24,13 +24,7 @@ describe('components/common/Avatar', () => {
   `(
     'should show avatar placeholder, when avatar is $avatar',
     (avatarLink: string) => {
-      render(
-        <table>
-          <tbody>
-            <Avatar avatar={avatarLink} playerName={playerName} />
-          </tbody>
-        </table>
-      );
+      render(<Avatar avatar={avatarLink} playerName={playerName} />);
 
       const avatarImg = screen.getByRole('img', {
         name: `Avatar of player ${playerName}`,

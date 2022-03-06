@@ -66,12 +66,12 @@ const MyHive = (): JSX.Element | null => {
   const beesExists = bees.length > 0;
   const toggleModal = () => setModal(!modal);
   const handleSelect = (bee: Bee) => setCurrentBee(bee);
-  const handleDelete = async (beeToDelete: Bee) => {
+  const handleDelete = (beeToDelete: Bee) => {
     const newBees = bees.filter(
       (bee: Bee) => bee.playerId !== beeToDelete.playerId
     );
 
-    await toast.promise(
+    void toast.promise(
       updateUser({
         userId,
         userData: { bees: newBees },
