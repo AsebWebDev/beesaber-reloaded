@@ -2,7 +2,7 @@ import { skipToken } from '@reduxjs/toolkit/dist/query/react';
 import { useEffect, useState } from 'react';
 
 import {
-  useGetFullPlayerQuery,
+  useGetPlayerByIdQuery,
   useGetPlayersByNameQuery,
 } from '@/api/services/apiPlayer/apiPlayer';
 import { useGetUserDataQuery } from '@/api/services/apiUser/apiUser';
@@ -41,7 +41,7 @@ const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
     data: playerById,
     isFetching: isFetchingQueryById,
     error: errorById,
-  } = useGetFullPlayerQuery(debouncedSearchQuery ?? skipToken);
+  } = useGetPlayerByIdQuery(debouncedSearchQuery ?? skipToken);
 
   const showSpinner = isFetchingQueryByName || isFetchingQueryById;
 

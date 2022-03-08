@@ -1,38 +1,36 @@
 import api from '@/api/api';
 
-import type { Scores, ScoreSaberUserInfo, UserScores } from '@/../sharedTypes';
+import type { ScoreData, ScoreSaberUserInfo } from '@/../sharedTypes';
 import type { PlayerInfo } from '@/../sharedTypes/ScoreSaberUserInfo';
 
-const baseUrl = 'https://new.scoresaber.com/api';
+const baseLocalUrl =
+  process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:5001/api';
 
 export const apiPlayer = api.injectEndpoints({
   endpoints: (builder) => ({
-    getRecentScores: builder.query<
-      Scores,
-      { count: number | undefined; id: string }
-    >({
-      query: ({ id, count = 1 }) =>
-        `${baseUrl}/player/${id}/scores/recent/${count}`,
-      transformResponse: (response: UserScores) => response.scores,
+    getAllScores: builder.query<ScoreData, string>({
+      query: (id) => `${baseLocalUrl}/player/${id}/allscores`,
       providesTags: ['Scores'],
     }),
-    getFullPlayer: builder.query<ScoreSaberUserInfo, string>({
-      query: (id) => `${baseUrl}/player/${id}/full`,
+    getPlayerById: builder.query<ScoreSaberUserInfo, string>({
+      query: (id) => `${baseLocalUrl}/player/${id}/playerbyid/`,
       providesTags: ['ScoreSaberUserInfo'],
     }),
     getPlayersByName: builder.query<PlayerInfo[], string>({
-      query: (name) => `${baseUrl}/players/by-name/${name}`,
-      transformResponse: (response: { players: PlayerInfo[] }) =>
-        response.players,
-      providesTags: ['PlayerInfo'],
+      query: (name) => `${baseLocalUrl}/player/${name}/playersbyname`,
+      providesTags: ['ScoreSaberUserInfo'],
+    }),
+    isValidPlayerId: builder.query<boolean, string>({
+      query: (id) => `${baseLocalUrl}/player/${id}/isvalidplayerid/`,
     }),
   }),
 });
 
 export const {
-  useGetFullPlayerQuery,
+  useIsValidPlayerIdQuery,
+  useGetAllScoresQuery,
+  useGetPlayerByIdQuery,
   useGetPlayersByNameQuery,
-  useGetRecentScoresQuery,
 } = apiPlayer;
 
 export default apiPlayer;

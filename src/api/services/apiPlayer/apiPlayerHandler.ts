@@ -17,7 +17,7 @@ const handlers = [
       res(ctx.status(200), ctx.json([exampleSSUserInfo.playerInfo]))
   ),
 
-  // useGetFullPlayerQuery
+  // useGetPlayerByIdQuery
   rest.get('https://new.scoresaber.com/api/player/:id/full', (req, res, ctx) =>
     res(ctx.status(200), ctx.json(exampleSSUserInfo))
   ),

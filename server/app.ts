@@ -13,6 +13,7 @@ import passport from './passport';
 import indexRoutes from './routes/index';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/user';
+import playerRoutes from './routes/player';
 import './configs/database';
 import type { ErrnoException } from './types/global';
 
@@ -64,6 +65,7 @@ app.use(
 app.use('/api', indexRoutes);
 app.use('/api', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/player', playerRoutes);
 
 // For any routes that starts with "/api", catch 404 and forward to error handler
 app.use('/api/*', (_req, _res, next) => {

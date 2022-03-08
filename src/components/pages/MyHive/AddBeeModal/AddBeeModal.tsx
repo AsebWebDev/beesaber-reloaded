@@ -19,11 +19,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
+import { useGetAllScoresQuery } from '@/api/services/apiPlayer/apiPlayer';
 import {
   useGetUserDataQuery,
   useUpdateUserDataMutation,
 } from '@/api/services/apiUser/apiUser';
-import getAllScores from '@/api/services/helper/getAllScores';
 import Alert from '@/components/common/Message/Message';
 import NeonText from '@/components/common/NeonText/NeonText';
 import Spinner from '@/components/common/Spinner/SpinnerPulse';
@@ -65,6 +65,10 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
   const { foundPlayers, showSpinner, thatIsYou, userAlreadyAdded } =
     useQueryForPlayers({ query, searchBy });
 
+  const { data: scoreDataOfSelectedPlayer } = useGetAllScoresQuery(
+    selectedPlayer?.playerId ?? skipToken
+  );
+
   const handleEscKey = useCallback((event: KeyboardEvent) => {
     if (event.key === 'Escape') {
       toggleModal();
@@ -89,22 +93,18 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
   }, [foundPlayers]);
 
   useEffect(() => {
-    if (selectedPlayer === undefined) return;
+    if (selectedPlayer === undefined || scoreDataOfSelectedPlayer === undefined)
+      return;
     const { avatar, playerId, playerName, rank, country } = selectedPlayer;
-    const buildBee = async () => {
-      const scoreData = await getAllScores(playerId);
 
-      setBeeToAdd({
-        avatar,
-        country,
-        playerId,
-        playerName,
-        rank,
-        scoreData,
-      });
-    };
-
-    void buildBee();
+    setBeeToAdd({
+      avatar,
+      country,
+      playerId,
+      playerName,
+      rank,
+      scoreData: scoreDataOfSelectedPlayer,
+    });
   }, [selectedPlayer]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>

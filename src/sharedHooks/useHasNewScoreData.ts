@@ -1,7 +1,7 @@
 import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { useEffect, useState } from 'react';
 
-import { useGetFullPlayerQuery } from '@/api/services/apiPlayer/apiPlayer';
+import { useGetPlayerByIdQuery } from '@/api/services/apiPlayer/apiPlayer';
 import { useGetUserDataQuery } from '@/api/services/apiUser/apiUser';
 
 const useHasNewScoreData = (userId: string): boolean => {
@@ -19,7 +19,7 @@ const useHasNewScoreData = (userId: string): boolean => {
     if (_scoreSaberId !== undefined) setScoreSaberId(_scoreSaberId);
   }, [_scoreSaberId]);
 
-  const { data: scoreSaberData } = useGetFullPlayerQuery(
+  const { data: scoreSaberData } = useGetPlayerByIdQuery(
     scoreSaberId ?? skipToken
   );
 
