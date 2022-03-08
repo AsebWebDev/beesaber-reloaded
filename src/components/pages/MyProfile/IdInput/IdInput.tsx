@@ -6,12 +6,14 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
 import errHandler from '@/api/errHandler';
-import { useGetFullPlayerQuery } from '@/api/services/apiPlayer/apiPlayer';
+import {
+  useGetPlayerByIdQuery,
+  useIsValidPlayerIdQuery,
+} from '@/api/services/apiPlayer/apiPlayer';
 import {
   useGetUserDataQuery,
   useUpdateUserDataMutation,
 } from '@/api/services/apiUser/apiUser';
-import verifyValidScoreSaberId from '@/helper/verifyValidScoreSaberId';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { userIsFetchingData } from '@/store/reducer/appStatusReducer';
 import { selectUserId, userDataUpdated } from '@/store/reducer/userDataReducer';
@@ -31,20 +33,21 @@ const IdInput = (): JSX.Element | null => {
   const myScoreSaberId = userDataResult?.myScoreSaberId;
 
   const [idInput, setIdInput] = useState<string | undefined>(myScoreSaberId);
-  const { data: fullPlayer } = useGetFullPlayerQuery(idInput ?? skipToken);
+  const { data: fullPlayer } = useGetPlayerByIdQuery(idInput ?? skipToken);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
     setIdInput(e.target.value);
 
   const dispatch = useAppDispatch();
+
+  const { data: isValidId } = useIsValidPlayerIdQuery(idInput ?? skipToken);
   const handleSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (userId === undefined || idInput === undefined) return;
+    if (userId === undefined || idInput === undefined || isValidId !== true)
+      return;
 
     dispatch(userIsFetchingData({ status: true, statusText: 'Saving ID...' }));
     try {
-      await verifyValidScoreSaberId(idInput);
-
       const userData = {
         myScoreSaberId: idInput,
         totalPlayCount: fullPlayer?.scoreStats.totalPlayCount,

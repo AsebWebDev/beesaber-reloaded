@@ -4,8 +4,8 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
+import * as apiPlayer from '@/api/services/apiPlayer/apiPlayer';
 import * as apiUser from '@/api/services/apiUser/apiUser';
-import * as getAllScores from '@/api/services/helper/getAllScores';
 import * as useDebounce from '@/sharedHooks/useDebounce';
 import { initialState as store } from '@/store/store';
 import exampleSSUserInfo, {
@@ -32,10 +32,7 @@ describe('AddBeeModal', () => {
     [{ query: string; searchBy: 'id' | 'name' }]
   >;
 
-  let getAllScoresSpy: jest.SpyInstance<
-    Promise<ScoreData>,
-    [id: string, threshold?: number | undefined]
-  >;
+  let getAllScoresSpy: jest.SpyInstance;
 
   let useUpdateUserDataMutationSpy: jest.SpyInstance;
 
@@ -46,7 +43,7 @@ describe('AddBeeModal', () => {
 
   beforeEach(() => {
     spy = jest.spyOn(useQueryForPlayers, 'default');
-    getAllScoresSpy = jest.spyOn(getAllScores, 'default');
+    getAllScoresSpy = jest.spyOn(apiPlayer, 'useGetAllScoresQuery');
     useUpdateUserDataMutationSpy = jest.spyOn(
       apiUser,
       'useUpdateUserDataMutation'
