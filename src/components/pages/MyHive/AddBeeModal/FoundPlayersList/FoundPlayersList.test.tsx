@@ -1,32 +1,32 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 
-import { initialState as store } from '@/store/store';
+import { apiUser } from '@/api/services/apiUser/apiUser';
+import * as hooks from '@/store/hooks';
+import userDataReducer from '@/store/reducer/userDataReducer';
+import setupApiStore from '@/testing/setupApiStore';
 import { examplePlayerInfos } from '@/testing/testData/exampleSSUserInfo';
-import exampleUserData from '@/testing/testData/exampleUserData';
 
 import FoundPlayersList from './FoundPlayersList';
 
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
-const extendedStore = Object.assign(store, {
-  userData: exampleUserData,
-});
-
 describe('FoundPlayersList', () => {
-  it('should render found players, when players are found', () => {
+  const storeRef = setupApiStore(apiUser, { userData: userDataReducer });
+  const spy = jest.spyOn(hooks, 'useAppSelector');
+
+  it('should render found players, when players are found', async () => {
+    spy.mockImplementation((selector) => {
+      if (selector.name === 'selectUserId') return '12345678';
+    });
+
     render(
-      <Provider store={mockStore(extendedStore)}>
+      <Provider store={storeRef.store}>
         <FoundPlayersList foundPlayers={examplePlayerInfos} />
       </Provider>
     );
 
-    // FIXME: when MSW is running for tests, to properly test useGetUserDataQuery hook
-    // const elem = await screen.findByTestId('found-players-list');
-    // expect(elem).toBeInTheDocument();
-    expect(2 + 2).toBe(4);
+    const elem = await screen.findByTestId('found-players-list');
+
+    expect(elem).toBeInTheDocument();
   });
 
   it.todo('should match snapshot for one found players');
