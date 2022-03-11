@@ -8,7 +8,6 @@ const router = express.Router();
 const baseUrl = 'https://new.scoresaber.com/api';
 
 router.get('/:id/allscores/', isLoggedIn, async (req, res, next) => {
-  console.log('All scores');
   const id = req.params.id;
   const threshold = 10;
   const scoresRecent = await getRecentScores({ id, threshold });
@@ -24,41 +23,50 @@ router.get('/:id/allscores/', isLoggedIn, async (req, res, next) => {
 
 router.get('/:id/playerbyid/', isLoggedIn, async (req, res, next) => {
   const id = req.params.id;
-  const url = `${baseUrl}/player/${id}/full`;
+  const isNumeric = /^\d+$/.test(id);
+  if (!isNumeric) return;
 
   try {
+    const url = `${baseUrl}/player/${id}/full`;
     const result = await axios.get(url);
     res.json(result.data);
-  } catch (err) {
-    next();
+  } catch (err: unknown) {
+    res.status(404).json(err);
   }
 });
 
 router.get('/:name/playersbyname/', isLoggedIn, async (req, res, next) => {
-  const name = req.params.name;
-  const url = `${baseUrl}/player/${name}/full`;
-  const result = await axios.get(url);
-  res.json(result.data.players);
+  try {
+    const url = `${baseUrl}/players/by-name/${req.params.name}`;
+    const result: AxiosResponse = await axios.get(url);
+    res.json(result.data.players);
+  } catch (err: unknown) {
+    res.status(404).json(err);
+  }
 });
 
 router.get('/:id/isvalidplayerid/', isLoggedIn, async (req, res, next) => {
-  console.log('isvalidplayerid');
-  const id = req.params.id;
-  const url = `${baseUrl}/player/${id}/full`;
+  const url = `${baseUrl}/player/${req.params.id}/full`;
   try {
     const result: AxiosResponse = await axios.get(url);
-    return res.json(result.status === 200 && result.data !== undefined);
+    res.json(result.status === 200 && result.data !== undefined);
   } catch (err) {
-    return res.json(false);
+    res.json(false);
   }
 });
 
 router.get('/:id/recentScores/:count', isLoggedIn, async (req, res, next) => {
   const id = req.params.id;
   const count = req.params.count;
-  const url = `${baseUrl}/player/${id}/scores/recent/${count}`;
-  const result = await axios.get(url);
-  res.json(result.data);
+
+  try {
+    const url = `${baseUrl}/player/${id}/scores/recent/${count}`;
+    const result = await axios.get(url);
+
+    res.json(result.data);
+  } catch (err: unknown) {
+    res.status(404).json(err);
+  }
 });
 
 export default router;
