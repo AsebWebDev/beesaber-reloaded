@@ -35,13 +35,13 @@ function FoundPlayersList({
   handleSelect,
 }: Props): JSX.Element | null {
   if (foundPlayers === null) return null;
+  // When input is not an array it is one single user --> parse to Array for mapping
+  const players = Array.isArray(foundPlayers) ? foundPlayers : [foundPlayers];
+
   const userId = useAppSelector(selectUserId);
   const { data: userData } = useGetUserDataQuery(userId ?? skipToken);
 
-  if (userData === undefined) return null;
-
-  // When input is not an array it is one single user --> parse to Array for mapping
-  const players = Array.isArray(foundPlayers) ? foundPlayers : [foundPlayers];
+  if (userData === undefined || players.length === 0) return null;
 
   return (
     <Container data-testid="found-players-list">
