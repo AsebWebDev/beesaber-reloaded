@@ -1,25 +1,28 @@
 import { rest } from 'msw';
 
-import exampleScores from '@/testing/testData/exampleScores';
+import { exampleScoreData } from '@/testing/testData/exampleScores';
 import exampleSSUserInfo from '@/testing/testData/exampleSSUserInfo';
 
+const baseLocalUrl = 'http://localhost:5001/api';
+
 const handlers = [
-  // getRecentScores
-  rest.get(
-    'https://new.scoresaber.com/api/player/:id/scores/recent/:count',
-    (req, res, ctx) => res(ctx.status(200), ctx.json(exampleScores))
+  // getAllScores
+  rest.get(`${baseLocalUrl}/player/:id/allscores`, (req, res, ctx) =>
+    res(ctx.status(200), ctx.json(exampleScoreData))
   ),
 
-  // useGetPlayersByNameQuery
-  rest.get(
-    'https://new.scoresaber.com/api/players/by-name/:name',
-    (req, res, ctx) =>
-      res(ctx.status(200), ctx.json([exampleSSUserInfo.playerInfo]))
+  // getPlayersByName
+  rest.get(`${baseLocalUrl}/player/:name/playersbyname`, (req, res, ctx) =>
+    res(ctx.status(200), ctx.json([exampleSSUserInfo.playerInfo]))
   ),
 
-  // useGetPlayerByIdQuery
-  rest.get('https://new.scoresaber.com/api/player/:id/full', (req, res, ctx) =>
+  // getPlayerById
+  rest.get(`${baseLocalUrl}/player/:id/playerbyid/`, (req, res, ctx) =>
     res(ctx.status(200), ctx.json(exampleSSUserInfo))
+  ),
+  // isValidPlayerId
+  rest.get(`${baseLocalUrl}/player/:id/isvalidplayerid/`, (req, res, ctx) =>
+    res(ctx.status(200), ctx.json(true))
   ),
 ];
 
