@@ -31,17 +31,21 @@ const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
   const [thatIsYou, setThatIsYou] = useState(false);
   const [userAlreadyAdded, setUserAlreadyAdded] = useState(false);
   const debouncedSearchQuery = useDebounce(query, 600);
+  const isSearchById = searchBy === 'id';
+  const isSearchByName = searchBy === 'name';
+  const queryById = isSearchById ? debouncedSearchQuery : undefined;
+  const queryByName = isSearchByName ? debouncedSearchQuery : undefined;
 
   const {
     data: playersByName,
     isFetching: isFetchingQueryByName,
     error: errorByName,
-  } = useGetPlayersByNameQuery(debouncedSearchQuery ?? skipToken);
+  } = useGetPlayersByNameQuery(queryByName ?? skipToken);
   const {
     data: playerById,
     isFetching: isFetchingQueryById,
     error: errorById,
-  } = useGetPlayerByIdQuery(debouncedSearchQuery ?? skipToken);
+  } = useGetPlayerByIdQuery(queryById ?? skipToken);
 
   const showSpinner = isFetchingQueryByName || isFetchingQueryById;
 
@@ -67,8 +71,8 @@ const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
 
   useEffect(() => {
     const searchHasError =
-      (searchBy === 'id' && errorById !== undefined) ||
-      (searchBy === 'name' && errorByName !== undefined);
+      (isSearchById && errorById !== undefined) ||
+      (isSearchByName && errorByName !== undefined);
 
     if (searchHasError) {
       setFoundPlayers(null);
@@ -76,7 +80,7 @@ const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
   }, [errorById, errorByName]);
 
   useEffect(() => {
-    const players = searchBy === 'id' ? playerById?.playerInfo : playersByName;
+    const players = isSearchById ? playerById?.playerInfo : playersByName;
 
     if (players === undefined) return;
 
