@@ -12,7 +12,7 @@ const exampleUserData: UserData = {
   created_at: '',
   isAdmin: false,
   myIntersections: [],
-  myScoreSaberId: '',
+  myScoreSaberId: '123456',
   news: [],
   scoreData: {
     scoredSongsHashes: [],

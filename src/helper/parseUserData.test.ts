@@ -26,7 +26,7 @@ describe('parseUserData', () => {
       created_at: '',
       isAdmin: false,
       myIntersections: [],
-      myScoreSaberId: '',
+      myScoreSaberId: '123456',
       news: [],
       scoreData: {
         scoredSongsHashes: ['32C3A0E1FEE9FD589B795941B6D79AFE8061D30A'],
