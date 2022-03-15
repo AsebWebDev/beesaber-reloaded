@@ -1,53 +1,49 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 
-import { initialState as initialStore } from '@/store/store';
-import exampleUserData from '@/testing/testData/exampleUserData';
+import { apiUser } from '@/api/services/apiUser/apiUser';
+import * as hooks from '@/store/hooks';
+import userDataReducer from '@/store/reducer/userDataReducer';
+import setupApiStore from '@/testing/setupApiStore';
+import waitForSpinnerToBeRemoved from '@/testing/waitForSpinnerToBeRemoved';
 
 import IdInput from './IdInput';
 
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
-const baseUrl = 'https://new.scoresaber.com/api';
-
 describe('IdInput', () => {
-  const user = { ...exampleUserData, myScoreSaberId: '123456' };
-  const store = { ...initialStore, userData: user };
-  const endpointUrl = `${baseUrl}/player/${user.myScoreSaberId}/full`;
+  const spy = jest.spyOn(hooks, 'useAppSelector');
 
-  console.log(
-    '🚀 ~ file: IdInput.test.tsx ~ line 19 ~ describe ~ endpointUrl',
-    endpointUrl
-  );
+  afterAll(() => {
+    spy.mockReset();
+    jest.clearAllMocks();
+  });
 
-  it('should make proper backend request on handleSave', async () => {
-    const mockedStore = mockStore(store);
+  it('should disable the save button, when ID is equal to current ID', async () => {
+    const storeRef = setupApiStore(apiUser, { userData: userDataReducer });
+    const idInput = '123456';
+
+    spy.mockImplementation((selector) => {
+      if (selector.name === 'selectUserId') return '123456789';
+    });
 
     render(
-      <Provider store={mockedStore}>
+      <Provider store={storeRef.store}>
         <IdInput />
       </Provider>
     );
 
+    await waitForSpinnerToBeRemoved();
+
     const saveButton = screen.getByRole('button', { name: 'Save' });
+    const input = screen.getByRole('textbox');
 
-    userEvent.click(saveButton);
-    const actions = mockedStore.getActions();
+    userEvent.type(input, idInput);
 
-    expect(saveButton).toBeInTheDocument();
-    await waitFor(() => {
-      // FIXME: Test for proper backend request
+    expect(input).toHaveValue(idInput);
 
-      expect(actions).toHaveLength(2);
-    });
+    expect(saveButton).toBeDisabled();
   });
 
-  it.todo('should disable the save button, when ID is equal to current ID');
-
+  it.todo('should make proper backend request on handleSave');
   it.todo('should throw error, when invalid ID is entered on save');
-
-  it.todo('should match Snapshot');
 });

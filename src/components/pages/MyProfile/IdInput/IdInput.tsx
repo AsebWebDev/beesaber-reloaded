@@ -14,8 +14,8 @@ import {
   useGetUserDataQuery,
   useUpdateUserDataMutation,
 } from '@/api/services/apiUser/apiUser';
+import Spinner from '@/components/common/Spinner/SpinnerPulse';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { userIsFetchingData } from '@/store/reducer/appStatusReducer';
 import { selectUserId, userDataUpdated } from '@/store/reducer/userDataReducer';
 
 import type { ChangeEvent } from 'react';
@@ -28,11 +28,14 @@ const IdForm = styled.form`
 
 const IdInput = (): JSX.Element | null => {
   const userId = useAppSelector(selectUserId);
-  const { data: userDataResult } = useGetUserDataQuery(userId ?? skipToken);
+  const { data: userDataResult, isLoading } = useGetUserDataQuery(
+    userId ?? skipToken
+  );
   const [updateUser] = useUpdateUserDataMutation();
   const myScoreSaberId = userDataResult?.myScoreSaberId;
 
   const [idInput, setIdInput] = useState<string | undefined>(myScoreSaberId);
+
   const { data: fullPlayer } = useGetPlayerByIdQuery(idInput ?? skipToken);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
@@ -46,7 +49,6 @@ const IdInput = (): JSX.Element | null => {
     if (userId === undefined || idInput === undefined || isValidId !== true)
       return;
 
-    dispatch(userIsFetchingData({ status: true, statusText: 'Saving ID...' }));
     try {
       const userData = {
         myScoreSaberId: idInput,
@@ -60,8 +62,9 @@ const IdInput = (): JSX.Element | null => {
     } catch (err: unknown) {
       errHandler(err as PossibleResponses);
     }
-    dispatch(userIsFetchingData({ status: false }));
   };
+
+  if (isLoading) return <Spinner />;
 
   return (
     <IdForm>
@@ -74,7 +77,8 @@ const IdInput = (): JSX.Element | null => {
         validate="true"
         error="wrong"
         success="right"
-        value={idInput}
+        // we need to pass in an empty string for MDBInput instead undefined
+        value={idInput !== undefined ? idInput : ''}
       />
       <MDBBtn
         onClick={handleSave}
