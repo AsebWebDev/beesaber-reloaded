@@ -105,7 +105,7 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
       rank,
       scoreData: scoreDataOfSelectedPlayer,
     });
-  }, [selectedPlayer]);
+  }, [selectedPlayer, scoreDataOfSelectedPlayer]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setQuery(e.target.value);
@@ -145,6 +145,11 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
     setQuery('');
     if (activeItem !== tab) setActiveItem(tab);
   };
+
+  const playerIsSelected = selectedPlayer !== undefined;
+  const beeIsReady = beeToAdd !== undefined;
+  const showAddButton = beeIsReady && !userAlreadyAdded && !thatIsYou;
+  const showSmallSpinner = !showAddButton && playerIsSelected;
 
   return (
     <MDBContainer>
@@ -211,14 +216,12 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
             {/* /// Show Buttons OR Status bar /// */}
             {!showSpinner && (
               <MDBModalFooter>
-                {beeToAdd !== undefined && !userAlreadyAdded && !thatIsYou && (
+                {showAddButton && (
                   <MDBBtn color="success" onClick={handleSave}>
                     Add {beeToAdd.playerName}
                   </MDBBtn>
                 )}
-                {beeToAdd === undefined && selectedPlayer !== undefined && (
-                  <Spinner />
-                )}
+                {showSmallSpinner && <Spinner />}
                 {thatIsYou && (
                   <Alert
                     text={
