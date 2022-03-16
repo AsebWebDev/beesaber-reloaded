@@ -12,6 +12,7 @@ import BeeTag from '@/components/common/BeeTag/BeeTag';
 import NeonButtonBase from '@/components/common/NeonButton/NeonButton';
 import ScoreBox from '@/components/common/ScoreBox/ScoreBox';
 import Title from '@/components/common/Title/Title';
+import parseId from '@/helper/parseEmptyStringToUndefined';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsLoggedIn } from '@/store/reducer/appStatusReducer';
 import { selectUserId } from '@/store/reducer/userDataReducer';
@@ -50,7 +51,7 @@ const MyHive = (): JSX.Element | null => {
   const history = useHistory();
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
   const userId = useAppSelector(selectUserId);
-  const { data: userData } = useGetUserDataQuery(userId ?? skipToken);
+  const { data: userData } = useGetUserDataQuery(parseId(userId) ?? skipToken);
   const [updateUser] = useUpdateUserDataMutation();
 
   if (!isLoggedIn || userData === undefined || userId === undefined) {
@@ -104,7 +105,7 @@ const MyHive = (): JSX.Element | null => {
       </MyHiveBees>
 
       <div id="current-scores">
-        {currentBee !== null && (
+        {beesExists && currentBee !== null && (
           <ScoreBox scoreData={currentBee.scoreData} bee={currentBee} />
         )}
       </div>

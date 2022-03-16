@@ -15,6 +15,7 @@ import {
   useUpdateUserDataMutation,
 } from '@/api/services/apiUser/apiUser';
 import Spinner from '@/components/common/Spinner/SpinnerPulse';
+import parseId from '@/helper/parseEmptyStringToUndefined';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectUserId, userDataUpdated } from '@/store/reducer/userDataReducer';
 
@@ -29,21 +30,25 @@ const IdForm = styled.form`
 const IdInput = (): JSX.Element | null => {
   const userId = useAppSelector(selectUserId);
   const { data: userDataResult, isLoading } = useGetUserDataQuery(
-    userId ?? skipToken
+    parseId(userId) ?? skipToken
   );
   const [updateUser] = useUpdateUserDataMutation();
   const myScoreSaberId = userDataResult?.myScoreSaberId;
 
   const [idInput, setIdInput] = useState<string | undefined>(myScoreSaberId);
 
-  const { data: fullPlayer } = useGetPlayerByIdQuery(idInput ?? skipToken);
+  const { data: fullPlayer } = useGetPlayerByIdQuery(
+    parseId(idInput) ?? skipToken
+  );
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
     setIdInput(e.target.value);
 
   const dispatch = useAppDispatch();
 
-  const { data: isValidId } = useIsValidPlayerIdQuery(idInput ?? skipToken);
+  const { data: isValidId } = useIsValidPlayerIdQuery(
+    parseId(idInput) ?? skipToken
+  );
   const handleSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (userId === undefined || idInput === undefined || isValidId !== true)

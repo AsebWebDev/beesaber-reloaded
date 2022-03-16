@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { useGetAllScoresQuery } from '@/api/services/apiPlayer/apiPlayer';
+import parseId from '@/helper/parseEmptyStringToUndefined';
 import { useAppDispatch } from '@/store/hooks';
 import { userIsFetchingData } from '@/store/reducer/appStatusReducer';
 
@@ -15,7 +16,6 @@ import type { ScoreData } from '@/../sharedTypes';
  * score hashes
  */
 const useBuildScoreData = (id?: string): ScoreData | undefined => {
-  console.log('🚀 ~ file: useBuildScoreData.ts ~ line 18 ~ id', id);
   const dispatch = useAppDispatch();
   const [scoreData, setScoreData] = useState<ScoreData>({
     scoredSongsHashes: [],
@@ -27,7 +27,7 @@ const useBuildScoreData = (id?: string): ScoreData | undefined => {
     data: fetchedScoreData,
     isFetching,
     isError,
-  } = useGetAllScoresQuery(id ?? skipToken);
+  } = useGetAllScoresQuery(parseId(id) ?? skipToken);
 
   useEffect(() => {
     if (fetchedScoreData !== undefined) {
