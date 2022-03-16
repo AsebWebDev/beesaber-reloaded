@@ -5,7 +5,10 @@ import BrandLogo from '@/components/common/BrandLogo/BrandLogo';
 import GoogleOAuth from '@/components/common/GoogleOAuth/GoogleOAuth';
 import Title from '@/components/common/Title/Title';
 import Divider from '@/components/tools/Divider/Divider';
+import parseId from '@/helper/parseEmptyStringToUndefined';
 import useIsMobile from '@/sharedHooks/useIsMobile';
+import { useAppSelector } from '@/store/hooks';
+import { selectMyScoreSaberId } from '@/store/reducer/userDataReducer';
 import { mediaQuery } from '@/tokens/definitions/layout';
 
 const Container = styled.div`
@@ -56,6 +59,7 @@ const MenuItems = styled.div`
 
 const Menu = (): JSX.Element => {
   const { isMobile } = useIsMobile();
+  const myScoreSaberId = useAppSelector(selectMyScoreSaberId);
 
   return (
     <Container data-testid={'menu'}>
@@ -71,9 +75,11 @@ const Menu = (): JSX.Element => {
           <MenuLink to="/myprofile">
             <Title>My Profile</Title>
           </MenuLink>
-          <MenuLink to="/myhive">
-            <Title>My Hive</Title>
-          </MenuLink>
+          {parseId(myScoreSaberId) !== undefined && (
+            <MenuLink to="/myhive">
+              <Title>My Hive</Title>
+            </MenuLink>
+          )}
         </MenuItems>
         <GoogleOAuth />
       </MenuContainer>
