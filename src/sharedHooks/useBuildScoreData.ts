@@ -15,6 +15,7 @@ import type { ScoreData } from '@/../sharedTypes';
  * score hashes
  */
 const useBuildScoreData = (id?: string): ScoreData | undefined => {
+  console.log('🚀 ~ file: useBuildScoreData.ts ~ line 18 ~ id', id);
   const dispatch = useAppDispatch();
   const [scoreData, setScoreData] = useState<ScoreData>({
     scoredSongsHashes: [],
@@ -44,7 +45,7 @@ const useBuildScoreData = (id?: string): ScoreData | undefined => {
 
   useEffect(() => {
     if (isError) {
-      toast.error('There has been an issue your scores 🤯');
+      toast.error('There has been an issue with your scores 🤯');
     }
   }, [isError]);
 
