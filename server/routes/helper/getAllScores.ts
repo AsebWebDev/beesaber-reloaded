@@ -2,8 +2,6 @@ import { ScoreData } from '../../../sharedTypes';
 import { calcScoreHashed, calcTopScores } from './calcScores';
 import getRecentScores from './getRecentScores';
 
-const baseUrl = 'https://new.scoresaber.com/api';
-
 /**
  * Fetch all Scores of a ScoreSaberUser
  * @param {String} id - ScoreSaber id

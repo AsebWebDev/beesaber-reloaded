@@ -1,22 +1,14 @@
 import axios, { AxiosResponse } from 'axios';
 import { isLoggedIn } from '../middlewares';
 import express from 'express';
-import { calcScoreHashed, calcTopScores } from './helper/calcScores';
-import getRecentScores from './helper/getRecentScores';
+import getAllScores from './helper/getAllScores';
 const router = express.Router();
 
 const baseUrl = 'https://new.scoresaber.com/api';
 
 router.get('/:id/allscores/', isLoggedIn, async (req, res, next) => {
   const id = req.params.id;
-  const threshold = 10;
-  const scoresRecent = await getRecentScores({ id, threshold });
-
-  const result = {
-    scoredSongsHashes: calcScoreHashed(scoresRecent),
-    scoresRecent,
-    scoresTop: calcTopScores(scoresRecent),
-  };
+  const result = await getAllScores(id);
 
   res.json(result);
 });

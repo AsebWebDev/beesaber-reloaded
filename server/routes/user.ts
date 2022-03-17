@@ -2,19 +2,26 @@ import express from 'express';
 import mongoose from 'mongoose';
 import User from '../models/User';
 import { isLoggedIn } from '../middlewares';
+import { UserData } from '../../sharedTypes';
+import syncBeeScores from '../helper/syncBeeScores';
+import getAllScores from './helper/getAllScores';
 
 const router = express.Router();
 
-router.post('/:id/', isLoggedIn, (req, res, next) => {
-  if (mongoose.Types.ObjectId.isValid(req.params.id)) {
-    User.findByIdAndUpdate(req.params.id, req.body, { new: true })
-      .then((userDoc: Express.User) => {
+router.post('/:id/', isLoggedIn, async (req, res, next) => {
+  const mongoId = req.params.id;
+  if (mongoose.Types.ObjectId.isValid(mongoId)) {
+    User.findByIdAndUpdate(mongoId, req.body, { new: true })
+      .then(async (userDoc: Express.User) => {
         if (!userDoc) {
           next(new Error('Could not find user.'));
 
           return;
         }
-        res.json(userDoc);
+        const id = req.body.myScoreSaberId;
+        const scoreData = await getAllScores(id);
+        const newUser = { ...req.body, scoreData: scoreData };
+        res.json(newUser);
       })
       .catch((err: unknown) => next(err));
   } else next(new Error('Invalid Mongoose User ID'));
@@ -23,12 +30,19 @@ router.post('/:id/', isLoggedIn, (req, res, next) => {
 router.get('/:id/', isLoggedIn, (req, res, next) => {
   if (mongoose.Types.ObjectId.isValid(req.params.id)) {
     User.findById(req.params.id)
-      .then((userDoc: Express.User) => {
+      .then((userDoc: UserData) => {
         if (!userDoc) {
           next(new Error('Could not find user.'));
 
           return;
         }
+
+        const testSync = syncBeeScores(userDoc);
+        console.log(
+          '🚀 ~ file: user.ts ~ line 43 ~ .then ~ testSync',
+          testSync
+        );
+
         res.json(userDoc);
       })
       .catch((err: unknown) => next(err));
