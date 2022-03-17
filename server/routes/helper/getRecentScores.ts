@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { Scores } from '../../../sharedTypes';
-
-const baseUrl = 'https://new.scoresaber.com/api';
+import { baseUrl } from '../../constants';
 
 type Props = {
   array?: Scores;
