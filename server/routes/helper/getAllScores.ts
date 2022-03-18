@@ -1,5 +1,5 @@
 import { ScoreData } from '../../../sharedTypes';
-import { calcScoreHashed, calcTopScores } from './calcScores';
+import calcAllScores from './calcScores';
 import getRecentScores from './getRecentScores';
 
 /**
@@ -11,11 +11,7 @@ const getAllScores = async (id: string): Promise<ScoreData> => {
   const threshold = 10;
   const scoresRecent = await getRecentScores({ id, threshold });
 
-  return {
-    scoredSongsHashes: calcScoreHashed(scoresRecent),
-    scoresRecent,
-    scoresTop: calcTopScores(scoresRecent),
-  };
+  return calcAllScores(scoresRecent);
 };
 
 export default getAllScores;
