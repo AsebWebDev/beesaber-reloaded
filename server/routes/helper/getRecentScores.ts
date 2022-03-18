@@ -24,8 +24,14 @@ const getRecentScores = async ({
   threshold,
 }: Props): Promise<Scores> => {
   const url = `${baseUrl}/player/${id}/scores/recent/${count}`;
-  const { data } = await axios.get(url);
-  if (data === undefined) return [];
+  let apiRes;
+  try {
+    apiRes = await axios.get(url);
+  } catch (err) {
+    console.error('Error response: ', err.response.status);
+  }
+  if (apiRes === undefined || apiRes.data === undefined) return [];
+  const { data } = apiRes;
   if (threshold !== undefined && count > threshold) return data.scores;
 
   const newArray = array.concat(
