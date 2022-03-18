@@ -74,7 +74,7 @@ const MyHive = (): JSX.Element | null => {
     void toast.promise(
       updateUser({
         userId,
-        userData: { bees: newBees },
+        userData: { ...userData, bees: newBees },
       }),
       {
         pending: `Deleting ${beeToDelete.playerName}...`,
