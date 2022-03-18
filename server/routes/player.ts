@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { isLoggedIn } from '../middlewares';
 import express from 'express';
 import getAllScores from './helper/getAllScores';
+import getPlayerById from './helper/getPlayerById';
 const router = express.Router();
 
 const baseUrl = 'https://new.scoresaber.com/api';
@@ -19,9 +20,8 @@ router.get('/:id/playerbyid/', isLoggedIn, async (req, res, next) => {
   if (!isNumeric) return;
 
   try {
-    const url = `${baseUrl}/player/${id}/full`;
-    const result = await axios.get(url);
-    res.json(result.data);
+    const result = await getPlayerById(id);
+    return res.status(200).json(result);
   } catch (err: unknown) {
     res.status(404).json(err);
   }
