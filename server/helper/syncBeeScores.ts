@@ -1,6 +1,6 @@
 import { UserData } from '../../sharedTypes';
 import calcAllScores from '../routes/helper/calcScores';
-import getAllScores from '../routes/helper/getAllScores';
+import updateAllScores from './updateAllScores';
 
 /**
  *
@@ -10,27 +10,22 @@ import getAllScores from '../routes/helper/getAllScores';
  * another player. If so, it marks this song as "playedByHive" and adds the other player to
  * the playedBy array of that song.
  *
+ * If there is no ScoreData yet, the data will be fetched and return.
+ *
  * The returned userData is updated with these information.
  */
 const syncBeeScores = async (userData: UserData): Promise<UserData> => {
   const { bees, myScoreSaberId, scoreData } = userData;
+  const scoreDataExists = scoreData.scoresRecent.length > 0;
+
   if (myScoreSaberId === '') return userData;
 
-  const scoreRecentCopy = [...scoreData.scoresRecent];
-
-  if (scoreRecentCopy.length === 0) {
-    console.log('No scoreData, fetching for the first time...');
-    const newScoreData = await getAllScores(userData.myScoreSaberId);
-    const newData = {
-      ...userData,
-      scoreData: newScoreData,
-    };
-
-    return Promise.resolve(newData);
-  }
+  const scoresToMap = scoreDataExists
+    ? [...scoreData.scoresRecent]
+    : (await updateAllScores(userData)).scoreData.scoresRecent;
 
   console.log('Userdata exists and syncing...');
-  const myUpdatedScores = scoreRecentCopy.map((currentSong) => {
+  const myUpdatedScores = scoresToMap.map((currentSong) => {
     console.log('Checking ', currentSong.songName);
 
     // check all your bees for this specific song and return the song
@@ -68,18 +63,7 @@ const syncBeeScores = async (userData: UserData): Promise<UserData> => {
     return currentSong;
   });
 
-  console.log(
-    '🚀 ~ file: syncBeeScores.ts ~ line 64 ~ syncBeeScores ~ myUpdatedScores',
-    myUpdatedScores
-  );
-
   const newScoreData = calcAllScores(myUpdatedScores);
-  console.log(
-    '🚀 ~ file: syncBeeScores.ts ~ line 64 ~ syncBeeScores ~ newScoreData',
-    newScoreData
-  );
-
-  console.log(userData);
 
   return { ...userData, scoreData: newScoreData };
 };

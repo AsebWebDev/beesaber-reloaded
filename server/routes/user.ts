@@ -5,10 +5,11 @@ import { isLoggedIn } from '../middlewares';
 import { UserData } from '../../sharedTypes';
 import syncBeeScores from '../helper/syncBeeScores';
 import getAllScores from './helper/getAllScores';
-
+import updateAllScores from '../helper/updateAllScores';
+import isUpdateNeeded from '../helper/IsUpdateNeeded';
 const router = express.Router();
 
-type userDocType = UserData & {
+type UserDocType = UserData & {
   toObject?: () => UserData;
 };
 
@@ -16,7 +17,7 @@ router.post('/:id/', isLoggedIn, async (req, res, next) => {
   const mongoId = req.params.id;
   if (mongoose.Types.ObjectId.isValid(mongoId)) {
     User.findByIdAndUpdate(mongoId, req.body, { new: true })
-      .then(async (userDoc: userDocType) => {
+      .then(async (userDoc: UserDocType) => {
         if (!userDoc) {
           next(new Error('Could not find user.'));
 
@@ -34,16 +35,23 @@ router.post('/:id/', isLoggedIn, async (req, res, next) => {
 router.get('/:id/', isLoggedIn, (req, res, next) => {
   if (mongoose.Types.ObjectId.isValid(req.params.id)) {
     User.findById(req.params.id)
-      .then(async (userDoc: userDocType) => {
+      .then(async (userDoc: UserDocType) => {
         if (!userDoc) {
           next(new Error('Could not find user.'));
 
           return;
         }
 
-        const response: UserData = userDoc.toObject();
+        // We parse mongoos userDoc to plain object and sync all scores
+        const parsedUserData: UserData = userDoc.toObject();
+        const updateNeeded = await isUpdateNeeded(parsedUserData);
+        console.log(
+          '🚀 ~ file: user.ts ~ line 48 ~ .then ~ updateNeeded',
+          updateNeeded
+        );
 
-        const syncedUserData = await syncBeeScores(response);
+        const updatedData = await updateAllScores(parsedUserData);
+        const syncedUserData = await syncBeeScores(updatedData);
 
         res.json(syncedUserData);
       })
