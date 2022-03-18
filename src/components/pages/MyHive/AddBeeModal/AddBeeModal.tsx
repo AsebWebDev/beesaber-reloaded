@@ -128,7 +128,7 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
     await toast.promise(
       updateUser({
         userId,
-        userData: { bees: [...userData.bees, beeToAdd] },
+        userData: { ...userData, bees: [...userData.bees, beeToAdd] },
       }),
       {
         pending: `Saving ${beeToAdd.playerName}...`,
