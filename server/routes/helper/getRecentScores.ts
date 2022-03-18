@@ -26,19 +26,19 @@ const getRecentScores = async ({
   const url = `${baseUrl}/player/${id}/scores/recent/${count}`;
   let apiRes;
   try {
+    console.log('Fetching Data - getRecentScores - page ', count);
     apiRes = await axios.get(url);
   } catch (err) {
-    console.error('Error response: ', err.response.status);
+    console.error(`Error response on page ${count}: ${err.response.status}`);
   }
   if (apiRes === undefined || apiRes.data === undefined) return [];
-  const { data } = apiRes;
-  if (threshold !== undefined && count > threshold) return data.scores;
+  if (threshold !== undefined && count > threshold) return apiRes.data.scores;
 
   const newArray = array.concat(
     await getRecentScores({
       id,
       count: count + 1,
-      array: data.scores,
+      array: apiRes.data.scores,
       threshold,
     })
   ) as Scores;

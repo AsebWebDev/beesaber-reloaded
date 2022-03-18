@@ -25,7 +25,7 @@ router.post('/:id/', isLoggedIn, async (req, res, next) => {
         }
         const id = req.body.myScoreSaberId;
         const scoreData = await getAllScores(id);
-        const newUser = { ...req.body, scoreData: scoreData };
+        const newUser = { ...req.body, scoreData };
         res.json(newUser);
       })
       .catch((err: unknown) => next(err));
@@ -45,13 +45,10 @@ router.get('/:id/', isLoggedIn, (req, res, next) => {
         // We parse mongoos userDoc to plain object and sync all scores
         const parsedUserData: UserData = userDoc.toObject();
         const updateNeeded = await isUpdateNeeded(parsedUserData);
-        console.log(
-          '🚀 ~ file: user.ts ~ line 48 ~ .then ~ updateNeeded',
-          updateNeeded
-        );
-
-        const updatedData = await updateAllScores(parsedUserData);
-        const syncedUserData = await syncBeeScores(updatedData);
+        const userData = updateNeeded
+          ? await updateAllScores(parsedUserData)
+          : parsedUserData;
+        const syncedUserData = await syncBeeScores(userData);
 
         res.json(syncedUserData);
       })
