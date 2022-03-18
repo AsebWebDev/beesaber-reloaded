@@ -8,11 +8,15 @@ import getAllScores from './helper/getAllScores';
 
 const router = express.Router();
 
+type userDocType = UserData & {
+  toObject?: () => UserData;
+};
+
 router.post('/:id/', isLoggedIn, async (req, res, next) => {
   const mongoId = req.params.id;
   if (mongoose.Types.ObjectId.isValid(mongoId)) {
     User.findByIdAndUpdate(mongoId, req.body, { new: true })
-      .then(async (userDoc: Express.User) => {
+      .then(async (userDoc: userDocType) => {
         if (!userDoc) {
           next(new Error('Could not find user.'));
 
@@ -30,20 +34,18 @@ router.post('/:id/', isLoggedIn, async (req, res, next) => {
 router.get('/:id/', isLoggedIn, (req, res, next) => {
   if (mongoose.Types.ObjectId.isValid(req.params.id)) {
     User.findById(req.params.id)
-      .then((userDoc: UserData) => {
+      .then(async (userDoc: userDocType) => {
         if (!userDoc) {
           next(new Error('Could not find user.'));
 
           return;
         }
 
-        const testSync = syncBeeScores(userDoc);
-        console.log(
-          '🚀 ~ file: user.ts ~ line 43 ~ .then ~ testSync',
-          testSync
-        );
+        const response: UserData = userDoc.toObject();
 
-        res.json(userDoc);
+        const syncedUserData = await syncBeeScores(response);
+
+        res.json(syncedUserData);
       })
       .catch((err: unknown) => next(err));
   }
