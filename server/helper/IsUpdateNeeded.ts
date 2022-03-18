@@ -13,6 +13,10 @@ const isUpdateNeeded = async (userData: UserData): Promise<boolean> => {
       return userDoc.totalPlayCount;
     })
     .catch((err: unknown) => console.log(err));
+  if (remotePlayCount > localPlayCount)
+    console.log(
+      `Update needed: Remote: ${remotePlayCount} Local ${localPlayCount}`
+    );
 
   return remotePlayCount > localPlayCount;
 };

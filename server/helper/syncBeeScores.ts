@@ -26,13 +26,9 @@ const syncBeeScores = async (userData: UserData): Promise<UserData> => {
 
   console.log('Userdata exists and syncing...');
   const myUpdatedScores = scoresToMap.map((currentSong) => {
-    console.log('Checking ', currentSong.songName);
-
     // check all your bees for this specific song and return the song
     // with all bees in playedby which also played this song
     bees.map((currentBee) => {
-      console.log('...for bee: ', currentBee.playerName);
-
       // check if the bee check has player your song
       const isMatch = currentBee.scoreData.scoredSongsHashes.includes(
         currentSong.songHash
@@ -40,6 +36,8 @@ const syncBeeScores = async (userData: UserData): Promise<UserData> => {
 
       // Returns the current song with extra playedBy data, if it is a match
       if (isMatch) {
+        console.log('It is a match: ', currentSong.songName);
+        console.log('Played by: ', currentBee.playerName);
         // find their score for this song
         const theirScore = currentBee.scoreData.scoresRecent.find(
           (song) => song.songHash === currentSong.songHash
