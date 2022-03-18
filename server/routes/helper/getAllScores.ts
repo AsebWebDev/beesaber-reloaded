@@ -8,8 +8,7 @@ import getRecentScores from './getRecentScores';
  * @returns {ScoreData} ScoreData with recentScores, topScores and all score hashes
  */
 const getAllScores = async (id: string): Promise<ScoreData> => {
-  const threshold = 10;
-  const scoresRecent = await getRecentScores({ id, threshold });
+  const scoresRecent = await getRecentScores({ id });
 
   return calcAllScores(scoresRecent);
 };
