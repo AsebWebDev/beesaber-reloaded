@@ -25,7 +25,7 @@ router.post('/:id/', isLoggedIn, async (req, res, next) => {
         }
         const id = req.body.myScoreSaberId;
         const scoreData = await getAllScores(id);
-        const newUser = { ...req.body, scoreData: scoreData };
+        const newUser = { ...req.body, scoreData };
         res.json(newUser);
       })
       .catch((err: unknown) => next(err));
