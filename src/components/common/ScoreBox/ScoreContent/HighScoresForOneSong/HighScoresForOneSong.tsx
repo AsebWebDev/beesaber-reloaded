@@ -69,7 +69,7 @@ function HighScoresForOneSong({ highscore }: Props): JSX.Element | null {
           <DiffTag difficulty={difficulty} />
           <Img src={parseSongPicUrl(songHash)} alt={`Cover of ${songName}`} />
           {playedByHive === true && (
-            <MDBTooltip domElement clickable tag="span" placement="top">
+            <MDBTooltip clickable="true" tag="span" placement="top">
               <span>
                 <MDBIcon far icon="handshake" />
               </span>
