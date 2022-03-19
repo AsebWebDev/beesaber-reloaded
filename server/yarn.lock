@@ -1391,10 +1391,10 @@ node-addon-api@^3.1.0:
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-3.2.1.tgz#81325e0a2117789c0128dab65e7e38f07ceba161"
   integrity sha512-mmcei9JghVNDYydghQmeDX8KoAm0FAiYyIcUt/N4nhyAipB17pllZQDOJD2fotxABnt4Mdz+dKTO7eftLg4d0A==
 
-node-color-log@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/node-color-log/-/node-color-log-7.0.0.tgz#09c2dc0176dc852593fd92113b309ece8dd4cd02"
-  integrity sha512-Lxe7GaWxsTNnZmSf2tS9FgCBv9DJdJGTSZZxQ18heCs+QWYIs8Arsh6JGfTk329hKpY+is1Y5hXbAkagBo9Pww==
+node-color-log@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/node-color-log/-/node-color-log-8.0.1.tgz#ee1007ac55615902e77766359e5585f535ac35a2"
+  integrity sha512-VDTkuiIB3WS4vbb/xLeVbmoFSEIgg43oWqqI7hp7DXIZ+An1S+7L/frnVThnAAjEHnE3v1go4ol/fzRpkiiAgQ==
 
 node-fetch@^2.6.5:
   version "2.6.5"
