@@ -1,6 +1,7 @@
 import { UserData } from '../../sharedTypes';
 import calcAllScores from '../routes/helper/calcScores';
 import updateAllScores from './updateAllScores';
+import logger from 'node-color-log';
 
 /**
  *
@@ -24,7 +25,7 @@ const syncBeeScores = async (userData: UserData): Promise<UserData> => {
     ? [...scoreData.scoresRecent]
     : (await updateAllScores(userData)).scoreData.scoresRecent;
 
-  console.log('Userdata exists and syncing...');
+  logger.info('Userdata exists and syncing...');
   const myUpdatedScores = scoresToMap.map((currentSong) => {
     // check all your bees for this specific song and return the song
     // with all bees in playedby which also played this song
@@ -36,8 +37,8 @@ const syncBeeScores = async (userData: UserData): Promise<UserData> => {
 
       // Returns the current song with extra playedBy data, if it is a match
       if (isMatch) {
-        console.log('It is a match: ', currentSong.songName);
-        console.log('Played by: ', currentBee.playerName);
+        logger.info('It is a match: ', currentSong.songName);
+        logger.info('Played by: ', currentBee.playerName);
         // find their score for this song
         const theirScore = currentBee.scoreData.scoresRecent.find(
           (song) => song.songHash === currentSong.songHash
