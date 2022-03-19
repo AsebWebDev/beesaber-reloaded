@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Scores } from '../../../sharedTypes';
 import { baseUrl } from '../../constants';
 import logger from 'node-color-log';
+import delay from './delay';
 
 type Props = {
   array?: Scores;
@@ -26,6 +27,7 @@ const getRecentScores = async ({
 }: Props): Promise<Scores> => {
   const url = `${baseUrl}/player/${id}/scores/recent/${count}`;
   let apiRes;
+  let isError429: boolean;
   try {
     logger.debug('Fetching Data - getRecentScores - page ', count);
     apiRes = await axios.get(url);
@@ -33,16 +35,31 @@ const getRecentScores = async ({
     logger.error(
       `Error response on page ${count}: ${err.response.status}, ${err.message}`
     );
-    if (err.response.status === 429) logger.warn('429 FORBIDDEN');
+    if (err.response.status === 429) {
+      // The ScoreSaber API limits requests and throws a 429 error. In this case, we needed to wait a minute
+      // to continue. Not ideal, but the only solution I could think of for now.
+      logger.warn('429 FORBIDDEN, waiting 60 seconds...');
+      isError429 = true;
+      await delay(60000);
+      logger.warn('waited 60 seconds');
+    }
   }
-  if (apiRes === undefined || apiRes.data === undefined) return [];
-  if (threshold !== undefined && count > threshold) return apiRes.data.scores;
+
+  if (!isError429) {
+    if (apiRes === undefined || apiRes.data === undefined) return [];
+    if (threshold !== undefined && count > threshold && apiRes !== undefined)
+      return apiRes.data.scores;
+  } else {
+    // Reseting count to continue on the last successfully count, if current request failed because of 429.
+    count--;
+  }
 
   const newArray = array.concat(
     await getRecentScores({
       id,
       count: count + 1,
-      array: apiRes.data.scores,
+      // if a 429 error occured, we pass through the original array
+      array: isError429 ? array : apiRes.data.scores,
       threshold,
     })
   ) as Scores;
