@@ -3,12 +3,18 @@ import User from '../models/User';
 import getAllScores from '../routes/helper/getAllScores';
 import getPlayerById from '../routes/helper/getPlayerById';
 import logger from 'node-color-log';
+import isUpdateNeeded from './IsUpdateNeeded';
 
 const updateAllScores = async (userData: UserData): Promise<UserData> => {
+  logger.info(`Updating all scores of ${userData.playerInfo.playerName}`);
   const { myScoreSaberId, _id } = userData;
   if (myScoreSaberId === '') return userData;
 
-  const newScoreData = await getAllScores(myScoreSaberId);
+  const needsUpdate = await isUpdateNeeded(userData);
+
+  const newScoreData = needsUpdate
+    ? await getAllScores(myScoreSaberId)
+    : userData.scoreData;
   const player = await getPlayerById(myScoreSaberId);
   const remotePlayCount = player.scoreStats.totalPlayCount;
 

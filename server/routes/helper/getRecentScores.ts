@@ -29,7 +29,7 @@ const getRecentScores = async ({
   let apiRes;
   let isError429: boolean;
   try {
-    logger.debug('Fetching Data - getRecentScores - page ', count);
+    // logger.debug('Fetching Data - getRecentScores - page ', count);
     apiRes = await axios.get(url);
   } catch (err) {
     logger.error(
@@ -42,6 +42,9 @@ const getRecentScores = async ({
       isError429 = true;
       await delay(60000);
       logger.warn('waited 60 seconds');
+    }
+    if (err.response.status === 404) {
+      logger.info(`Fetching of scores for finsihed at count ${count}.`);
     }
   }
 

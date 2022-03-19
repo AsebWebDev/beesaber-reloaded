@@ -18,18 +18,17 @@ type ReturnType = {
 const checkIsMeAndNeedsUpdate = async (id: string): Promise<ReturnType> => {
   const result: UserDocType = await User.findOne({ myScoreSaberId: id });
   const isMe = result !== null;
-  if (isMe) {
-    logger.success(`It's you (${result?.playerInfo?.playerName})!`);
-    const parsedUserData = result?.toObject();
+  if (!isMe) return { isMe };
+  logger.success(`It's you (${result?.playerInfo?.playerName})!`);
+  const parsedUserData = result?.toObject();
 
-    const needsUpdate = await isUpdateNeeded(parsedUserData);
+  const needsUpdate = await isUpdateNeeded(parsedUserData);
 
-    return {
-      isMe,
-      needsUpdate,
-      userData: parsedUserData,
-    };
-  }
+  return {
+    isMe,
+    needsUpdate,
+    userData: parsedUserData,
+  };
 };
 
 export default checkIsMeAndNeedsUpdate;
