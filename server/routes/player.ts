@@ -3,15 +3,26 @@ import { isLoggedIn } from '../middlewares';
 import express from 'express';
 import getAllScores from './helper/getAllScores';
 import getPlayerById from './helper/getPlayerById';
+import logger from 'node-color-log';
+
+import checkIsMeAndNeedsUpdate from './helper/checkIsMeAndNeedsUpdate';
+
 const router = express.Router();
 
 const baseUrl = 'https://new.scoresaber.com/api';
 
 router.get('/:id/allscores/', isLoggedIn, async (req, res, next) => {
   const id = req.params.id;
-  const result = await getAllScores(id);
 
-  res.json(result);
+  logger.debug(`Getting all scores for id ${id}`);
+
+  const result = await checkIsMeAndNeedsUpdate(id);
+  if (result.isMe && result.needsUpdate === false)
+    return res.json(result.userData.scoreData);
+
+  const allScores = await getAllScores(id);
+
+  res.json(allScores);
 });
 
 router.get('/:id/playerbyid/', isLoggedIn, async (req, res, next) => {

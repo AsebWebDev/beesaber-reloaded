@@ -10,7 +10,7 @@ type UserDocType = UserData & {
 const isUpdateNeeded = async (userData: UserData): Promise<boolean> => {
   const { _id: mongoId, myScoreSaberId } = userData;
 
-  if (myScoreSaberId === '') return false;
+  if (myScoreSaberId === '' || myScoreSaberId === undefined) return false;
   const result: ScoreSaberUserInfo = await getPlayerById(myScoreSaberId);
   const remotePlayCount = result.scoreStats.totalPlayCount;
   const localPlayCount = await User.findById(mongoId)
