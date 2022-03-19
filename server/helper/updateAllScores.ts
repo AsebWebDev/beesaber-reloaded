@@ -2,6 +2,7 @@ import { UserData } from '../../sharedTypes';
 import User from '../models/User';
 import getAllScores from '../routes/helper/getAllScores';
 import getPlayerById from '../routes/helper/getPlayerById';
+import logger from 'node-color-log';
 
 const updateAllScores = async (userData: UserData): Promise<UserData> => {
   const { myScoreSaberId, _id } = userData;
@@ -18,8 +19,10 @@ const updateAllScores = async (userData: UserData): Promise<UserData> => {
   };
 
   User.findByIdAndUpdate(_id, newUserData as Express.User, { new: true })
-    .then((user: UserData) => console.log('Updated: ', user.googleName))
-    .catch((err: unknown) => console.log(err));
+    .then((user: UserData) =>
+      logger.info('Updated all scores for : ', user.googleName)
+    )
+    .catch((err: unknown) => logger.error(err));
 
   return newUserData;
 };

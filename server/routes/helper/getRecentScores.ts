@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Scores } from '../../../sharedTypes';
 import { baseUrl } from '../../constants';
+import logger from 'node-color-log';
 
 type Props = {
   array?: Scores;
@@ -26,10 +27,13 @@ const getRecentScores = async ({
   const url = `${baseUrl}/player/${id}/scores/recent/${count}`;
   let apiRes;
   try {
-    console.log('Fetching Data - getRecentScores - page ', count);
+    logger.debug('Fetching Data - getRecentScores - page ', count);
     apiRes = await axios.get(url);
   } catch (err) {
-    console.error(`Error response on page ${count}: ${err.response.status}`);
+    logger.error(
+      `Error response on page ${count}: ${err.response.status}, ${err.message}`
+    );
+    if (err.response.status === 429) logger.warn('429 FORBIDDEN');
   }
   if (apiRes === undefined || apiRes.data === undefined) return [];
   if (threshold !== undefined && count > threshold) return apiRes.data.scores;

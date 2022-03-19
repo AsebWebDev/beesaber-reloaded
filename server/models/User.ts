@@ -23,6 +23,7 @@ interface User {
   news: unknown[];
   playerInfo: {
     playerId: string;
+    playerName: string;
   };
   scoreData: {
     lastSync: string; // lastSync currently not used
@@ -65,6 +66,7 @@ const userSchema = new Schema<User>(
     },
     playerInfo: {
       playerId: String,
+      playerName: String,
     },
     scoreData: {
       lastSync: String, // lastSync currently not used
