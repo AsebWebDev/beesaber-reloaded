@@ -19,15 +19,27 @@ const isUpdateNeeded = async (userData: UserData): Promise<boolean> => {
       return userDoc.totalPlayCount;
     })
     .catch((err: unknown) => logger.error(err));
-  if (remotePlayCount > localPlayCount) {
-    logger.warn(
-      `Update needed (${userData.playerInfo.playerName}): Remote: ${remotePlayCount} /  Local ${localPlayCount}`
-    );
+
+  const noScoresExist =
+    userData.scoreData.scoresRecent === undefined ||
+    userData.scoreData.scoresRecent.length === 0;
+
+  const updateNeeded = remotePlayCount > localPlayCount || noScoresExist;
+
+  if (updateNeeded) {
+    if (remotePlayCount > localPlayCount)
+      logger.warn(
+        `Update needed (${userData.playerInfo.playerName}): Remote: ${remotePlayCount} /  Local ${localPlayCount}`
+      );
+    if (noScoresExist)
+      logger.warn(
+        `Update needed (${userData.playerInfo.playerName}): No scores!`
+      );
   } else {
     logger.debug(`No updated needed (${userData.playerInfo.playerName})`);
   }
 
-  return remotePlayCount > localPlayCount;
+  return updateNeeded;
 };
 
 export default isUpdateNeeded;
