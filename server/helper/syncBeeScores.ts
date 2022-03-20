@@ -37,7 +37,7 @@ const syncBeeScores = async (userData: UserData): Promise<UserData> => {
 
       // Returns the current song with extra playedBy data, if it is a match
       if (isMatch) {
-        logger.info(
+        logger.debug(
           `It is a match: ${currentSong.songName} played by ${currentBee.playerName}`
         );
         // find their score for this song
