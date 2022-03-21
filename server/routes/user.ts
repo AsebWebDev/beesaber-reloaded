@@ -2,12 +2,14 @@ import express from 'express';
 import mongoose from 'mongoose';
 import User from '../models/User';
 import { isLoggedIn } from '../middlewares';
-import { UserData } from '../../sharedTypes';
+import { Bee, UserData } from '../../sharedTypes';
 import syncBeeScores from '../helper/syncBeeScores';
 import getAllScores from './helper/getAllScores';
 import updateAllScores from '../helper/updateAllScores';
 import isUpdateNeeded from '../helper/IsUpdateNeeded';
 import logger from 'node-color-log';
+import { PlayedBy } from '../../sharedTypes/UserScores';
+import { parse } from 'path';
 
 const router = express.Router();
 
@@ -21,11 +23,8 @@ router.post('/:id/', isLoggedIn, async (req, res, next) => {
     if (mongoose.Types.ObjectId.isValid(mongoId)) {
       User.findByIdAndUpdate(mongoId, req.body, { new: true })
         .then(async (userDoc: UserDocType) => {
-          if (!userDoc) {
-            next(new Error('Could not find user.'));
+          if (!userDoc) return next(new Error('Could not find user.'));
 
-            return;
-          }
           const id = req.body.myScoreSaberId;
           const scoreData = await getAllScores(id);
           const newUser: UserData = { ...req.body, scoreData };
@@ -38,15 +37,13 @@ router.post('/:id/', isLoggedIn, async (req, res, next) => {
 });
 
 router.get('/:id/', isLoggedIn, (req, res, next) => {
-  if (req.params.id !== undefined) {
-    if (mongoose.Types.ObjectId.isValid(req.params.id)) {
-      User.findById(req.params.id)
-        .then(async (userDoc: UserDocType) => {
-          if (!userDoc) {
-            next(new Error('Could not find user.'));
+  const { id } = req.params;
 
-            return;
-          }
+  if (id !== undefined) {
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      User.findById(id)
+        .then(async (userDoc: UserDocType) => {
+          if (!userDoc) return next(new Error('Could not find user.'));
 
           // We parse mongoos userDoc to plain object and sync all scores
           const parsedUserData: UserData = userDoc.toObject();
@@ -63,24 +60,61 @@ router.get('/:id/', isLoggedIn, (req, res, next) => {
   } else logger.warn('No ID in Params');
 });
 
+router.post('/:id/bee/delete', isLoggedIn, async (req, res, next) => {
+  const { id: _id } = req.params;
+  const { playerId } = req.body;
+
+  if (playerId === undefined) return next(new Error('No playerId'));
+
+  let updatedUserData: UserData | undefined;
+
+  const filterBee = (bee: Bee | PlayedBy) => bee.playerId !== playerId;
+
+  await User.findOne({ _id })
+    .then((userDoc: UserDocType) => {
+      if (!userDoc) return next(new Error('Could not find user.'));
+
+      const parsedUserData: UserData = userDoc.toObject();
+
+      // Remove this bee from hive and all playedBy scores
+      updatedUserData = { ...parsedUserData };
+      updatedUserData.bees = parsedUserData.bees.filter(filterBee);
+      updatedUserData.scoreData.scoresRecent =
+        parsedUserData.scoreData.scoresRecent.map((score) => {
+          if (score.playedBy === undefined) return score;
+
+          score.playedBy = score.playedBy?.filter(filterBee);
+          if (score.playedBy.length === 0) score.playedByHive = false;
+
+          return score;
+        });
+    })
+    .catch((err: unknown) => next(err));
+
+  await User.findByIdAndUpdate({ _id }, updatedUserData as Express.User, {
+    new: true,
+  })
+    .then((userDoc: UserDocType) => {
+      if (!userDoc) return next(new Error('Could not find user.'));
+
+      const parsedUserData: UserData = userDoc.toObject();
+      logger.info(`Successfully deleted bee with id ${playerId}`);
+      res.json(userDoc);
+    })
+    .catch((err: unknown) => next(err));
+  logger.debug('ENDE');
+});
+
 router.post('/:id/bee/update', isLoggedIn, (req, res, next) => {
   if (req.params.id !== undefined) {
     User.findByIdAndUpdate(
-      {
-        _id: req.params.id,
-      },
+      { _id: req.params.id },
       { $set: { bees: req.body } },
-      {
-        // safe: true, FIXME: Needed?
-        new: true,
-      }
+      { new: true }
     )
       .then((userDoc: UserDocType) => {
-        if (!userDoc) {
-          next(new Error('Could not find user.'));
+        if (!userDoc) return next(new Error('Could not find user.'));
 
-          return;
-        }
         const parsedUserData: UserData = userDoc.toObject();
         logger.info(
           `Successfully updated bees for ${parsedUserData.googleName}`
@@ -97,17 +131,12 @@ router.post('/:id/bee', isLoggedIn, (req, res, next) => {
       req.params.id,
       { $push: { bees: req.body } },
       {
-        // safe: true, FIXME: Needed?
         upsert: true,
         new: true,
       }
     )
       .then((userDoc: UserDocType) => {
-        if (!userDoc) {
-          next(new Error('Could not find user.'));
-
-          return;
-        }
+        if (!userDoc) return next(new Error('Could not find user.'));
         const parsedUserData: UserData = userDoc.toObject();
         logger.info(`Successfully added bee for ${parsedUserData.googleName}`);
         res.json(userDoc);

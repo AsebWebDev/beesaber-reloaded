@@ -5,8 +5,8 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
 import {
+  useDeleteBeeMutation,
   useGetUserDataQuery,
-  useUpdateUserDataMutation,
 } from '@/api/services/apiUser/apiUser';
 import BeeTag from '@/components/common/BeeTag/BeeTag';
 import NeonButtonBase from '@/components/common/NeonButton/NeonButton';
@@ -52,7 +52,7 @@ const MyHive = (): JSX.Element | null => {
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
   const userId = useAppSelector(selectUserId);
   const { data: userData } = useGetUserDataQuery(parseId(userId) ?? skipToken);
-  const [updateUser] = useUpdateUserDataMutation();
+  const [deleteBee] = useDeleteBeeMutation();
 
   if (!isLoggedIn || userData === undefined || userId === undefined) {
     history.push('/'); // Redirect to the main page
@@ -67,19 +67,17 @@ const MyHive = (): JSX.Element | null => {
   const toggleModal = () => setModal(!modal);
   const handleSelect = (bee: Bee) => setCurrentBee(bee);
   const handleDelete = (beeToDelete: Bee) => {
-    const newBees = bees.filter(
-      (bee: Bee) => bee.playerId !== beeToDelete.playerId
-    );
+    const { playerId, playerName } = beeToDelete;
 
     void toast.promise(
-      updateUser({
+      deleteBee({
         userId,
-        userData: { ...userData, bees: newBees },
+        playerId,
       }),
       {
-        pending: `Deleting ${beeToDelete.playerName}...`,
-        success: `Your Bee ${beeToDelete.playerName} has been deleted. 👋`,
-        error: `There has been an issue deleting ${beeToDelete.playerName} 🤯`,
+        pending: `Deleting ${playerName}...`,
+        success: `Your Bee ${playerName} has been deleted. 👋`,
+        error: `There has been an issue deleting ${playerName} 🤯`,
       }
     );
 

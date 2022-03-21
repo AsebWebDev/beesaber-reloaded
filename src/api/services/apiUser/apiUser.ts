@@ -10,6 +10,11 @@ type UpdateUserDataArgs = {
   userId: string;
 };
 
+type DeleteBeeArgs = {
+  playerId: string;
+  userId: string;
+};
+
 export const apiUser = api.injectEndpoints({
   endpoints: (builder) => ({
     getMyScoreSaberId: builder.query<string, string>({
@@ -35,6 +40,14 @@ export const apiUser = api.injectEndpoints({
       }),
       invalidatesTags: ['UserData'],
     }),
+    deleteBee: builder.mutation<boolean, DeleteBeeArgs>({
+      query: ({ userId, playerId }) => ({
+        url: `${baseUrl}/user/${userId}/bee/delete`,
+        method: 'POST',
+        body: { playerId },
+      }),
+      invalidatesTags: ['UserData'],
+    }),
   }),
 });
 
@@ -42,5 +55,6 @@ export const {
   useGetTotalPlayCountQuery,
   useGetMyScoreSaberIdQuery,
   useGetUserDataQuery,
+  useDeleteBeeMutation,
   useUpdateUserDataMutation,
 } = apiUser;
