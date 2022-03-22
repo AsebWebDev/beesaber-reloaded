@@ -7,6 +7,7 @@ import Title from '@/components/common/Title/Title';
 import Divider from '@/components/tools/Divider/Divider';
 import parseId from '@/helper/parseEmptyStringToUndefined';
 import useIsMobile from '@/sharedHooks/useIsMobile';
+import useLoadingState from '@/sharedHooks/useLoadingState';
 import { useAppSelector } from '@/store/hooks';
 import { selectMyScoreSaberId } from '@/store/reducer/userDataReducer';
 import { mediaQuery } from '@/tokens/definitions/layout';
@@ -59,6 +60,7 @@ const MenuItems = styled.div`
 
 const Menu = (): JSX.Element => {
   const { isMobile } = useIsMobile();
+  const isLoading = useLoadingState();
   const myScoreSaberId = useAppSelector(selectMyScoreSaberId);
 
   return (
@@ -75,7 +77,7 @@ const Menu = (): JSX.Element => {
           <MenuLink to="/myprofile">
             <Title>My Profile</Title>
           </MenuLink>
-          {parseId(myScoreSaberId) !== undefined && (
+          {parseId(myScoreSaberId) !== undefined && !isLoading && (
             <MenuLink to="/myhive">
               <Title>My Hive</Title>
             </MenuLink>
