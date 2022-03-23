@@ -125,6 +125,10 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
     )
       return;
 
+    setBeeToAdd(undefined);
+    setQuery('');
+    setSelectedPlayer(undefined);
+
     await toast.promise(
       updateUser({
         userId,
@@ -136,9 +140,6 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
         error: `There has been an issue saving ${beeToAdd.playerName} 🤯`,
       }
     );
-    setQuery('');
-    setSelectedPlayer(undefined);
-    setBeeToAdd(undefined);
   };
 
   const switchTab = (tab: Tab) => {
