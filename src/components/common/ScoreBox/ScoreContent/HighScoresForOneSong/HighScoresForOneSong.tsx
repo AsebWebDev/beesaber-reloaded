@@ -6,6 +6,8 @@ import DiffTag from '@/components/common/DiffTag/DiffTag';
 import { parseSongPicUrl } from '@/helper/urlParser';
 import tokens from '@/tokens';
 
+import ToolTip from './ToolTip/ToolTip';
+
 import type { Score } from '@/../sharedTypes';
 // import HighscoreTable from "./HighscoreTable";
 
@@ -69,26 +71,8 @@ function HighScoresForOneSong({ highscore }: Props): JSX.Element | null {
           <DiffTag difficulty={difficulty} />
           <Img src={parseSongPicUrl(songHash)} alt={`Cover of ${songName}`} />
           {playedByHive === true && (
-            <MDBTooltip clickable="true" tag="span" placement="top">
-              <span>
-                <MDBIcon far icon="handshake" />
-              </span>
-              <div className="also-played-by">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Bee</th>
-                      <th>Score</th>
-                      <th>My Score</th>
-                    </tr>
-                  </thead>
-                  <tbody id="bees">
-                    {/* {playedBy.map((bee, i) => (
-                      <HighscoreTable bee={bee} key={i} />
-                    ))} */}
-                  </tbody>
-                </table>
-              </div>
+            <MDBTooltip tag="span" title={<ToolTip playedBy={playedBy} />}>
+              <MDBIcon far icon="handshake" />
             </MDBTooltip>
           )}
           <MDBBadge onClick={() => logid(songHash)} color="dark">

@@ -152,33 +152,9 @@ exports[`components/common/ScoreBox/ScoreContent/HighScoresForOneSong should mat
         src="https://new.scoresaber.com/api/static/covers/32C3A0E1FEE9FD589B795941B6D79AFE8061D30B.png"
       />
       <span>
-        <span>
-          <i
-            class="far fa-handshake"
-          />
-        </span>
-        <div
-          class="also-played-by"
-        >
-          <table>
-            <thead>
-              <tr>
-                <th>
-                  Bee
-                </th>
-                <th>
-                  Score
-                </th>
-                <th>
-                  My Score
-                </th>
-              </tr>
-            </thead>
-            <tbody
-              id="bees"
-            />
-          </table>
-        </div>
+        <i
+          class="far fa-handshake"
+        />
       </span>
       <span
         class="badge bg-dark"
