@@ -30,27 +30,25 @@ const syncBeeScores = async (userData: UserData): Promise<UserData> => {
     // check all your bees for this specific song and return the song
     // with all bees in playedby which also played this song
     bees.map((currentBee) => {
-      // check if the bee check has player your song
-      const isMatch = currentBee.scoreData.scoredSongsHashes.includes(
-        currentSong.songHash
+      const matchingScore = currentBee.scoreData.scoresRecent.find(
+        (song) =>
+          song.songHash === currentSong.songHash &&
+          song.difficulty === currentSong.difficulty
       );
 
       // Returns the current song with extra playedBy data, if it is a match
-      if (isMatch) {
+      if (matchingScore) {
         logger.debug(
           `It is a match: ${currentSong.songName} played by ${currentBee.playerName}`
         );
-        // find their score for this song
-        const theirScore = currentBee.scoreData.scoresRecent.find(
-          (song) => song.songHash === currentSong.songHash
-        ).score;
 
         // create a new playedby array, if non exists
         if (currentSong.playedBy === undefined) currentSong.playedBy = [];
 
         // add the bee to the playbed by array of the current song
         currentSong.playedBy.push({
-          beeScore: theirScore,
+          beeScore: matchingScore.score,
+          difficulty: currentSong.difficulty,
           myScore: currentSong.score,
           playerId: currentBee.playerId,
           playerName: currentBee.playerName,

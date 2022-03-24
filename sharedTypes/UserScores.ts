@@ -4,6 +4,7 @@ type DifficultyName = 'Easy' | 'Expert' | 'Expert+' | 'Hard' | 'Normal';
 
 type PlayedBy = {
   beeScore: number;
+  difficulty: Difficulty;
   myScore: number;
   playerId: string;
   playerName: string;

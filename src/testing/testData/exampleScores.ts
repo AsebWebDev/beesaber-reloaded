@@ -4,10 +4,11 @@ import type { ScoreData, Scores } from '@/../sharedTypes';
 import type { PlayedBy } from '@/../sharedTypes/UserScores';
 
 const examplePlayedBy: PlayedBy = {
+  beeScore: 2000,
+  difficulty: 3,
+  myScore: 3000,
   playerId: '12345',
   playerName: 'examplePlayer',
-  myScore: 3000,
-  beeScore: 2000,
 };
 
 const exampleScores: Scores = [
