@@ -3,13 +3,12 @@ import mongoose from 'mongoose';
 import User from '../models/User';
 import { isLoggedIn } from '../middlewares';
 import { Bee, UserData } from '../../sharedTypes';
-import syncBeeScores from '../helper/syncBeeScores';
+import syncAll from '../helper/syncAll';
 import getAllScores from './helper/getAllScores';
 import updateAllScores from '../helper/updateAllScores';
 import isUpdateNeeded from '../helper/IsUpdateNeeded';
 import logger from 'node-color-log';
 import { PlayedBy } from '../../sharedTypes/UserScores';
-import { parse } from 'path';
 
 const router = express.Router();
 
@@ -51,7 +50,7 @@ router.get('/:id/', isLoggedIn, (req, res, next) => {
           const userData = updateNeeded
             ? await updateAllScores(parsedUserData)
             : parsedUserData;
-          const syncedUserData = await syncBeeScores(userData);
+          const syncedUserData = await syncAll(userData);
           logger.info(`Successfully synced user ${syncedUserData.googleName}`);
           res.json(syncedUserData);
         })

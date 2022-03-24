@@ -1,4 +1,4 @@
-import { UserData } from '../../sharedTypes';
+import { ScoreData, UserData } from '../../sharedTypes';
 import calcAllScores from '../routes/helper/calcScores';
 import updateAllScores from './updateAllScores';
 import logger from 'node-color-log';
@@ -15,11 +15,11 @@ import logger from 'node-color-log';
  *
  * The returned userData is updated with these information.
  */
-const syncBeeScores = async (userData: UserData): Promise<UserData> => {
+const syncMyScoreData = async (userData: UserData): Promise<ScoreData> => {
   const { bees, myScoreSaberId, scoreData } = userData;
   const scoreDataExists = scoreData.scoresRecent.length > 0;
 
-  if (myScoreSaberId === '') return userData;
+  if (myScoreSaberId === '') return scoreData;
 
   const scoresToMap = scoreDataExists
     ? [...scoreData.scoresRecent]
@@ -61,9 +61,7 @@ const syncBeeScores = async (userData: UserData): Promise<UserData> => {
     return currentSong;
   });
 
-  const newScoreData = calcAllScores(myUpdatedScores);
-
-  return { ...userData, scoreData: newScoreData };
+  return calcAllScores(myUpdatedScores);
 };
 
-export default syncBeeScores;
+export default syncMyScoreData;
