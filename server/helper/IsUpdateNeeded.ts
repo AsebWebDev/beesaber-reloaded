@@ -8,6 +8,8 @@ type UserDocType = UserData & {
 };
 
 const isUpdateNeeded = async (userData: UserData): Promise<boolean> => {
+  const { playerInfo } = userData;
+  if (playerInfo === undefined) return false;
   const { _id: mongoId, myScoreSaberId } = userData;
 
   if (myScoreSaberId === '' || myScoreSaberId === undefined) return false;
@@ -29,14 +31,12 @@ const isUpdateNeeded = async (userData: UserData): Promise<boolean> => {
   if (updateNeeded) {
     if (remotePlayCount > localPlayCount)
       logger.warn(
-        `Update needed (${userData.playerInfo.playerName}): Remote: ${remotePlayCount} /  Local ${localPlayCount}`
+        `Update needed (${playerInfo.playerName}): Remote: ${remotePlayCount} /  Local ${localPlayCount}`
       );
     if (noScoresExist)
-      logger.warn(
-        `Update needed (${userData.playerInfo.playerName}): No scores!`
-      );
+      logger.warn(`Update needed (${playerInfo.playerName}): No scores!`);
   } else {
-    logger.debug(`No updated needed (${userData.playerInfo.playerName})`);
+    logger.debug(`No updated needed (${playerInfo.playerName})`);
   }
 
   return updateNeeded;
