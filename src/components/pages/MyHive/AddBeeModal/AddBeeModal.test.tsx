@@ -15,7 +15,6 @@ import exampleSSUserInfo, {
 import AddBeeModal from './AddBeeModal';
 import * as useQueryForPlayers from './useQueryForPlayers';
 
-import type { ScoreData } from '@/../sharedTypes';
 import type { PlayerInfo } from '@/../sharedTypes/ScoreSaberUserInfo';
 
 const middlewares = [thunk];
@@ -188,7 +187,7 @@ describe('AddBeeModal', () => {
   //   expect(addButton).toBeInTheDocument();
   // });
 
-  it('should not show "add" button, when selected player is already added', async () => {
+  it('should not show "add" button, when selected player is already added', () => {
     spy.mockReturnValue({
       foundPlayers: [exampleSSUserInfo.playerInfo],
       showSpinner: false,
@@ -202,8 +201,6 @@ describe('AddBeeModal', () => {
       </Provider>
     );
 
-    await screen.findByTestId('loading-spinner');
-
     const addButton = screen.queryByRole('button', {
       name: `Add ${exampleSSUserInfo.playerInfo.playerName}`,
     });
@@ -211,7 +208,7 @@ describe('AddBeeModal', () => {
     expect(addButton).not.toBeInTheDocument();
   });
 
-  it('should not show "add" button, when selected player is you', async () => {
+  it('should not show "add" button, when selected player is you', () => {
     spy.mockReturnValue({
       foundPlayers: [exampleSSUserInfo.playerInfo],
       showSpinner: false,
@@ -224,8 +221,6 @@ describe('AddBeeModal', () => {
         <AddBeeModal toggleModal={jest.fn()} />
       </Provider>
     );
-
-    await screen.findByTestId('loading-spinner');
 
     const addButton = screen.queryByRole('button', {
       name: `Add ${exampleSSUserInfo.playerInfo.playerName}`,
@@ -291,13 +286,13 @@ describe('AddBeeModal', () => {
     const idTab = screen.getByText('Search by Id');
     const usernameTab = screen.getByText('Search by Username');
 
-    expect(idTab).toHaveClass('active');
-    expect(usernameTab).not.toHaveClass('active');
-
-    userEvent.click(usernameTab);
-
-    expect(idTab).not.toHaveClass('active');
     expect(usernameTab).toHaveClass('active');
+    expect(idTab).not.toHaveClass('active');
+
+    userEvent.click(idTab);
+
+    expect(usernameTab).not.toHaveClass('active');
+    expect(idTab).toHaveClass('active');
   });
 
   it('should reset query when tab is switched', () => {

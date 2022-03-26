@@ -56,8 +56,9 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
   const [selectedPlayer, setSelectedPlayer] = useState<
     PlayerInfo | undefined
   >();
+
   const [beeToAdd, setBeeToAdd] = useState<Bee | undefined>();
-  const searchBy = activeItem === '1' ? 'id' : 'name';
+  const searchBy = activeItem === '1' ? 'name' : 'id';
   const [updateUser] = useUpdateUserDataMutation();
   const userId = useAppSelector(selectUserId);
   const { data: userData } = useGetUserDataQuery(userId ?? skipToken);
@@ -68,6 +69,12 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
   const { data: scoreDataOfSelectedPlayer } = useGetAllScoresQuery(
     selectedPlayer?.playerId ?? skipToken
   );
+
+  const resetAll = () => {
+    setBeeToAdd(undefined);
+    setQuery('');
+    setSelectedPlayer(undefined);
+  };
 
   const handleEscKey = useCallback((event: KeyboardEvent) => {
     if (event.key === 'Escape') {
@@ -125,9 +132,7 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
     )
       return;
 
-    setBeeToAdd(undefined);
-    setQuery('');
-    setSelectedPlayer(undefined);
+    resetAll();
 
     await toast.promise(
       updateUser({
@@ -143,14 +148,16 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
   };
 
   const switchTab = (tab: Tab) => {
-    setQuery('');
+    resetAll();
+
     if (activeItem !== tab) setActiveItem(tab);
   };
 
   const playerIsSelected = selectedPlayer !== undefined;
   const beeIsReady = beeToAdd !== undefined;
   const showAddButton = beeIsReady && !userAlreadyAdded && !thatIsYou;
-  const showSmallSpinner = !showAddButton && playerIsSelected;
+  const showSmallSpinner =
+    !thatIsYou && !userAlreadyAdded && !showAddButton && playerIsSelected;
 
   return (
     <MDBContainer>
@@ -165,7 +172,7 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
                     onClick={() => switchTab('1')}
                     active={activeItem === '1'}
                   >
-                    Search by Id
+                    Search by Username
                   </MDBTabsLink>
                 </MDBTabsItem>
                 <MDBTabsItem>
@@ -173,13 +180,13 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
                     onClick={() => switchTab('2')}
                     active={activeItem === '2'}
                   >
-                    Search by Username
+                    Search by Id
                   </MDBTabsLink>
                 </MDBTabsItem>
               </MDBTabs>
 
               <MDBTabsContent>
-                <MDBTabsPane show={activeItem === '1'}>
+                <MDBTabsPane show={activeItem === '2'}>
                   <MDBInput
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       handleChange(e)
@@ -193,7 +200,7 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
                     success="right"
                   />
                 </MDBTabsPane>
-                <MDBTabsPane show={activeItem === '2'}>
+                <MDBTabsPane show={activeItem === '1'}>
                   <MDBInput
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       handleChange(e)
