@@ -45,16 +45,21 @@ const syncMyScoreData = async (userData: UserData): Promise<ScoreData> => {
         // create a new playedby array, if non exists
         if (currentSong.playedBy === undefined) currentSong.playedBy = [];
 
+        const songAlreadyAdded = currentSong.playedBy.some(
+          (e) => e.playerId === currentBee.playerId
+        );
+        if (songAlreadyAdded) logger.warn('Song already added!');
         // add the bee to the playbed by array of the current song
-        currentSong.playedBy.push({
-          beeScore: matchingScore.score,
-          difficulty: currentSong.difficulty,
-          myScore: currentSong.score,
-          playerId: currentBee.playerId,
-          playerName: currentBee.playerName,
-        });
-        currentSong.playedByHive = true;
-        return currentSong;
+        if (!songAlreadyAdded) {
+          currentSong.playedBy.push({
+            beeScore: matchingScore.score,
+            difficulty: currentSong.difficulty,
+            myScore: currentSong.score,
+            playerId: currentBee.playerId,
+            playerName: currentBee.playerName,
+          });
+          currentSong.playedByHive = true;
+        }
       }
     });
 
