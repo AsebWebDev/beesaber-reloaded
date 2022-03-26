@@ -35,12 +35,13 @@ router.post('/:id/', isLoggedIn, async (req, res, next) => {
   } else logger.warn('No ID in Params');
 });
 
-router.get('/:id/', isLoggedIn, (req, res, next) => {
+router.get('/:id/', isLoggedIn, async (req, res, next) => {
   const { id } = req.params;
+  let updatedUserData: UserData | undefined;
 
   if (id !== undefined) {
     if (mongoose.Types.ObjectId.isValid(id)) {
-      User.findById(id)
+      await User.findById(id)
         .then(async (userDoc: UserDocType) => {
           if (!userDoc) return next(new Error('Could not find user.'));
 
@@ -52,7 +53,23 @@ router.get('/:id/', isLoggedIn, (req, res, next) => {
             : parsedUserData;
           const syncedUserData = await syncAll(userData);
           logger.info(`Successfully synced user ${syncedUserData.googleName}`);
-          res.json(syncedUserData);
+          updatedUserData = { ...syncedUserData };
+        })
+        .catch((err: unknown) => next(err));
+
+      await User.findByIdAndUpdate(
+        { _id: id },
+        updatedUserData as Express.User,
+        {
+          new: true,
+        }
+      )
+        .then((userDoc: UserDocType) => {
+          if (!userDoc) return next(new Error('Could not find user.'));
+
+          const parsedUserData: UserData = userDoc.toObject();
+          logger.info(`Successfully saved user ${updatedUserData.googleName}`);
+          res.json(userDoc);
         })
         .catch((err: unknown) => next(err));
     }
