@@ -4,7 +4,7 @@ type Props = {
   playedBy?: PlayedBy[];
 };
 
-const ToolTip = ({ playedBy }: Props) => (
+const ToolTip = ({ playedBy }: Props): JSX.Element => (
   <ul>
     {playedBy?.map((bee) => {
       const { difficulty, playerId, playerName, myScore, beeScore } = bee;

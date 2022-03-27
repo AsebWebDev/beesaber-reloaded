@@ -46,6 +46,7 @@ function HighScoresForOneSong({ highscore }: Props): JSX.Element | null {
     songName,
     timeSet,
   } = highscore;
+  // eslint-disable-next-line no-console
   const logid = (id: string) => console.log('id: !', id);
 
   let scoreColorClass = '';
