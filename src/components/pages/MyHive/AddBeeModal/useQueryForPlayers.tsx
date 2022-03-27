@@ -50,6 +50,12 @@ const useQueryForPlayers = ({ query, searchBy }: Props): ReturnType => {
   const showSpinner = isFetchingQueryByName || isFetchingQueryById;
 
   useEffect(() => {
+    setFoundPlayers(null);
+    setThatIsYou(false);
+    setUserAlreadyAdded(false);
+  }, [searchBy]);
+
+  useEffect(() => {
     if (
       foundPlayers !== null &&
       foundPlayers.length === 1 &&
