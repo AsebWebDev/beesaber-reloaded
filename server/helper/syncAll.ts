@@ -7,7 +7,7 @@ const syncAll = async (userData: UserData): Promise<UserData> => {
   logger.info(`syncing my ScoreData...`);
   const newScoreData = await syncMyScoreData(userData);
   logger.info(`syncing my Bees`);
-  const updatedBees = await syncMyBees(userData.bees);
+  const updatedBees = await syncMyBees(userData);
 
   return { ...userData, bees: updatedBees, scoreData: newScoreData };
 };

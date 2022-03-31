@@ -14,8 +14,14 @@ const syncBee = async (bee: Bee): Promise<Bee> => {
   const needsUpdate = remotePlayCount > newBee.playCount || !scoreDataExists;
 
   if (needsUpdate) {
-    logger.info(`${bee.playerName} needs an update. Syncing...`);
+    logger.info(
+      `${bee.playerName} needs an update. Scoredata exists: ${scoreDataExists}.`
+    );
+    logger.info(
+      `Remote: ${remotePlayCount} / Local: ${newBee.playCount} Syncing...`
+    );
     newBee.scoreData = await getAllScores(newBee.playerId);
+    newBee.playCount = remotePlayCount;
     logger.info(`...synced.`);
   }
 

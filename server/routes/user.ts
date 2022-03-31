@@ -66,8 +66,9 @@ router.get('/:id/', isLoggedIn, async (req, res, next) => {
       )
         .then((userDoc: UserDocType) => {
           if (!userDoc) return next(new Error('Could not find user.'));
-
           const parsedUserData: UserData = userDoc.toObject();
+          logger.info(`Saving User ${parsedUserData} `);
+
           logger.info(`Successfully saved user ${updatedUserData.googleName}`);
           res.json(userDoc);
         })
