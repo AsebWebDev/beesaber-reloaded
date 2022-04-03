@@ -27,7 +27,7 @@ router.post('/:id/', isLoggedIn, async (req, res, next) => {
           const id = req.body.myScoreSaberId;
           const scoreData = await getAllScores(id);
           const newUser: UserData = { ...req.body, scoreData };
-          logger.info(`Successfully updated user ${newUser.googleName}`);
+          logger.success(`Successfully updated user ${newUser.googleName}`);
           res.json(newUser);
         })
         .catch((err: unknown) => next(err));
@@ -52,7 +52,9 @@ router.get('/:id/', isLoggedIn, async (req, res, next) => {
             ? await updateAllScores(parsedUserData)
             : parsedUserData;
           const syncedUserData = await syncAll(userData);
-          logger.info(`Successfully synced user ${syncedUserData.googleName}`);
+          logger.success(
+            `Successfully synced user ${syncedUserData.googleName}`
+          );
           updatedUserData = { ...syncedUserData };
         })
         .catch((err: unknown) => next(err));
@@ -67,9 +69,10 @@ router.get('/:id/', isLoggedIn, async (req, res, next) => {
         .then((userDoc: UserDocType) => {
           if (!userDoc) return next(new Error('Could not find user.'));
           const parsedUserData: UserData = userDoc.toObject();
-          logger.info(`Saving User ${parsedUserData} `);
 
-          logger.info(`Successfully saved user ${updatedUserData.googleName}`);
+          logger.success(
+            `Successfully saved user ${updatedUserData.googleName}`
+          );
           res.json(userDoc);
         })
         .catch((err: unknown) => next(err));
@@ -115,11 +118,10 @@ router.post('/:id/bee/delete', isLoggedIn, async (req, res, next) => {
       if (!userDoc) return next(new Error('Could not find user.'));
 
       const parsedUserData: UserData = userDoc.toObject();
-      logger.info(`Successfully deleted bee with id ${playerId}`);
+      logger.success(`Successfully deleted bee with id ${playerId}`);
       res.json(userDoc);
     })
     .catch((err: unknown) => next(err));
-  logger.debug('ENDE');
 });
 
 router.post('/:id/bee/update', isLoggedIn, (req, res, next) => {
@@ -155,7 +157,9 @@ router.post('/:id/bee', isLoggedIn, (req, res, next) => {
       .then((userDoc: UserDocType) => {
         if (!userDoc) return next(new Error('Could not find user.'));
         const parsedUserData: UserData = userDoc.toObject();
-        logger.info(`Successfully added bee for ${parsedUserData.googleName}`);
+        logger.success(
+          `Successfully added bee for ${parsedUserData.googleName}`
+        );
         res.json(userDoc);
       })
       .catch((err: unknown) => next(err));

@@ -3,8 +3,6 @@ import { Bee, UserData } from '../../sharedTypes';
 import calcAllScores from '../routes/helper/calcScores';
 
 const syncBeeScores = (userdata: UserData): Bee[] => {
-  logger.debug('syncBeeScores hit');
-
   const { bees, scoreData: myScores } = userdata;
 
   const updatedBees = bees.map((currentBee) => {
@@ -19,10 +17,6 @@ const syncBeeScores = (userdata: UserData): Bee[] => {
 
       // Returns the current song with extra playedBy data, if it is a match
       if (matchingScore) {
-        logger.debug(
-          `It is a BEE-match: ${currentSong.songName} played by ${currentBee.playerName}`
-        );
-
         // create a new playedby array, if non exists
         if (currentSong.playedBy === undefined) currentSong.playedBy = [];
 
@@ -30,14 +24,20 @@ const syncBeeScores = (userdata: UserData): Bee[] => {
           (e) => e.playerId === userdata.playerInfo.playerId
         );
 
-        if (songAlreadyAdded) logger.warn('Song already added!');
+        const beeScore = currentSong.score;
+        const myScore = matchingScore.score;
+        const { songName } = currentSong;
+        const { playerName } = currentBee;
 
         // add the bee to the playbed by array of the current song
         if (!songAlreadyAdded) {
+          logger.info(
+            `New song synced: ${songName}, played by me and my bee ${playerName} (Me: ${myScore} / Bee: ${beeScore})`
+          );
           currentSong.playedBy.push({
-            beeScore: currentSong.score,
+            beeScore,
             difficulty: currentSong.difficulty,
-            myScore: matchingScore.score,
+            myScore,
             playerId: userdata.myScoreSaberId,
             playerName: userdata.playerInfo.playerName,
           });
