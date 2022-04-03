@@ -5,6 +5,11 @@ import getPlayerById from '../routes/helper/getPlayerById';
 import logger from 'node-color-log';
 import isUpdateNeeded from './IsUpdateNeeded';
 
+/**
+ *
+ * @param userData
+ * @returns userdata with updated scores, updated userdata will be stored in local database
+ */
 const updateAllScores = async (userData: UserData): Promise<UserData> => {
   logger.info(`Updating all scores of ${userData.playerInfo.playerName}`);
   const { myScoreSaberId, _id } = userData;

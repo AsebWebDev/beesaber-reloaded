@@ -3,6 +3,13 @@ import { Bee } from '../../sharedTypes';
 import getAllScores from '../routes/helper/getAllScores';
 import getPlayerById from '../routes/helper/getPlayerById';
 
+/**
+ *
+ * @param bee
+ * @returns the passed in bee with updated scores. To avoid verbose syncing a quick compare
+ * of the remote total playcount with the playcount on the local database is done. Only if
+ * the scores differ all scores will be fetched again.
+ */
 const syncBee = async (bee: Bee): Promise<Bee> => {
   const newBee = { ...bee };
   const remotePlayer = await getPlayerById(bee.playerId);

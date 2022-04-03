@@ -2,6 +2,13 @@ import logger from 'node-color-log';
 import { Bee, UserData } from '../../sharedTypes';
 import calcAllScores from '../routes/helper/calcScores';
 
+/**
+ *
+ * @param userdata
+ * @returns an Array of Bees, which an additional or new playedBy Array, which lists all scores which
+ * are also played by the user. Each song will only be added, if it has not been added yet. If a song
+ * is played by the user, it also gets marked with the "played by hive" flag.
+ */
 const syncBeeScores = (userdata: UserData): Bee[] => {
   const { bees, scoreData: myScores } = userdata;
 
