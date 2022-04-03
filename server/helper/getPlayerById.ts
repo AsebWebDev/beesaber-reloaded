@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { ScoreSaberUserInfo } from '../../../sharedTypes';
-import { baseUrl } from '../../constants';
+import { ScoreSaberUserInfo } from '../../sharedTypes';
+import { baseUrl } from '../constants';
 import logger from 'node-color-log';
 
 const getPlayerById = async (id: string): Promise<ScoreSaberUserInfo> => {

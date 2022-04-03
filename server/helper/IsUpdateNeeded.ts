@@ -1,7 +1,7 @@
 import logger from 'node-color-log';
 import { ScoreSaberUserInfo, UserData } from '../../sharedTypes';
 import User from '../models/User';
-import getPlayerById from '../routes/helper/getPlayerById';
+import getPlayerById from './getPlayerById';
 
 type UserDocType = UserData & {
   toObject?: () => UserData;

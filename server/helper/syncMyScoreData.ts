@@ -1,5 +1,5 @@
 import { ScoreData, UserData } from '../../sharedTypes';
-import calcAllScores from '../routes/helper/calcScores';
+import calcAllScores from './calcScores';
 import updateAllScores from './updateAllScores';
 import logger from 'node-color-log';
 

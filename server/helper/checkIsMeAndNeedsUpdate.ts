@@ -1,7 +1,7 @@
 import logger from 'node-color-log';
-import User from '../../models/User';
-import { UserData } from '../../../sharedTypes';
-import isUpdateNeeded from '../../helper/IsUpdateNeeded';
+import User from '../models/User';
+import { UserData } from '../../sharedTypes';
+import isUpdateNeeded from '../helper/IsUpdateNeeded';
 
 type UserDocType =
   | (UserData & {

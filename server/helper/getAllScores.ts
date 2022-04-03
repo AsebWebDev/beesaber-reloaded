@@ -1,4 +1,4 @@
-import { ScoreData } from '../../../sharedTypes';
+import { ScoreData } from '../../sharedTypes';
 import calcAllScores from './calcScores';
 import getRecentScores from './getRecentScores';
 import logger from 'node-color-log';

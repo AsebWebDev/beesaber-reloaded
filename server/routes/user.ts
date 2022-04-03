@@ -4,7 +4,7 @@ import User from '../models/User';
 import { isLoggedIn } from '../middlewares';
 import { Bee, UserData } from '../../sharedTypes';
 import syncAll from '../helper/syncAll';
-import getAllScores from './helper/getAllScores';
+import getAllScores from '../helper/getAllScores';
 import updateAllScores from '../helper/updateAllScores';
 import isUpdateNeeded from '../helper/IsUpdateNeeded';
 import logger from 'node-color-log';

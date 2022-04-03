@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { Scores } from '../../../sharedTypes';
-import { baseUrl } from '../../constants';
+import { Scores } from '../../sharedTypes';
+import { baseUrl } from '../constants';
 import logger from 'node-color-log';
 import delay from './delay';
 

@@ -1,11 +1,11 @@
 import axios, { AxiosResponse } from 'axios';
 import { isLoggedIn } from '../middlewares';
 import express from 'express';
-import getAllScores from './helper/getAllScores';
-import getPlayerById from './helper/getPlayerById';
+import getAllScores from '../helper/getAllScores';
+import getPlayerById from '../helper/getPlayerById';
 import logger from 'node-color-log';
 
-import checkIsMeAndNeedsUpdate from './helper/checkIsMeAndNeedsUpdate';
+import checkIsMeAndNeedsUpdate from '../helper/checkIsMeAndNeedsUpdate';
 
 const router = express.Router();
 

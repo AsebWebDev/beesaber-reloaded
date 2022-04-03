@@ -1,6 +1,6 @@
 import logger from 'node-color-log';
 import { Bee, UserData } from '../../sharedTypes';
-import calcAllScores from '../routes/helper/calcScores';
+import calcAllScores from './calcScores';
 
 /**
  *

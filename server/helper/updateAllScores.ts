@@ -1,7 +1,7 @@
 import { UserData } from '../../sharedTypes';
 import User from '../models/User';
-import getAllScores from '../routes/helper/getAllScores';
-import getPlayerById from '../routes/helper/getPlayerById';
+import getAllScores from './getAllScores';
+import getPlayerById from './getPlayerById';
 import logger from 'node-color-log';
 import isUpdateNeeded from './IsUpdateNeeded';
 
