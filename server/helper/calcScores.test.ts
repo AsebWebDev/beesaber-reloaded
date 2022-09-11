@@ -1,5 +1,5 @@
 import { calcScoreHashed, calcTopScores } from './calcScores';
-import exampleScores from '../../../src/testing/testData/exampleScores';
+import exampleScores from '../../src/testing/testData/exampleScores';
 
 describe('calcScores', () => {
   it('calcScoreHashed should return array of hashes', () => {
