@@ -127,7 +127,7 @@ exports[`components/common/ScoreContent/ should match snapshot 1`] = `
         <b
           class="card-link"
         >
-          in 4 months
+          in 10 months
         </b>
       </td>
     </tr>
@@ -190,7 +190,7 @@ exports[`components/common/ScoreContent/ should match snapshot 1`] = `
         <b
           class="card-link"
         >
-          in 4 months
+          in 10 months
         </b>
       </td>
     </tr>
@@ -253,7 +253,7 @@ exports[`components/common/ScoreContent/ should match snapshot 1`] = `
         <b
           class="card-link"
         >
-          in 4 months
+          in 10 months
         </b>
       </td>
     </tr>
