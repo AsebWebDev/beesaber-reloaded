@@ -1,4 +1,4 @@
-import type { ScoreData, Scores } from '@/../../sharedTypes';
+import type { ScoreData, Scores } from '../../sharedTypes';
 
 /**
  *
