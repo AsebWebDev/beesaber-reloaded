@@ -5,10 +5,10 @@
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc",
-    "debug": "DEBUG=server:* nodemon ./bin/www",
-    "dev": "nodemon ./bin/www",
+    "debug": "DEBUG=server:* nodemon ./bin/www.ts",
+    "dev": "nodemon ./bin/www.ts",
     "prestart": "yarn build",
-    "start": "ts-node ./bin/www",
+    "start": "ts-node ./bin/www.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
