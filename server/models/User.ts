@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Bee } from '../../sharedTypes/Bee';
+import { Bee } from '@beesaber/shared/Bee';
 import userSettings from '../configs/usersettings';
 
 const Schema = mongoose.Schema;

@@ -2,13 +2,13 @@ import express from 'express';
 import mongoose from 'mongoose';
 import User from '../models/User';
 import { isLoggedIn } from '../middlewares';
-import { Bee, UserData } from '../../sharedTypes';
+import { Bee, UserData } from '@beesaber/shared';
 import syncAll from '../helper/syncAll';
 import getAllScores from '../helper/getAllScores';
 import updateAllScores from '../helper/updateAllScores';
 import isUpdateNeeded from '../helper/IsUpdateNeeded';
 import logger from 'node-color-log';
-import { PlayedBy } from '../../sharedTypes/UserScores';
+import { PlayedBy } from '@beesaber/shared/UserScores';
 
 const router = express.Router();
 

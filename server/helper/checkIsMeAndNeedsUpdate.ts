@@ -1,6 +1,6 @@
 import logger from 'node-color-log';
 import User from '../models/User';
-import { UserData } from '../../sharedTypes';
+import { UserData } from '@beesaber/shared';
 import isUpdateNeeded from '../helper/IsUpdateNeeded';
 
 type UserDocType =

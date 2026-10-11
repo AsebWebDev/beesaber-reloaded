@@ -1,4 +1,4 @@
-import { UserData } from '../../sharedTypes';
+import { UserData } from '@beesaber/shared';
 import syncMyScoreData from './syncMyScoreData';
 import syncMyBees from './syncMyBees';
 import logger from 'node-color-log';

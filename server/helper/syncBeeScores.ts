@@ -1,5 +1,5 @@
 import logger from 'node-color-log';
-import { Bee, UserData } from '../../sharedTypes';
+import { Bee, UserData } from '@beesaber/shared';
 import calcAllScores from './calcScores';
 
 /**

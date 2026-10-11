@@ -1,4 +1,4 @@
-import { ScoreData } from '../../sharedTypes';
+import { ScoreData } from '@beesaber/shared';
 import calcAllScores from './calcScores';
 import getRecentScores from './getRecentScores';
 import logger from 'node-color-log';

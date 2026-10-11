@@ -1,4 +1,4 @@
-import { Bee, UserData } from '../../sharedTypes';
+import { Bee, UserData } from '@beesaber/shared';
 import syncBee from './syncBee';
 import syncBeeScores from './syncBeeScores';
 

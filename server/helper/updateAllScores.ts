@@ -1,4 +1,4 @@
-import { UserData } from '../../sharedTypes';
+import { UserData } from '@beesaber/shared';
 import User from '../models/User';
 import getAllScores from './getAllScores';
 import getPlayerById from './getPlayerById';

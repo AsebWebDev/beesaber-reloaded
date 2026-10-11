@@ -1,0 +1,10 @@
+packages:
+  - client
+  - server
+  - shared
+allowBuilds:
+  '@parcel/watcher': false
+  bcrypt: false
+  core-js: false
+  core-js-pure: false
+  msw: false

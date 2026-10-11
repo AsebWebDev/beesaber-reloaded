@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ScoreSaberUserInfo } from '../../sharedTypes';
+import { ScoreSaberUserInfo } from '@beesaber/shared';
 import { baseUrl } from '../constants';
 import logger from 'node-color-log';
 

@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "@beesaber/server",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -7,11 +7,13 @@
     "build": "tsc",
     "debug": "DEBUG=server:* nodemon ./bin/www.ts",
     "dev": "nodemon ./bin/www.ts",
-    "prestart": "yarn build",
+    "prestart": "pnpm build",
     "start": "ts-node ./bin/www.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@beesaber/shared": "workspace:*",
     "axios": "^0.26.0",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",

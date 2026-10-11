@@ -1,5 +1,5 @@
 import logger from 'node-color-log';
-import { ScoreSaberUserInfo, UserData } from '../../sharedTypes';
+import { ScoreSaberUserInfo, UserData } from '@beesaber/shared';
 import User from '../models/User';
 import getPlayerById from './getPlayerById';
 
