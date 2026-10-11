@@ -19,6 +19,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
+    # A Postgres that lives as long as this job. The server tests run against
+    # it, the same way they run against the container from docker-compose.yml
+    # on a developer's machine.
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: beesaber
+          POSTGRES_PASSWORD: beesaber
+          POSTGRES_DB: beesaber_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U beesaber -d beesaber_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
     steps:
       - name: Check out the code
         uses: actions/checkout@v4
