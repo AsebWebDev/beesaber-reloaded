@@ -1,23 +1,30 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { app, ME, scoreSaber } from '../testing/harness.ts';
+import {
+  api,
+  app,
+  createUser,
+  linkProfile,
+  ME,
+  scoreSaber,
+} from '../testing/harness.ts';
 
 const BEE = '76561198000000002';
 const STRANGER = '76561198000000003';
 
 const json = async (response: Response) => (await response.json()) as never;
 
-const addToHive = (playerId: string) =>
-  app.request('/api/hive', {
+const addToHive = (playerId: string, as = api) =>
+  as('/api/hive', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ playerId }),
   });
 
 const sync = (playerId: string) =>
-  app.request(`/api/players/${playerId}/sync`, { method: 'POST' });
+  api(`/api/players/${playerId}/sync`, { method: 'POST' });
 
-beforeEach(() => {
+beforeEach(async () => {
   // I am ahead on leaderboard 1, behind on 2, and alone on 3
   scoreSaber.setPlayer(ME, 'me', [
     { leaderboardId: 1, score: 900, playedAt: '2024-01-01T10:00:00.000Z' },
@@ -30,6 +37,8 @@ beforeEach(() => {
     { leaderboardId: 2, score: 500, playedAt: '2024-01-05T10:00:00.000Z' },
     { leaderboardId: 4, score: 700, playedAt: '2024-01-06T10:00:00.000Z' },
   ]);
+
+  await linkProfile(ME);
 });
 
 describe('POST /api/hive', () => {
@@ -44,7 +53,7 @@ describe('POST /api/hive', () => {
     await addToHive(BEE);
     await addToHive(BEE);
 
-    const hive = await app.request('/api/hive');
+    const hive = await api('/api/hive');
     const body: { items: unknown[] } = await json(hive);
 
     expect(body.items).toHaveLength(1);
@@ -66,7 +75,7 @@ describe('POST /api/hive', () => {
   });
 
   it('rejects a body without a player id', async () => {
-    const response = await app.request('/api/hive', {
+    const response = await api('/api/hive', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({}),
@@ -78,7 +87,7 @@ describe('POST /api/hive', () => {
 
 describe('GET /api/hive', () => {
   it('is empty at first', async () => {
-    const response = await app.request('/api/hive');
+    const response = await api('/api/hive');
 
     expect(await response.json()).toEqual({ items: [] });
   });
@@ -86,7 +95,7 @@ describe('GET /api/hive', () => {
   it('lists the bees with the head-to-head record', async () => {
     await addToHive(BEE);
 
-    const response = await app.request('/api/hive');
+    const response = await api('/api/hive');
 
     expect(await json(response)).toMatchObject({
       items: [
@@ -104,7 +113,7 @@ describe('GET /api/hive', () => {
     scoreSaber.setPlayer(BEE, 'bee', []);
     await addToHive(BEE);
 
-    const response = await app.request('/api/hive');
+    const response = await api('/api/hive');
 
     expect(await json(response)).toMatchObject({
       items: [{ player: { id: BEE }, shared: 0, winning: 0, losing: 0 }],
@@ -123,7 +132,7 @@ describe('GET /api/hive/:playerId/comparison', () => {
   };
 
   const compare = async (query = ''): Promise<Comparison> =>
-    json(await app.request(`/api/hive/${BEE}/comparison?${query}`));
+    json(await api(`/api/hive/${BEE}/comparison?${query}`));
 
   it('lists only the leaderboards both have played', async () => {
     await addToHive(BEE);
@@ -159,7 +168,7 @@ describe('GET /api/hive/:playerId/comparison', () => {
     scoreSaber.setPlayer(STRANGER, 'stranger', []);
     await sync(STRANGER);
 
-    const response = await app.request(`/api/hive/${STRANGER}/comparison`);
+    const response = await api(`/api/hive/${STRANGER}/comparison`);
 
     expect(response.status).toBe(404);
   });
@@ -175,8 +184,7 @@ describe('GET /api/hive/news', () => {
     }[];
   };
 
-  const news = async (): Promise<News> =>
-    json(await app.request('/api/hive/news'));
+  const news = async (): Promise<News> => json(await api('/api/hive/news'));
 
   it('has nothing to report right after adding a bee', async () => {
     await addToHive(BEE);
@@ -265,18 +273,18 @@ describe('DELETE /api/hive/:playerId', () => {
   it('removes a bee from the hive', async () => {
     await addToHive(BEE);
 
-    const response = await app.request(`/api/hive/${BEE}`, {
+    const response = await api(`/api/hive/${BEE}`, {
       method: 'DELETE',
     });
 
     expect(response.status).toBe(204);
-    expect(await (await app.request('/api/hive')).json()).toEqual({
+    expect(await (await api('/api/hive')).json()).toEqual({
       items: [],
     });
   });
 
   it('answers 404 when the player was not in the hive', async () => {
-    const response = await app.request(`/api/hive/${BEE}`, {
+    const response = await api(`/api/hive/${BEE}`, {
       method: 'DELETE',
     });
 
@@ -288,9 +296,44 @@ describe('POST /api/hive/sync', () => {
   it('brings me and every bee up to date', async () => {
     await addToHive(BEE);
 
-    const response = await app.request('/api/hive/sync', { method: 'POST' });
+    const response = await api('/api/hive/sync', { method: 'POST' });
     const body: { items: { playerId: string }[] } = await json(response);
 
     expect(body.items.map((item) => item.playerId)).toEqual([ME, BEE]);
+  });
+});
+
+describe('who may use the hive', () => {
+  it('answers 401 without a session', async () => {
+    const response = await app.request('/api/hive');
+
+    expect(response.status).toBe(401);
+    expect(await json(response)).toMatchObject({
+      error: { code: 'unauthorized' },
+    });
+  });
+
+  it('answers 409 until the user has picked a ScoreSaber profile', async () => {
+    const newcomer = await createUser('newcomer');
+
+    const response = await newcomer('/api/hive');
+
+    expect(response.status).toBe(409);
+    expect(await json(response)).toMatchObject({
+      error: { code: 'no_player_linked' },
+    });
+  });
+
+  it('keeps the hives of two accounts apart, even with the same profile', async () => {
+    const other = await createUser('other-user');
+
+    await linkProfile(ME, other);
+    await addToHive(BEE);
+
+    const mine: { items: unknown[] } = await json(await api('/api/hive'));
+    const theirs: { items: unknown[] } = await json(await other('/api/hive'));
+
+    expect(mine.items).toHaveLength(1);
+    expect(theirs.items).toHaveLength(0);
   });
 });

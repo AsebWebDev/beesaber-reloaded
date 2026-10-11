@@ -1,33 +1,38 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 
+import { requireMe } from '../http/session.ts';
 import { paginated, pagination, playerId, validate } from '../http/validate.ts';
 
-import type { CurrentPlayerEnv } from '../http/currentPlayer.ts';
+import type { UserEnv } from '../http/session.ts';
 import type { HiveService } from './hive.service.ts';
 
 /**
- * The hive of the player making the request. There is no player id for the
- * owner in these paths on purpose: it comes from the session, so nobody can
- * read or change somebody else's hive by editing a URL.
+ * The hive of the signed-in user. There is no user id in these paths on
+ * purpose: it comes from the session, so nobody can read or change somebody
+ * else's hive by editing a URL.
  */
 const createHiveRoutes = (service: HiveService) =>
-  new Hono<CurrentPlayerEnv>()
+  new Hono<UserEnv>()
     // GET /api/hive
     .get('/', async (c) =>
-      c.json({ items: await service.listMembers(c.get('playerId')) })
+      c.json({ items: await service.listMembers(requireMe(c.get('user'))) })
     )
 
     // POST /api/hive  { "playerId": "7656..." }
     .post('/', validate('json', z.object({ playerId })), async (c) => {
       const { playerId: memberId } = c.req.valid('json');
+      const result = await service.addMember(
+        requireMe(c.get('user')),
+        memberId
+      );
 
-      return c.json(await service.addMember(c.get('playerId'), memberId), 201);
+      return c.json(result, 201);
     })
 
     // POST /api/hive/sync
     .post('/sync', async (c) =>
-      c.json({ items: await service.syncAll(c.get('playerId')) })
+      c.json({ items: await service.syncAll(requireMe(c.get('user'))) })
     )
 
     // GET /api/hive/news?limit=20
@@ -38,7 +43,7 @@ const createHiveRoutes = (service: HiveService) =>
         const { limit } = c.req.valid('query');
 
         return c.json({
-          items: await service.listNews(c.get('playerId'), limit),
+          items: await service.listNews(requireMe(c.get('user')), limit),
         });
       }
     )
@@ -58,7 +63,7 @@ const createHiveRoutes = (service: HiveService) =>
         const { playerId: memberId } = c.req.valid('param');
         const query = c.req.valid('query');
         const { items, total } = await service.compare(
-          c.get('playerId'),
+          requireMe(c.get('user')),
           memberId,
           query
         );
@@ -73,7 +78,7 @@ const createHiveRoutes = (service: HiveService) =>
       validate('param', z.object({ playerId })),
       async (c) => {
         await service.removeMember(
-          c.get('playerId'),
+          requireMe(c.get('user')),
           c.req.valid('param').playerId
         );
 

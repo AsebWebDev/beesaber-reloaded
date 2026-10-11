@@ -10,10 +10,14 @@ import {
 } from '../db/schema.ts';
 
 import type { Database } from '../db/client.ts';
+import type { Me } from '../http/session.ts';
 
 /**
  * Reads and writes hives, and answers the questions a hive is for: how do I
  * compare to a bee, and which of my scores did a bee beat.
+ *
+ * A hive belongs to a user account (`me.userId`). "My scores" are those of
+ * the ScoreSaber profile the account compares as (`me.playerId`).
  *
  * The comparisons join the `scores` table with itself: once for my scores
  * ("mine") and once for the bee's ("theirs"), matched by leaderboard.
@@ -38,33 +42,27 @@ const count = (condition?: ReturnType<typeof sql>) =>
   ).mapWith(Number);
 
 const createHiveRepository = (db: Database) => {
-  const isMember = async (ownerId: string, memberId: string) => {
+  const isMember = async (userId: string, memberId: string) => {
     const [row] = await db
       .select({ memberId: hiveMembers.memberId })
       .from(hiveMembers)
       .where(
-        and(
-          eq(hiveMembers.ownerId, ownerId),
-          eq(hiveMembers.memberId, memberId)
-        )
+        and(eq(hiveMembers.userId, userId), eq(hiveMembers.memberId, memberId))
       );
 
     return row !== undefined;
   };
 
   /** Adding a player twice is not an error, the second call changes nothing */
-  const addMember = (ownerId: string, memberId: string) =>
-    db.insert(hiveMembers).values({ ownerId, memberId }).onConflictDoNothing();
+  const addMember = (userId: string, memberId: string) =>
+    db.insert(hiveMembers).values({ userId, memberId }).onConflictDoNothing();
 
   /** Returns whether there was a member to remove */
-  const removeMember = async (ownerId: string, memberId: string) => {
+  const removeMember = async (userId: string, memberId: string) => {
     const removed = await db
       .delete(hiveMembers)
       .where(
-        and(
-          eq(hiveMembers.ownerId, ownerId),
-          eq(hiveMembers.memberId, memberId)
-        )
+        and(eq(hiveMembers.userId, userId), eq(hiveMembers.memberId, memberId))
       )
       .returning({ memberId: hiveMembers.memberId });
 
@@ -72,10 +70,10 @@ const createHiveRepository = (db: Database) => {
   };
 
   /**
-   * The bees of a hive, each with the head-to-head record against the owner:
-   * on how many shared leaderboards the owner is ahead, behind, or level.
+   * The bees of a hive, each with my head-to-head record against them: on how
+   * many shared leaderboards I am ahead, behind, or level.
    */
-  const listMembers = (ownerId: string) =>
+  const listMembers = ({ playerId, userId }: Me) =>
     db
       .select({
         player: players,
@@ -91,22 +89,22 @@ const createHiveRepository = (db: Database) => {
       .leftJoin(
         mine,
         and(
-          eq(mine.playerId, hiveMembers.ownerId),
+          eq(mine.playerId, playerId),
           eq(mine.leaderboardId, theirs.leaderboardId)
         )
       )
-      .where(eq(hiveMembers.ownerId, ownerId))
+      .where(eq(hiveMembers.userId, userId))
       .groupBy(players.id, hiveMembers.createdAt)
       .orderBy(asc(hiveMembers.createdAt));
 
   /** The leaderboards both players have a score on, with both scores */
   const compare = async (
-    ownerId: string,
+    myPlayerId: string,
     memberId: string,
     { filter, limit, page }: ComparisonOptions
   ) => {
     const where = and(
-      eq(mine.playerId, ownerId),
+      eq(mine.playerId, myPlayerId),
       filter === 'winning'
         ? gt(mine.modifiedScore, theirs.modifiedScore)
         : filter === 'losing'
@@ -143,10 +141,10 @@ const createHiveRepository = (db: Database) => {
   };
 
   /**
-   * "A bee beat your score": score changes of bees that went past the owner's
-   * score and that the owner has not answered yet.
+   * "A bee beat your score": score changes of bees that went past my score
+   * and that I have not answered yet.
    */
-  const listNews = (ownerId: string, limit: number) =>
+  const listNews = ({ playerId, userId }: Me, limit: number) =>
     db
       .select({
         event: scoreEvents,
@@ -163,13 +161,13 @@ const createHiveRepository = (db: Database) => {
         hiveMembers,
         and(
           eq(hiveMembers.memberId, scoreEvents.playerId),
-          eq(hiveMembers.ownerId, ownerId)
+          eq(hiveMembers.userId, userId)
         )
       )
       .innerJoin(
         mine,
         and(
-          eq(mine.playerId, ownerId),
+          eq(mine.playerId, playerId),
           eq(mine.leaderboardId, scoreEvents.leaderboardId)
         )
       )
@@ -178,7 +176,7 @@ const createHiveRepository = (db: Database) => {
       .where(
         and(
           eq(scoreEvents.isNews, true),
-          // The bee is ahead of the owner now ...
+          // The bee is ahead of me now ...
           gt(scoreEvents.newScore, mine.modifiedScore),
           // ... and was not ahead before this score
           or(

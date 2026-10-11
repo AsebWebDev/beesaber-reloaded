@@ -1,7 +1,10 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
-import * as schema from './schema.ts';
+import * as authSchema from './authSchema.ts';
+import * as appSchema from './schema.ts';
+
+const schema = { ...appSchema, ...authSchema };
 
 /**
  * Opens a connection pool and wraps it with Drizzle.

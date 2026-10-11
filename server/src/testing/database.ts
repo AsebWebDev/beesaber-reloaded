@@ -16,7 +16,7 @@ const createTestDatabase = () => {
   /** Empties every table, so each test starts from nothing */
   const reset = () =>
     db.execute(
-      sql`truncate table hive_members, score_events, scores, leaderboards, players restart identity cascade`
+      sql`truncate table hive_members, score_events, scores, leaderboards, players, verification, account, session, "user" restart identity cascade`
     );
 
   return { db, close, reset };

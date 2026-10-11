@@ -9,8 +9,8 @@ played and who scored higher.
 
 The project was built in 2021/22 and is being modernised step by step. **The
 new API and the frontend both run, but are not connected yet**: the API fetches
-real data from ScoreSaber, while the frontend still shows mocked responses.
-Phase 4 connects the two and adds sign-in.
+real data from ScoreSaber and has sign-in, while the frontend still shows
+mocked responses. The next step builds a new frontend on top of the API.
 
 | Phase | Content                                                      | State   |
 | ----- | ------------------------------------------------------------ | ------- |
@@ -18,9 +18,10 @@ Phase 4 connects the two and adds sign-in.
 | 1     | Vite instead of Create React App                             | done    |
 | 2     | Vitest, ESLint, Prettier 3, CI                               | done    |
 | 3     | New backend: Hono, Postgres, Drizzle, current ScoreSaber API | done    |
-| 4     | Sign in with ScoreSaber, frontend on the new API, router 7   | next    |
-| 5     | Tailwind instead of styled-components and MDB                | planned |
-| 6     | Production readiness: Docker image, deployment               | planned |
+| 4     | Sign-in with Google, accounts and sessions                   | done    |
+| 5     | New frontend with Tailwind and react-router 7 on the new API | next    |
+| 6     | Background jobs: regular sync, first sync without waiting    | planned |
+| 7     | Production readiness: Docker image, deployment               | planned |
 
 ## Structure
 
@@ -71,7 +72,7 @@ API nor an account is needed.
 
 ```sh
 pnpm db                             # start Postgres in Docker
-cp server/.env.example server/.env  # then set DEV_PLAYER_ID to your ScoreSaber id
+cp server/.env.example server/.env  # then set AUTH_SECRET, see the comments in the file
 pnpm db:migrate                     # create the tables
 pnpm server                         # http://localhost:5001/api
 ```
@@ -80,11 +81,17 @@ Try it:
 
 ```sh
 curl http://localhost:5001/api/health
-curl http://localhost:5001/api/me
 ```
 
-The first call to `/api/me` fetches your profile and all your scores from
-ScoreSaber.
+Everything else needs a session. With `DEV_LOGIN=true` you can create a local
+test account without Google:
+
+```sh
+curl -c cookies.txt -H 'origin: http://localhost:3000' -H 'content-type: application/json' \
+  -d '{"name":"Dev","email":"dev@beesaber.local","password":"local-development-only"}' \
+  http://localhost:5001/api/auth/sign-up/email
+curl -b cookies.txt http://localhost:5001/api/me
+```
 
 ## Commands
 
@@ -143,8 +150,8 @@ Until phase 4 and phase 5 are done, expect these:
 
 - The frontend does not talk to the new API yet. `pnpm client` without mock
   mode is therefore of little use for now.
-- There is no sign-in. The API treats every request as coming from the player
-  in `DEV_PLAYER_ID`; the frontend has a Dev Login button in mock mode.
+- Sign-in with Google needs your own OAuth client, see `server/.env.example`.
+  The frontend does not offer it yet.
 - Adding a player with thousands of scores keeps the request open until all of
   them are fetched, about 20 seconds for 3600 scores.
 - `pnpm lint` reports warnings in components that are due to be rewritten in
@@ -154,8 +161,18 @@ Until phase 4 and phase 5 are done, expect these:
 
 ## The API
 
-All paths start with `/api`. Errors always look like
+All paths start with `/api`. Everything except `/health` and `/auth` needs a
+session and answers `401` without one. The hive routes also need a linked
+ScoreSaber profile and answer `409` until one is picked. Errors always look like
 `{ "error": { "code": "not_found", "message": "..." } }`.
+
+### Accounts and profiles
+
+An account is who you are in BeeSaber: you sign in with Google and get a
+session cookie. A profile is the ScoreSaber player you compare as; you pick it
+once after signing in. Nothing proves the profile is yours, and nothing needs
+to: all it exposes is public ScoreSaber data. Your hive belongs to your
+account, so two accounts with the same profile still have a hive each.
 
 | Method and path                  | What it does                                    |
 | -------------------------------- | ----------------------------------------------- |
@@ -164,7 +181,9 @@ All paths start with `/api`. Errors always look like
 | `GET /players/:id`               | A player's profile                              |
 | `GET /players/:id/scores`        | A player's scores, in pages; `sort`, `search`   |
 | `POST /players/:id/sync`         | Fetch new scores of a player from ScoreSaber    |
-| `GET /me`                        | The profile of the player making the request    |
+| `GET`, `POST /auth/*`            | Sign-in, callback and sign-out, by Better Auth  |
+| `GET /me`                        | My account and my ScoreSaber profile            |
+| `PUT /me/player`                 | Pick the ScoreSaber profile I compare as        |
 | `GET /hive`                      | My bees, each with the head-to-head record      |
 | `POST /hive`                     | Add a player to my hive                         |
 | `DELETE /hive/:playerId`         | Remove a player from my hive                    |
@@ -177,10 +196,12 @@ All paths start with `/api`. Errors always look like
 | Folder                  | Content                                                     |
 | ----------------------- | ----------------------------------------------------------- |
 | `server/src/db`         | Schema, connection, migration runner                        |
+| `server/src/auth`       | Sign-in and sessions with Better Auth                       |
+| `server/src/me`         | The signed-in user and their profile                        |
 | `server/src/scoresaber` | Client for the ScoreSaber API and the mapping to our tables |
 | `server/src/players`    | Players and scores: routes, service, repository             |
 | `server/src/hive`       | Hives and comparisons: routes, service, repository          |
-| `server/src/http`       | Error format, request validation, who is asking             |
+| `server/src/http`       | Error format, request validation, session check             |
 | `server/drizzle`        | Generated SQL migrations                                    |
 
 A request passes through three layers. The **route** reads and validates it,

@@ -1,7 +1,5 @@
-import { sql } from 'drizzle-orm';
 import {
   boolean,
-  check,
   doublePrecision,
   index,
   integer,
@@ -11,6 +9,8 @@ import {
   text,
   timestamp,
 } from 'drizzle-orm/pg-core';
+
+import { user } from './authSchema.ts';
 
 /**
  * The database schema. Column names are written in camelCase here and stored
@@ -127,22 +127,25 @@ const scoreEvents = pgTable(
   ]
 );
 
-/** `owner` has `member` in their hive. */
+/**
+ * The user has `member` in their hive.
+ *
+ * The hive belongs to the account, not to the ScoreSaber profile the account
+ * compares as. Two accounts that picked the same profile still have a hive
+ * each.
+ */
 const hiveMembers = pgTable(
   'hive_members',
   {
-    ownerId: text()
+    userId: text()
       .notNull()
-      .references(() => players.id, { onDelete: 'cascade' }),
+      .references(() => user.id, { onDelete: 'cascade' }),
     memberId: text()
       .notNull()
       .references(() => players.id, { onDelete: 'cascade' }),
     createdAt: timestamptz().notNull().defaultNow(),
   },
-  (table) => [
-    primaryKey({ columns: [table.ownerId, table.memberId] }),
-    check('not_self', sql`${table.ownerId} <> ${table.memberId}`),
-  ]
+  (table) => [primaryKey({ columns: [table.userId, table.memberId] })]
 );
 
 export { hiveMembers, leaderboards, players, scoreEvents, scores };

@@ -1,17 +1,18 @@
 import { describe, expect, it } from 'vitest';
 
 import { scoreEvents } from '../db/schema.ts';
-import { app, database, scoreSaber } from '../testing/harness.ts';
+import { api, app, database, scoreSaber } from '../testing/harness.ts';
 
 const ALICE = '76561198000000002';
 
 const json = async (response: Response) => (await response.json()) as never;
 
 const sync = (playerId: string) =>
-  app.request(`/api/players/${playerId}/sync`, { method: 'POST' });
+  api(`/api/players/${playerId}/sync`, { method: 'POST' });
 
 describe('GET /api/health', () => {
   it('reports that the server and its database are up', async () => {
+    // No session needed, so a monitoring service can call it
     const response = await app.request('/api/health');
 
     expect(response.status).toBe(200);
@@ -36,7 +37,7 @@ describe('POST /api/players/:id/sync', () => {
       improved: 0,
     });
 
-    const scores = await app.request(`/api/players/${ALICE}/scores`);
+    const scores = await api(`/api/players/${ALICE}/scores`);
 
     expect(await json(scores)).toMatchObject({
       total: 2,
@@ -170,7 +171,7 @@ describe('GET /api/players/:id/scores', () => {
   ];
 
   const songNames = async (query: string) => {
-    const response = await app.request(`/api/players/${ALICE}/scores?${query}`);
+    const response = await api(`/api/players/${ALICE}/scores?${query}`);
     const body: { items: { leaderboard: { songName: string } }[] } =
       await json(response);
 
@@ -221,9 +222,7 @@ describe('GET /api/players/:id/scores', () => {
     scoreSaber.setPlayer(ALICE, 'alice', scores);
     await sync(ALICE);
 
-    const response = await app.request(
-      `/api/players/${ALICE}/scores?limit=2&page=2`
-    );
+    const response = await api(`/api/players/${ALICE}/scores?limit=2&page=2`);
 
     expect(await json(response)).toMatchObject({
       page: 2,
@@ -235,9 +234,7 @@ describe('GET /api/players/:id/scores', () => {
   });
 
   it('rejects parameters that make no sense and names them', async () => {
-    const response = await app.request(
-      '/api/players/not-an-id/scores?limit=500'
-    );
+    const response = await api('/api/players/not-an-id/scores?limit=500');
 
     expect(response.status).toBe(400);
 
@@ -257,7 +254,7 @@ describe('GET /api/players/search', () => {
     scoreSaber.setPlayer(ALICE, 'alice', []);
     scoreSaber.setPlayer('76561198000000003', 'bob', []);
 
-    const response = await app.request('/api/players/search?q=ali');
+    const response = await api('/api/players/search?q=ali');
 
     expect(await json(response)).toMatchObject({
       items: [{ id: ALICE, name: 'alice' }],
@@ -265,7 +262,7 @@ describe('GET /api/players/search', () => {
   });
 
   it('wants at least three characters', async () => {
-    const response = await app.request('/api/players/search?q=al');
+    const response = await api('/api/players/search?q=al');
 
     expect(response.status).toBe(400);
   });

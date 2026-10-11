@@ -13,6 +13,7 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status';
 
 type ErrorCode =
   | 'internal_error'
+  | 'no_player_linked'
   | 'not_found'
   | 'scoresaber_unavailable'
   | 'unauthorized'
@@ -20,6 +21,8 @@ type ErrorCode =
 
 const statusOf: Record<ErrorCode, ContentfulStatusCode> = {
   internal_error: 500,
+  // 409 Conflict: the request is fine, the account is not ready for it yet
+  no_player_linked: 409,
   not_found: 404,
   scoresaber_unavailable: 502,
   unauthorized: 401,
