@@ -17,5 +17,5 @@
     "allowImportingTsExtensions": true,
     "erasableSyntaxOnly": true
   },
-  "include": ["src", "drizzle.config.ts", "vitest.config.ts"]
+  "include": ["src", "scripts", "drizzle.config.ts", "vitest.config.ts"]
 }

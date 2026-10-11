@@ -9,6 +9,7 @@
     "server": "pnpm --filter @beesaber/server dev",
     "db": "docker compose up -d --wait",
     "db:migrate": "pnpm --filter @beesaber/server db:migrate",
+    "api:update": "pnpm --filter @beesaber/server api:update",
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
