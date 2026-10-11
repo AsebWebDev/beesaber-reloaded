@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import Flag from 'react-country-flag';
 import styled from 'styled-components';
 

@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { formatDistance, subDays } from 'date-fns';
 import { MDBBadge, MDBIcon, MDBTooltip } from 'mdb-react-ui-kit';
 import styled from 'styled-components';

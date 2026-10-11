@@ -1,4 +1,5 @@
-import { skipToken } from '@reduxjs/toolkit/dist/query/react';
+import type { JSX } from 'react';
+import { skipToken } from '@reduxjs/toolkit/query/react';
 import {
   MDBBtn,
   MDBContainer,
@@ -161,7 +162,7 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
 
   return (
     <MDBContainer>
-      <MDBModal staticBackdrop show={true}>
+      <MDBModal staticBackdrop open={true}>
         <MDBModalDialog>
           <ModalContent>
             <MDBModalHeader>Add a new Bee</MDBModalHeader>
@@ -186,7 +187,7 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
               </MDBTabs>
 
               <MDBTabsContent>
-                <MDBTabsPane show={activeItem === '2'}>
+                <MDBTabsPane open={activeItem === '2'}>
                   <MDBInput
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       handleChange(e)
@@ -194,13 +195,10 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
                     value={query}
                     aria-label="Search ID"
                     label="Search ID"
-                    icon="hashtag"
                     type="number"
-                    error="wrong"
-                    success="right"
                   />
                 </MDBTabsPane>
-                <MDBTabsPane show={activeItem === '1'}>
+                <MDBTabsPane open={activeItem === '1'}>
                   <MDBInput
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       handleChange(e)
@@ -208,10 +206,7 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
                     value={query}
                     aria-label="Search Username"
                     label="Search Username"
-                    icon="user"
                     type="text"
-                    error="wrong"
-                    success="right"
                   />
                 </MDBTabsPane>
                 <FoundPlayersList

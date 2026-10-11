@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { toast } from 'react-toastify';
 
 import { apiAuth } from '@/api/services/apiAuth/apiAuth';

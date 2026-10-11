@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import type BadgeColor from '@beesaber/shared/BadgeColor';
 
 type Props = {

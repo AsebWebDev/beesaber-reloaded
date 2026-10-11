@@ -1,4 +1,5 @@
-import { skipToken } from '@reduxjs/toolkit/dist/query/react';
+import type { JSX } from 'react';
+import { skipToken } from '@reduxjs/toolkit/query/react';
 import styled from 'styled-components';
 
 import { useGetUserDataQuery } from '@/api/services/apiUser/apiUser';

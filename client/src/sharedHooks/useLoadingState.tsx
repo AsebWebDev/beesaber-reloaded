@@ -1,4 +1,4 @@
-import { skipToken } from '@reduxjs/toolkit/dist/query/react';
+import { skipToken } from '@reduxjs/toolkit/query/react';
 
 import { useGetUserDataQuery } from '@/api/services/apiUser/apiUser';
 import { useAppSelector } from '@/store/hooks';

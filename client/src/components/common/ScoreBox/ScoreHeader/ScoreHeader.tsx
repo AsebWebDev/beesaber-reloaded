@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { MDBInput } from 'mdb-react-ui-kit';
 import React from 'react';
 import styled from 'styled-components';

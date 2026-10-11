@@ -1,4 +1,5 @@
-import { skipToken } from '@reduxjs/toolkit/dist/query';
+import type { JSX } from 'react';
+import { skipToken } from '@reduxjs/toolkit/query';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -53,6 +54,10 @@ const MyHive = (): JSX.Element | null => {
   const userId = useAppSelector(selectUserId);
   const { data: userData } = useGetUserDataQuery(parseId(userId) ?? skipToken);
   const [deleteBee] = useDeleteBeeMutation();
+  const [modal, setModal] = useState(false);
+  const [selectedBeeId, setSelectedBeeId] = useState<string | undefined>(
+    undefined
+  );
 
   if (!isLoggedIn || userData === undefined || userId === undefined) {
     history.push('/'); // Redirect to the main page
@@ -61,11 +66,12 @@ const MyHive = (): JSX.Element | null => {
   }
 
   const { bees } = userData;
-  const [modal, setModal] = useState(false);
-  const [currentBee, setCurrentBee] = useState<Bee | undefined>(bees[0]);
+  // Fall back to the first bee, when none is selected or the selected one got deleted
+  const currentBee: Bee | undefined =
+    bees.find((bee) => bee.playerId === selectedBeeId) ?? bees[0];
   const beesExists = bees.length > 0;
   const toggleModal = () => setModal(!modal);
-  const handleSelect = (bee: Bee) => setCurrentBee(bee);
+  const handleSelect = (bee: Bee) => setSelectedBeeId(bee.playerId);
   const handleDelete = (beeToDelete: Bee) => {
     const { playerId, playerName } = beeToDelete;
 
@@ -81,7 +87,7 @@ const MyHive = (): JSX.Element | null => {
       }
     );
 
-    setCurrentBee(bees[0]);
+    setSelectedBeeId(undefined);
   };
 
   return (

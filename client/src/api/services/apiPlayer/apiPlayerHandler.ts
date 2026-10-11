@@ -3,7 +3,7 @@ import { rest } from 'msw';
 import { exampleScoreData } from '@/testing/testData/exampleScores';
 import exampleSSUserInfo from '@/testing/testData/exampleSSUserInfo';
 
-const baseLocalUrl = 'http://localhost:5001/api';
+const baseLocalUrl = '/api';
 
 const handlers = [
   // getAllScores

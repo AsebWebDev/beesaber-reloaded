@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import type { PlayedBy } from '@beesaber/shared/UserScores';
 
 type Props = {

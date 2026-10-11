@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { MDBBadge, MDBTooltip } from 'mdb-react-ui-kit';
 import { useState } from 'react';
 import styled from 'styled-components';

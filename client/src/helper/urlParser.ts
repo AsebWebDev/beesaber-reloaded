@@ -3,7 +3,7 @@ type UrlParser = (arg0: string, arg2?: string) => string;
 const baseUrl = 'https://new.scoresaber.com';
 
 const parseSongPicUrl: UrlParser = (hash) =>
-  `${baseUrl}/api/static/covers/${hash}.png`;
+  `https://cdn.scoresaber.com/covers/${hash}.png`;
 
 const parseFullPlayerQueryUrl: UrlParser = (query) =>
   `${baseUrl}/api/player/${query}/full`;

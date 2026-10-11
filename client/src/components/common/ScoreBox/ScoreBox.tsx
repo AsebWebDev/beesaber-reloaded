@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { MDBContainer, MDBTabsContent } from 'mdb-react-ui-kit';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -44,9 +45,6 @@ type Props = Required<Pick<UserData, 'scoreData'>> & {
 
 function ScoreBox({ bee, scoreData }: Props): JSX.Element | null {
   const { scoresRecent } = scoreData;
-
-  if (scoresRecent.length === 0) return null;
-
   const [query, setQuery] = useState('');
   const [activeItem, setActiveItem] = useState<NavTabs>('RECENT');
   const [isPlayedByHive, setIsPlayedByHive] = useState(false);
@@ -85,6 +83,8 @@ function ScoreBox({ bee, scoreData }: Props): JSX.Element | null {
 
     setAllScores(filteredScores);
   }, [query, isPlayedByHive, activeItem, scoreData]);
+
+  if (scoresRecent.length === 0) return null;
 
   return (
     <Container>

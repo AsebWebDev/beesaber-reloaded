@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { Route, useHistory } from 'react-router-dom';
 
 import { useAppSelector } from '@/store/hooks';

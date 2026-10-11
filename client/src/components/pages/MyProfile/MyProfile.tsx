@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import styled from 'styled-components';
 
 import ScoreBox from '@/components/common/ScoreBox/ScoreBox';

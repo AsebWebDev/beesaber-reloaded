@@ -1,23 +1,22 @@
 {
-  "extends": "./tsconfig.paths.json",
   "compilerOptions": {
-    "allowJs": true,
-    "baseUrl": "src",
-    "esModuleInterop": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "lib": ["dom", "es2017"],
-    "module": "esnext",
-    "moduleResolution": "node",
+    "types": ["vite/client"],
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "allowJs": true,
     "resolveJsonModule": true,
-    "strict": true,
-    "target": "es2017",
-    "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
   },
-  "include": ["./"],
-  "exclude": ["build", "node_modules"]
+  "include": ["src", "vite.config.ts"]
 }

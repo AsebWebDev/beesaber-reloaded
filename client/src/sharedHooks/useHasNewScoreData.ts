@@ -1,4 +1,4 @@
-import { skipToken } from '@reduxjs/toolkit/dist/query';
+import { skipToken } from '@reduxjs/toolkit/query';
 import { useEffect, useState } from 'react';
 
 import { useGetPlayerByIdQuery } from '@/api/services/apiPlayer/apiPlayer';

@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { MDBIcon } from 'mdb-react-ui-kit';
 import styled from 'styled-components';
 

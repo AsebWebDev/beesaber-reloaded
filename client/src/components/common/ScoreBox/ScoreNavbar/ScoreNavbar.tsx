@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import {
   MDBNavbar,
   MDBNavbarItem,
@@ -44,7 +45,6 @@ const ScoreNavbar = ({
     <NavigationItems>
       <MDBNavbarItem>
         <MDBNavbarLink
-          to="#"
           active={activeItem === 'RECENT'}
           onClick={() => toggleTab('RECENT')}
           role="tab"
@@ -54,7 +54,6 @@ const ScoreNavbar = ({
       </MDBNavbarItem>
       <MDBNavbarItem>
         <MDBNavbarLink
-          to="#"
           active={activeItem === 'TOP'}
           onClick={() => toggleTab('TOP')}
           role="tab"

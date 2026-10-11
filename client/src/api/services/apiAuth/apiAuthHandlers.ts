@@ -4,17 +4,15 @@ import { exampleGoogleUserData } from '@/testing/testData/exampleGoogleData';
 
 const handlers = [
   // googleLogin
-  rest.post('http://localhost:5001/api/googlelogin', (req, res, ctx) =>
+  rest.post('/api/googlelogin', (req, res, ctx) =>
     res(ctx.status(200), ctx.json(exampleGoogleUserData))
   ),
 
   // googleLogout
-  rest.post('http://localhost:5001/api/logout', (req, res, ctx) =>
-    res(ctx.status(200))
-  ),
+  rest.post('/api/logout', (req, res, ctx) => res(ctx.status(200))),
 
   // isValidMongoId
-  rest.get('http://localhost:5001/api/checkValidMongoId/:id', (req, res, ctx) =>
+  rest.get('/api/checkValidMongoId/:id', (req, res, ctx) =>
     res(ctx.status(200), ctx.json(true))
   ),
 ];

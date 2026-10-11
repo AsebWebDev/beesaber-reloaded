@@ -3,8 +3,7 @@ import api from '@/api/api';
 
 import type { GooglePayload, GoogleUserData } from '@beesaber/shared';
 
-const baseUrl =
-  process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:5001/api';
+const baseUrl = '/api';
 
 export const apiAuth = api.injectEndpoints({
   endpoints: (builder) => ({

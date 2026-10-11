@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -15,15 +16,17 @@ import {
   userIsLogginIn,
 } from '@/store/reducer/appStatusReducer';
 import { userDataUpdated } from '@/store/reducer/userDataReducer';
+import { exampleGooglePayLoad } from '@/testing/testData/exampleGoogleData';
 import { mediaQuery } from '@/tokens/definitions/layout';
 
 import { loginProps, logoutProps } from './authHandlers';
+import NeonGoogleButton from './NeonGoogleButton/NeonGoogleButton';
 
 import type {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login';
-import type { GoogleUserData } from '@beesaber/shared';
+import type { GooglePayload, GoogleUserData } from '@beesaber/shared';
 
 const Container = styled.div`
   ${mediaQuery.mobile} {
@@ -31,10 +34,13 @@ const Container = styled.div`
   }
 `;
 
-const GoogleOAuth = (): JSX.Element | null => {
-  const clientId = process.env.REACT_APP_GOOGLE_CLIENTID;
+// TEMPORARY: react-google-login no longer works, Google shut down the library
+// it wraps. Until the new login exists, mock mode offers a login without
+// Google that is answered by the msw handlers.
+const isMockMode = import.meta.env.VITE_MSW === 'enabled';
 
-  if (clientId === undefined) return null;
+const GoogleOAuth = (): JSX.Element | null => {
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENTID;
   const dispatch = useAppDispatch();
   const history = useHistory();
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
@@ -42,7 +48,7 @@ const GoogleOAuth = (): JSX.Element | null => {
   const [logoutGoogle, { isSuccess }] = useGoogleLogoutMutation();
 
   const onSuccess = async (
-    response: GoogleLoginResponse | GoogleLoginResponseOffline
+    response: GoogleLoginResponse | GoogleLoginResponseOffline | GooglePayload
   ) => {
     dispatch(userIsLogginIn(isLoggingIn));
     if ('googleId' in response) {
@@ -73,6 +79,23 @@ const GoogleOAuth = (): JSX.Element | null => {
     });
     dispatch(userIsLoggedIn(isSuccess));
   };
+
+  if (isMockMode)
+    return (
+      <Container>
+        {!isLoggedIn && (
+          <NeonGoogleButton
+            text={'Dev Login'}
+            onClick={() => void onSuccess(exampleGooglePayLoad)}
+          />
+        )}
+        {isLoggedIn && (
+          <NeonGoogleButton text={'Logout'} onClick={() => void logout()} />
+        )}
+      </Container>
+    );
+
+  if (clientId === undefined) return null;
 
   return (
     <Container>

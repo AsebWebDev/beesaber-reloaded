@@ -1,10 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { setupListeners } from '@reduxjs/toolkit/dist/query/react';
+import { setupListeners } from '@reduxjs/toolkit/query/react';
 
-import { apiInitialState } from '@/api/api';
-import { apiAuth } from '@/api/services/apiAuth/apiAuth';
-import { apiPlayer } from '@/api/services/apiPlayer/apiPlayer';
-import { apiUser } from '@/api/services/apiUser/apiUser';
+import api, { apiInitialState } from '@/api/api';
 
 import { initialState as appStatusInitialState } from './reducer/appStatusReducer';
 import { initialState as notificationsInitialState } from './reducer/notificationsReducer';
@@ -14,11 +11,9 @@ import { initialState as userDataInitialState } from './reducer/userDataReducer'
 const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(
-      apiAuth.middleware,
-      apiPlayer.middleware,
-      apiUser.middleware
-    ),
+    // All services inject their endpoints into the same api, so there is
+    // exactly one middleware to register.
+    getDefaultMiddleware().concat(api.middleware),
   devTools: true,
 });
 

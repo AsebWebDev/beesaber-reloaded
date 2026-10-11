@@ -2,7 +2,7 @@
 node_modules
 
 # build output
-/client/build
+/client/dist
 /server/dist
 
 # testing

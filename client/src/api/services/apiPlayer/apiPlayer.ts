@@ -3,8 +3,7 @@ import api from '@/api/api';
 import type { ScoreData, ScoreSaberUserInfo } from '@beesaber/shared';
 import type { PlayerInfo } from '@beesaber/shared/ScoreSaberUserInfo';
 
-const baseLocalUrl =
-  process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:5001/api';
+const baseLocalUrl = '/api';
 
 export const apiPlayer = api.injectEndpoints({
   endpoints: (builder) => ({

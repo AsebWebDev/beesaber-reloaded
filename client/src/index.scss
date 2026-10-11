@@ -1,5 +1,5 @@
 // Import FontFace for Neon Tubes Font
-@import './tokens/definitions/neonTubes/importFontFace';
+@use './tokens/definitions/neonTubes/importFontFace';
 
 body {
   background-color: #00111f;

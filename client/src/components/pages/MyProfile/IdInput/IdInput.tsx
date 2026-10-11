@@ -1,5 +1,6 @@
+import type { JSX } from 'react';
 /* eslint-disable no-console */
-import { skipToken } from '@reduxjs/toolkit/dist/query/react';
+import { skipToken } from '@reduxjs/toolkit/query/react';
 import { MDBBtn, MDBIcon, MDBInput } from 'mdb-react-ui-kit';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -49,7 +50,7 @@ const IdInput = (): JSX.Element | null => {
   const { data: isValidId } = useIsValidPlayerIdQuery(
     parseId(idInput) ?? skipToken
   );
-  const handleSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSave = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (userId === undefined || idInput === undefined || isValidId !== true)
       return;
@@ -76,12 +77,7 @@ const IdInput = (): JSX.Element | null => {
       <MDBInput
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)}
         label="Your ScoreSaber ID"
-        icon="user"
-        group="true"
         type="text"
-        validate="true"
-        error="wrong"
-        success="right"
         // we need to pass in an empty string for MDBInput instead undefined
         value={idInput !== undefined ? idInput : ''}
       />

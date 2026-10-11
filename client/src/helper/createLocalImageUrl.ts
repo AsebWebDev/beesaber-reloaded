@@ -1,7 +1,4 @@
-const createLocalImageUrl = (fileName: string): string => {
-  const baseUrl = process.env.PUBLIC_URL ?? '/public';
-
-  return `${baseUrl}/imgs/${fileName}`;
-};
+const createLocalImageUrl = (fileName: string): string =>
+  `${import.meta.env.BASE_URL}imgs/${fileName}`;
 
 export default createLocalImageUrl;

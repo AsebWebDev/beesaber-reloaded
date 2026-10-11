@@ -7,15 +7,15 @@ played and who scored higher.
 
 ## Status
 
-The project was built in 2021/22 and is being modernised step by step. **It does
-not run end to end at the moment**: the old client build and the old server are
-both broken until the phases below replace them.
+The project was built in 2021/22 and is being modernised step by step. **The
+frontend runs, but only against mocked API responses**: the old server is broken
+until phase 3 replaces it, and real sign-in comes with phase 4.
 
 | Phase | Content                                                      | State   |
 | ----- | ------------------------------------------------------------ | ------- |
 | 0     | pnpm workspaces, `client/` `server/` `shared/`               | done    |
-| 1     | Vite instead of Create React App                             | next    |
-| 2     | Vitest, ESLint 9, Prettier 3, CI                             | planned |
+| 1     | Vite instead of Create React App                             | done    |
+| 2     | Vitest, ESLint 9, Prettier 3, CI                             | next    |
 | 3     | New backend: Hono, Postgres, Drizzle, current ScoreSaber API | planned |
 | 4     | Better Auth with Google, react-router 7                      | planned |
 | 5     | Tailwind instead of styled-components and MDB                | planned |
@@ -46,8 +46,13 @@ import type { Bee } from '@beesaber/shared';
   corepack enable pnpm
   ```
 
-  If that fails for lack of permissions, prefix the commands below with
-  `corepack`, for example `corepack pnpm install`.
+  If that fails with `EPERM` on Windows, let Corepack put the launchers into a
+  folder of your user profile that is already on the `PATH`:
+
+  ```powershell
+  corepack enable pnpm --install-directory "$env:APPDATA
+  pm"
+  ```
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/), needed from
   phase 3 on for the database
@@ -56,9 +61,12 @@ import type { Bee } from '@beesaber/shared';
 
 ```sh
 pnpm install
-cp client/.env.example client/.env
-cp server/.env.example server/.env
+pnpm client:mock
 ```
+
+Then open <http://localhost:3000> and click **Dev Login**. Mock mode answers all
+API calls with example data from `client/src/testing/testData`, so neither a
+server nor a Google account is needed.
 
 ## Commands
 
@@ -66,8 +74,8 @@ Run these from the repository root.
 
 | Command            | What it does                                    |
 | ------------------ | ----------------------------------------------- |
-| `pnpm client`      | Start the frontend dev server                   |
 | `pnpm client:mock` | Start the frontend against mocked API responses |
+| `pnpm client`      | Start the frontend against the real API         |
 | `pnpm server`      | Start the API in watch mode                     |
 | `pnpm typecheck`   | Type-check all packages                         |
 | `pnpm build`       | Build all packages                              |
@@ -79,15 +87,21 @@ To run a script of a single package, use a filter:
 pnpm --filter @beesaber/client typecheck
 ```
 
-### Known failures
+The frontend dev server runs on port 3000 and forwards requests to `/api` to the
+server on port 5001.
 
-Until phase 1 and phase 3 are done, expect these:
+### Known limitations
 
-- `pnpm client`, `pnpm client:mock` and `pnpm build` fail in the client because
-  of imports that Redux Toolkit 2 no longer allows.
+Until phase 3 and phase 4 are done, expect these:
+
 - `pnpm server` needs a MongoDB and calls a ScoreSaber API host that no longer
-  exists.
-- `pnpm typecheck` reports errors left over from an unfinished React 19 upgrade.
+  exists. `pnpm client` is therefore of little use for now.
+- Sign-in with Google does not work, the library behind it was shut down. Mock
+  mode replaces it with the Dev Login button.
+- `pnpm typecheck` passes for `client` and `shared` and reports three errors in
+  `server`.
+- Player avatars and some song covers do not load in mock mode, the example data
+  points to files that do not exist.
 
 ## Dependency install scripts
 

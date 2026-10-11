@@ -1,33 +1,35 @@
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import './index.scss';
 
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { MemoryRouter as Router } from 'react-router-dom';
-import { injectStyle } from 'react-toastify/dist/inject-style';
 
 import store from '@/store/store';
 
 import App from './App';
-import worker from './mocks/browser';
 
 async function prepareWorkers(): Promise<void> {
-  if (process.env.REACT_APP_MSW === 'enabled') {
-    await worker.start();
+  if (import.meta.env.VITE_MSW === 'enabled') {
+    // Loaded on demand, so msw is not part of the production bundle
+    const { default: worker } = await import('./mocks/browser');
+
+    await worker.start({ onUnhandledRequest: 'bypass' });
     // eslint-disable-next-line no-console
     console.log('MSW Worker started');
   }
 }
 
 void prepareWorkers().then(() => {
-  injectStyle(); // import Toastify CSS without webpack css loader
+  const container = document.getElementById('root');
 
-  ReactDOM.render(
+  if (container === null) throw new Error('Root element is missing');
+
+  createRoot(container).render(
     <Provider store={store}>
       <Router>
         <App />
       </Router>
-    </Provider>,
-    document.getElementById('root')
+    </Provider>
   );
 });
