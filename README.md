@@ -191,6 +191,25 @@ account, so two accounts with the same profile still have a hive each.
 | `GET /hive/news`                 | Scores of bees that went past mine              |
 | `POST /hive/sync`                | Fetch new scores for me and all my bees         |
 
+### Security
+
+What the server does to stay safe, and where:
+
+| Risk                              | Protection                                                                      |
+| --------------------------------- | ------------------------------------------------------------------------------- |
+| SQL injection                     | All queries go through Drizzle, which sends values separately from SQL          |
+| Malformed or hostile input        | Every route validates its input with zod before anything else runs              |
+| Stolen or forged sessions         | Random session tokens in `HttpOnly`, `SameSite=Lax` cookies, stored in Postgres |
+| Requests forged by other websites | Origin check for form requests; no CORS headers, so answers stay private        |
+| Reading or changing others' data  | Hive routes take the user from the session, never from the URL                  |
+| Flooding                          | 120 requests per minute per account, body limit of 100 kB                       |
+| Abusing us to hammer ScoreSaber   | A player is synced at most once a minute; hives hold at most 50 bees            |
+| Leaking internals                 | Errors return a code and a message, details only go to the server log           |
+| Vulnerable dependencies           | `pnpm audit` in CI, Dependabot, install scripts blocked by default              |
+| Leaked secrets                    | Secrets only in `server/.env`, which git ignores; checked at startup            |
+
+`server/src/security.test.ts` plays the attacker for most of these rows.
+
 ### How the server is organised
 
 | Folder                  | Content                                                     |

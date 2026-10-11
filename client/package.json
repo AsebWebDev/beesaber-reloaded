@@ -14,7 +14,6 @@
   "dependencies": {
     "@beesaber/shared": "workspace:*",
     "@reduxjs/toolkit": "^2.7.0",
-    "axios": "^0.24.0",
     "date-fns": "^2.30.0",
     "mdb-react-ui-kit": "^10.0.0",
     "react": "^19.1.0",

@@ -13,6 +13,7 @@ const config = loadConfig();
 const { db, close } = createDatabase(config.DATABASE_URL);
 
 const app = createApp({
+  appUrl: config.APP_URL,
   auth: createAuth(db, config),
   db,
   logRequests: true,

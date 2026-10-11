@@ -35,6 +35,7 @@ describe('POST /api/players/:id/sync', () => {
       firstSync: true,
       added: 2,
       improved: 0,
+      skipped: false,
     });
 
     const scores = await api(`/api/players/${ALICE}/scores`);
@@ -83,6 +84,7 @@ describe('POST /api/players/:id/sync', () => {
       firstSync: false,
       added: 1,
       improved: 1,
+      skipped: false,
     });
 
     const events = await database.db

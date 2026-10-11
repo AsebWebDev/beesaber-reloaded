@@ -9,6 +9,12 @@ type Dependencies = {
   repository: HiveRepository;
 };
 
+/**
+ * The most bees a hive can have. Every bee means stored scores and requests
+ * to ScoreSaber, so the number needs an upper bound.
+ */
+const MAX_HIVE_SIZE = 50;
+
 /** The rules of a hive: who may be added, and what happens when they are */
 const createHiveService = ({ playersService, repository }: Dependencies) => {
   /**
@@ -20,6 +26,17 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
       throw new AppError(
         'validation_failed',
         'You cannot add yourself to your hive'
+      );
+
+    const alreadyIn = await repository.isMember(me.userId, memberId);
+
+    if (
+      !alreadyIn &&
+      (await repository.countMembers(me.userId)) >= MAX_HIVE_SIZE
+    )
+      throw new AppError(
+        'validation_failed',
+        `A hive can have at most ${MAX_HIVE_SIZE} bees`
       );
 
     const result = await playersService.syncPlayer(memberId);
@@ -70,5 +87,5 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
 
 type HiveService = ReturnType<typeof createHiveService>;
 
-export { createHiveService };
+export { createHiveService, MAX_HIVE_SIZE };
 export type { HiveService };

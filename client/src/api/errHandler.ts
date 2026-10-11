@@ -1,30 +1,15 @@
-import axios from 'axios';
 import { toast } from 'react-toastify';
 
-import type { AxiosError } from 'axios';
 import type {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login';
 
-type ErrorBody = {
-  message: string;
-};
-
 type PossibleResponses =
-  AxiosError | Error | GoogleLoginResponse | GoogleLoginResponseOffline;
+  Error | GoogleLoginResponse | GoogleLoginResponseOffline;
 
 const errHandler = (err: PossibleResponses): string => {
-  let errorString = 'Unknown Error';
-
-  if (axios.isAxiosError(err) && err.response !== undefined) {
-    const data = err.response.data as ErrorBody;
-
-    errorString = data.message;
-  }
-  if (err instanceof Error) {
-    errorString = err.message;
-  }
+  const errorString = err instanceof Error ? err.message : 'Unknown Error';
 
   if (errorString.length > 0) toast.error(errorString);
 

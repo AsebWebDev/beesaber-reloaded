@@ -53,6 +53,15 @@ const createHiveRepository = (db: Database) => {
     return row !== undefined;
   };
 
+  const countMembers = async (userId: string) => {
+    const [row] = await db
+      .select({ total: count() })
+      .from(hiveMembers)
+      .where(eq(hiveMembers.userId, userId));
+
+    return row?.total ?? 0;
+  };
+
   /** Adding a player twice is not an error, the second call changes nothing */
   const addMember = (userId: string, memberId: string) =>
     db.insert(hiveMembers).values({ userId, memberId }).onConflictDoNothing();
@@ -188,7 +197,15 @@ const createHiveRepository = (db: Database) => {
       .orderBy(desc(scoreEvents.playedAt), desc(scoreEvents.id))
       .limit(limit);
 
-  return { addMember, compare, isMember, listMembers, listNews, removeMember };
+  return {
+    addMember,
+    compare,
+    countMembers,
+    isMember,
+    listMembers,
+    listNews,
+    removeMember,
+  };
 };
 
 type HiveRepository = ReturnType<typeof createHiveRepository>;

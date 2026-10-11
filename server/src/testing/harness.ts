@@ -47,27 +47,46 @@ const fakeAuth: Auth = {
   },
 };
 
-const app = createApp({
-  auth: fakeAuth,
-  db: database.db,
-  // The client talks to the fake instead of the network, so no test can
-  // reach the real ScoreSaber by accident
-  scoreSaber: createScoreSaberClient({
-    baseUrl: FAKE_SCORESABER_URL,
-    fetch: scoreSaber.fetch,
-  }),
-});
+const APP_URL = 'http://localhost:3000';
 
-/** Creates an account and returns a function that makes requests as it */
-const createUser = async (id: string) => {
+/** Builds the app for tests. A test can override single settings. */
+const createTestApp = (
+  overrides: Partial<Parameters<typeof createApp>[0]> = {}
+) =>
+  createApp({
+    appUrl: APP_URL,
+    auth: fakeAuth,
+    db: database.db,
+    // Tests sync the same player several times in a row
+    minSyncIntervalMs: 0,
+    // No test should run into the limit by accident
+    requestsPerMinute: 10_000,
+    // The client talks to the fake instead of the network, so no test can
+    // reach the real ScoreSaber by accident
+    scoreSaber: createScoreSaberClient({
+      baseUrl: FAKE_SCORESABER_URL,
+      fetch: scoreSaber.fetch,
+    }),
+    ...overrides,
+  });
+
+const app = createTestApp();
+
+/**
+ * Creates an account and returns a function that makes requests as it,
+ * against the default app or the one given.
+ */
+const createUser = async (id: string, target: typeof app = app) => {
   await database.db
     .insert(users)
-    .values({ id, name: id, email: `${id}@example.test` });
+    .values({ id, name: id, email: `${id}@example.test` })
+    .onConflictDoNothing();
 
   return (path: string, init: RequestInit = {}) =>
-    app.request(path, {
+    target.request(path, {
       ...init,
-      headers: { ...init.headers, [USER_HEADER]: id },
+      // Like a browser, say which site the request comes from
+      headers: { origin: APP_URL, ...init.headers, [USER_HEADER]: id },
     });
 };
 
@@ -97,5 +116,15 @@ afterAll(async () => {
   await database.close();
 });
 
-export { api, app, createUser, database, linkProfile, ME, scoreSaber };
+export {
+  api,
+  app,
+  APP_URL,
+  createTestApp,
+  createUser,
+  database,
+  linkProfile,
+  ME,
+  scoreSaber,
+};
 export type { Api };

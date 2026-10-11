@@ -1,3 +1,5 @@
+import { HTTPException } from 'hono/http-exception';
+
 import { ScoreSaberError } from '../scoresaber/client.ts';
 
 import type { ErrorHandler, NotFoundHandler } from 'hono';
@@ -12,18 +14,22 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status';
  */
 
 type ErrorCode =
+  | 'forbidden'
   | 'internal_error'
   | 'no_player_linked'
   | 'not_found'
+  | 'rate_limited'
   | 'scoresaber_unavailable'
   | 'unauthorized'
   | 'validation_failed';
 
 const statusOf: Record<ErrorCode, ContentfulStatusCode> = {
+  forbidden: 403,
   internal_error: 500,
   // 409 Conflict: the request is fine, the account is not ready for it yet
   no_player_linked: 409,
   not_found: 404,
+  rate_limited: 429,
   scoresaber_unavailable: 502,
   unauthorized: 401,
   validation_failed: 400,
@@ -53,6 +59,18 @@ const handleError: ErrorHandler = (error, c) => {
       body(error.code, error.message, error.details),
       statusOf[error.code]
     );
+
+  // Thrown by Hono's own middleware, for example when a request comes from
+  // another site or its body is not valid JSON
+  if (error instanceof HTTPException) {
+    if (error.status === 403)
+      return c.json(body('forbidden', 'This request is not allowed'), 403);
+    if (error.status >= 400 && error.status < 500)
+      return c.json(
+        body('validation_failed', 'The request could not be read'),
+        400
+      );
+  }
 
   if (error instanceof ScoreSaberError) {
     if (error.kind === 'not_found')

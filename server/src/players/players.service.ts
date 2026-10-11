@@ -21,15 +21,24 @@ type SyncResult = {
   /** Scores that beat the player's own previous score */
   improved: number;
   playerId: string;
+  /** True when the last sync was so recent that nothing was fetched */
+  skipped: boolean;
 };
 
 type Dependencies = {
+  /**
+   * A player is not fetched again within this time after a sync. ScoreSaber
+   * caches score lists for 30 seconds anyway, and without the pause anyone
+   * could make this server send it requests in a loop.
+   */
+  minSyncIntervalMs?: number;
   now?: () => Date;
   repository: PlayersRepository;
   scoreSaber: ScoreSaberClient;
 };
 
 const createPlayersService = ({
+  minSyncIntervalMs = 60_000,
   now = () => new Date(),
   repository,
   scoreSaber,
@@ -39,6 +48,21 @@ const createPlayersService = ({
 
   const runSync = async (playerId: string): Promise<SyncResult> => {
     const startedAt = now();
+    const lastSyncedAt = (await repository.findPlayer(playerId))
+      ?.scoresSyncedAt;
+
+    if (
+      lastSyncedAt != null &&
+      startedAt.getTime() - lastSyncedAt.getTime() < minSyncIntervalMs
+    )
+      return {
+        playerId,
+        firstSync: false,
+        added: 0,
+        improved: 0,
+        skipped: true,
+      };
+
     const profile = await scoreSaber.getPlayer(playerId);
     const player = await repository.savePlayer(toPlayerRow(profile, startedAt));
 
@@ -66,7 +90,7 @@ const createPlayersService = ({
 
     await repository.markScoresSynced(playerId, startedAt);
 
-    return { playerId, firstSync, added, improved };
+    return { playerId, firstSync, added, improved, skipped: false };
   };
 
   /**

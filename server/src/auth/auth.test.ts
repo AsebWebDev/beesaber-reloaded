@@ -17,6 +17,7 @@ const APP_URL = 'http://localhost:3000';
 
 const createRealApp = (devLogin: boolean) =>
   createApp({
+    appUrl: APP_URL,
     auth: createAuth(database.db, {
       APP_URL,
       AUTH_SECRET: 'a-secret-only-used-by-the-automated-tests',
