@@ -1,10 +1,11 @@
-import type { JSX } from 'react';
 import styled from 'styled-components';
 
 import Spinner from '@/components/common/Spinner/SpinnerPulse';
 import useLoadingState from '@/sharedHooks/useLoadingState';
 
 import GoogleProfileData from './GoogleProfileData/GoogleProfileData';
+
+import type { JSX } from 'react';
 
 const Container = styled.div`
   display: flex;

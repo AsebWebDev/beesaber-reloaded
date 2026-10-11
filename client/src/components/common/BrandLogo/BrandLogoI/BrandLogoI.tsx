@@ -1,8 +1,9 @@
-import type { JSX } from 'react';
 import React from 'react';
 import styled from 'styled-components';
 
 import tokens from '@/tokens/index';
+
+import type { JSX } from 'react';
 
 const yellow = tokens.color.yellow;
 
@@ -12,9 +13,13 @@ const Container = styled.div`
 
 const IStroke = styled.span`
   color: ${yellow.light};
-  text-shadow: ${yellow.main} -2px -1px 5px, ${yellow.main} 2px 1px 5px,
-    ${yellow.main} 0px 0px 10px, ${yellow.main} 0px 0px 15px,
-    ${yellow.main} 0px 0px 20px, ${yellow.main} 0px 0px 30px;
+  text-shadow:
+    ${yellow.main} -2px -1px 5px,
+    ${yellow.main} 2px 1px 5px,
+    ${yellow.main} 0px 0px 10px,
+    ${yellow.main} 0px 0px 15px,
+    ${yellow.main} 0px 0px 20px,
+    ${yellow.main} 0px 0px 30px;
 `;
 
 const BrandLogoI = (): JSX.Element => (

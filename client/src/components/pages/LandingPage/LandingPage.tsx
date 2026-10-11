@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -8,6 +7,8 @@ import GoolgeOAuth from '@/components/common/GoogleOAuth/GoogleOAuth';
 import NeonText from '@/components/common/NeonText/NeonText';
 import { selectIsLoggingIn } from '@/store/reducer/appStatusReducer';
 import { mediaQuery } from '@/tokens/definitions/layout';
+
+import type { JSX } from 'react';
 
 const Content = styled.div`
   display: flex;

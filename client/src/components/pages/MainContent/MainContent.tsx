@@ -1,5 +1,3 @@
-import type { JSX } from 'react';
-/* eslint-disable no-console */
 import { Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -14,6 +12,8 @@ import tokens from '@/tokens';
 import { mediaQuery } from '@/tokens/definitions/layout';
 
 import Header from './Header/Header';
+
+import type { JSX } from 'react';
 
 const Container = styled.div`
   width: 100%;

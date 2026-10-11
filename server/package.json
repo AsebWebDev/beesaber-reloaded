@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc",
     "debug": "DEBUG=server:* nodemon ./bin/www.ts",
     "dev": "nodemon ./bin/www.ts",
@@ -15,7 +14,6 @@
     "@beesaber/shared": "workspace:*",
     "axios": "^0.26.0",
     "bcrypt": "^5.0.0",
-    "body-parser": "^1.19.0",
     "connect-mongo": "^3.2.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -41,7 +39,6 @@
     "@types/passport": "^1.0.7",
     "node-color-log": "^8.0.1",
     "nodemon": "^2.0.6",
-    "tslint": "^6.1.3",
     "typescript": "^4.6.2"
   }
 }

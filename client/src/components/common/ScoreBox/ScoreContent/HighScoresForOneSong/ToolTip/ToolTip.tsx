@@ -1,5 +1,5 @@
-import type { JSX } from 'react';
 import type { PlayedBy } from '@beesaber/shared/UserScores';
+import type { JSX } from 'react';
 
 type Props = {
   playedBy?: PlayedBy[];

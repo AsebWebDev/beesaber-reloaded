@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 
@@ -9,6 +8,8 @@ import useIsMobile from './sharedHooks/useIsMobile';
 import { useAppSelector } from './store/hooks';
 import { selectIsLoggedIn } from './store/reducer/appStatusReducer';
 import { mediaQuery } from './tokens/definitions/layout';
+
+import type { JSX } from 'react';
 
 const Container = styled.div`
   display: flex;

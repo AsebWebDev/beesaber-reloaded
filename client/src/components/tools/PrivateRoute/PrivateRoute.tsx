@@ -1,8 +1,9 @@
-import type { JSX } from 'react';
 import { Route, useHistory } from 'react-router-dom';
 
 import { useAppSelector } from '@/store/hooks';
 import { selectIsLoggedIn } from '@/store/reducer/appStatusReducer';
+
+import type { JSX } from 'react';
 
 type Props = {
   component: () => JSX.Element | null;

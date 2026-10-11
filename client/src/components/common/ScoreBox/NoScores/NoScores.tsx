@@ -1,8 +1,9 @@
-import type { JSX } from 'react';
 import React from 'react';
 import styled from 'styled-components';
 
 import colors from '@/tokens/definitions/color';
+
+import type { JSX } from 'react';
 
 const Container = styled.div`
   text-align: center;

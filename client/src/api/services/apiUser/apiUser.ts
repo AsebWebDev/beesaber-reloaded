@@ -2,8 +2,6 @@ import api from '@/api/api';
 
 import type { UserData } from '@beesaber/shared';
 
-const baseUrl = '/api';
-
 type UpdateUserDataArgs = {
   userData: Partial<UserData>;
   userId: string;
@@ -17,23 +15,23 @@ type DeleteBeeArgs = {
 export const apiUser = api.injectEndpoints({
   endpoints: (builder) => ({
     getMyScoreSaberId: builder.query<string, string>({
-      query: (userId) => `${baseUrl}/user/${userId}`,
+      query: (userId) => `user/${userId}`,
       providesTags: ['UserData'],
       transformResponse: (response: UserData) => response.myScoreSaberId,
     }),
     getTotalPlayCount: builder.query<number, string>({
-      query: (userId) => `${baseUrl}/user/${userId}`,
+      query: (userId) => `user/${userId}`,
       providesTags: ['UserData'],
       transformResponse: (response: UserData) =>
         response.totalPlayCount !== undefined ? response.totalPlayCount : 0,
     }),
     getUserData: builder.query<UserData, string>({
-      query: (userId) => `${baseUrl}/user/${userId}`,
+      query: (userId) => `user/${userId}`,
       providesTags: ['UserData'],
     }),
     updateUserData: builder.mutation<UserData, UpdateUserDataArgs>({
       query: ({ userId, userData }) => ({
-        url: `${baseUrl}/user/${userId}`,
+        url: `user/${userId}`,
         method: 'POST',
         body: userData,
       }),
@@ -41,7 +39,7 @@ export const apiUser = api.injectEndpoints({
     }),
     deleteBee: builder.mutation<boolean, DeleteBeeArgs>({
       query: ({ userId, playerId }) => ({
-        url: `${baseUrl}/user/${userId}/bee/delete`,
+        url: `user/${userId}/bee/delete`,
         method: 'POST',
         body: { playerId },
       }),

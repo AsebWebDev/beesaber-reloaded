@@ -1,10 +1,11 @@
-import type { JSX } from 'react';
 import { toast } from 'react-toastify';
 
 import { apiAuth } from '@/api/services/apiAuth/apiAuth';
 import store from '@/store/store';
 
 import NeonGoogleButton from './NeonGoogleButton/NeonGoogleButton';
+
+import type { JSX } from 'react';
 
 type RenderPropsType = {
   disabled?: boolean | undefined;

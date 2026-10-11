@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import { MDBInput } from 'mdb-react-ui-kit';
 import React from 'react';
 import styled from 'styled-components';
@@ -9,6 +8,7 @@ import { selectUserName } from '@/store/reducer/userDataReducer';
 import tokens from '@/tokens';
 
 import type { Bee } from '@beesaber/shared';
+import type { JSX } from 'react';
 
 const Header = styled.div`
   display: flex;
@@ -36,6 +36,7 @@ const ScoreHeader = ({ bee, onChange, query }: Props): JSX.Element => {
     <Header>
       <Title as="h3">{bee !== undefined ? bee.playerName : title}</Title>
       <MDBInput
+        id="filter-songs"
         label="Filter Songs..."
         size="sm"
         value={query}

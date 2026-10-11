@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 import styled from 'styled-components';
 
@@ -6,6 +5,8 @@ import { useGetUserDataQuery } from '@/api/services/apiUser/apiUser';
 import { parseAvatarUrl } from '@/helper/urlParser';
 import { useAppSelector } from '@/store/hooks';
 import { selectUserId } from '@/store/reducer/userDataReducer';
+
+import type { JSX } from 'react';
 
 const Container = styled.div`
   max-height: 100px;

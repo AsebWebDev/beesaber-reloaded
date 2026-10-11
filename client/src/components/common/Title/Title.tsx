@@ -1,9 +1,9 @@
-import type { JSX } from 'react';
 // import { useState } from 'react';
 import styled from 'styled-components';
 
 import NeonText from '../NeonText/NeonText';
 
+import type { JSX } from 'react';
 import type { ColorStrings } from '@/tokens/definitions/color';
 import type { ElementType } from '../NeonText/NeonText';
 

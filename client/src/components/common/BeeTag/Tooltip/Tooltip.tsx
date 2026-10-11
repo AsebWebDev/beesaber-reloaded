@@ -1,10 +1,10 @@
-import type { JSX } from 'react';
 import Flag from 'react-country-flag';
 import styled from 'styled-components';
 
 import Avatar from '@/components/common/Avatar/Avatar';
 
 import type { Bee } from '@beesaber/shared';
+import type { JSX } from 'react';
 
 const Container = styled.span`
   display: flex;

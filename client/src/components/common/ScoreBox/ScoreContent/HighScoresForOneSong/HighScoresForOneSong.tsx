@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import { formatDistance, subDays } from 'date-fns';
 import { MDBBadge, MDBIcon, MDBTooltip } from 'mdb-react-ui-kit';
 import styled from 'styled-components';
@@ -10,6 +9,7 @@ import tokens from '@/tokens';
 import ToolTip from './ToolTip/ToolTip';
 
 import type { Score } from '@beesaber/shared';
+import type { JSX } from 'react';
 // import HighscoreTable from "./HighscoreTable";
 
 const Badge = styled(MDBBadge)`
@@ -47,7 +47,7 @@ function HighScoresForOneSong({ highscore }: Props): JSX.Element | null {
     songName,
     timeSet,
   } = highscore;
-  // eslint-disable-next-line no-console
+
   const logid = (id: string) => console.log('id: !', id);
 
   let scoreColorClass = '';

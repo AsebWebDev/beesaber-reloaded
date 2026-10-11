@@ -1,10 +1,11 @@
-import type { JSX } from 'react';
 import React from 'react';
 import styled from 'styled-components';
 
 import tokens from '@/tokens/index';
 
 import BrandLogoI from './BrandLogoI/BrandLogoI';
+
+import type { JSX } from 'react';
 
 const Container = styled.div`
   position: relative;
@@ -51,7 +52,8 @@ const Container = styled.div`
     left: 49%;
     transform: rotate(30deg);
     background-color: ${tokens.color.red.light};
-    box-shadow: 0px 0px 8px 2px ${tokens.color.red.shadow},
+    box-shadow:
+      0px 0px 8px 2px ${tokens.color.red.shadow},
       0px 0px 12px 6px ${tokens.color.red.main};
   }
 
@@ -59,7 +61,8 @@ const Container = styled.div`
     right: 49%;
     transform: rotate(-30deg);
     background-color: ${tokens.color.blue.light};
-    box-shadow: 0px 0px 8px 2px ${tokens.color.red.shadow},
+    box-shadow:
+      0px 0px 8px 2px ${tokens.color.red.shadow},
       0px 0px 12px 6px ${tokens.color.red.main};
   }
 `;

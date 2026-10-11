@@ -1,7 +1,8 @@
-import type { JSX } from 'react';
 import styled from 'styled-components';
 
 import tokens from '@/tokens/index';
+
+import type { JSX } from 'react';
 
 const Hr = styled.hr`
   margin-top: 1rem;

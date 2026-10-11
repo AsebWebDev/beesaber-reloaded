@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import { MDBBadge, MDBTooltip } from 'mdb-react-ui-kit';
 import { useState } from 'react';
 import styled from 'styled-components';
@@ -8,6 +7,7 @@ import tokens from '@/tokens';
 import Tooltip from './Tooltip/Tooltip';
 
 import type { Bee } from '@beesaber/shared';
+import type { JSX } from 'react';
 
 const BeeIcon = styled.i`
   padding-right: 0.5rem;

@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -12,6 +11,8 @@ import useLoadingState from '@/sharedHooks/useLoadingState';
 import { useAppSelector } from '@/store/hooks';
 import { selectMyScoreSaberId } from '@/store/reducer/userDataReducer';
 import { mediaQuery } from '@/tokens/definitions/layout';
+
+import type { JSX } from 'react';
 
 const Container = styled.div`
   display: flex;

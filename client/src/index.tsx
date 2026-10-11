@@ -14,8 +14,8 @@ async function prepareWorkers(): Promise<void> {
     // Loaded on demand, so msw is not part of the production bundle
     const { default: worker } = await import('./mocks/browser');
 
-    await worker.start({ onUnhandledRequest: 'bypass' });
-    // eslint-disable-next-line no-console
+    await worker.start({ onUnhandledFrame: 'bypass' });
+
     console.log('MSW Worker started');
   }
 }

@@ -1,7 +1,8 @@
-import type { JSX } from 'react';
 import styled from 'styled-components';
 
 import useIsScrollingDown from '@/sharedHooks/useIsScrollingDown';
+
+import type { JSX } from 'react';
 
 const Indicator = styled.div`
     position: relative;

@@ -1,5 +1,5 @@
-import type { JSX } from 'react';
 import type BadgeColor from '@beesaber/shared/BadgeColor';
+import type { JSX } from 'react';
 
 type Props = {
   text: string;

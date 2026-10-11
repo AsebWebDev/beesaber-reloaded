@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 import { MDBTable, MDBTableBody, MDBTableHead } from 'mdb-react-ui-kit';
 import styled from 'styled-components';
@@ -11,6 +10,7 @@ import tokens from '@/tokens';
 import OnePlayer from './OnePlayer/OnePlayer';
 
 import type { PlayerInfo } from '@beesaber/shared/ScoreSaberUserInfo';
+import type { JSX } from 'react';
 
 const Container = styled.div`
   display: flex;

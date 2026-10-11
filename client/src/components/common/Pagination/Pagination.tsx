@@ -1,10 +1,11 @@
-import type { JSX } from 'react';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import fetchPageNumbers from './helpers/fetchPageNumbers';
 import PageDirection from './PageDirection/PageDirection';
 import PageNumber from './PageNumber/PageNumber';
+
+import type { JSX } from 'react';
 
 const LEFT_PAGE = 'LEFT';
 const RIGHT_PAGE = 'RIGHT';

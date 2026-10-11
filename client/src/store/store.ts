@@ -8,14 +8,18 @@ import { initialState as notificationsInitialState } from './reducer/notificatio
 import rootReducer from './reducer/rootReducer';
 import { initialState as userDataInitialState } from './reducer/userDataReducer';
 
-const store = configureStore({
-  reducer: rootReducer,
-  middleware: (getDefaultMiddleware) =>
-    // All services inject their endpoints into the same api, so there is
-    // exactly one middleware to register.
-    getDefaultMiddleware().concat(api.middleware),
-  devTools: true,
-});
+// A function, so every test can work on a store of its own
+const createAppStore = () =>
+  configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+      // All services inject their endpoints into the same api, so there is
+      // exactly one middleware to register.
+      getDefaultMiddleware().concat(api.middleware),
+    devTools: true,
+  });
+
+const store = createAppStore();
 
 setupListeners(store.dispatch);
 
@@ -26,7 +30,7 @@ const initialState = {
   api: { ...apiInitialState },
 };
 
-export { initialState };
+export { createAppStore, initialState };
 
 export default store;
 

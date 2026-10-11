@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import { MDBContainer, MDBTabsContent } from 'mdb-react-ui-kit';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -12,6 +11,7 @@ import ScoreHeader from './ScoreHeader/ScoreHeader';
 import ScoreNavbar from './ScoreNavbar/ScoreNavbar';
 
 import type { Bee, Scores, UserData } from '@beesaber/shared';
+import type { JSX } from 'react';
 
 const Container = styled(MDBContainer)`
   display: flex;

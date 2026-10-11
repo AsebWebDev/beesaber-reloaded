@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import {
   MDBNavbar,
   MDBNavbarItem,
@@ -9,6 +8,7 @@ import styled from 'styled-components';
 
 import tokens from '@/tokens';
 
+import type { JSX } from 'react';
 import type { NavTabs } from '../ScoreBox';
 
 const NavBar = styled(MDBNavbar)`

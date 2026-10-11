@@ -8,14 +8,37 @@
     "client:mock": "pnpm --filter @beesaber/client dev:mock",
     "server": "pnpm --filter @beesaber/server dev",
     "build": "pnpm -r build",
+    "test": "pnpm --filter @beesaber/client test",
     "typecheck": "pnpm -r typecheck",
-    "format": "prettier --write ."
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "prettier": "^2.8.8"
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-simple-import-sort": "^14.0.0",
+    "globals": "^17.13.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.1"
   },
   "packageManager": "pnpm@12.11.2",
   "engines": {
     "node": ">=24"
+  },
+  "type": "module",
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml,html,scss}": "prettier --write"
   }
 }

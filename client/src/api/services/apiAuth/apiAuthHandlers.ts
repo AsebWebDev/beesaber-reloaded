@@ -1,20 +1,16 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { exampleGoogleUserData } from '@/testing/testData/exampleGoogleData';
 
 const handlers = [
   // googleLogin
-  rest.post('/api/googlelogin', (req, res, ctx) =>
-    res(ctx.status(200), ctx.json(exampleGoogleUserData))
-  ),
+  http.post('/api/googlelogin', () => HttpResponse.json(exampleGoogleUserData)),
 
   // googleLogout
-  rest.post('/api/logout', (req, res, ctx) => res(ctx.status(200))),
+  http.post('/api/logout', () => new HttpResponse(null, { status: 200 })),
 
   // isValidMongoId
-  rest.get('/api/checkValidMongoId/:id', (req, res, ctx) =>
-    res(ctx.status(200), ctx.json(true))
-  ),
+  http.get('/api/checkValidMongoId/:id', () => HttpResponse.json(true)),
 ];
 
 export default handlers;

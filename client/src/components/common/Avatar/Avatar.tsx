@@ -1,8 +1,9 @@
-import type { JSX } from 'react';
 import styled from 'styled-components';
 
 import createLocalImageUrl from '@/helper/createLocalImageUrl';
 import { parseAvatarUrl } from '@/helper/urlParser';
+
+import type { JSX } from 'react';
 
 const Container = styled.img`
   margin-right: 1rem;

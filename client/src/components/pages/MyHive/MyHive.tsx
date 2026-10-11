@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import { skipToken } from '@reduxjs/toolkit/query';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -21,6 +20,7 @@ import { selectUserId } from '@/store/reducer/userDataReducer';
 import AddBeeModal from './AddBeeModal/AddBeeModal';
 
 import type { Bee } from '@beesaber/shared';
+import type { JSX } from 'react';
 
 const Container = styled.div`
   width: 100%;

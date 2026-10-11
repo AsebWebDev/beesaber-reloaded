@@ -1,16 +1,13 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import exampleUserData from '@/testing/testData/exampleUserData';
 
 const handlers = [
   // getUserData
-  rest.get('/api/user/:id', (req, res, ctx) =>
-    res(ctx.status(200), ctx.json(exampleUserData))
-  ),
+  http.get('/api/user/:id', () => HttpResponse.json(exampleUserData)),
+
   // updateUserData
-  rest.post('/api/user/:id', (req, res, ctx) =>
-    res(ctx.status(200), ctx.json(exampleUserData))
-  ),
+  http.post('/api/user/:id', () => HttpResponse.json(exampleUserData)),
 ];
 
 export default handlers;

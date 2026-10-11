@@ -1,7 +1,6 @@
-import { fileURLToPath } from 'node:url';
-
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { fileURLToPath } from 'node:url';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [react()],
@@ -19,5 +18,12 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:5001',
     },
+  },
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./src/testing/setup.ts'],
+    // Mock mode, so the app offers the dev login instead of Google
+    env: { VITE_MSW: 'enabled' },
+    restoreMocks: true,
   },
 });

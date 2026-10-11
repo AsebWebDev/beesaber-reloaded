@@ -1,15 +1,12 @@
-/* eslint-disable @typescript-eslint/no-invalid-void-type */
 import api from '@/api/api';
 
 import type { GooglePayload, GoogleUserData } from '@beesaber/shared';
-
-const baseUrl = '/api';
 
 export const apiAuth = api.injectEndpoints({
   endpoints: (builder) => ({
     googleLogin: builder.mutation<GoogleUserData, GooglePayload>({
       query: (payload) => ({
-        url: `${baseUrl}/googlelogin`,
+        url: `googlelogin`,
         method: 'POST',
         body: payload,
       }),
@@ -20,7 +17,7 @@ export const apiAuth = api.injectEndpoints({
         myScoreSaberId,
         profilePic,
         username,
-      }) => ({
+      }: GoogleUserData) => ({
         _id,
         googleImageUrl,
         googleName,
@@ -31,20 +28,20 @@ export const apiAuth = api.injectEndpoints({
     }),
     googleLogout: builder.mutation<undefined, void>({
       query: () => ({
-        url: `${baseUrl}/logout`,
+        url: `logout`,
         method: 'POST',
       }),
       invalidatesTags: ['UserData'],
     }),
     isValidMongoId: builder.query<boolean, string>({
       query: (id) => ({
-        url: `${baseUrl}/checkValidMongoId/${id}`,
+        url: `checkValidMongoId/${id}`,
         method: 'GET',
       }),
     }),
     logout: builder.query<undefined, void>({
       query: () => ({
-        url: `${baseUrl}/logout`,
+        url: `logout`,
         method: 'GET',
       }),
     }),

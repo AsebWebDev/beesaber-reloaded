@@ -1,8 +1,8 @@
-import type { JSX } from 'react';
 import React from 'react';
 
 import NeonButton from '@/components/common/NeonButton/NeonButton';
 
+import type { JSX } from 'react';
 import type { ElementType } from '@/components/common/NeonText/NeonText';
 import type { RenderPropsType } from '../authHandlers';
 

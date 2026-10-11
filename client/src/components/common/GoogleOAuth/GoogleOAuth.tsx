@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -22,11 +21,12 @@ import { mediaQuery } from '@/tokens/definitions/layout';
 import { loginProps, logoutProps } from './authHandlers';
 import NeonGoogleButton from './NeonGoogleButton/NeonGoogleButton';
 
+import type { GooglePayload, GoogleUserData } from '@beesaber/shared';
+import type { JSX } from 'react';
 import type {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login';
-import type { GooglePayload, GoogleUserData } from '@beesaber/shared';
 
 const Container = styled.div`
   ${mediaQuery.mobile} {

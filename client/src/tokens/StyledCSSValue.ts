@@ -11,8 +11,7 @@ type CSSValue = number | string;
  * `
  */
 type StyledCSSValue =
-  | CSSValue
-  | (({ theme }: { theme: DefaultTheme }) => CSSValue);
+  CSSValue | (({ theme }: { theme: DefaultTheme }) => CSSValue);
 
 export default StyledCSSValue;
 export type { CSSValue };

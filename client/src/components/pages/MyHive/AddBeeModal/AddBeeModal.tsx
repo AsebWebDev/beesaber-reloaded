@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 import {
   MDBBtn,
@@ -37,6 +36,7 @@ import useQueryForPlayers from './useQueryForPlayers';
 
 import type { Bee } from '@beesaber/shared';
 import type { PlayerInfo } from '@beesaber/shared/ScoreSaberUserInfo';
+import type { JSX } from 'react';
 
 const ModalContent = styled(MDBModalContent)`
   background-color: ${tokens.color.page.bgColor.light};
@@ -220,7 +220,7 @@ const AddBeeModal = ({ toggleModal }: Props): JSX.Element | null => {
             {!showSpinner && (
               <MDBModalFooter>
                 {showAddButton && (
-                  <MDBBtn color="success" onClick={handleSave}>
+                  <MDBBtn color="success" onClick={() => void handleSave()}>
                     Add {beeToAdd.playerName}
                   </MDBBtn>
                 )}

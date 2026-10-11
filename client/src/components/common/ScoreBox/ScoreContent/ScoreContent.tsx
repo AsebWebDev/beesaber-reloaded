@@ -1,5 +1,3 @@
-import type { JSX } from 'react';
-/* eslint-disable no-console */
 import { MDBTable, MDBTableBody, MDBTableHead } from 'mdb-react-ui-kit';
 import styled from 'styled-components';
 
@@ -8,6 +6,7 @@ import tokens from '@/tokens';
 import HighScoresForOneSong from './HighScoresForOneSong/HighScoresForOneSong';
 
 import type { Scores } from '@beesaber/shared';
+import type { JSX } from 'react';
 
 const TableHead = styled(MDBTableHead)`
   color: ${tokens.color.yellow.main};

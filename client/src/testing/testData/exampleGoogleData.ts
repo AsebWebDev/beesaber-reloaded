@@ -21,5 +21,4 @@ const exampleGoogleUserData: GoogleUserData = {
   username: 'darthVader',
 };
 
-// eslint-disable-next-line import/prefer-default-export
 export { exampleGooglePayLoad, exampleGoogleUserData };

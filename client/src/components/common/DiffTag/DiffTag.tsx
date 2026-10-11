@@ -1,9 +1,9 @@
-import type { JSX } from 'react';
 import React from 'react';
 import styled from 'styled-components';
 
 import type BadgeColor from '@beesaber/shared/BadgeColor';
 import type { Difficulty, DifficultyName } from '@beesaber/shared/UserScores';
+import type { JSX } from 'react';
 
 const Tag = styled.span`
   margin: 1px 2px 1px 2px;

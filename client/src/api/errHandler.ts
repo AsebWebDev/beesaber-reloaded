@@ -12,16 +12,13 @@ type ErrorBody = {
 };
 
 type PossibleResponses =
-  | AxiosError
-  | Error
-  | GoogleLoginResponse
-  | GoogleLoginResponseOffline;
+  AxiosError | Error | GoogleLoginResponse | GoogleLoginResponseOffline;
 
 const errHandler = (err: PossibleResponses): string => {
   let errorString = 'Unknown Error';
 
   if (axios.isAxiosError(err) && err.response !== undefined) {
-    const data: ErrorBody = err.response.data;
+    const data = err.response.data as ErrorBody;
 
     errorString = data.message;
   }

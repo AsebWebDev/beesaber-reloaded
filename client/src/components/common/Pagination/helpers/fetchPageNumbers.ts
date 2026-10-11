@@ -32,8 +32,6 @@ const fetchPageNumbers = ({
   const totalBlocks = totalNumbers + 2;
 
   if (totalPages > totalBlocks) {
-    let pages: PagesArray = [];
-
     const leftBound = currentPage - pageNeighbours;
     const rightBound = currentPage + pageNeighbours;
     const beforeLastPage = totalPages - 1;
@@ -41,7 +39,7 @@ const fetchPageNumbers = ({
     const startPage = leftBound > 2 ? leftBound : 2;
     const endPage = rightBound < beforeLastPage ? rightBound : beforeLastPage;
 
-    pages = range(startPage, endPage);
+    let pages: PagesArray = range(startPage, endPage);
 
     const pagesCount = pages.length;
     const singleSpillOffset = totalNumbers - pagesCount - 1;

@@ -1,10 +1,10 @@
-import type { JSX } from 'react';
 import { MDBIcon } from 'mdb-react-ui-kit';
 import styled from 'styled-components';
 
 import Avatar from '@/components/common/Avatar/Avatar';
 
 import type { PlayerInfo } from '@beesaber/shared/ScoreSaberUserInfo';
+import type { JSX } from 'react';
 
 const Player = styled.div`
   display: flex;

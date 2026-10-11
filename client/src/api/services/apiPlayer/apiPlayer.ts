@@ -3,24 +3,22 @@ import api from '@/api/api';
 import type { ScoreData, ScoreSaberUserInfo } from '@beesaber/shared';
 import type { PlayerInfo } from '@beesaber/shared/ScoreSaberUserInfo';
 
-const baseLocalUrl = '/api';
-
 export const apiPlayer = api.injectEndpoints({
   endpoints: (builder) => ({
     getAllScores: builder.query<ScoreData, string>({
-      query: (id) => `${baseLocalUrl}/player/${id}/allscores`,
+      query: (id) => `player/${id}/allscores`,
       providesTags: ['Scores'],
     }),
     getPlayerById: builder.query<ScoreSaberUserInfo, string>({
-      query: (id) => `${baseLocalUrl}/player/${id}/playerbyid/`,
+      query: (id) => `player/${id}/playerbyid/`,
       providesTags: ['ScoreSaberUserInfo'],
     }),
     getPlayersByName: builder.query<PlayerInfo[], string>({
-      query: (name) => `${baseLocalUrl}/player/${name}/playersbyname`,
+      query: (name) => `player/${name}/playersbyname`,
       providesTags: ['ScoreSaberUserInfo'],
     }),
     isValidPlayerId: builder.query<boolean, string>({
-      query: (id) => `${baseLocalUrl}/player/${id}/isvalidplayerid/`,
+      query: (id) => `player/${id}/isvalidplayerid/`,
     }),
   }),
 });

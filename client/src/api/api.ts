@@ -18,7 +18,10 @@ const apiInitialState = {
 
 const api = createApi({
   tagTypes: ['UserData', 'PlayerInfo', 'Scores', 'ScoreSaberUserInfo'],
-  baseQuery: fetchBaseQuery({}),
+  // An absolute URL, so requests also work where no page URL exists to
+  // resolve a relative one against, such as in tests. In development the Vite
+  // dev server forwards /api to the server.
+  baseQuery: fetchBaseQuery({ baseUrl: `${window.location.origin}/api` }),
   endpoints: () => ({}),
 });
 

@@ -1,6 +1,5 @@
 import path from 'path';
 import dotenv from 'dotenv';
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import express from 'express';
@@ -42,8 +41,8 @@ app.use(
   })
 );
 app.use(logger('dev'));
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../client/build')));
 

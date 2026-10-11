@@ -1,5 +1,3 @@
-import type { JSX } from 'react';
-/* eslint-disable no-console */
 import { skipToken } from '@reduxjs/toolkit/query/react';
 import { MDBBtn, MDBIcon, MDBInput } from 'mdb-react-ui-kit';
 import { useState } from 'react';
@@ -20,6 +18,7 @@ import parseId from '@/helper/parseEmptyStringToUndefined';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectUserId, userDataUpdated } from '@/store/reducer/userDataReducer';
 
+import type { JSX } from 'react';
 import type { ChangeEvent } from 'react';
 import type { PossibleResponses } from '@/api/errHandler';
 
@@ -82,7 +81,7 @@ const IdInput = (): JSX.Element | null => {
         value={idInput !== undefined ? idInput : ''}
       />
       <MDBBtn
-        onClick={handleSave}
+        onClick={(e: React.MouseEvent) => void handleSave(e)}
         size="sm"
         disabled={myScoreSaberId === idInput}
         outline

@@ -1,9 +1,9 @@
-import type { JSX } from 'react';
 import { MDBIcon } from 'mdb-react-ui-kit';
 import styled from 'styled-components';
 
 import NeonText from '@/components/common/NeonText/NeonText';
 
+import type { JSX } from 'react';
 import type { ElementType } from '../NeonText/NeonText';
 
 type Props = {
@@ -45,7 +45,9 @@ const Button = styled.div`
 
   :hover {
     background: rgb(0 0 255);
-    box-shadow: 0 0 10px rgb(0 0 255), 0 0 40px rgb(0 0 255),
+    box-shadow:
+      0 0 10px rgb(0 0 255),
+      0 0 40px rgb(0 0 255),
       0 0 80px rgb(0 0 255);
     color: #fff0f0;
     transition-delay: 1s;

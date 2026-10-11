@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import styled from 'styled-components';
 
 import ScoreBox from '@/components/common/ScoreBox/ScoreBox';
@@ -8,6 +7,8 @@ import { useAppSelector } from '@/store/hooks';
 import { selectMyScoreSaberId } from '@/store/reducer/userDataReducer';
 
 import IdInput from './IdInput/IdInput';
+
+import type { JSX } from 'react';
 
 const Container = styled.div`
   width: 100%;
