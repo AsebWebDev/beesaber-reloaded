@@ -85,23 +85,38 @@ const createApp = ({
     })
   );
 
-  // Open to everyone: is the server up, and sign-in itself
-  app.get('/health', async (c) => {
-    await db.execute(sql`select 1`);
+  // The routes are chained into one expression on purpose: that way their
+  // paths, inputs and answers add up to one type, which the frontend imports
+  // (see AppType below).
+  return (
+    app
+      // Open to everyone: is the server up, which ways to sign in exist,
+      // and sign-in itself
+      .get('/health', async (c) => {
+        await db.execute(sql`select 1`);
 
-    return c.json({ status: 'ok' });
-  });
-  app.on(['GET', 'POST'], '/auth/*', (c) => auth.handler(c.req.raw));
+        return c.json({ status: 'ok' });
+      })
+      .get('/config', (c) => c.json({ signIn: auth.methods }))
+      .on(['GET', 'POST'], '/auth/*', (c) => auth.handler(c.req.raw))
 
-  // Everything registered below this line needs a session
-  app.use(requireUser(auth));
-  app.use(rateLimit({ limit: requestsPerMinute, windowMs: 60_000 }));
+      // Everything registered below this line needs a session
+      .use(requireUser(auth))
+      .use(rateLimit({ limit: requestsPerMinute, windowMs: 60_000 }))
 
-  app.route('/me', createMeRoutes({ db, playersService }));
-  app.route('/players', createPlayersRoutes(playersService));
-  app.route('/hive', createHiveRoutes(hiveService));
-
-  return app;
+      .route('/me', createMeRoutes({ db, playersService }))
+      .route('/players', createPlayersRoutes(playersService))
+      .route('/hive', createHiveRoutes(hiveService))
+  );
 };
 
+/**
+ * The whole API as a type: every path with what it takes and what it
+ * returns. The frontend builds its client from this, so a call to a path
+ * that does not exist, or a read of a field that is not there, fails the
+ * type check instead of failing in the browser.
+ */
+type AppType = ReturnType<typeof createApp>;
+
 export { createApp };
+export type { AppType };

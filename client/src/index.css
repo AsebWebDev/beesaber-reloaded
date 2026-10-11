@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'NeonTubes2';
+  src:
+    url('./assets/fonts/neontubes2-webfont.woff2') format('woff2'),
+    url('./assets/fonts/neontubes2-webfont.woff') format('woff');
+  font-display: swap;
+}
+
+/*
+ * The design tokens. Tailwind turns each of them into utilities:
+ * --color-neon-red gives text-neon-red, bg-neon-red, border-neon-red ...
+ */
+@theme {
+  --color-night: #00111f;
+  --color-night-raised: #0b2233;
+  --color-night-line: #1d3a50;
+
+  --color-neon-red: #ff0025;
+  --color-neon-red-core: #fff0f0;
+  --color-neon-blue: #2b4bff;
+  --color-neon-blue-core: #edf5ff;
+  --color-neon-yellow: #ffeb00;
+  --color-neon-yellow-core: #fffcdd;
+
+  --font-neon: 'NeonTubes2', ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
+ * Neon tubes: a light core with a coloured glow around it. Used as
+ * `glow-red`, `glow-blue`, `glow-yellow` on text.
+ */
+@utility glow-* {
+  color: --value(--color-neon-* -core);
+  text-shadow:
+    0 0 4px --value(--color-neon-*),
+    0 0 10px --value(--color-neon-*),
+    0 0 20px --value(--color-neon-*),
+    0 0 34px --value(--color-neon-*);
+}
+
+/* A glowing outline, for the focused or highlighted box */
+@utility halo-* {
+  box-shadow:
+    0 0 6px --value(--color-neon-*),
+    0 0 18px --value(--color-neon-*);
+}
+
+@layer base {
+  body {
+    @apply bg-night min-h-screen text-slate-200 antialiased;
+  }
+
+  /* Visible on every interactive element when reached by keyboard */
+  :focus-visible {
+    @apply outline-neon-yellow outline-2 outline-offset-2;
+  }
+}

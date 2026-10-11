@@ -7,10 +7,10 @@ played and who scored higher.
 
 ## Status
 
-The project was built in 2021/22 and is being modernised step by step. **The
-new API and the frontend both run, but are not connected yet**: the API fetches
-real data from ScoreSaber and has sign-in, while the frontend still shows
-mocked responses. The next step builds a new frontend on top of the API.
+The project was built in 2021/22 and is being modernised step by step. **It runs
+end to end on a developer's machine**: sign in, pick your ScoreSaber profile,
+add friends to your hive and compare scores. New scores arrive when you press
+"Sync scores"; fetching them in the background is the next step.
 
 | Phase | Content                                                      | State   |
 | ----- | ------------------------------------------------------------ | ------- |
@@ -19,19 +19,23 @@ mocked responses. The next step builds a new frontend on top of the API.
 | 2     | Vitest, ESLint, Prettier 3, CI                               | done    |
 | 3     | New backend: Hono, Postgres, Drizzle, current ScoreSaber API | done    |
 | 4     | Sign-in with Google, accounts and sessions                   | done    |
-| 5     | New frontend with Tailwind and react-router 7 on the new API | next    |
-| 6     | Background jobs: regular sync, first sync without waiting    | planned |
+| 5     | New frontend with Tailwind and react-router on the new API   | done    |
+| 6     | Background jobs: live score feed, sync without waiting       | next    |
 | 7     | Production readiness: Docker image, deployment               | planned |
 
 ## Structure
 
-This is a [pnpm workspace](https://pnpm.io/workspaces) with three packages:
+This is a [pnpm workspace](https://pnpm.io/workspaces) with two packages:
 
-| Folder    | Package            | Content                                        |
-| --------- | ------------------ | ---------------------------------------------- |
-| `client/` | `@beesaber/client` | React frontend                                 |
-| `server/` | `@beesaber/server` | API: Hono, Drizzle, Postgres                   |
-| `shared/` | `@beesaber/shared` | Types of the old API, still used by the client |
+| Folder    | Package            | Content                                   |
+| --------- | ------------------ | ----------------------------------------- |
+| `client/` | `@beesaber/client` | Frontend: React, Tailwind, TanStack Query |
+| `server/` | `@beesaber/server` | API: Hono, Drizzle, Postgres, Better Auth |
+
+The client imports the _types_ of the server's routes (`AppType`) and builds
+its API client from them. A call to a path that does not exist, or a read of a
+field the server does not send, fails the type check. No server code ends up
+in the browser.
 
 ## Prerequisites
 
@@ -56,60 +60,39 @@ This is a [pnpm workspace](https://pnpm.io/workspaces) with three packages:
 
 ```sh
 pnpm install
-```
-
-### Frontend
-
-```sh
-pnpm client:mock
-```
-
-Then open <http://localhost:3000> and click **Dev Login**. Mock mode answers all
-API calls with example data from `client/src/testing/testData`, so neither the
-API nor an account is needed.
-
-### API
-
-```sh
 pnpm db                             # start Postgres in Docker
 cp server/.env.example server/.env  # then set AUTH_SECRET, see the comments in the file
 pnpm db:migrate                     # create the tables
-pnpm server                         # http://localhost:5001/api
 ```
 
-Try it:
+Then, in two terminals:
 
 ```sh
-curl http://localhost:5001/api/health
+pnpm server    # the API on http://localhost:5001/api
+pnpm client    # the app on http://localhost:3000
 ```
 
-Everything else needs a session. With `DEV_LOGIN=true` you can create a local
-test account without Google:
-
-```sh
-curl -c cookies.txt -H 'origin: http://localhost:3000' -H 'content-type: application/json' \
-  -d '{"name":"Dev","email":"dev@beesaber.local","password":"local-development-only"}' \
-  http://localhost:5001/api/auth/sign-up/email
-curl -b cookies.txt http://localhost:5001/api/me
-```
+Open <http://localhost:3000>. With `DEV_LOGIN=true` in `server/.env` there is a
+**Dev Login** button that signs you in as a local test account, so you need no
+Google credentials to try it. Search for your ScoreSaber name, pick your
+profile, and add a friend on the "My hive" page.
 
 ## Commands
 
 Run these from the repository root.
 
-| Command            | What it does                                    |
-| ------------------ | ----------------------------------------------- |
-| `pnpm client:mock` | Start the frontend against mocked API responses |
-| `pnpm client`      | Start the frontend against the real API         |
-| `pnpm server`      | Start the API in watch mode                     |
-| `pnpm db`          | Start the database and wait until it is ready   |
-| `pnpm db:migrate`  | Apply database migrations                       |
-| `pnpm test`        | Run the tests once                              |
-| `pnpm lint`        | Check the code with ESLint                      |
-| `pnpm lint:fix`    | Let ESLint fix what it can                      |
-| `pnpm typecheck`   | Type-check all packages                         |
-| `pnpm format`      | Format all files with Prettier                  |
-| `pnpm build`       | Build all packages                              |
+| Command           | What it does                                  |
+| ----------------- | --------------------------------------------- |
+| `pnpm client`     | Start the frontend                            |
+| `pnpm server`     | Start the API in watch mode                   |
+| `pnpm db`         | Start the database and wait until it is ready |
+| `pnpm db:migrate` | Apply database migrations                     |
+| `pnpm test`       | Run the tests once                            |
+| `pnpm lint`       | Check the code with ESLint                    |
+| `pnpm lint:fix`   | Let ESLint fix what it can                    |
+| `pnpm typecheck`  | Type-check all packages                       |
+| `pnpm format`     | Format all files with Prettier                |
+| `pnpm build`      | Build all packages                            |
 
 To run a script of a single package, use a filter. This one keeps the tests
 running and repeats them on every change:
@@ -136,9 +119,12 @@ The hook is installed by `pnpm install`. The workflow is defined in
 
 Tests are written with [Vitest](https://vitest.dev/) and
 [Testing Library](https://testing-library.com/) and live next to the code they
-test as `*.test.ts(x)`. API calls are answered by the same
-[msw](https://mswjs.io/) handlers that drive mock mode; a request without a
-handler fails the test.
+test as `*.test.ts(x)`.
+
+The frontend tests render the whole app and use it like a person would. Its
+API calls are answered by a fake built with [msw](https://mswjs.io/)
+(`client/src/testing/fakeApi.ts`); the fake's answers are typed with the real
+server's types, so it cannot drift from the API unnoticed.
 
 The server tests run against a real Postgres, in a database of their own
 (`beesaber_test`), so `pnpm db` has to be running. ScoreSaber is replaced by a
@@ -146,18 +132,14 @@ small fake built from real answers.
 
 ### Known limitations
 
-Until phase 4 and phase 5 are done, expect these:
-
-- The frontend does not talk to the new API yet. `pnpm client` without mock
-  mode is therefore of little use for now.
-- Sign-in with Google needs your own OAuth client, see `server/.env.example`.
-  The frontend does not offer it yet.
+- New scores only arrive when someone presses "Sync scores". Phase 6 changes
+  that.
 - Adding a player with thousands of scores keeps the request open until all of
   them are fetched, about 20 seconds for 3600 scores.
-- `pnpm lint` reports warnings in components that are due to be rewritten in
-  phase 5.
-- Player avatars and some song covers do not load in mock mode, the example data
-  points to files that do not exist.
+- Sign-in with Google needs your own OAuth client, see `server/.env.example`.
+  It has not been tested against Google yet.
+- Nothing proves that the ScoreSaber profile you pick is yours. ScoreSaber
+  offers sign-in for third-party apps only to approved developers.
 
 ## The API
 

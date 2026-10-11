@@ -28,6 +28,7 @@ const scoreSaber = createFakeScoreSaber();
  * from the database on every request, like a real session would be.
  */
 const fakeAuth: Auth = {
+  methods: { devLogin: true, google: false },
   handler: () => Promise.resolve(new Response(null, { status: 404 })),
   getUser: async (headers) => {
     const id = headers.get(USER_HEADER);

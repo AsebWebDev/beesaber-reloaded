@@ -37,6 +37,8 @@ type Auth = {
   getUser: (headers: Headers) => Promise<SessionUser | null>;
   /** Answers everything under /api/auth: sign-in, callback, sign-out */
   handler: (request: Request) => Promise<Response>;
+  /** Which ways to sign in are switched on. The frontend shows only these. */
+  methods: { devLogin: boolean; google: boolean };
 };
 
 type AuthConfig = Pick<
@@ -75,6 +77,10 @@ const createAuth = (db: Database, config: AuthConfig): Auth => {
   });
 
   return {
+    methods: {
+      devLogin: config.DEV_LOGIN,
+      google: config.GOOGLE_CLIENT_ID !== undefined,
+    },
     handler: (request) => auth.handler(request),
     getUser: async (headers) => {
       const session = await auth.api.getSession({ headers });

@@ -1,7 +1,6 @@
 packages:
   - client
   - server
-  - shared
 allowBuilds:
   '@parcel/watcher': false
   bcrypt: false

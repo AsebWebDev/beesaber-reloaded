@@ -9,7 +9,6 @@ import tseslint from 'typescript-eslint';
 export default defineConfig(
   globalIgnores([
     '**/dist',
-    'client/public/mockServiceWorker.js',
     // Generated from ScoreSaber's OpenAPI description by `pnpm gen:api`
     'server/src/scoresaber/openapi.d.ts',
   ]),
@@ -52,11 +51,6 @@ export default defineConfig(
     files: ['client/**/*.{ts,tsx}'],
     extends: [reactHooks.configs.flat.recommended],
     languageOptions: { globals: globals.browser },
-    rules: {
-      // The components written before this rule existed derive state in
-      // effects. They get rewritten in phase 5; until then this only warns.
-      'react-hooks/set-state-in-effect': 'warn',
-    },
   },
 
   {

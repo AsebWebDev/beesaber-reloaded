@@ -5,7 +5,6 @@
   "description": "Compare your Beat Saber scores with your friends",
   "scripts": {
     "client": "pnpm --filter @beesaber/client dev",
-    "client:mock": "pnpm --filter @beesaber/client dev:mock",
     "server": "pnpm --filter @beesaber/server dev",
     "db": "docker compose up -d --wait",
     "db:migrate": "pnpm --filter @beesaber/server db:migrate",
@@ -13,7 +12,7 @@
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -39,9 +38,9 @@
   "type": "module",
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "eslint --fix",
+      "eslint --fix --max-warnings 0",
       "prettier --write"
     ],
-    "*.{json,md,yml,yaml,html,scss}": "prettier --write"
+    "*.{json,md,yml,yaml,html,css}": "prettier --write"
   }
 }

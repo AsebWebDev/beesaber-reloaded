@@ -269,3 +269,14 @@ describe('GET /api/players/search', () => {
     expect(response.status).toBe(400);
   });
 });
+
+describe('GET /api/config', () => {
+  it('tells everyone which ways to sign in are switched on', async () => {
+    const response = await app.request('/api/config');
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      signIn: { devLogin: true, google: false },
+    });
+  });
+});
