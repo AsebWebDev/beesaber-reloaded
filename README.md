@@ -1,46 +1,101 @@
-# Getting Started with Create React App
+# BeeSaber Reloaded
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Compare your [Beat Saber](https://beatsaber.com/) scores with your friends.
+Sign in, link your [ScoreSaber](https://scoresaber.com/) profile and add other
+players as "bees" to your "hive". BeeSaber then shows which songs you have both
+played and who scored higher.
 
-## Available Scripts
+## Status
 
-In the project directory, you can run:
+The project was built in 2021/22 and is being modernised step by step. **It does
+not run end to end at the moment**: the old client build and the old server are
+both broken until the phases below replace them.
 
-### `yarn start`
+| Phase | Content                                                      | State   |
+| ----- | ------------------------------------------------------------ | ------- |
+| 0     | pnpm workspaces, `client/` `server/` `shared/`               | done    |
+| 1     | Vite instead of Create React App                             | next    |
+| 2     | Vitest, ESLint 9, Prettier 3, CI                             | planned |
+| 3     | New backend: Hono, Postgres, Drizzle, current ScoreSaber API | planned |
+| 4     | Better Auth with Google, react-router 7                      | planned |
+| 5     | Tailwind instead of styled-components and MDB                | planned |
+| 6     | Production readiness: Docker image, deployment               | planned |
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Structure
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+This is a [pnpm workspace](https://pnpm.io/workspaces) with three packages:
 
-### `yarn test`
+| Folder    | Package            | Content                                         |
+| --------- | ------------------ | ----------------------------------------------- |
+| `client/` | `@beesaber/client` | React frontend                                  |
+| `server/` | `@beesaber/server` | API                                             |
+| `shared/` | `@beesaber/shared` | TypeScript types used by both client and server |
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Client and server import the shared types like any other package:
 
-### `yarn build`
+```ts
+import type { Bee } from '@beesaber/shared';
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Prerequisites
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- [Node.js](https://nodejs.org/) 24 (see `.nvmrc`)
+- pnpm, provided by Corepack which ships with Node:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  ```sh
+  corepack enable pnpm
+  ```
 
-### `yarn eject`
+  If that fails for lack of permissions, prefix the commands below with
+  `corepack`, for example `corepack pnpm install`.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/), needed from
+  phase 3 on for the database
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Getting started
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```sh
+pnpm install
+cp client/.env.example client/.env
+cp server/.env.example server/.env
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Commands
 
-## Learn More
+Run these from the repository root.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+| Command            | What it does                                    |
+| ------------------ | ----------------------------------------------- |
+| `pnpm client`      | Start the frontend dev server                   |
+| `pnpm client:mock` | Start the frontend against mocked API responses |
+| `pnpm server`      | Start the API in watch mode                     |
+| `pnpm typecheck`   | Type-check all packages                         |
+| `pnpm build`       | Build all packages                              |
+| `pnpm format`      | Format all files with Prettier                  |
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+To run a script of a single package, use a filter:
+
+```sh
+pnpm --filter @beesaber/client typecheck
+```
+
+### Known failures
+
+Until phase 1 and phase 3 are done, expect these:
+
+- `pnpm client`, `pnpm client:mock` and `pnpm build` fail in the client because
+  of imports that Redux Toolkit 2 no longer allows.
+- `pnpm server` needs a MongoDB and calls a ScoreSaber API host that no longer
+  exists.
+- `pnpm typecheck` reports errors left over from an unfinished React 19 upgrade.
+
+## Dependency install scripts
+
+pnpm does not run install scripts of dependencies unless they are allowed.
+Every decision is recorded under `allowBuilds` in `pnpm-workspace.yaml`. When a
+new dependency asks to run a script, `pnpm install` fails and names it; allow or
+deny it with:
+
+```sh
+pnpm approve-builds
+```

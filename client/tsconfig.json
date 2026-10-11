@@ -5,10 +5,7 @@
     "baseUrl": "src",
     "esModuleInterop": true,
     "jsx": "react-jsx",
-    "lib": [
-      "dom",
-      "es2017"
-    ],
+    "lib": ["dom", "es2017"],
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -21,11 +18,6 @@
     "isolatedModules": true,
     "noEmit": true
   },
-  "include": [
-    "./"
-  ],
-  "exclude": [
-    "build",
-    "node_modules"
-  ]
+  "include": ["./"],
+  "exclude": ["build", "node_modules"]
 }

@@ -3,10 +3,6 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "eslint.workingDirectories": [
-    "client"
-  ],
-  "eslint.validate": [
-    "javascript"
-  ]
+  "eslint.workingDirectories": ["client"],
+  "eslint.validate": ["javascript"]
 }
