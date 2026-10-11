@@ -10,8 +10,8 @@ export default defineConfig(
   globalIgnores([
     '**/dist',
     'client/public/mockServiceWorker.js',
-    // The server is rewritten in phase 3 and gets linted from then on
-    'server',
+    // Generated from ScoreSaber's OpenAPI description by `pnpm gen:api`
+    'server/src/scoresaber/openapi.d.ts',
   ]),
 
   js.configs.recommended,
@@ -57,6 +57,11 @@ export default defineConfig(
       // effects. They get rewritten in phase 5; until then this only warns.
       'react-hooks/set-state-in-effect': 'warn',
     },
+  },
+
+  {
+    files: ['server/**/*.ts'],
+    languageOptions: { globals: globals.node },
   },
 
   {

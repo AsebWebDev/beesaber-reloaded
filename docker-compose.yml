@@ -1,0 +1,28 @@
+# Local infrastructure for development and tests.
+# Start it with `docker compose up -d`, stop it with `docker compose down`.
+# `docker compose down -v` also deletes the data.
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      # Development credentials only, never use these outside your machine
+      POSTGRES_USER: beesaber
+      POSTGRES_PASSWORD: beesaber
+      POSTGRES_DB: beesaber
+    ports:
+      # Bound to localhost, so the database is not reachable from the network
+      - '127.0.0.1:5432:5432'
+    volumes:
+      # Named volume, so the data survives restarts of the container
+      - postgres-data:/var/lib/postgresql
+      # Scripts in this folder run once, when the volume is created
+      - ./docker/postgres:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U beesaber -d beesaber']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres-data:

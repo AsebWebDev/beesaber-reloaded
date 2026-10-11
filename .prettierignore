@@ -11,3 +11,9 @@ client/public/mockServiceWorker.js
 
 # We format our scss files using stylelint
 *.scss
+
+# Generated: ScoreSaber's OpenAPI description, the types made from it,
+# and the database migrations
+server/src/scoresaber/openapi.json
+server/src/scoresaber/openapi.d.ts
+server/drizzle

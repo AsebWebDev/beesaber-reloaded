@@ -5,4 +5,5 @@ packages:
 allowBuilds:
   '@parcel/watcher': false
   bcrypt: false
+  esbuild: false
   msw: false
