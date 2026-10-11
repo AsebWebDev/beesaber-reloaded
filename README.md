@@ -15,8 +15,8 @@ until phase 3 replaces it, and real sign-in comes with phase 4.
 | ----- | ------------------------------------------------------------ | ------- |
 | 0     | pnpm workspaces, `client/` `server/` `shared/`               | done    |
 | 1     | Vite instead of Create React App                             | done    |
-| 2     | Vitest, ESLint 9, Prettier 3, CI                             | next    |
-| 3     | New backend: Hono, Postgres, Drizzle, current ScoreSaber API | planned |
+| 2     | Vitest, ESLint, Prettier 3, CI                               | done    |
+| 3     | New backend: Hono, Postgres, Drizzle, current ScoreSaber API | next    |
 | 4     | Better Auth with Google, react-router 7                      | planned |
 | 5     | Tailwind instead of styled-components and MDB                | planned |
 | 6     | Production readiness: Docker image, deployment               | planned |
@@ -50,8 +50,7 @@ import type { Bee } from '@beesaber/shared';
   folder of your user profile that is already on the `PATH`:
 
   ```powershell
-  corepack enable pnpm --install-directory "$env:APPDATA
-  pm"
+  corepack enable pnpm --install-directory "$env:APPDATA\npm"
   ```
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/), needed from
@@ -77,18 +76,41 @@ Run these from the repository root.
 | `pnpm client:mock` | Start the frontend against mocked API responses |
 | `pnpm client`      | Start the frontend against the real API         |
 | `pnpm server`      | Start the API in watch mode                     |
+| `pnpm test`        | Run the tests once                              |
+| `pnpm lint`        | Check the code with ESLint                      |
+| `pnpm lint:fix`    | Let ESLint fix what it can                      |
 | `pnpm typecheck`   | Type-check all packages                         |
-| `pnpm build`       | Build all packages                              |
 | `pnpm format`      | Format all files with Prettier                  |
+| `pnpm build`       | Build all packages                              |
 
-To run a script of a single package, use a filter:
+To run a script of a single package, use a filter. This one keeps the tests
+running and repeats them on every change:
 
 ```sh
-pnpm --filter @beesaber/client typecheck
+pnpm --filter @beesaber/client test:watch
 ```
 
 The frontend dev server runs on port 3000 and forwards requests to `/api` to the
 server on port 5001.
+
+## Checks
+
+Checks run in three places:
+
+| Where           | When                           | What                                     |
+| --------------- | ------------------------------ | ---------------------------------------- |
+| Pre-commit hook | On `git commit`                | ESLint and Prettier, on the staged files |
+| GitHub Actions  | On pull requests and on `main` | Formatting, lint, types, tests, build    |
+| Your terminal   | Whenever you like              | The commands above                       |
+
+The hook is installed by `pnpm install`. The workflow is defined in
+`.github/workflows/ci.yml`.
+
+Tests are written with [Vitest](https://vitest.dev/) and
+[Testing Library](https://testing-library.com/) and live next to the code they
+test as `*.test.ts(x)`. API calls are answered by the same
+[msw](https://mswjs.io/) handlers that drive mock mode; a request without a
+handler fails the test.
 
 ### Known limitations
 
@@ -98,8 +120,8 @@ Until phase 3 and phase 4 are done, expect these:
   exists. `pnpm client` is therefore of little use for now.
 - Sign-in with Google does not work, the library behind it was shut down. Mock
   mode replaces it with the Dev Login button.
-- `pnpm typecheck` passes for `client` and `shared` and reports three errors in
-  `server`.
+- `pnpm lint` skips the `server` folder and reports warnings in components that
+  are due to be rewritten in phase 5.
 - Player avatars and some song covers do not load in mock mode, the example data
   points to files that do not exist.
 
