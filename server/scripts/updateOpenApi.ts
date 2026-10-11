@@ -32,13 +32,10 @@ const operationsOf = (spec: Spec) =>
     Object.entries(spec.paths).flatMap(([path, methods]) =>
       Object.entries(methods)
         .filter(([method]) => METHODS.includes(method))
-        .map(
-          ([method, definition]) =>
-            [
-              `${method.toUpperCase()} ${path}`,
-              JSON.stringify(definition),
-            ] as const
-        )
+        .map(([method, definition]): [string, string] => [
+          `${method.toUpperCase()} ${path}`,
+          JSON.stringify(definition),
+        ])
     )
   );
 
