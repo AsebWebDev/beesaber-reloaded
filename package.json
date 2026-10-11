@@ -8,7 +8,6 @@
     "client:mock": "pnpm --filter @beesaber/client msw",
     "server": "pnpm --filter @beesaber/server dev",
     "build": "pnpm -r build",
-    "test": "pnpm --filter @beesaber/client exec cross-env REACT_APP_MSW=enabled jest",
     "typecheck": "pnpm -r typecheck",
     "format": "prettier --write ."
   },

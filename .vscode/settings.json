@@ -1,10 +1,12 @@
 {
-  "jest.rootPath": "client",
-  "jest.jestCommandLine": "pnpm exec cross-env REACT_APP_MSW=enabled jest",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "eslint.workingDirectories": ["client"],
-  "eslint.validate": ["javascript"]
+  "eslint.workingDirectories": [
+    "client"
+  ],
+  "eslint.validate": [
+    "javascript"
+  ]
 }
