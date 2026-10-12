@@ -1,8 +1,9 @@
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 
 import { user as users } from '../db/authSchema.ts';
+import { hiveMembers } from '../db/schema.ts';
 import { playerId, validate } from '../http/validate.ts';
 
 import type { MiddlewareHandler } from 'hono';
@@ -55,6 +56,16 @@ const createMeRoutes = ({
           .update(users)
           .set({ playerId: chosenId })
           .where(eq(users.id, user.id));
+        // Nobody is their own bee. If the profile picked is in the user's
+        // hive, it leaves the hive.
+        await db
+          .delete(hiveMembers)
+          .where(
+            and(
+              eq(hiveMembers.userId, user.id),
+              eq(hiveMembers.memberId, chosenId)
+            )
+          );
         // The scores follow in the background
         await playersService.requestSync(chosenId);
 

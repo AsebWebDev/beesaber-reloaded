@@ -32,14 +32,14 @@ const NewsCard = ({ item }: { item: NewsItem }) => (
     <p className="text-sm">
       <span className="text-slate-400">Theirs </span>
       <span className="font-semibold text-slate-100">
-        {formatScore(item.event.newScore)}
+        {formatScore(item.theirScore)}
       </span>
       <span className="text-slate-400"> · yours </span>
       <span className="font-semibold text-slate-100">
         {formatScore(item.myScore)}
       </span>
       <span className="text-neon-red-core ml-2 font-semibold">
-        {formatDelta(item.myScore - item.event.newScore)}
+        {formatDelta(item.myScore - item.theirScore)}
       </span>
     </p>
   </Card>

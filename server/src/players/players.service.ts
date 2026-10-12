@@ -144,8 +144,8 @@ const createPlayersService = ({
 
       await repository.markSyncStarted(playerId, startedAt);
 
-      // Until the first sync has finished, everything found is history.
-      // After that, every new or improved score is news.
+      // Until the first sync has finished, everything found is history and
+      // is not logged. After that, every new or improved score is an event.
       const firstSync = player.scoresSyncedAt === null;
       // Continue where the stored scores end. On the very first run there is
       // nothing stored and all scores are fetched.
@@ -159,7 +159,7 @@ const createPlayersService = ({
           playerId,
           page.data.map(toLeaderboardRow),
           page.data.map((entry) => toScoreRow(playerId, entry)),
-          { isNews: !firstSync }
+          { logEvents: !firstSync }
         );
 
         added += saved.added;
@@ -189,11 +189,10 @@ const createPlayersService = ({
    * it was down, and restarts syncs that died halfway.
    */
   const syncStalePlayers = async () => {
-    const time = now().getTime();
-    const playerIds = await repository.listStalePlayerIds(
-      new Date(time - STALE_AFTER_MS),
-      new Date(time - STUCK_AFTER_MS)
-    );
+    const playerIds = await repository.listStalePlayerIds(now(), {
+      staleAfterMs: STALE_AFTER_MS,
+      stuckAfterMs: STUCK_AFTER_MS,
+    });
 
     for (const playerId of playerIds)
       await requestSync(playerId, { force: true });

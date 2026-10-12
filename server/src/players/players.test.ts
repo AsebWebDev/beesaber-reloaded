@@ -63,7 +63,7 @@ describe('syncing a player', () => {
     );
   });
 
-  it('logs a new and an improved score as news after the first sync', async () => {
+  it('logs new and improved scores once the first sync is done, but not the first sync itself', async () => {
     scoreSaber.setPlayer(ALICE, 'alice', [
       { leaderboardId: 1, score: 500, playedAt: '2024-01-01T10:00:00.000Z' },
     ]);
@@ -83,10 +83,10 @@ describe('syncing a player', () => {
       .from(scoreEvents)
       .orderBy(scoreEvents.id);
 
+    // Nothing for the 500 of the first sync: that was history
     expect(events).toMatchObject([
-      { leaderboardId: 1, previousScore: null, newScore: 500, isNews: false },
-      { leaderboardId: 1, previousScore: 500, newScore: 650, isNews: true },
-      { leaderboardId: 2, previousScore: null, newScore: 300, isNews: true },
+      { leaderboardId: 1, previousScore: 500, newScore: 650 },
+      { leaderboardId: 2, previousScore: null, newScore: 300 },
     ]);
   });
 
@@ -98,7 +98,7 @@ describe('syncing a player', () => {
 
     await sync(ALICE);
 
-    expect(await database.db.select().from(scoreEvents)).toHaveLength(1);
+    expect(await database.db.select().from(scoreEvents)).toHaveLength(0);
   });
 
   it('fetches every page of a player with many scores', async () => {
@@ -116,6 +116,88 @@ describe('syncing a player', () => {
     expect(
       await json(await api(`/api/players/${ALICE}/scores?limit=1`))
     ).toMatchObject({ total: 230 });
+  });
+
+  it('does not lose a score when the list changes between two pages', async () => {
+    const minute = (n: number) =>
+      new Date(Date.UTC(2024, 0, 1, 0, n)).toISOString();
+    const scores = Array.from({ length: 150 }, (_, index) => ({
+      leaderboardId: index + 1,
+      score: 1000,
+      playedAt: minute(index),
+    }));
+
+    scoreSaber.setPlayer(ALICE, 'alice', scores);
+    // While we read page one, Alice improves her oldest score. In a list
+    // sorted by time it moves to the end, and every score behind it moves up
+    // by one: what was first on page two is now last on page one.
+    scoreSaber.onScoresRequest((count) => {
+      if (count === 2)
+        scoreSaber.setPlayer(ALICE, 'alice', [
+          ...scores.slice(1),
+          { leaderboardId: 1, score: 2000, playedAt: minute(500) },
+        ]);
+    });
+
+    await sync(ALICE);
+
+    const all: { total: number } = await json(
+      await api(`/api/players/${ALICE}/scores?limit=1&sort=top`)
+    );
+
+    expect(all.total).toBe(150);
+    expect(all).toMatchObject({
+      items: [{ leaderboard: { id: 1 }, score: { modifiedScore: 2000 } }],
+    });
+  });
+
+  it('logs a score once when two syncs of the same player overlap', async () => {
+    scoreSaber.setPlayer(ALICE, 'alice', [
+      { leaderboardId: 1, score: 500, playedAt: '2024-01-01T10:00:00.000Z' },
+    ]);
+    await sync(ALICE);
+    scoreSaber.setPlayer(ALICE, 'alice', [
+      { leaderboardId: 1, score: 650, playedAt: '2024-02-01T10:00:00.000Z' },
+      { leaderboardId: 2, score: 300, playedAt: '2024-02-02T10:00:00.000Z' },
+    ]);
+
+    await Promise.all([
+      services.playersService.runSync(ALICE),
+      services.playersService.runSync(ALICE),
+      services.playersService.runSync(ALICE),
+    ]);
+
+    expect(await database.db.select().from(scoreEvents)).toHaveLength(2);
+  });
+
+  it('keeps the best score when ScoreSaber sends two plays of one map', async () => {
+    scoreSaber.setPlayer(ALICE, 'alice', [
+      { leaderboardId: 1, score: 700, playedAt: '2024-01-01T10:00:00.000Z' },
+      { leaderboardId: 1, score: 500, playedAt: '2024-01-02T10:00:00.000Z' },
+    ]);
+
+    await sync(ALICE);
+
+    expect(await json(await api(`/api/players/${ALICE}/scores`))).toMatchObject(
+      { total: 1, items: [{ score: { modifiedScore: 700 } }] }
+    );
+  });
+
+  it('never replaces a stored score with a worse one', async () => {
+    scoreSaber.setPlayer(ALICE, 'alice', [
+      { leaderboardId: 1, score: 700, playedAt: '2024-01-01T10:00:00.000Z' },
+    ]);
+    await sync(ALICE);
+    scoreSaber.setPlayer(ALICE, 'alice', [
+      { leaderboardId: 1, score: 400, playedAt: '2024-02-01T10:00:00.000Z' },
+    ]);
+
+    await sync(ALICE);
+
+    expect(await json(await api(`/api/players/${ALICE}/scores`))).toMatchObject(
+      { total: 1, items: [{ score: { modifiedScore: 700 } }] }
+    );
+    expect(await database.db.select().from(scoreEvents)).toHaveLength(0);
   });
 
   it('answers 404 when the profile picked is unknown to ScoreSaber', async () => {

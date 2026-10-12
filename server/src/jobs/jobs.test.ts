@@ -23,6 +23,13 @@ import {
 const BEE = '76561198000000002';
 const STRANGER = '76561198000000003';
 
+/**
+ * A moment shortly after now. News only counts scores set after the bee
+ * joined the hive, which in a test is "now".
+ */
+const soon = (minutes: number) =>
+  new Date(Date.now() + minutes * 60_000).toISOString();
+
 const playerRow = async (id: string) => {
   const [row] = await database.db
     .select()
@@ -189,7 +196,7 @@ describe('a score on the live feed', () => {
 
     // The bee plays and goes past me; the feed announces it
     scoreSaber.setPlayer(BEE, 'bee', [
-      { leaderboardId: 1, score: 950, playedAt: '2024-02-01T10:00:00.000Z' },
+      { leaderboardId: 1, score: 950, playedAt: soon(1) },
     ]);
     await services.playersService.handleLiveScore(BEE);
 
@@ -198,7 +205,8 @@ describe('a score on the live feed', () => {
     ).json()) as never;
 
     expect(news.items).toHaveLength(1);
-    expect(await database.db.select().from(scoreEvents)).toHaveLength(3);
+    // The first syncs of both players logged nothing
+    expect(await database.db.select().from(scoreEvents)).toHaveLength(1);
   });
 });
 
@@ -254,6 +262,58 @@ describe('the periodic catch-up', () => {
     time = new Date(time.getTime() + HOUR);
     expect(await own.playersService.syncStalePlayers()).toBe(1);
     expect(manual.jobs).toHaveLength(1);
+  });
+
+  it('waits longer after every failed attempt before trying a player again', async () => {
+    const MINUTE = 60 * 1000;
+    let time = new Date('2024-05-01T12:00:00.000Z');
+    const later = (minutes: number) => {
+      time = new Date(time.getTime() + minutes * MINUTE);
+    };
+    const manual = createManualQueue();
+    const { app, services: own } = createTestApp({
+      now: () => time,
+      queue: manual.queue,
+    });
+    const user = await createUser('test-user', app);
+
+    scoreSaber.setPlayer(ME, 'me', []);
+    await linkProfile(ME, user);
+    await manual.runAll();
+
+    // From now on ScoreSaber answers nonsense for this player
+    scoreSaber.breakProfile(ME, { unexpected: true });
+
+    // Stale after an hour: tried, and it fails for the first time
+    later(60);
+    expect(await own.playersService.syncStalePlayers()).toBe(1);
+    await manual.runAll();
+    expect((await playerRow(ME))?.syncFailures).toBe(1);
+
+    // Not again within half an hour ...
+    later(20);
+    expect(await own.playersService.syncStalePlayers()).toBe(0);
+    // ... but after it. Second failure.
+    later(15);
+    expect(await own.playersService.syncStalePlayers()).toBe(1);
+    await manual.runAll();
+    expect((await playerRow(ME))?.syncFailures).toBe(2);
+
+    // The wait has doubled to an hour
+    later(45);
+    expect(await own.playersService.syncStalePlayers()).toBe(0);
+    later(20);
+    expect(await own.playersService.syncStalePlayers()).toBe(1);
+
+    // Once it works again, the count starts over
+    scoreSaber.reset();
+    scoreSaber.setPlayer(ME, 'me', []);
+    await manual.runAll();
+    expect(await playerRow(ME)).toMatchObject({
+      syncFailures: 0,
+      syncFailedAt: null,
+      syncError: null,
+    });
   });
 
   it('runs as the queue’s periodic job', async () => {

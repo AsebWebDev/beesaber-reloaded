@@ -29,19 +29,20 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
         'You cannot add yourself to your hive'
       );
 
-    const alreadyIn = await repository.isMember(me.userId, memberId);
+    await playersService.ensureProfile(memberId);
 
-    if (
-      !alreadyIn &&
-      (await repository.countMembers(me.userId)) >= MAX_HIVE_SIZE
-    )
+    const outcome = await repository.addMember(
+      me.userId,
+      memberId,
+      MAX_HIVE_SIZE
+    );
+
+    if (outcome === 'full')
       throw new AppError(
         'validation_failed',
         `A hive can have at most ${MAX_HIVE_SIZE} bees`
       );
 
-    await playersService.ensureProfile(memberId);
-    await repository.addMember(me.userId, memberId);
     await playersService.requestSync(memberId);
 
     // Read again: the sync request has just changed the player

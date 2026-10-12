@@ -8,6 +8,7 @@ import {
   serial,
   text,
   timestamp,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
 
 import { user } from './authSchema.ts';
@@ -41,8 +42,12 @@ const players = pgTable('players', {
   // Set while a background job is fetching this player's scores, or is
   // queued to. The frontend shows "fetching" as long as it is set.
   syncStartedAt: timestamptz(),
-  // Why the last attempt failed, cleared by the next success
+  // Why the last attempt failed, as a short code, cleared by the next success
   syncError: text(),
+  // How many attempts in a row have failed, and when the last one did. The
+  // periodic sync waits longer after every failure before it tries again.
+  syncFailures: integer().notNull().default(0),
+  syncFailedAt: timestamptz(),
 });
 
 /** One difficulty of one map. Scores are set on a leaderboard. */
@@ -97,8 +102,6 @@ const scores = pgTable(
     primaryKey({ columns: [table.playerId, table.leaderboardId] }),
     // "Latest scores of a player" reads along this index
     index().on(table.playerId, table.playedAt.desc()),
-    // "Who else played this leaderboard" reads along this one
-    index().on(table.leaderboardId),
   ]
 );
 
@@ -107,6 +110,9 @@ const scores = pgTable(
  * leaderboard, or an improvement. `scores` only knows the current state;
  * this table knows when it changed, which is what "a bee beat your score"
  * is derived from.
+ *
+ * Nothing is logged during the very first sync of a player. Those thousands
+ * of scores are history, not something that happened while we were watching.
  */
 const scoreEvents = pgTable(
   'score_events',
@@ -122,13 +128,12 @@ const scoreEvents = pgTable(
     previousScore: integer(),
     newScore: integer().notNull(),
     playedAt: timestamptz().notNull(),
-    // False for scores found during the very first sync of a player. Those
-    // are history, not news.
-    isNews: boolean().notNull(),
   },
   (table) => [
     index().on(table.playerId, table.playedAt.desc()),
-    index().on(table.leaderboardId),
+    // The same play can never be logged twice, whatever goes wrong: two
+    // syncs of one player overlapping, or a job running again after a crash
+    uniqueIndex().on(table.playerId, table.leaderboardId, table.playedAt),
   ]
 );
 

@@ -33,6 +33,8 @@ const player = (id: string, name: string): Player => ({
   scoresSyncedAt: '2024-03-01T10:00:00.000Z',
   syncStartedAt: null,
   syncError: null,
+  syncFailures: 0,
+  syncFailedAt: null,
 });
 
 const leaderboard = (id: number, songName: string): Leaderboard => ({
@@ -307,11 +309,11 @@ const fakeApi = {
       previousScore: 300_000,
       newScore: 500_000,
       playedAt: '2024-02-01T10:00:00.000Z',
-      isNews: true,
     },
     player: { id: BEE.id, name: BEE.name, avatarUrl: BEE.avatarUrl },
     leaderboard: SUPERSTAR,
     myScore: 400_000,
+    theirScore: 500_000,
   }),
   BEE,
   ME,

@@ -199,6 +199,24 @@ and goes down now and then, which is what the timer is for. Set
 While a fetch is queued or running, the player has `syncStartedAt` set. The
 frontend shows "fetching" and asks again every 1.5 seconds until it is done.
 
+### What counts as news
+
+"A bee beat your score" is derived from a log of score changes
+(`score_events`), written whenever a sync finds a new or improved score. Three
+rules keep it honest:
+
+- The first sync of a player logs nothing. Those scores are history.
+- Only what a bee did after joining your hive is news to you, however long
+  someone else has been tracking that bee.
+- A report disappears once you have taken the lead back, and it shows what the
+  bee holds now, not what they held when they passed you.
+
+Scores are read from ScoreSaber by time, not by page number, because the list
+shifts while it is being read. A stored score is never replaced by a worse
+one, and a play can only be logged once, whatever overlaps or retries happen.
+A player whose sync keeps failing is tried again after half an hour, then an
+hour, doubling up to once a day.
+
 ### Security
 
 What the server does to stay safe, and where:
