@@ -1,0 +1,8 @@
+packages:
+  - client
+  - server
+allowBuilds:
+  '@parcel/watcher': false
+  bcrypt: false
+  esbuild: false
+  msw: false

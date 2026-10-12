@@ -1,0 +1,2 @@
+# Always use LF line endings, on every operating system
+* text=auto eol=lf

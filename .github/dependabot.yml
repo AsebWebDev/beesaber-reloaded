@@ -1,0 +1,17 @@
+# Lets GitHub open pull requests when a dependency has a newer version or a
+# known security problem.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # One pull request for all minor and patch updates instead of dozens
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

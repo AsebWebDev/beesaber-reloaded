@@ -1,142 +1,46 @@
 {
-  "name": "beesaber2",
+  "name": "beesaber-reloaded",
   "version": "0.1.0",
   "private": true,
-  "workspaces": [
-    "server/*"
-  ],
+  "description": "Compare your Beat Saber scores with your friends",
   "scripts": {
-    "build": "craco build",
-    "eject": "craco eject",
-    "lint:js": "eslint . --ext .js,.jsx",
-    "lint:js:fix": "yarn lint:js --fix",
-    "lint:scss": "stylelint 'src/**/*.scss' scss",
-    "lint:scss:fix": "stylelint 'src/**/*.scss' scss --fix",
-    "msw": "cross-env REACT_APP_MSW='enabled' craco start",
-    "prepare": "husky install",
-    "server": "cd server && yarn run dev",
-    "start": "craco start",
-    "test": "cross-env REACT_APP_MSW='enabled' jest --watch",
-    "test:live": "jest --watch"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-merge-commit": "cross-env REACT_APP_MSW='enabled' jest TZ='UTC' --bail"
-    }
-  },
-  "lint-staged": {
-    "src/**/*.(js|jsx|ts|tsx|md|markdown|json|yml|yaml)": [
-      "yarn prettier --write"
-    ],
-    "src/**/*.(js|ts|tsx)": [
-      "yarn eslint . --fix",
-      "yarn cross-env REACT_APP_MSW='enabled' jest --findRelatedTests"
-    ],
-    "src/**/*.scss": [
-      "stylelint scss --fix"
-    ],
-    "package.json": [
-      "yarn sort-package-json"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "dependencies": {
-    "@craco/craco": "^6.4.5",
-    "@reduxjs/toolkit": "^2.7.0",
-    "axios": "^0.24.0",
-    "date-fns": "^2.30.0",
-    "mdb-react-ui-kit": "^1.6.0",
-    "mongoose": "^6.13.8",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-google-login": "^5.2.2",
-    "react-is": "^19.1.0",
-    "react-redux": "^9.2.0",
-    "react-router-dom": "^5.3.4",
-    "react-scripts": "5.0.1",
-    "react-toastify": "^8.2.0",
-    "redux": "^5.0.1",
-    "redux-thunk": "^3.1.0",
-    "sass": "^1.87.0",
-    "styled-components": "^5.3.11",
-    "web-vitals": "^1.1.2",
-    "whatwg-fetch": "^3.6.20"
+    "client": "pnpm --filter @beesaber/client dev",
+    "server": "pnpm --filter @beesaber/server dev",
+    "db": "docker compose up -d --wait",
+    "db:migrate": "pnpm --filter @beesaber/server db:migrate",
+    "api:update": "pnpm --filter @beesaber/server api:update",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.10",
-    "@babel/preset-typescript": "^7.27.0",
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/react-hooks": "^8.0.1",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/eslint": "^7.29.0",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^12.20.55",
-    "@types/react": "^19.1.2",
-    "@types/react-dom": "^19.1.3",
-    "@types/react-redux": "^7.1.34",
-    "@types/react-router-dom": "^5.3.3",
-    "@types/redux-mock-store": "^1.5.0",
-    "@types/sass": "^1.43.1",
-    "@types/styled-components": "^5.1.34",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
-    "babel-jest": "^29.7.0",
-    "craco-alias": "^3.0.1",
-    "cross-env": "^7.0.3",
-    "eslint": "^7.32.0",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-jest": "^28.11.0",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-prettier": "^3.4.1",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-simple-import-sort": "^7.0.0",
-    "husky": "^7.0.4",
-    "jest": "^29.7.0",
-    "jest-styled-components": "^7.2.0",
-    "jest-useragent-mock": "^0.1.1",
-    "lint-staged": "^11.2.6",
-    "msw": "^0.36.8",
-    "postcss": "^8.3.11",
-    "postcss-scss": "^4.0.1",
-    "prettier": "^2.8.8",
-    "react-country-flag": "^3.1.0",
-    "redux-devtools-extension": "^2.13.9",
-    "redux-mock-store": "^1.5.5",
-    "sort-package-json": "^1.57.0",
-    "stylelint": "^14.16.1",
-    "stylelint-config-standard-scss": "^2.0.1",
-    "stylelint-order": "^5.0.0",
-    "stylelint-scss": "^4.7.0",
-    "ts-jest": "^29.3.2",
-    "typescript": "^4.9.5"
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-simple-import-sort": "^14.0.0",
+    "globals": "^17.13.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.1"
   },
-  "packageManager": "yarn@4.9.1",
+  "packageManager": "pnpm@12.11.2",
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.0.0"
+    "node": ">=24"
   },
-  "msw": {
-    "workerDirectory": "public"
+  "type": "module",
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --fix --max-warnings 0",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml,html,css}": "prettier --write"
   }
 }

@@ -1,0 +1,226 @@
+{
+  "data": [
+    {
+      "score": {
+        "id": 76664946,
+        "rank": 67,
+        "unmodifiedScore": 636886,
+        "modifiedScore": 636886,
+        "accuracy": 0,
+        "pp": 0,
+        "weight": 0,
+        "mods": [],
+        "badCuts": 8,
+        "missedNotes": 5,
+        "maxCombo": 165,
+        "fullCombo": false,
+        "hasReplay": false,
+        "personalBest": true,
+        "legacyHmdId": 64,
+        "version": null,
+        "playOutcome": "CLEAR",
+        "playOutcomeTime": null,
+        "hasHistory": false,
+        "createdAt": "2023-02-03T11:15:34.000Z",
+        "player": {
+          "id": "76561198000000001",
+          "name": "example",
+          "playerNameInGame": "example",
+          "avatar": "https://cdn.scoresaber.com/avatars/steam.png",
+          "avatarVersion": 1,
+          "country": "DE",
+          "role": null,
+          "permissions": 0
+        },
+        "device": null
+      },
+      "leaderboard": {
+        "id": 402627,
+        "map": {
+          "id": 35272,
+          "hash": "3348593C2380592F271E7269E4E79A5A883CB35E",
+          "bsid": "1eda9",
+          "songName": "Monster",
+          "songSubName": "",
+          "songAuthorName": "Reol",
+          "levelAuthorName": "riasuh",
+          "bpm": 164,
+          "coverUrl": "https://cdn.scoresaber.com/covers/3348593C2380592F271E7269E4E79A5A883CB35E.png",
+          "verified": false
+        },
+        "difficulty": {
+          "id": 402627,
+          "difficulty": 5,
+          "gameMode": "SoloStandard",
+          "rawDifficulty": "_Hard_SoloStandard"
+        },
+        "maxScore": 0,
+        "legacyMaxScore": null,
+        "totalScores": 199,
+        "dailyScores": 0,
+        "createdAt": "2021-12-12T20:46:17.000Z",
+        "realm": {
+          "realmId": 1,
+          "realmName": "",
+          "leaderboardStatus": "UNRANKED",
+          "positiveModifiers": false,
+          "modifierValues": "[[\"NO\",-0.05],[\"NB\",-0.1],[\"NF\",-0.5],[\"SS\",-0.3],[\"NA\",-0.3],[\"FS\",0.08],[\"DA\",0.02],[\"GN\",0.04]]",
+          "stars": 0,
+          "rankedAt": null,
+          "qualifiedAt": null,
+          "lovedAt": null
+        }
+      }
+    },
+    {
+      "score": {
+        "id": 76609123,
+        "rank": 40,
+        "unmodifiedScore": 362801,
+        "modifiedScore": 362801,
+        "accuracy": 0.8959929861822852,
+        "pp": 0,
+        "weight": 0,
+        "mods": [],
+        "badCuts": 3,
+        "missedNotes": 0,
+        "maxCombo": 262,
+        "fullCombo": false,
+        "hasReplay": false,
+        "personalBest": true,
+        "legacyHmdId": 64,
+        "version": null,
+        "playOutcome": "CLEAR",
+        "playOutcomeTime": null,
+        "hasHistory": false,
+        "createdAt": "2023-01-31T19:53:39.000Z",
+        "player": {
+          "id": "76561198000000001",
+          "name": "example",
+          "playerNameInGame": "example",
+          "avatar": "https://cdn.scoresaber.com/avatars/steam.png",
+          "avatarVersion": 1,
+          "country": "DE",
+          "role": null,
+          "permissions": 0
+        },
+        "device": null
+      },
+      "leaderboard": {
+        "id": 397896,
+        "map": {
+          "id": 161271,
+          "hash": "EBFFA1FA77EC0A410C43C29C2FDE1B4188002396",
+          "bsid": "1e2e1",
+          "songName": "Still",
+          "songSubName": "",
+          "songAuthorName": "Glacier",
+          "levelAuthorName": "FireStrike",
+          "bpm": 99,
+          "coverUrl": "https://cdn.scoresaber.com/covers/EBFFA1FA77EC0A410C43C29C2FDE1B4188002396.png",
+          "verified": true
+        },
+        "difficulty": {
+          "id": 397896,
+          "difficulty": 5,
+          "gameMode": "SoloStandard",
+          "rawDifficulty": "_Hard_SoloStandard"
+        },
+        "maxScore": 404915,
+        "legacyMaxScore": null,
+        "totalScores": 413,
+        "dailyScores": 0,
+        "createdAt": "2021-11-22T20:50:31.000Z",
+        "realm": {
+          "realmId": 1,
+          "realmName": "",
+          "leaderboardStatus": "UNRANKED",
+          "positiveModifiers": false,
+          "modifierValues": "[[\"NO\",-0.05],[\"NB\",-0.1],[\"NF\",-0.5],[\"SS\",-0.3],[\"NA\",-0.3],[\"FS\",0.08],[\"DA\",0.02],[\"GN\",0.04]]",
+          "stars": 0,
+          "rankedAt": null,
+          "qualifiedAt": null,
+          "lovedAt": null
+        }
+      }
+    },
+    {
+      "score": {
+        "id": 40874798,
+        "rank": 172,
+        "unmodifiedScore": 584364,
+        "modifiedScore": 584364,
+        "accuracy": 0.8663983097965084,
+        "pp": 0,
+        "weight": 0.017223195099964585,
+        "mods": [],
+        "badCuts": 0,
+        "missedNotes": 5,
+        "maxCombo": 316,
+        "fullCombo": false,
+        "hasReplay": false,
+        "personalBest": true,
+        "legacyHmdId": 64,
+        "version": null,
+        "playOutcome": "CLEAR",
+        "playOutcomeTime": null,
+        "hasHistory": false,
+        "createdAt": "2023-01-31T19:48:48.000Z",
+        "player": {
+          "id": "76561198000000001",
+          "name": "example",
+          "playerNameInGame": "example",
+          "avatar": "https://cdn.scoresaber.com/avatars/steam.png",
+          "avatarVersion": 1,
+          "country": "DE",
+          "role": null,
+          "permissions": 0
+        },
+        "device": null
+      },
+      "leaderboard": {
+        "id": 279841,
+        "map": {
+          "id": 133366,
+          "hash": "C37900994B0C029C46C7283DFA95B8B073CA7E78",
+          "bsid": "c20a",
+          "songName": "Superstar",
+          "songSubName": "",
+          "songAuthorName": "ft. Krewella",
+          "levelAuthorName": "Pegboard Nerds, NGHTMRE",
+          "bpm": 150,
+          "coverUrl": "https://cdn.scoresaber.com/covers/C37900994B0C029C46C7283DFA95B8B073CA7E78.png",
+          "verified": true
+        },
+        "difficulty": {
+          "id": 279841,
+          "difficulty": 7,
+          "gameMode": "SoloStandard",
+          "rawDifficulty": "_Expert_SoloStandard"
+        },
+        "maxScore": 674475,
+        "legacyMaxScore": null,
+        "totalScores": 1156,
+        "dailyScores": 0,
+        "createdAt": "2020-07-17T16:59:55.000Z",
+        "realm": {
+          "realmId": 1,
+          "realmName": "",
+          "leaderboardStatus": "UNRANKED",
+          "positiveModifiers": false,
+          "modifierValues": "[[\"NO\",-0.05],[\"NB\",-0.1],[\"NF\",-0.5],[\"SS\",-0.3],[\"NA\",-0.3],[\"FS\",0.08],[\"DA\",0.02],[\"GN\",0.04]]",
+          "stars": 0,
+          "rankedAt": null,
+          "qualifiedAt": null,
+          "lovedAt": null
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "page": 1,
+    "itemsPerPage": 3,
+    "totalItems": 475,
+    "totalPages": 159
+  }
+}

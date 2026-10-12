@@ -1,13 +1,14 @@
 # Build folders
 dist
 build
+coverage
 
-# Yarn files
-.yarn
-.pnp.*
+# Lockfile
+pnpm-lock.yaml
 
-# We format our scss files using stylelint
-*.scss
 
-# Changelog is auto-generated
-CHANGELOG.md
+# Generated: ScoreSaber's OpenAPI description, the types made from it,
+# and the database migrations
+server/src/scoresaber/openapi.json
+server/src/scoresaber/openapi.d.ts
+server/drizzle
