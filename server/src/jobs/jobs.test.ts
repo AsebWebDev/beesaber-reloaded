@@ -65,7 +65,7 @@ describe('adding a bee', () => {
     expect(response.status).toBe(201);
     // The job is waiting, no score request has gone out
     expect(manual.jobs).toEqual([
-      { job: { playerId: BEE, force: false }, delaySeconds: undefined },
+      { job: { playerId: BEE }, delaySeconds: undefined, priority: 'user' },
     ]);
     expect(scoreSaber.requests).toHaveLength(0);
     expect((await playerRow(BEE))?.syncStartedAt).toBeInstanceOf(Date);
@@ -88,6 +88,83 @@ describe('adding a bee', () => {
     });
 
     expect(response.status).toBe(404);
+  });
+});
+
+describe('asking who is being fetched', () => {
+  const syncing = async (as = api) => {
+    const body = (await (await as('/api/hive/sync')).json()) as {
+      syncing: { playerId: string; since: string }[];
+    };
+
+    return body.syncing;
+  };
+
+  it('names me and my bees while their jobs wait, and nobody once they ran', async () => {
+    const manual = createManualQueue();
+    const { app } = createTestApp({ queue: manual.queue });
+    const user = await createUser('test-user', app);
+
+    scoreSaber.setPlayer(ME, 'me', []);
+    scoreSaber.setPlayer(BEE, 'bee', []);
+    await linkProfile(ME, user);
+
+    expect((await syncing(user)).map((entry) => entry.playerId)).toEqual([ME]);
+
+    await manual.runAll();
+    await postJson('/api/hive', { playerId: BEE }, user);
+
+    const waiting = await syncing(user);
+
+    expect(waiting.map((entry) => entry.playerId)).toEqual([BEE]);
+    expect(Number.isNaN(Date.parse(waiting[0]!.since))).toBe(false);
+
+    await manual.runAll();
+
+    expect(await syncing(user)).toEqual([]);
+  });
+
+  it('leaves out players of other hives', async () => {
+    const manual = createManualQueue();
+    const { app } = createTestApp({ queue: manual.queue });
+    const user = await createUser('test-user', app);
+    const other = await createUser('other-user', app);
+
+    scoreSaber.setPlayer(ME, 'me', []);
+    scoreSaber.setPlayer(BEE, 'bee', []);
+    scoreSaber.setPlayer(STRANGER, 'stranger', []);
+    await linkProfile(ME, user);
+    await linkProfile(STRANGER, other);
+    await manual.runAll();
+
+    // The other account's bee is being fetched, mine are not
+    await postJson('/api/hive', { playerId: BEE }, other);
+
+    expect(await syncing(user)).toEqual([]);
+    expect(await syncing(other)).toHaveLength(1);
+  });
+});
+
+describe('the periodic catch-up', () => {
+  it('queues its jobs behind those a user or the live feed asked for', async () => {
+    let time = new Date('2024-05-01T12:00:00.000Z');
+    const manual = createManualQueue();
+    const { app, services: own } = createTestApp({
+      now: () => time,
+      queue: manual.queue,
+    });
+    const user = await createUser('test-user', app);
+
+    scoreSaber.setPlayer(ME, 'me', []);
+    await linkProfile(ME, user);
+    await manual.runAll();
+
+    time = new Date(time.getTime() + 60 * 60 * 1000);
+    await own.playersService.syncStalePlayers();
+
+    expect(manual.jobs).toMatchObject([
+      { job: { playerId: ME }, priority: 'catchUp' },
+    ]);
   });
 });
 
@@ -148,10 +225,10 @@ describe('a score on the live feed', () => {
     const tracked = await own.playersService.handleLiveScore(BEE);
 
     expect(tracked).toBe(true);
-    // Forced, because the bee was synced a moment ago, and delayed, because
+    // Queued although the bee was synced a moment ago, and delayed, because
     // ScoreSaber's score list lags behind the feed
     expect(manual.jobs).toEqual([
-      { job: { playerId: BEE, force: true }, delaySeconds: 40 },
+      { job: { playerId: BEE }, delaySeconds: 40, priority: 'live' },
     ]);
   });
 

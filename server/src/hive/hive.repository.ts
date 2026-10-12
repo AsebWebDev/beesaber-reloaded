@@ -1,4 +1,17 @@
-import { and, asc, desc, eq, gt, isNull, lt, lte, or, sql } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  gt,
+  inArray,
+  isNotNull,
+  isNull,
+  lt,
+  lte,
+  or,
+  sql,
+} from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 import {
@@ -79,6 +92,43 @@ const createHiveRepository = (db: Database) => {
 
       return 'added' as const;
     });
+
+  /** Just the ids of the bees, without the head-to-head records */
+  const listMemberIds = async (userId: string) => {
+    const rows = await db
+      .select({ memberId: hiveMembers.memberId })
+      .from(hiveMembers)
+      .where(eq(hiveMembers.userId, userId))
+      .orderBy(asc(hiveMembers.createdAt));
+
+    return rows.map((row) => row.memberId);
+  };
+
+  /**
+   * Whose scores are being fetched right now, out of me and my bees. Small
+   * and cheap on purpose: the frontend asks this over and over while it
+   * waits, instead of asking for the whole hive.
+   */
+  const listSyncing = ({ playerId, userId }: Me) =>
+    db
+      .select({ playerId: players.id, since: players.syncStartedAt })
+      .from(players)
+      .where(
+        and(
+          isNotNull(players.syncStartedAt),
+          or(
+            eq(players.id, playerId),
+            inArray(
+              players.id,
+              db
+                .select({ memberId: hiveMembers.memberId })
+                .from(hiveMembers)
+                .where(eq(hiveMembers.userId, userId))
+            )
+          )
+        )
+      )
+      .orderBy(asc(players.id));
 
   /** Returns whether there was a member to remove */
   const removeMember = async (userId: string, memberId: string) => {
@@ -229,8 +279,10 @@ const createHiveRepository = (db: Database) => {
     addMember,
     compare,
     isMember,
+    listMemberIds,
     listMembers,
     listNews,
+    listSyncing,
     removeMember,
   };
 };

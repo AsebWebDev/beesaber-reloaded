@@ -21,7 +21,11 @@ const services = createServices({
   queue,
   scoreSaber: createScoreSaberClient({
     baseUrl: config.SCORESABER_URL,
-    fetch: createThrottledFetch(),
+    // Two lanes to ScoreSaber, so that a background sync of thousands of
+    // scores cannot keep a user's search or "add bee" waiting. Together they
+    // send at most about 20 requests a second; ScoreSaber allows 25.
+    fetch: createThrottledFetch({ minIntervalMs: 120 }),
+    backgroundFetch: createThrottledFetch({ minIntervalMs: 80 }),
   }),
 });
 
@@ -40,14 +44,9 @@ console.log('Job queue started');
 
 const liveFeed = createLiveFeed({
   url: config.LIVE_FEED_URL,
-  onScore: (playerId) => {
-    services.playersService.handleLiveScore(playerId).then(
-      (tracked) => {
-        if (tracked)
-          console.log('Live feed: score of a tracked player, sync queued');
-      },
-      (error: unknown) => console.error('Live feed handler failed', error)
-    );
+  onScore: async (playerId) => {
+    if (await services.playersService.handleLiveScore(playerId))
+      console.log('Live feed: score of a tracked player, sync queued');
   },
 });
 
@@ -63,17 +62,43 @@ const server = serve({ fetch: app.fetch, port: config.PORT }, ({ port }) => {
     console.log('DEV_LOGIN is on: the local test account can sign in');
 });
 
+/** How long a shutdown may take before the process ends regardless */
+const SHUTDOWN_DEADLINE_MS = 15_000;
+
+let shuttingDown = false;
+
 // When asked to stop: take no new work, finish what is running, then close
-// the connections, instead of cutting everything off
-const shutdown = () => {
+// the connections, instead of cutting everything off. But not forever: a
+// request or a job that hangs must not keep a deployment from finishing.
+const shutdown = (signal: string) => {
+  // A second Ctrl+C while we are at it changes nothing
+  if (shuttingDown) return;
+
+  shuttingDown = true;
+  console.log(`${signal} received, shutting down`);
+
+  const deadline = setTimeout(() => {
+    console.error('Shutdown took too long, exiting anyway');
+    process.exit(1);
+  }, SHUTDOWN_DEADLINE_MS);
+
+  // The timer alone must not keep the process alive once everything is closed
+  deadline.unref();
+
   liveFeed.stop();
   server.close(() => {
-    void queue
+    queue
       .stop()
       .then(close)
-      .then(() => process.exit(0));
+      .then(
+        () => process.exit(0),
+        (error: unknown) => {
+          console.error('Shutdown failed', error);
+          process.exit(1);
+        }
+      );
   });
 };
 
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));

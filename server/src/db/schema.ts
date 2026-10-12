@@ -155,7 +155,12 @@ const hiveMembers = pgTable(
       .references(() => players.id, { onDelete: 'cascade' }),
     createdAt: timestamptz().notNull().defaultNow(),
   },
-  (table) => [primaryKey({ columns: [table.userId, table.memberId] })]
+  (table) => [
+    primaryKey({ columns: [table.userId, table.memberId] }),
+    // "Is anyone following this player?" is asked for every score on the
+    // live feed, and the primary key above only helps when the user is known
+    index().on(table.memberId),
+  ]
 );
 
 export { hiveMembers, leaderboards, players, scoreEvents, scores };

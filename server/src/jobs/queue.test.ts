@@ -42,13 +42,13 @@ describe('the pg-boss queue', () => {
     });
 
     // Both are queued before the worker polls for the first time
-    await queue.enqueueSync({ playerId, force: false });
-    await queue.enqueueSync({ playerId, force: false });
+    await queue.enqueueSync({ playerId });
+    await queue.enqueueSync({ playerId });
 
     await waitFor(() => received.length > 0, 15_000);
     // Leave time for a second delivery, if there wrongly were one
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    expect(received).toEqual([{ playerId, force: false }]);
+    expect(received).toEqual([{ playerId }]);
   }, 30_000);
 });

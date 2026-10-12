@@ -115,7 +115,7 @@ describe('the dashboard', () => {
   });
 
   it('shows that scores are being fetched and updates itself when they are in', async () => {
-    // The hive reports its bee as being fetched for the first two requests
+    // The server says twice that the bee is being fetched, then that it is done
     fakeApi.signedInAs({ hive: [fakeApi.BEE.id], pollsUntilSynced: 2 });
     renderApp();
 

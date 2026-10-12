@@ -106,7 +106,7 @@ type State = {
   playerId: string | null;
   /** How long lists of scores take to answer, in milliseconds */
   listDelayMs: number;
-  /** How many more times the hive reports its bee as being fetched */
+  /** How many more times the server says the bee is being fetched */
   pollsUntilSynced: number;
   /** Makes the server refuse to sign out, as it would when it is down */
   signOutFails: boolean;
@@ -148,7 +148,7 @@ const me = (): Me => ({
 
 const member = (): HiveMember => ({
   player:
-    state.pollsUntilSynced-- > 0
+    state.pollsUntilSynced > 0
       ? { ...BEE, syncStartedAt: '2024-03-01T10:00:00.000Z' }
       : BEE,
   addedAt: '2024-03-01T10:00:00.000Z',
@@ -261,6 +261,17 @@ const server = setupServer(
     return new HttpResponse(null, { status: 204 });
   }),
   http.get('/api/hive/news', () => HttpResponse.json({ items: state.news })),
+  http.get('/api/hive/sync', () => {
+    // Every question brings the end of the sync one step closer
+    const syncing =
+      state.hive.length > 0 && state.pollsUntilSynced > 0
+        ? [{ playerId: BEE.id, since: new Date().toISOString() }]
+        : [];
+
+    state.pollsUntilSynced = Math.max(0, state.pollsUntilSynced - 1);
+
+    return HttpResponse.json({ syncing });
+  }),
   http.post('/api/hive/sync', () =>
     HttpResponse.json(
       { queued: state.queuedBySync, upToDate: 1 - state.queuedBySync },

@@ -39,8 +39,21 @@ type ComparisonEntry = InferResponseType<
 
 const PAGE_SIZE = 15;
 
-/** How often to ask again while the server is fetching someone's scores */
-const POLL_WHILE_SYNCING_MS = 1500;
+/** How often to look whether the server has started fetching scores */
+const SYNC_IDLE_INTERVAL_MS = 30_000;
+
+/**
+ * How long to wait before asking again whether a sync is done. Most finish
+ * within seconds, so the first questions come quickly. One that takes
+ * minutes, like the first fetch of a player with thousands of scores, is
+ * asked about less and less often.
+ */
+const syncPollDelay = (elapsedMs: number): number => {
+  if (elapsedMs < 20_000) return 1500;
+  if (elapsedMs < 2 * 60_000) return 5000;
+
+  return 15_000;
+};
 /** How often to look for news that arrived on their own */
 const NEWS_INTERVAL_MS = 60_000;
 
@@ -73,11 +86,6 @@ const useMe = () =>
       }
     },
     staleTime: 60_000,
-    // While my scores are being fetched, keep asking until they are done
-    refetchInterval: ({ state }) =>
-      state.data?.player != null && isSyncing(state.data.player)
-        ? POLL_WHILE_SYNCING_MS
-        : false,
   });
 
 /** Picks the ScoreSaber profile to compare as. Fetches all its scores. */
@@ -128,10 +136,6 @@ const useHive = () =>
   useQuery({
     queryKey: ['hive', 'members'],
     queryFn: () => unwrap(api.hive.$get()),
-    refetchInterval: ({ state }) =>
-      state.data?.items.some(({ player }) => isSyncing(player)) === true
-        ? POLL_WHILE_SYNCING_MS
-        : false,
   });
 
 const useNews = () =>
@@ -143,26 +147,54 @@ const useNews = () =>
   });
 
 /**
- * Whether scores of me or of a bee are being fetched right now. When that
- * ends, everything on screen is fetched again, because the new scores change
- * records, comparisons and news.
+ * Whose scores the server is fetching right now, out of me and my bees.
+ *
+ * This is the one thing the page keeps asking while it waits. The answer is
+ * a handful of ids, where the hive with its records is a heavy query; asking
+ * for that every second and a half was the old way.
+ */
+const useSyncStatus = () =>
+  useQuery({
+    queryKey: ['hive', 'sync'],
+    queryFn: () => unwrap(api.hive.sync.$get()),
+    refetchInterval: ({ state }) => {
+      const started = (state.data?.syncing ?? []).map(({ since }) =>
+        Date.parse(since)
+      );
+
+      return started.length === 0
+        ? SYNC_IDLE_INTERVAL_MS
+        : syncPollDelay(Date.now() - Math.min(...started));
+    },
+  });
+
+/**
+ * Whether scores of me or of a bee are being fetched right now.
+ *
+ * When the set of players being fetched changes, the places that show a
+ * "fetching" mark are loaded again. When the last one is done, everything on
+ * screen is, because the new scores change records, comparisons and news.
  */
 const useSyncing = (): boolean => {
   const queryClient = useQueryClient();
-  const me = useMe();
-  const hive = useHive();
-  const syncing =
-    (me.data?.player != null && isSyncing(me.data.player)) ||
-    hive.data?.items.some(({ player }) => isSyncing(player)) === true;
-  const wasSyncing = useRef(false);
+  const { data } = useSyncStatus();
+  const players = (data?.syncing ?? []).map(({ playerId }) => playerId);
+  const current = players.sort().join(',');
+  const previous = useRef(current);
 
   useEffect(() => {
-    if (wasSyncing.current && !syncing) void queryClient.invalidateQueries();
+    if (previous.current === current) return;
 
-    wasSyncing.current = syncing;
-  }, [syncing, queryClient]);
+    previous.current = current;
 
-  return syncing;
+    if (current === '') void queryClient.invalidateQueries();
+    else {
+      void queryClient.invalidateQueries({ queryKey: ['me'] });
+      void queryClient.invalidateQueries({ queryKey: ['hive', 'members'] });
+    }
+  }, [current, queryClient]);
+
+  return current !== '';
 };
 
 const useComparison = (
@@ -225,10 +257,7 @@ const useSyncHive = () => {
     mutationFn: () => unwrap(api.hive.sync.$post()),
     // Pick up who is being fetched now. useSyncing takes it from there.
     onSuccess: () =>
-      Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['me'] }),
-        queryClient.invalidateQueries({ queryKey: ['hive', 'members'] }),
-      ]),
+      queryClient.invalidateQueries({ queryKey: ['hive', 'sync'] }),
   });
 };
 

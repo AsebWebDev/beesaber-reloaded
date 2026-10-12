@@ -69,8 +69,10 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
 
   /** Asks for new scores of me and every bee. Says how many were queued. */
   const syncAll = async (me: Me) => {
-    const members = await repository.listMembers(me);
-    const playerIds = [me.playerId, ...members.map(({ player }) => player.id)];
+    const playerIds = [
+      me.playerId,
+      ...(await repository.listMemberIds(me.userId)),
+    ];
     let queued = 0;
 
     for (const playerId of playerIds)
@@ -79,11 +81,20 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
     return { queued, upToDate: playerIds.length - queued };
   };
 
+  /** Whose scores are being fetched right now, out of me and my bees */
+  const listSyncing = async (me: Me) =>
+    (await repository.listSyncing(me)).flatMap(({ playerId, since }) =>
+      // The query only returns players with a start time; this tells the
+      // compiler so
+      since === null ? [] : [{ playerId, since }]
+    );
+
   return {
     addMember,
     compare,
     listMembers: repository.listMembers,
     listNews: repository.listNews,
+    listSyncing,
     removeMember,
     syncAll,
   };

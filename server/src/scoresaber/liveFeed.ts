@@ -29,13 +29,29 @@ type Socket = {
 };
 
 type Options = {
+  clearTimer?: (timer: unknown) => void;
   /** Lets a test supply its own socket */
   connect?: (url: string) => Socket;
+  /**
+   * How long the feed may stay silent before the connection is taken for
+   * dead. Scores arrive every few seconds around the clock, so minutes of
+   * silence mean the connection is gone without anyone having said so.
+   */
+  idleTimeoutMs?: number;
   log?: (message: string) => void;
+  /** At most this many scores are being handled at once; more are dropped */
+  maxPending?: number;
+  now?: () => number;
   /** Called with the player's id for every score on the feed */
-  onScore: (playerId: string) => void;
-  /** Waiting times before reconnecting: first, and at most */
-  reconnect?: { maxMs: number; minMs: number };
+  onScore: (playerId: string) => Promise<unknown> | void;
+  reconnect?: {
+    /** The longest wait between two attempts */
+    maxMs: number;
+    /** The wait before the first attempt */
+    minMs: number;
+    /** A connection that held this long counts as working */
+    stableAfterMs: number;
+  };
   setTimer?: (callback: () => void, ms: number) => unknown;
   url: string;
 };
@@ -57,52 +73,130 @@ const playerIdOf = (data: unknown): string | undefined => {
 };
 
 const createLiveFeed = ({
+  clearTimer = (timer) => clearTimeout(timer as NodeJS.Timeout),
   connect = (url) => new WebSocket(url),
+  idleTimeoutMs = 5 * 60_000,
   log = console.log,
+  maxPending = 50,
+  now = Date.now,
   onScore,
-  reconnect = { minMs: 1000, maxMs: 60_000 },
+  reconnect = { minMs: 1000, maxMs: 60_000, stableAfterMs: 30_000 },
   setTimer = setTimeout,
   url,
 }: Options) => {
-  let socket: Socket | undefined;
   let stopped = false;
   let waitMs = reconnect.minMs;
+  let socket: Socket | undefined;
+  let idleTimer: unknown;
+  // Counts connections. Events of an older connection are ignored.
+  let generation = 0;
+  let pending = 0;
+  let dropped = 0;
+  let lastMessageAt: number | undefined;
+
+  const handle = (playerId: string) => {
+    // If handling cannot keep up, say because the database is slow, scores
+    // are dropped instead of piling up in memory. The periodic sync picks
+    // up whatever was missed.
+    if (pending >= maxPending) {
+      dropped += 1;
+      if (dropped % 100 === 1)
+        log(`Live feed: handling is too slow, ${dropped} scores dropped`);
+
+      return;
+    }
+
+    pending += 1;
+    Promise.resolve()
+      .then(() => onScore(playerId))
+      .catch((error: unknown) =>
+        log(`Live feed handler failed: ${String(error)}`)
+      )
+      .finally(() => {
+        pending -= 1;
+      });
+  };
 
   const open = () => {
     if (stopped) return;
 
-    socket = connect(url);
+    generation += 1;
 
-    socket.addEventListener('open', () => {
-      log('Live feed connected');
-      // It works again, so the next outage starts with a short wait
-      waitMs = reconnect.minMs;
-    });
+    const mine = generation;
+    const current = connect(url);
+    let openedAt: number | undefined;
 
-    socket.addEventListener('message', ({ data }) => {
-      const playerId = playerIdOf(data);
+    socket = current;
 
-      if (playerId !== undefined) onScore(playerId);
-    });
+    const isCurrent = () => mine === generation && !stopped;
 
-    // The feed goes down now and then. Try again, waiting longer each time,
-    // so a long outage does not turn into a flood of attempts.
-    socket.addEventListener('close', () => {
-      if (stopped) return;
+    const reconnectLater = (why: string) => {
+      if (!isCurrent()) return;
 
-      log(`Live feed closed, reconnecting in ${waitMs / 1000} s`);
+      // From here on, nothing this connection does matters any more
+      generation += 1;
+      clearTimer(idleTimer);
+
+      // Only a connection that held for a while resets the waiting time. One
+      // that is accepted and dropped right away keeps backing off, so a
+      // broken server is not retried every second forever.
+      if (openedAt !== undefined && now() - openedAt >= reconnect.stableAfterMs)
+        waitMs = reconnect.minMs;
+
+      log(`Live feed ${why}, reconnecting in ${waitMs / 1000} s`);
       setTimer(open, waitMs);
       waitMs = Math.min(waitMs * 2, reconnect.maxMs);
+    };
+
+    // A connection can die without a close event, for example when a network
+    // device in between forgets about it. Silence is the only sign.
+    const watchForSilence = () => {
+      clearTimer(idleTimer);
+      idleTimer = setTimer(() => {
+        if (!isCurrent()) return;
+
+        try {
+          current.close();
+        } catch {
+          // Already gone, which is what we are dealing with
+        }
+        reconnectLater(`silent for ${idleTimeoutMs / 1000} s`);
+      }, idleTimeoutMs);
+    };
+
+    watchForSilence();
+
+    current.addEventListener('open', () => {
+      if (!isCurrent()) return;
+
+      openedAt = now();
+      log('Live feed connected');
     });
 
+    current.addEventListener('message', ({ data }) => {
+      if (!isCurrent()) return;
+
+      lastMessageAt = now();
+      watchForSilence();
+
+      const playerId = playerIdOf(data);
+
+      if (playerId !== undefined) handle(playerId);
+    });
+
+    current.addEventListener('close', () => reconnectLater('closed'));
+
     // An error is always followed by a close event, which reconnects
-    socket.addEventListener('error', () => {});
+    current.addEventListener('error', () => {});
   };
 
   return {
     start: open,
+    /** For a health check or a log line: is the feed alive? */
+    status: () => ({ lastMessageAt, pending, dropped }),
     stop: () => {
       stopped = true;
+      clearTimer(idleTimer);
       socket?.close();
     },
   };

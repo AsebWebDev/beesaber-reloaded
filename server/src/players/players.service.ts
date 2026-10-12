@@ -5,7 +5,7 @@ import {
   toScoreRow,
 } from '../scoresaber/mapping.ts';
 
-import type { JobQueue } from '../jobs/queue.ts';
+import type { JobQueue, SyncPriority } from '../jobs/queue.ts';
 import type { ScoreSaberClient } from '../scoresaber/client.ts';
 import type { PlayersRepository } from './players.repository.ts';
 
@@ -106,7 +106,13 @@ const createPlayersService = ({
     {
       delaySeconds,
       force = false,
-    }: { delaySeconds?: number; force?: boolean } = {}
+      priority = 'user',
+    }: {
+      delaySeconds?: number;
+      /** Fetch even if the player was synced a moment ago */
+      force?: boolean;
+      priority?: SyncPriority;
+    } = {}
   ): Promise<SyncRequest> => {
     const player = await ensureProfile(playerId);
     const lastSyncedAt = player.scoresSyncedAt;
@@ -124,7 +130,7 @@ const createPlayersService = ({
     if (player.syncStartedAt === null)
       await repository.markSyncStarted(playerId, time);
 
-    await queue.enqueueSync({ playerId, force }, { delaySeconds });
+    await queue.enqueueSync({ playerId }, { delaySeconds, priority });
 
     return { queued: true };
   };
@@ -195,7 +201,7 @@ const createPlayersService = ({
     });
 
     for (const playerId of playerIds)
-      await requestSync(playerId, { force: true });
+      await requestSync(playerId, { force: true, priority: 'catchUp' });
 
     return playerIds.length;
   };
@@ -210,6 +216,7 @@ const createPlayersService = ({
     await requestSync(playerId, {
       force: true,
       delaySeconds: LIVE_SCORE_DELAY_SECONDS,
+      priority: 'live',
     });
 
     return true;

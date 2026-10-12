@@ -105,12 +105,26 @@ class ScoreSaberError extends Error {
 const SCORES_PER_PAGE = 100;
 
 type Options = {
+  /**
+   * Used for the long lists of scores, which only background jobs read.
+   * Given a throttle of its own, they cannot hold up the quick requests a
+   * user is waiting for. Without it, everything goes through `fetch`.
+   */
+  backgroundFetch?: typeof fetch;
   baseUrl: string;
   fetch?: typeof fetch;
 };
 
-const createScoreSaberClient = ({ baseUrl, fetch: customFetch }: Options) => {
+const createScoreSaberClient = ({
+  backgroundFetch,
+  baseUrl,
+  fetch: customFetch,
+}: Options) => {
   const api = createClient<paths>({ baseUrl, fetch: customFetch });
+  const background = createClient<paths>({
+    baseUrl,
+    fetch: backgroundFetch ?? customFetch,
+  });
 
   /** Turns the three ways a call can go wrong into a ScoreSaberError */
   const unwrap = async <Output>(
@@ -180,7 +194,7 @@ const createScoreSaberClient = ({ baseUrl, fetch: customFetch }: Options) => {
     unwrap(
       `Scores of player ${playerId}, page ${page}`,
       scorePageSchema,
-      api.GET('/api/v2/players/{id}/scores', {
+      background.GET('/api/v2/players/{id}/scores', {
         params: {
           path: { id: playerId },
           query: {

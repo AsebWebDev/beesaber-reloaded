@@ -55,6 +55,80 @@ describe('createThrottledFetch', () => {
     expect(sleep).toHaveBeenCalledWith(7000);
   });
 
+  it('does not wait longer than the cap, whatever Retry-After says', async () => {
+    const baseFetch = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(tooManyRequests('3600'))
+      .mockResolvedValueOnce(ok());
+    const sleep = vi.fn(() => Promise.resolve());
+    const throttled = createThrottledFetch({
+      fetch: baseFetch,
+      maxRetryAfterMs: 30_000,
+      minIntervalMs: 0,
+      sleep,
+    });
+
+    await throttled('https://example.test/a');
+
+    expect(sleep).toHaveBeenCalledWith(30_000);
+    expect(sleep).not.toHaveBeenCalledWith(3_600_000);
+  });
+
+  it('gives up on a request that gets no answer, and lets the next one through', async () => {
+    // Answers the first request never, like a server that accepted the
+    // connection and then went quiet. Only an abort ends it.
+    const hang: typeof fetch = (input) =>
+      new Promise<Response>((_resolve, reject) => {
+        const { signal } = input as Request;
+
+        signal.addEventListener('abort', () => reject(signal.reason as Error));
+      });
+    const baseFetch = vi
+      .fn<typeof fetch>()
+      .mockImplementationOnce(hang)
+      .mockResolvedValueOnce(ok());
+    const throttled = createThrottledFetch({
+      fetch: baseFetch,
+      minIntervalMs: 0,
+      sleep: () => Promise.resolve(),
+      timeoutMs: 30,
+    });
+
+    const first = throttled('https://example.test/a');
+    const second = throttled('https://example.test/b');
+
+    await expect(first).rejects.toThrow();
+    await expect(second).resolves.toHaveProperty('status', 200);
+  });
+
+  it('stops when the caller gives up', async () => {
+    const baseFetch = vi.fn<typeof fetch>(
+      (input) =>
+        new Promise<Response>((_resolve, reject) => {
+          const { signal } = input as Request;
+
+          signal.addEventListener('abort', () =>
+            reject(signal.reason as Error)
+          );
+        })
+    );
+    const throttled = createThrottledFetch({
+      fetch: baseFetch,
+      minIntervalMs: 0,
+      sleep: () => Promise.resolve(),
+    });
+    const controller = new AbortController();
+    const request = throttled('https://example.test/a', {
+      signal: controller.signal,
+    });
+
+    // Let the request start before it is called off
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    controller.abort(new Error('caller gave up'));
+
+    await expect(request).rejects.toThrow('caller gave up');
+  });
+
   it('gives up after the allowed number of retries', async () => {
     const baseFetch = vi.fn<typeof fetch>(() =>
       Promise.resolve(tooManyRequests())

@@ -40,6 +40,13 @@ const createHiveRoutes = (
       }
     )
 
+    // GET /api/hive/sync: who is being fetched right now?
+    .get('/sync', async (c) =>
+      c.json({
+        syncing: await service.listSyncing(requireMe(c.get('user'))),
+      })
+    )
+
     // POST /api/hive/sync
     .post('/sync', async (c) =>
       c.json(await service.syncAll(requireMe(c.get('user'))), 202)

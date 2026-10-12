@@ -11,7 +11,7 @@ import { createFakeScoreSaber, FAKE_SCORESABER_URL } from './fakeScoreSaber.ts';
 
 import type { Limits } from '../app.ts';
 import type { Auth } from '../auth/auth.ts';
-import type { JobQueue, SyncJob } from '../jobs/queue.ts';
+import type { JobQueue, SyncJob, SyncPriority } from '../jobs/queue.ts';
 
 /**
  * What a test file gets by importing this: an empty database before every
@@ -48,7 +48,7 @@ const fakeAuth: Auth = {
 
     const { email, image, name, playerId } = found;
 
-    return { id, email, name, image, playerId };
+    return { setCookies: [], user: { id, email, name, image, playerId } };
   },
 };
 
@@ -123,12 +123,20 @@ const createTestApp = ({
  * look at what was queued in the meantime.
  */
 const createManualQueue = () => {
-  const jobs: { delaySeconds?: number; job: SyncJob }[] = [];
+  const jobs: {
+    delaySeconds?: number;
+    job: SyncJob;
+    priority?: SyncPriority;
+  }[] = [];
   let onSync: ((job: SyncJob) => Promise<void>) | undefined;
 
   const queue: JobQueue = {
     enqueueSync: (job, options = {}) => {
-      jobs.push({ job, delaySeconds: options.delaySeconds });
+      jobs.push({
+        job,
+        delaySeconds: options.delaySeconds,
+        priority: options.priority,
+      });
 
       return Promise.resolve();
     },

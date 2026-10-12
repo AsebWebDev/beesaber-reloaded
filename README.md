@@ -171,6 +171,7 @@ account, so two accounts with the same profile still have a hive each.
 | `GET /hive/:playerId/comparison` | Maps we both played, with both scores; `filter` |
 | `GET /hive/news`                 | Scores of bees that went past mine              |
 | `POST /hive/sync`                | Queue a fetch of new scores, mine and my bees'  |
+| `GET /hive/sync`                 | Whose scores are being fetched right now        |
 
 ### How scores get here
 
@@ -193,11 +194,25 @@ The live feed is a WebSocket on which ScoreSaber announces every new score
 worldwide. The server only reads whose score it is and, if somebody here
 follows that player, queues a fetch 40 seconds later; ScoreSaber's own score
 lists lag behind the feed by up to half a minute. The feed is not documented
-and goes down now and then, which is what the timer is for. Set
+and goes down now and then, which is what the timer is for. A connection that
+stays silent for five minutes is taken for dead and replaced. Set
 `LIVE_FEED=false` in `server/.env` to run without it.
 
+When jobs pile up, those a user is waiting for run first, then those from the
+live feed, then the timer's.
+
 While a fetch is queued or running, the player has `syncStartedAt` set. The
-frontend shows "fetching" and asks again every 1.5 seconds until it is done.
+frontend shows "fetching" and asks `GET /hive/sync` until it is done: every
+1.5 seconds at first, less often the longer it takes.
+
+### Talking to ScoreSaber
+
+ScoreSaber allows 25 requests a second. All requests go through a throttle
+that sends them one after the other with a pause in between, gives up on a
+request after 15 seconds without an answer, and waits when ScoreSaber says
+"too many requests". There are two such lanes: one for the long score lists
+that background jobs read, one for everything a user waits for, so a big
+fetch cannot hold up a search.
 
 ### What counts as news
 
