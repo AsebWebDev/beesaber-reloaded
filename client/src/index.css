@@ -15,7 +15,14 @@
 @theme {
   --color-night: #00111f;
   --color-night-raised: #0b2233;
+  /* Lines that only divide or decorate: around cards, between table rows */
   --color-night-line: #1d3a50;
+  /*
+   * The outline of something to click or type into. It has to stand out
+   * from the background by at least 3:1 to be found, which the line colour
+   * above does not (1.4:1). This one reaches 3.4:1 on a card.
+   */
+  --color-night-control: #64748b;
 
   --color-neon-red: #ff0025;
   --color-neon-red-core: #fff0f0;

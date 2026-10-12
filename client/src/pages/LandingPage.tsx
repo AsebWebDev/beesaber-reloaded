@@ -4,6 +4,7 @@ import { useConfig } from '@/api/queries.ts';
 import { signInAsDev, signInWithGoogle } from '@/auth/authClient.ts';
 import { HexLogo } from '@/components/HexLogo.tsx';
 import { Button, ErrorNote, NeonHeading, Spinner } from '@/components/ui.tsx';
+import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 /** What visitors see before they sign in */
 const LandingPage = () => {
@@ -16,6 +17,8 @@ const LandingPage = () => {
     // Now signed in: ask the server again who we are
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['me'] }),
   });
+  usePageTitle();
+
   const signIn = config.data?.signIn;
   const offersDevLogin = signInAsDev !== undefined && signIn?.devLogin === true;
 

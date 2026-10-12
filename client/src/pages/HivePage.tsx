@@ -18,6 +18,7 @@ import {
   Spinner,
 } from '@/components/ui.tsx';
 import { countryFlag, formatRank } from '@/lib/format.ts';
+import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 /** Who is in my hive, with adding and removing */
 const HivePage = () => {
@@ -26,6 +27,8 @@ const HivePage = () => {
   const add = useAddBee();
   const remove = useRemoveBee();
   const memberIds = new Set(hive.data?.items.map((item) => item.player.id));
+
+  usePageTitle('My hive');
 
   return (
     <div className="space-y-10">

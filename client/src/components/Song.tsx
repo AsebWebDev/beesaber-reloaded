@@ -12,7 +12,7 @@ const difficultyLook: Record<number, string> = {
 
 const DifficultyBadge = ({ difficulty }: { difficulty: number }) => (
   <span
-    className={`rounded border px-1.5 py-0.5 text-xs font-semibold whitespace-nowrap ${difficultyLook[difficulty] ?? 'border-slate-500 text-slate-300'}`}
+    className={`rounded border px-1.5 py-0.5 text-xs font-semibold whitespace-nowrap ${difficultyLook[difficulty] ?? 'border-slate-400 text-slate-300'}`}
   >
     {difficultyName(difficulty)}
   </span>

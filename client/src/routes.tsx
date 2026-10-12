@@ -4,6 +4,7 @@ import { useMe } from '@/api/queries.ts';
 import { useSignOut } from '@/auth/useSignOut.ts';
 import { Button, EmptyState, ErrorNote, Spinner } from '@/components/ui.tsx';
 import { AppLayout } from '@/layout/AppLayout.tsx';
+import { usePageTitle } from '@/lib/usePageTitle.ts';
 import { ComparisonPage } from '@/pages/ComparisonPage.tsx';
 import { DashboardPage } from '@/pages/DashboardPage.tsx';
 import { HivePage } from '@/pages/HivePage.tsx';
@@ -67,14 +68,18 @@ const Profile = () => {
   return player == null ? null : <ProfilePage player={player} />;
 };
 
-const NotFound = () => (
-  <EmptyState>
-    There is nothing at this address.{' '}
-    <Link to="/" className="text-neon-yellow-core underline">
-      Back to the dashboard
-    </Link>
-  </EmptyState>
-);
+const NotFound = () => {
+  usePageTitle('Page not found');
+
+  return (
+    <EmptyState>
+      There is nothing at this address.{' '}
+      <Link to="/" className="text-neon-yellow-core underline">
+        Back to the dashboard
+      </Link>
+    </EmptyState>
+  );
+};
 
 const routes: RouteObject[] = [
   {

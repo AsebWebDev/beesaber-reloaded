@@ -22,6 +22,7 @@ import {
 } from '@/lib/format.ts';
 import { lastPageOf, useLastKnown } from '@/lib/pagination.ts';
 import { useDebouncedValue } from '@/lib/useDebouncedValue.ts';
+import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 import type { Player, ScoreSort } from '@/api/queries.ts';
 
@@ -46,6 +47,8 @@ const ProfilePage = ({ player }: { player: Player }) => {
   const loading =
     !scores.isError && (scores.isPending || scores.isPlaceholderData);
   const items = scores.data?.items ?? [];
+
+  usePageTitle('My profile');
   const lastPage = lastPageOf(useLastKnown(scores.data?.total) ?? 0, PAGE_SIZE);
 
   // The list got shorter than the page we are on
@@ -118,7 +121,7 @@ const ProfilePage = ({ player }: { player: Player }) => {
               setPage(1);
             }}
             placeholder="Song or artist"
-            className="border-night-line bg-night focus:border-neon-blue mt-1 w-full rounded border px-3 py-2 text-slate-100 placeholder:text-slate-500"
+            className="border-night-control bg-night focus:border-neon-blue mt-1 w-full rounded border px-3 py-2 text-slate-100 placeholder:text-slate-400"
           />
         </div>
         <div role="group" aria-label="Sort by" className="flex gap-2">
@@ -134,7 +137,7 @@ const ProfilePage = ({ player }: { player: Player }) => {
               className={`cursor-pointer rounded-full border px-3 py-1 text-sm transition ${
                 sort === value
                   ? 'border-neon-blue bg-neon-blue text-white'
-                  : 'border-night-line text-slate-300 hover:border-slate-400'
+                  : 'border-night-control text-slate-300 hover:border-slate-300'
               }`}
             >
               {label}

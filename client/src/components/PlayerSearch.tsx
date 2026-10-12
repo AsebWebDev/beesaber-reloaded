@@ -44,7 +44,7 @@ const PlayerSearch = ({
         onChange={(event) => setText(event.target.value)}
         placeholder="Player name, at least 3 characters"
         autoComplete="off"
-        className="border-night-line bg-night focus:border-neon-blue w-full rounded border px-3 py-2 text-slate-100 placeholder:text-slate-500"
+        className="border-night-control bg-night focus:border-neon-blue w-full rounded border px-3 py-2 text-slate-100 placeholder:text-slate-400"
       />
 
       {search.isFetching && <Spinner label="Searching" />}

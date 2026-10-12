@@ -11,6 +11,7 @@ import {
   Spinner,
 } from '@/components/ui.tsx';
 import { formatDelta, formatScore, timeAgo } from '@/lib/format.ts';
+import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 import type { HiveMember, NewsItem } from '@/api/queries.ts';
 
@@ -26,7 +27,7 @@ const NewsCard = ({ item }: { item: NewsItem }) => (
         {item.player.name}
       </Link>
       beat your score
-      <span className="text-slate-500">{timeAgo(item.event.playedAt)}</span>
+      <span className="text-slate-400">{timeAgo(item.event.playedAt)}</span>
     </p>
     <Song leaderboard={item.leaderboard} />
     <p className="text-sm">
@@ -87,6 +88,8 @@ const RecordCard = ({ member }: { member: HiveMember }) => {
 const DashboardPage = () => {
   const news = useNews();
   const hive = useHive();
+
+  usePageTitle('Dashboard');
 
   return (
     <div className="space-y-10">

@@ -645,3 +645,72 @@ describe('lists that have nothing or fail', () => {
     ).toBeInTheDocument();
   });
 });
+
+describe('for people who do not use a mouse or a screen', () => {
+  it('names every page in the browser tab', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp();
+
+    await screen.findByRole('heading', { name: 'Head to head' });
+    expect(document.title).toBe('Dashboard · BeeSaber');
+
+    await user.click(screen.getByRole('link', { name: 'My hive' }));
+    await waitFor(() => expect(document.title).toBe('My hive · BeeSaber'));
+
+    await user.click(await screen.findByRole('link', { name: /buzz/ }));
+    await waitFor(() => expect(document.title).toBe('Me vs buzz · BeeSaber'));
+
+    await user.click(screen.getByRole('link', { name: 'My profile' }));
+    await waitFor(() => expect(document.title).toBe('My profile · BeeSaber'));
+  });
+
+  it('uses the plain name of the app before signing in', async () => {
+    document.title = 'left over from another page';
+    renderApp();
+
+    await screen.findByTestId('landing-page');
+
+    expect(document.title).toBe('BeeSaber');
+  });
+
+  it('moves the focus to the new page when a menu link is used', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp();
+
+    await screen.findByRole('heading', { name: 'Head to head' });
+    // Opening the app does not grab the focus
+    expect(screen.getByRole('main')).not.toHaveFocus();
+
+    await user.click(screen.getByRole('link', { name: 'My hive' }));
+
+    await waitFor(() => expect(screen.getByRole('main')).toHaveFocus());
+  });
+
+  it('leaves the focus on the filter when only the filter changes', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp(`/hive/${fakeApi.BEE.id}`);
+
+    await screen.findByText('Monster');
+
+    const filter = screen.getByRole('button', { name: 'Where I am behind' });
+
+    await user.click(filter);
+    await screen.findByText('Superstar');
+
+    expect(filter).toHaveFocus();
+  });
+
+  it('offers a way past the menu as the first stop of the Tab key', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp();
+
+    await screen.findByRole('heading', { name: 'Head to head' });
+    await user.tab();
+
+    const skip = screen.getByRole('link', { name: 'Skip to content' });
+
+    expect(skip).toHaveFocus();
+    expect(skip).toHaveAttribute('href', '#content');
+    expect(screen.getByRole('main')).toHaveAttribute('id', 'content');
+  });
+});

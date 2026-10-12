@@ -35,8 +35,10 @@ const NeonHeading = ({
 const buttonLook: Record<'danger' | 'ghost' | 'primary', string> = {
   primary:
     'border-neon-blue text-neon-blue-core hover:bg-neon-blue hover:halo-blue',
-  danger: 'border-neon-red text-neon-red-core hover:bg-neon-red hover:halo-red',
-  ghost: 'border-night-line text-slate-300 hover:border-slate-400',
+  // Dark text on the red: the light one is too close to it to read
+  danger:
+    'border-neon-red text-neon-red-core hover:bg-neon-red hover:text-night hover:halo-red',
+  ghost: 'border-night-control text-slate-300 hover:border-slate-300',
 };
 
 const Button = ({
@@ -96,7 +98,8 @@ const Spinner = ({ label = 'Loading' }: { label?: string }) => (
     role="status"
     className="flex items-center gap-3 py-6 text-sm text-slate-400"
   >
-    <span className="border-neon-yellow size-4 animate-spin rounded-full border-2 border-t-transparent" />
+    {/* Stands still for people who asked their system for less motion */}
+    <span className="border-neon-yellow size-4 rounded-full border-2 border-t-transparent motion-safe:animate-spin" />
     {label}…
   </div>
 );

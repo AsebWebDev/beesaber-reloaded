@@ -13,6 +13,7 @@ import {
 } from '@/components/ui.tsx';
 import { formatDelta, formatScore } from '@/lib/format.ts';
 import { lastPageOf, pageFrom, useLastKnown } from '@/lib/pagination.ts';
+import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 import type { ComparisonFilter } from '@/api/queries.ts';
 
@@ -42,6 +43,10 @@ const ComparisonPage = () => {
   const comparison = useComparison(playerId, { filter, page });
   const member = hive.data?.items.find((item) => item.player.id === playerId);
   const items = comparison.data?.items ?? [];
+
+  usePageTitle(
+    member === undefined ? 'Comparison' : `Me vs ${member.player.name}`
+  );
   const lastPage = lastPageOf(
     useLastKnown(comparison.data?.total) ?? 0,
     PAGE_SIZE
@@ -107,7 +112,7 @@ const ComparisonPage = () => {
             className={`cursor-pointer rounded-full border px-3 py-1 text-sm transition ${
               filter === value
                 ? 'border-neon-blue bg-neon-blue text-white'
-                : 'border-night-line text-slate-300 hover:border-slate-400'
+                : 'border-night-control text-slate-300 hover:border-slate-300'
             }`}
           >
             {label}
