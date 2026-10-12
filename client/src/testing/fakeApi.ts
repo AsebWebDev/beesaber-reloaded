@@ -2,7 +2,10 @@ import { delay, http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 import type {
+  AddedBee,
   ComparisonEntry,
+  ComparisonPage,
+  Config,
   FoundPlayer,
   HiveMember,
   Leaderboard,
@@ -10,13 +13,18 @@ import type {
   NewsItem,
   Player,
   ScoreEntry,
+  ScorePage,
+  SyncRequest,
+  SyncStatus,
 } from '@/api/queries.ts';
 
 /**
  * A stand-in for our API in the frontend tests. It keeps a little state
  * (who is signed in, who is in the hive) and answers the same paths with the
- * same shapes. The types come from the real server, so if an answer here
- * drifts from what the server sends, the type check complains.
+ * same shapes. Every answer of our own API is typed with the type of the
+ * real route, so if one here drifts from what the server sends, the type
+ * check complains. The answers under /api/auth are Better Auth's and are
+ * not checked that way.
  */
 
 const player = (id: string, name: string): Player => ({
@@ -103,6 +111,17 @@ const MY_SCORES: ScoreEntry[] = SHARED.map(({ leaderboard: board, mine }) => ({
 type Failing = 'comparison' | 'hive' | 'me' | 'news' | 'scores';
 
 type State = {
+  /**
+   * The local test account: there already, created on first sign-in, or
+   * refused by a server that has the test sign-in switched off
+   */
+  devAccount: 'exists' | 'missing' | 'refused';
+  /** More scores of mine than the two every test has, to fill pages */
+  extraScores: number;
+  /** How often the browser was sent off to Google */
+  googleSignIns: number;
+  /** Makes the server fail to start a sign-in with Google */
+  googleFails: boolean;
   /** Answers that fail, with the HTTP status they fail with */
   failures: Partial<Record<Failing, number>>;
   hive: string[];
@@ -122,6 +141,10 @@ type State = {
 };
 
 const initial = (): State => ({
+  devAccount: 'exists',
+  extraScores: 0,
+  googleFails: false,
+  googleSignIns: 0,
   failures: {},
   hive: [],
   listDelayMs: 0,
@@ -135,6 +158,15 @@ const initial = (): State => ({
 });
 
 let state = initial();
+
+/** My scores: the two shared maps, and as many more as the test asked for */
+const myScores = (): ScoreEntry[] => [
+  ...MY_SCORES,
+  ...Array.from({ length: state.extraScores }, (_, index) => ({
+    leaderboard: leaderboard(100 + index, `Extra song ${index + 1}`),
+    score: score(ME.id, 100 + index, 1000 - index),
+  })),
+];
 
 const error = (status: number, code: string, message: string) =>
   HttpResponse.json({ error: { code, message } }, { status });
@@ -199,13 +231,49 @@ const session = () => ({
 });
 
 const server = setupServer(
-  http.get('/api/config', () => HttpResponse.json({ signIn: state.signIn })),
+  http.get('/api/config', () =>
+    HttpResponse.json({ signIn: state.signIn } satisfies Config)
+  ),
 
   // What Better Auth's browser client calls
   http.post('/api/auth/sign-in/email', () => {
+    if (state.devAccount !== 'exists')
+      return HttpResponse.json(
+        { code: 'INVALID_EMAIL_OR_PASSWORD', message: 'Invalid email' },
+        { status: 401 }
+      );
+
     state.signedIn = true;
 
     return HttpResponse.json({ ...session(), redirect: false });
+  }),
+  http.post('/api/auth/sign-up/email', () => {
+    if (state.devAccount === 'refused')
+      return HttpResponse.json(
+        { message: 'Email and password sign up is not enabled' },
+        { status: 400 }
+      );
+
+    state.devAccount = 'exists';
+    state.signedIn = true;
+
+    return HttpResponse.json(session());
+  }),
+  http.post('/api/auth/sign-in/social', () => {
+    if (state.googleFails)
+      return HttpResponse.json(
+        { message: 'Google did not answer' },
+        { status: 500 }
+      );
+
+    state.googleSignIns += 1;
+
+    // The real server answers with Google's address and `redirect: true`,
+    // and the browser leaves the page. A test has nowhere to go.
+    return HttpResponse.json({
+      url: 'https://accounts.google.test/sign-in',
+      redirect: false,
+    });
   }),
   http.post('/api/auth/sign-out', () => {
     if (state.signOutFails)
@@ -251,12 +319,11 @@ const server = setupServer(
 
     const url = new URL(request.url);
     const search = url.searchParams.get('search')?.toLowerCase();
+    const all = myScores();
     const sorted =
       url.searchParams.get('sort') === 'top'
-        ? [...MY_SCORES].sort(
-            (a, b) => b.score.modifiedScore - a.score.modifiedScore
-          )
-        : MY_SCORES;
+        ? [...all].sort((a, b) => b.score.modifiedScore - a.score.modifiedScore)
+        : all;
 
     return HttpResponse.json(
       paginated(
@@ -266,7 +333,7 @@ const server = setupServer(
             entry.leaderboard.songName.toLowerCase().includes(search)
         ),
         url
-      )
+      ) satisfies ScorePage
     );
   }),
 
@@ -281,7 +348,9 @@ const server = setupServer(
 
     if (!state.hive.includes(body.playerId)) state.hive.push(body.playerId);
 
-    return HttpResponse.json({ player: BEE }, { status: 201 });
+    return HttpResponse.json({ player: BEE } satisfies AddedBee, {
+      status: 201,
+    });
   }),
   http.delete('/api/hive/:playerId', ({ params }) => {
     state.hive = state.hive.filter((id) => id !== params.playerId);
@@ -305,11 +374,14 @@ const server = setupServer(
 
     state.pollsUntilSynced = Math.max(0, state.pollsUntilSynced - 1);
 
-    return HttpResponse.json({ syncing });
+    return HttpResponse.json({ syncing } satisfies SyncStatus);
   }),
   http.post('/api/hive/sync', () =>
     HttpResponse.json(
-      { queued: state.queuedBySync, upToDate: 1 - state.queuedBySync },
+      {
+        queued: state.queuedBySync,
+        upToDate: 1 - state.queuedBySync,
+      } satisfies SyncRequest,
       { status: 202 }
     )
   ),
@@ -333,7 +405,7 @@ const server = setupServer(
               : true
         ),
         url
-      )
+      ) satisfies ComparisonPage
     );
   })
 );
@@ -343,6 +415,8 @@ const fakeApi = {
   reset: () => {
     state = initial();
   },
+  /** What the fake has seen and been told so far */
+  state: (): Readonly<State> => state,
   /** Puts the fake into a given situation before the app renders */
   set: (changes: Partial<State>) => {
     state = { ...state, ...changes };

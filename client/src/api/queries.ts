@@ -33,6 +33,16 @@ type ScoreEntry = InferResponseType<
   (typeof api.players)[':id']['scores']['$get']
 >['items'][number];
 type Leaderboard = ScoreEntry['leaderboard'];
+type ScorePage = InferResponseType<
+  (typeof api.players)[':id']['scores']['$get']
+>;
+type ComparisonPage = InferResponseType<
+  (typeof api.hive)[':playerId']['comparison']['$get']
+>;
+type Config = InferResponseType<typeof api.config.$get>;
+type AddedBee = InferResponseType<typeof api.hive.$post>;
+type SyncRequest = InferResponseType<typeof api.hive.sync.$post>;
+type SyncStatus = InferResponseType<typeof api.hive.sync.$get>;
 type ComparisonEntry = InferResponseType<
   (typeof api.hive)[':playerId']['comparison']['$get']
 >['items'][number];
@@ -278,8 +288,11 @@ export {
   useSyncing,
 };
 export type {
+  AddedBee,
   ComparisonEntry,
   ComparisonFilter,
+  ComparisonPage,
+  Config,
   FoundPlayer,
   HiveMember,
   Leaderboard,
@@ -287,5 +300,8 @@ export type {
   NewsItem,
   Player,
   ScoreEntry,
+  ScorePage,
   ScoreSort,
+  SyncRequest,
+  SyncStatus,
 };

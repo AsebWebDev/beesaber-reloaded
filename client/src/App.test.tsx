@@ -476,3 +476,172 @@ describe('changing who I am', () => {
     expect(await screen.findByTestId('landing-page')).toBeInTheDocument();
   });
 });
+
+describe('signing in', () => {
+  it('sends the browser off to Google', async () => {
+    fakeApi.set({ signIn: { devLogin: false, google: true } });
+    const { user } = renderApp();
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Sign in with Google' })
+    );
+
+    await waitFor(() => expect(fakeApi.state().googleSignIns).toBe(1));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('says so when the sign-in with Google cannot be started', async () => {
+    fakeApi.set({
+      googleFails: true,
+      signIn: { devLogin: false, google: true },
+    });
+    const { user } = renderApp();
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Sign in with Google' })
+    );
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Google did not answer'
+    );
+    expect(screen.getByTestId('landing-page')).toBeInTheDocument();
+  });
+
+  it('creates the local test account when it does not exist yet', async () => {
+    fakeApi.set({ devAccount: 'missing' });
+    const { user } = renderApp();
+
+    await user.click(await screen.findByRole('button', { name: 'Dev Login' }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Which player are you?' })
+    ).toBeInTheDocument();
+    expect(fakeApi.state().devAccount).toBe('exists');
+  });
+
+  it('says so when the server refuses the local test account', async () => {
+    fakeApi.set({ devAccount: 'refused' });
+    const { user } = renderApp();
+
+    await user.click(await screen.findByRole('button', { name: 'Dev Login' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Email and password sign up is not enabled'
+    );
+    expect(screen.getByTestId('landing-page')).toBeInTheDocument();
+  });
+
+  it('says so when the server offers no way to sign in', async () => {
+    fakeApi.set({ signIn: { devLogin: false, google: false } });
+    renderApp();
+
+    expect(
+      await screen.findByText('No way to sign in is configured on the server.')
+    ).toBeInTheDocument();
+  });
+});
+
+describe('a list longer than one page', () => {
+  it('moves between the pages of my scores', async () => {
+    // 2 + 18 scores, 15 to a page
+    fakeApi.signedInAs({ extraScores: 18 });
+    const { user } = renderApp('/profile');
+
+    expect(await screen.findByText('Page 1 of 2')).toBeInTheDocument();
+    expect(screen.getByText('Monster')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+
+    expect(await screen.findByText('Page 2 of 2')).toBeInTheDocument();
+    expect(await screen.findByText('Extra song 18')).toBeInTheDocument();
+    expect(screen.queryByText('Monster')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: 'Previous' }));
+
+    expect(await screen.findByText('Monster')).toBeInTheDocument();
+    expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
+  });
+
+  it('starts on the first page again when the list is filtered', async () => {
+    fakeApi.signedInAs({ extraScores: 18 });
+    const { user } = renderApp('/profile');
+
+    await screen.findByText('Page 1 of 2');
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+    await screen.findByText('Page 2 of 2');
+
+    await user.type(screen.getByLabelText('Filter songs'), 'super');
+
+    // One match once typing has paused, so there is nothing to page through
+    await waitFor(() =>
+      expect(screen.queryByText(/^Page /)).not.toBeInTheDocument()
+    );
+    expect(screen.getByText('Superstar')).toBeInTheDocument();
+    expect(screen.queryByText('Monster')).not.toBeInTheDocument();
+  });
+
+  it('has no page buttons when everything fits on one page', async () => {
+    fakeApi.signedInAs();
+    renderApp('/profile');
+
+    await screen.findByText('Monster');
+
+    expect(
+      screen.queryByRole('navigation', { name: 'Pages' })
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe('lists that have nothing or fail', () => {
+  it('says so when the news cannot be loaded, and loads them on request', async () => {
+    fakeApi.signedInAs({ failures: { news: 500 }, news: [fakeApi.news()] });
+    const { user } = renderApp();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The server is having trouble'
+    );
+
+    fakeApi.set({ failures: {} });
+    await user.click(screen.getByRole('button', { name: 'Try again' }));
+
+    expect(await screen.findByText('beat your score')).toBeInTheDocument();
+  });
+
+  it('says so when the hive cannot be loaded', async () => {
+    fakeApi.signedInAs({ failures: { hive: 500 } });
+    renderApp('/hive');
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The server is having trouble'
+    );
+    expect(screen.queryByText(/No bees yet/)).not.toBeInTheDocument();
+  });
+
+  it('says so when no player matches the search', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/hive');
+
+    await user.type(
+      await screen.findByLabelText('Find a player on ScoreSaber'),
+      'nobody'
+    );
+
+    expect(
+      await screen.findByText('No player called “nobody” found.')
+    ).toBeInTheDocument();
+  });
+
+  it('says so when no song matches the filter', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    await screen.findByText('Monster');
+    await user.type(screen.getByLabelText('Filter songs'), 'zzz');
+
+    expect(
+      await screen.findByText('No song matches “zzz”.')
+    ).toBeInTheDocument();
+  });
+});

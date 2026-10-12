@@ -81,19 +81,20 @@ profile, and add a friend on the "My hive" page.
 
 Run these from the repository root.
 
-| Command           | What it does                                                        |
-| ----------------- | ------------------------------------------------------------------- |
-| `pnpm client`     | Start the frontend                                                  |
-| `pnpm server`     | Start the API in watch mode                                         |
-| `pnpm db`         | Start the database and wait until it is ready                       |
-| `pnpm db:migrate` | Apply database migrations                                           |
-| `pnpm api:update` | Fetch ScoreSaber's current API description and regenerate the types |
-| `pnpm test`       | Run the tests once                                                  |
-| `pnpm lint`       | Check the code with ESLint                                          |
-| `pnpm lint:fix`   | Let ESLint fix what it can                                          |
-| `pnpm typecheck`  | Type-check all packages                                             |
-| `pnpm format`     | Format all files with Prettier                                      |
-| `pnpm build`      | Build the frontend for production                                   |
+| Command              | What it does                                                        |
+| -------------------- | ------------------------------------------------------------------- |
+| `pnpm client`        | Start the frontend                                                  |
+| `pnpm server`        | Start the API in watch mode                                         |
+| `pnpm db`            | Start the database and wait until it is ready                       |
+| `pnpm db:migrate`    | Apply database migrations                                           |
+| `pnpm api:update`    | Fetch ScoreSaber's current API description and regenerate the types |
+| `pnpm test`          | Run the tests once                                                  |
+| `pnpm test:coverage` | Run the tests and report which code they do not reach               |
+| `pnpm lint`          | Check the code with ESLint                                          |
+| `pnpm lint:fix`      | Let ESLint fix what it can                                          |
+| `pnpm typecheck`     | Type-check all packages                                             |
+| `pnpm format`        | Format all files with Prettier                                      |
+| `pnpm build`         | Build the frontend for production                                   |
 
 To run a script of a single package, use a filter. This one keeps the tests
 running and repeats them on every change:
