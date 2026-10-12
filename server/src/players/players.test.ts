@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { scoreEvents } from '../db/schema.ts';
 import { api, app, database, scoreSaber } from '../testing/harness.ts';
@@ -127,6 +127,10 @@ describe('POST /api/players/:id/sync', () => {
   });
 
   it('answers 502 when ScoreSaber sends something unexpected', async () => {
+    // The server logs what was wrong with the answer. Catch the log, so it
+    // can be checked here instead of cluttering the test output.
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+
     scoreSaber.breakProfile(ALICE, { id: ALICE, renamedField: 'alice' });
 
     const response = await sync(ALICE);
@@ -135,6 +139,14 @@ describe('POST /api/players/:id/sync', () => {
     expect(await json(response)).toMatchObject({
       error: { code: 'scoresaber_unavailable' },
     });
+    // The details go to the log, not to the caller
+    expect(log).toHaveBeenCalledOnce();
+    expect(String(log.mock.calls[0]?.[0])).toContain(
+      'does not look as expected'
+    );
+    expect(JSON.stringify(await json(await sync(ALICE)))).not.toContain(
+      'renamedField'
+    );
   });
 });
 
