@@ -226,11 +226,11 @@ describe('my profile', () => {
 
     await user.type(screen.getByLabelText('Filter songs'), 'super');
 
-    // The list follows once typing has paused
-    await waitFor(() =>
-      expect(screen.queryByText('Monster')).not.toBeInTheDocument()
-    );
-    expect(screen.getByText('Superstar')).toBeInTheDocument();
+    // The list follows once typing has paused and the answer is in
+    await waitFor(() => {
+      expect(screen.getByText('Superstar')).toBeInTheDocument();
+      expect(screen.queryByText('Monster')).not.toBeInTheDocument();
+    });
   });
 
   it('sorts by the highest score on request', async () => {
@@ -240,7 +240,10 @@ describe('my profile', () => {
     await screen.findByText('Monster');
     await user.click(screen.getByRole('button', { name: 'Highest score' }));
 
-    const rows = await screen.findAllByRole('row');
+    // The header and the two scores, once the placeholders are gone
+    await waitFor(() => expect(screen.getAllByRole('row')).toHaveLength(3));
+
+    const rows = screen.getAllByRole('row');
 
     // Row 0 is the header. Monster has the higher score.
     expect(within(rows[1]!).getByText('Monster')).toBeInTheDocument();
@@ -267,5 +270,50 @@ describe('an unknown address', () => {
     expect(
       await screen.findByText(/There is nothing at this address/)
     ).toBeInTheDocument();
+  });
+});
+
+describe('while a list is loading', () => {
+  it('shows placeholder rows when the sort order of my scores changes', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    await screen.findByText('Monster');
+    // From now on, the list takes a moment to arrive
+    fakeApi.set({ listDelayMs: 300 });
+    await user.click(screen.getByRole('button', { name: 'Highest score' }));
+
+    // The old rows give way to as many placeholders, and it is announced
+    expect(await screen.findAllByTestId('skeleton-row')).toHaveLength(2);
+    expect(screen.queryByText('Monster')).not.toBeInTheDocument();
+    expect(screen.getByText('Loading scores')).toHaveRole('status');
+    expect(screen.getByRole('table')).toHaveAttribute('aria-busy', 'true');
+
+    // Then the new list replaces them
+    expect(await screen.findByText('Monster')).toBeInTheDocument();
+    expect(screen.queryByTestId('skeleton-row')).not.toBeInTheDocument();
+    expect(screen.getByRole('table')).toHaveAttribute('aria-busy', 'false');
+  });
+
+  it('shows placeholder rows when the comparison filter changes', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp(`/hive/${fakeApi.BEE.id}`);
+
+    await screen.findByText('Monster');
+    fakeApi.set({ listDelayMs: 300 });
+    await user.click(screen.getByRole('button', { name: 'Where I am behind' }));
+
+    expect(await screen.findAllByTestId('skeleton-row')).toHaveLength(2);
+    expect(await screen.findByText('Superstar')).toBeInTheDocument();
+    expect(screen.queryByTestId('skeleton-row')).not.toBeInTheDocument();
+  });
+
+  it('shows placeholder rows instead of an empty page on the first load', async () => {
+    fakeApi.signedInAs({ listDelayMs: 300 });
+    renderApp('/profile');
+
+    expect(await screen.findAllByTestId('skeleton-row')).toHaveLength(8);
+    expect(screen.queryByText('No scores yet.')).not.toBeInTheDocument();
+    expect(await screen.findByText('Monster')).toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw';
+import { delay, http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 import type {
@@ -102,6 +102,8 @@ type State = {
   news: NewsItem[];
   /** The ScoreSaber profile the account compares as */
   playerId: string | null;
+  /** How long lists of scores take to answer, in milliseconds */
+  listDelayMs: number;
   /** How many more times the hive reports its bee as being fetched */
   pollsUntilSynced: number;
   /** What a click on "Sync scores" queues */
@@ -112,6 +114,7 @@ type State = {
 
 const initial = (): State => ({
   hive: [],
+  listDelayMs: 0,
   news: [],
   playerId: null,
   pollsUntilSynced: 0,
@@ -210,7 +213,9 @@ const server = setupServer(
 
     return HttpResponse.json({ items });
   }),
-  http.get('/api/players/:id/scores', ({ request }) => {
+  http.get('/api/players/:id/scores', async ({ request }) => {
+    await delay(state.listDelayMs);
+
     const url = new URL(request.url);
     const search = url.searchParams.get('search')?.toLowerCase();
     const sorted =
@@ -254,7 +259,9 @@ const server = setupServer(
       { status: 202 }
     )
   ),
-  http.get('/api/hive/:playerId/comparison', ({ request }) => {
+  http.get('/api/hive/:playerId/comparison', async ({ request }) => {
+    await delay(state.listDelayMs);
+
     const url = new URL(request.url);
     const filter = url.searchParams.get('filter');
 
