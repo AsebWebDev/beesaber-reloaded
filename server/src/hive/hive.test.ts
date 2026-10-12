@@ -42,11 +42,16 @@ beforeEach(async () => {
 });
 
 describe('POST /api/hive', () => {
-  it('adds a player and fetches their scores right away', async () => {
+  it('adds a player and has their scores fetched', async () => {
     const response = await addToHive(BEE);
 
     expect(response.status).toBe(201);
-    expect(await response.json()).toMatchObject({ playerId: BEE, added: 3 });
+    expect(await response.json()).toMatchObject({
+      player: { id: BEE, name: 'bee' },
+    });
+    expect(await json(await api(`/api/players/${BEE}/scores`))).toMatchObject({
+      total: 3,
+    });
   });
 
   it('accepts the same player twice without doubling them', async () => {
@@ -293,13 +298,16 @@ describe('DELETE /api/hive/:playerId', () => {
 });
 
 describe('POST /api/hive/sync', () => {
-  it('brings me and every bee up to date', async () => {
+  it('asks for new scores of me and every bee', async () => {
     await addToHive(BEE);
+    scoreSaber.requests.length = 0;
 
     const response = await api('/api/hive/sync', { method: 'POST' });
-    const body: { items: { playerId: string }[] } = await json(response);
 
-    expect(body.items.map((item) => item.playerId)).toEqual([ME, BEE]);
+    expect(response.status).toBe(202);
+    expect(await response.json()).toEqual({ queued: 2, upToDate: 0 });
+    // One request for scores per player
+    expect(scoreSaber.requests).toHaveLength(2);
   });
 });
 

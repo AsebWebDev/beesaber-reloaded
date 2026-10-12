@@ -15,6 +15,8 @@ describe('loadConfig', () => {
       PORT: 5001,
       SCORESABER_URL: 'https://scoresaber.com',
       APP_URL: 'http://localhost:3000',
+      LIVE_FEED: true,
+      LIVE_FEED_URL: 'wss://scoresaber.com/ws',
       DEV_LOGIN: false,
     });
   });

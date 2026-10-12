@@ -1,6 +1,12 @@
 import { Link } from 'react-router';
 
-import { useAddBee, useHive, useMe, useRemoveBee } from '@/api/queries.ts';
+import {
+  isSyncing,
+  useAddBee,
+  useHive,
+  useMe,
+  useRemoveBee,
+} from '@/api/queries.ts';
 import { PlayerSearch } from '@/components/PlayerSearch.tsx';
 import {
   Avatar,
@@ -46,10 +52,22 @@ const HivePage = () => {
                   >
                     {countryFlag(player.country)} {player.name}
                   </Link>
-                  <p className="text-xs text-slate-400">
-                    {formatRank(player.rank)} · {player.totalPlayed} maps played
-                    · {shared} shared with you
-                  </p>
+                  {isSyncing(player) ? (
+                    <p role="status" className="text-neon-yellow-core text-xs">
+                      Fetching scores from ScoreSaber…
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-400">
+                      {formatRank(player.rank)} · {player.totalPlayed} maps
+                      played · {shared} shared with you
+                    </p>
+                  )}
+                  {player.syncError !== null && !isSyncing(player) && (
+                    <p className="text-neon-red-core text-xs">
+                      The last attempt to fetch their scores failed. It will be
+                      tried again.
+                    </p>
+                  )}
                 </div>
                 <Button
                   look="danger"
@@ -83,12 +101,6 @@ const HivePage = () => {
             }}
           />
         </Card>
-        {add.isPending && (
-          <p role="status" className="text-sm text-slate-400">
-            Fetching their scores from ScoreSaber. With many scores this takes a
-            moment.
-          </p>
-        )}
         {add.isError && <ErrorNote error={add.error} />}
       </section>
     </div>

@@ -35,7 +35,7 @@ const createPlayersRoutes = (service: PlayersService) =>
     .get('/:id', validate('param', z.object({ id: playerId })), async (c) => {
       const { id } = c.req.valid('param');
 
-      return c.json(await service.getOrSyncPlayer(id));
+      return c.json(await service.ensureProfile(id));
     })
 
     // GET /api/players/:id/scores?sort=recent&page=1&limit=20&search=text
@@ -60,13 +60,15 @@ const createPlayersRoutes = (service: PlayersService) =>
     )
 
     // POST /api/players/:id/sync
+    // Asks for new scores in the background. The answer says whether a sync
+    // was queued; its progress shows in `syncStartedAt` of the player.
     .post(
       '/:id/sync',
       validate('param', z.object({ id: playerId })),
       async (c) => {
         const { id } = c.req.valid('param');
 
-        return c.json(await service.syncPlayer(id));
+        return c.json(await service.requestSync(id), 202);
       }
     );
 

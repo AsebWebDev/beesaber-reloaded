@@ -15,6 +15,12 @@ const schema = z
     PORT: z.coerce.number().int().min(1).max(65535).default(5001),
     DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
     SCORESABER_URL: z.url().default('https://scoresaber.com'),
+    // The WebSocket on which ScoreSaber announces every new score. With
+    // LIVE_FEED=false, scores arrive with the periodic sync only.
+    LIVE_FEED: z.stringbool().default(true),
+    LIVE_FEED_URL: z
+      .url({ protocol: /^wss?$/ })
+      .default('wss://scoresaber.com/ws'),
 
     // The address people open in their browser. Sign-in redirects go here.
     APP_URL: z.url().default('http://localhost:3000'),

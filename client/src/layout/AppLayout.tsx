@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, NavLink, Outlet } from 'react-router';
 
-import { useSyncHive } from '@/api/queries.ts';
+import { useSyncHive, useSyncing } from '@/api/queries.ts';
 import { signOut } from '@/auth/authClient.ts';
 import { HexLogo } from '@/components/HexLogo.tsx';
 import { Avatar, Button, ErrorNote } from '@/components/ui.tsx';
@@ -30,12 +30,7 @@ const AppLayout = ({ player }: { player: Player }) => {
       });
     },
   });
-  const skipped = sync.data?.items.every((item) => item.skipped) ?? false;
-  const found =
-    sync.data?.items.reduce(
-      (sum, item) => sum + item.added + item.improved,
-      0
-    ) ?? 0;
+  const syncing = useSyncing();
 
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-6 lg:flex-row lg:gap-10">
@@ -83,15 +78,15 @@ const AppLayout = ({ player }: { player: Player }) => {
       <main className="min-w-0 flex-1 space-y-6">
         <div className="flex flex-wrap items-center justify-end gap-3">
           <p role="status" className="text-sm text-slate-400">
-            {sync.isPending && 'Asking ScoreSaber for new scores…'}
-            {sync.isSuccess &&
-              (skipped
-                ? 'Already up to date, checked less than a minute ago.'
-                : found === 0
-                  ? 'No new scores.'
-                  : `${found} new ${found === 1 ? 'score' : 'scores'}.`)}
+            {syncing
+              ? 'Fetching scores from ScoreSaber…'
+              : sync.data?.queued === 0 &&
+                'Already up to date, checked less than a minute ago.'}
           </p>
-          <Button disabled={sync.isPending} onClick={() => sync.mutate()}>
+          <Button
+            disabled={sync.isPending || syncing}
+            onClick={() => sync.mutate()}
+          >
             Sync scores
           </Button>
         </div>

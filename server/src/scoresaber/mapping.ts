@@ -7,7 +7,11 @@ import type { ScoreSaberPlayer, ScoreSaberPlayerScore } from './client.ts';
  * change in this file and nowhere else.
  */
 
-type PlayerRow = Omit<typeof players.$inferInsert, 'scoresSyncedAt'>;
+// Only the profile. The sync columns are written by the sync itself.
+type PlayerRow = Omit<
+  typeof players.$inferInsert,
+  'scoresSyncedAt' | 'syncError' | 'syncStartedAt'
+>;
 type LeaderboardRow = typeof leaderboards.$inferInsert;
 type ScoreRow = typeof scores.$inferInsert;
 

@@ -38,6 +38,11 @@ const players = pgTable('players', {
   profileSyncedAt: timestamptz().notNull(),
   // Null until the scores have been fetched completely once
   scoresSyncedAt: timestamptz(),
+  // Set while a background job is fetching this player's scores, or is
+  // queued to. The frontend shows "fetching" as long as it is set.
+  syncStartedAt: timestamptz(),
+  // Why the last attempt failed, cleared by the next success
+  syncError: text(),
 });
 
 /** One difficulty of one map. Scores are set on a leaderboard. */

@@ -31,6 +31,8 @@ const player = (id: string, name: string): Player => ({
   inactive: false,
   profileSyncedAt: '2024-03-01T10:00:00.000Z',
   scoresSyncedAt: '2024-03-01T10:00:00.000Z',
+  syncStartedAt: null,
+  syncError: null,
 });
 
 const leaderboard = (id: number, songName: string): Leaderboard => ({
@@ -100,6 +102,10 @@ type State = {
   news: NewsItem[];
   /** The ScoreSaber profile the account compares as */
   playerId: string | null;
+  /** How many more times the hive reports its bee as being fetched */
+  pollsUntilSynced: number;
+  /** What a click on "Sync scores" queues */
+  queuedBySync: number;
   signedIn: boolean;
   signIn: { devLogin: boolean; google: boolean };
 };
@@ -108,6 +114,8 @@ const initial = (): State => ({
   hive: [],
   news: [],
   playerId: null,
+  pollsUntilSynced: 0,
+  queuedBySync: 0,
   signedIn: false,
   signIn: { devLogin: true, google: false },
 });
@@ -131,7 +139,10 @@ const me = (): Me => ({
 });
 
 const member = (): HiveMember => ({
-  player: BEE,
+  player:
+    state.pollsUntilSynced-- > 0
+      ? { ...BEE, syncStartedAt: '2024-03-01T10:00:00.000Z' }
+      : BEE,
   addedAt: '2024-03-01T10:00:00.000Z',
   shared: 2,
   winning: 1,
@@ -229,16 +240,7 @@ const server = setupServer(
 
     if (!state.hive.includes(body.playerId)) state.hive.push(body.playerId);
 
-    return HttpResponse.json(
-      {
-        playerId: body.playerId,
-        firstSync: true,
-        added: 2,
-        improved: 0,
-        skipped: false,
-      },
-      { status: 201 }
-    );
+    return HttpResponse.json({ player: BEE }, { status: 201 });
   }),
   http.delete('/api/hive/:playerId', ({ params }) => {
     state.hive = state.hive.filter((id) => id !== params.playerId);
@@ -247,17 +249,10 @@ const server = setupServer(
   }),
   http.get('/api/hive/news', () => HttpResponse.json({ items: state.news })),
   http.post('/api/hive/sync', () =>
-    HttpResponse.json({
-      items: [
-        {
-          playerId: ME.id,
-          firstSync: false,
-          added: 1,
-          improved: 0,
-          skipped: false,
-        },
-      ],
-    })
+    HttpResponse.json(
+      { queued: state.queuedBySync, upToDate: 1 - state.queuedBySync },
+      { status: 202 }
+    )
   ),
   http.get('/api/hive/:playerId/comparison', ({ request }) => {
     const url = new URL(request.url);

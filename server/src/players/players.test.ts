@@ -29,14 +29,9 @@ describe('POST /api/players/:id/sync', () => {
 
     const response = await sync(ALICE);
 
-    expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({
-      playerId: ALICE,
-      firstSync: true,
-      added: 2,
-      improved: 0,
-      skipped: false,
-    });
+    // 202 Accepted: the request was taken, the work happens in a job
+    expect(response.status).toBe(202);
+    expect(await response.json()).toEqual({ queued: true });
 
     const scores = await api(`/api/players/${ALICE}/scores`);
 
@@ -77,15 +72,7 @@ describe('POST /api/players/:id/sync', () => {
       { leaderboardId: 2, score: 300, playedAt: '2024-02-02T10:00:00.000Z' },
     ]);
 
-    const response = await sync(ALICE);
-
-    expect(await response.json()).toEqual({
-      playerId: ALICE,
-      firstSync: false,
-      added: 1,
-      improved: 1,
-      skipped: false,
-    });
+    await sync(ALICE);
 
     const events = await database.db
       .select()
@@ -105,9 +92,8 @@ describe('POST /api/players/:id/sync', () => {
     ]);
     await sync(ALICE);
 
-    const response = await sync(ALICE);
+    await sync(ALICE);
 
-    expect(await response.json()).toMatchObject({ added: 0, improved: 0 });
     expect(await database.db.select().from(scoreEvents)).toHaveLength(1);
   });
 
@@ -120,10 +106,12 @@ describe('POST /api/players/:id/sync', () => {
 
     scoreSaber.setPlayer(ALICE, 'alice', manyScores);
 
-    const response = await sync(ALICE);
+    await sync(ALICE);
 
-    expect(await response.json()).toMatchObject({ added: 230 });
     expect(scoreSaber.requests).toHaveLength(3);
+    expect(
+      await json(await api(`/api/players/${ALICE}/scores?limit=1`))
+    ).toMatchObject({ total: 230 });
   });
 
   it('answers 404 for a player ScoreSaber does not know', async () => {

@@ -25,12 +25,6 @@ const OnboardingPage = () => {
         />
       </Card>
 
-      {link.isPending && (
-        <p role="status" className="text-sm text-slate-400">
-          Fetching your scores from ScoreSaber. With many scores this takes a
-          moment.
-        </p>
-      )}
       {link.isError && <ErrorNote error={link.error} />}
     </main>
   );

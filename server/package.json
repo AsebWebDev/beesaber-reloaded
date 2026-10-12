@@ -21,6 +21,7 @@
     "drizzle-orm": "^0.45.4",
     "hono": "^4.13.13",
     "openapi-fetch": "^0.17.0",
+    "pg-boss": "^12.37.1",
     "postgres": "^3.4.9",
     "zod": "^4.6.5"
   },

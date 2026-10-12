@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { createApp } from '../app.ts';
-import { createScoreSaberClient } from '../scoresaber/client.ts';
-import { FAKE_SCORESABER_URL } from '../testing/fakeScoreSaber.ts';
-import { database, scoreSaber } from '../testing/harness.ts';
+import { createTestApp, database } from '../testing/harness.ts';
 import { createAuth } from './auth.ts';
 
 /**
@@ -16,8 +13,7 @@ import { createAuth } from './auth.ts';
 const APP_URL = 'http://localhost:3000';
 
 const createRealApp = (devLogin: boolean) =>
-  createApp({
-    appUrl: APP_URL,
+  createTestApp({
     auth: createAuth(database.db, {
       APP_URL,
       AUTH_SECRET: 'a-secret-only-used-by-the-automated-tests',
@@ -25,12 +21,7 @@ const createRealApp = (devLogin: boolean) =>
       GOOGLE_CLIENT_ID: undefined,
       GOOGLE_CLIENT_SECRET: undefined,
     }),
-    db: database.db,
-    scoreSaber: createScoreSaberClient({
-      baseUrl: FAKE_SCORESABER_URL,
-      fetch: scoreSaber.fetch,
-    }),
-  });
+  }).app;
 
 const signUp = (app: ReturnType<typeof createRealApp>) =>
   app.request('/api/auth/sign-up/email', {

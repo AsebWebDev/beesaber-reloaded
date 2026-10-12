@@ -4,6 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
 
 import { api, ApiError, unwrap } from './client.ts';
 
@@ -38,6 +39,15 @@ type ComparisonEntry = InferResponseType<
 
 const PAGE_SIZE = 15;
 
+/** How often to ask again while the server is fetching someone's scores */
+const POLL_WHILE_SYNCING_MS = 1500;
+/** How often to look for news that arrived on their own */
+const NEWS_INTERVAL_MS = 60_000;
+
+/** True while a background job is fetching this player's scores */
+const isSyncing = (player: { syncStartedAt: string | null }): boolean =>
+  player.syncStartedAt !== null;
+
 /** Which ways to sign in the server offers */
 const useConfig = () =>
   useQuery({
@@ -63,6 +73,11 @@ const useMe = () =>
       }
     },
     staleTime: 60_000,
+    // While my scores are being fetched, keep asking until they are done
+    refetchInterval: ({ state }) =>
+      state.data?.player != null && isSyncing(state.data.player)
+        ? POLL_WHILE_SYNCING_MS
+        : false,
   });
 
 /** Picks the ScoreSaber profile to compare as. Fetches all its scores. */
@@ -113,13 +128,42 @@ const useHive = () =>
   useQuery({
     queryKey: ['hive', 'members'],
     queryFn: () => unwrap(api.hive.$get()),
+    refetchInterval: ({ state }) =>
+      state.data?.items.some(({ player }) => isSyncing(player)) === true
+        ? POLL_WHILE_SYNCING_MS
+        : false,
   });
 
 const useNews = () =>
   useQuery({
     queryKey: ['hive', 'news'],
     queryFn: () => unwrap(api.hive.news.$get({ query: {} })),
+    // The server learns about new scores on its own. Look in now and then.
+    refetchInterval: NEWS_INTERVAL_MS,
   });
+
+/**
+ * Whether scores of me or of a bee are being fetched right now. When that
+ * ends, everything on screen is fetched again, because the new scores change
+ * records, comparisons and news.
+ */
+const useSyncing = (): boolean => {
+  const queryClient = useQueryClient();
+  const me = useMe();
+  const hive = useHive();
+  const syncing =
+    (me.data?.player != null && isSyncing(me.data.player)) ||
+    hive.data?.items.some(({ player }) => isSyncing(player)) === true;
+  const wasSyncing = useRef(false);
+
+  useEffect(() => {
+    if (wasSyncing.current && !syncing) void queryClient.invalidateQueries();
+
+    wasSyncing.current = syncing;
+  }, [syncing, queryClient]);
+
+  return syncing;
+};
 
 const useComparison = (
   playerId: string,
@@ -153,7 +197,7 @@ const useHiveMutation = <Input>(
   });
 };
 
-/** Adds a player to my hive. Fetches all their scores, which can take a while. */
+/** Adds a player to my hive. Their scores are fetched in the background. */
 const useAddBee = () =>
   useHiveMutation((playerId: string) =>
     unwrap(api.hive.$post({ json: { playerId } }))
@@ -173,18 +217,23 @@ const useRemoveBee = () =>
       );
   });
 
-/** Fetches new scores for me and all my bees from ScoreSaber */
+/** Asks the server to look for new scores of me and all my bees */
 const useSyncHive = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => unwrap(api.hive.sync.$post()),
-    // New scores change the hive, my own scores and my profile
-    onSuccess: () => queryClient.invalidateQueries(),
+    // Pick up who is being fetched now. useSyncing takes it from there.
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['me'] }),
+        queryClient.invalidateQueries({ queryKey: ['hive', 'members'] }),
+      ]),
   });
 };
 
 export {
+  isSyncing,
   PAGE_SIZE,
   useAddBee,
   useComparison,
@@ -197,6 +246,7 @@ export {
   useRemoveBee,
   useScores,
   useSyncHive,
+  useSyncing,
 };
 export type {
   ComparisonEntry,

@@ -103,7 +103,7 @@ describe('the dashboard', () => {
     expect(screen.getByText('2 shared maps')).toBeInTheDocument();
   });
 
-  it('says how many new scores a sync found', async () => {
+  it('says so when a sync finds everything up to date', async () => {
     fakeApi.signedInAs();
     const { user } = renderApp();
 
@@ -111,8 +111,29 @@ describe('the dashboard', () => {
       await screen.findByRole('button', { name: 'Sync scores' })
     );
 
-    expect(await screen.findByText('1 new score.')).toBeInTheDocument();
+    expect(await screen.findByText(/Already up to date/)).toBeInTheDocument();
   });
+
+  it('shows that scores are being fetched and updates itself when they are in', async () => {
+    // The hive reports its bee as being fetched for the first two requests
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id], pollsUntilSynced: 2 });
+    renderApp();
+
+    expect(
+      await screen.findByText('Fetching scores from ScoreSaber…')
+    ).toBeInTheDocument();
+    expect(screen.getByText('Fetching scores…')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sync scores' })).toBeDisabled();
+
+    // Without anyone clicking, the page asks again until the scores are in
+    expect(
+      await screen.findByText('2 shared maps', {}, { timeout: 6000 })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('Fetching scores from ScoreSaber…')
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sync scores' })).toBeEnabled();
+  }, 10_000);
 });
 
 describe('the hive page', () => {

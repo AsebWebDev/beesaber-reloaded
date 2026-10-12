@@ -5,21 +5,17 @@ import { csrf } from 'hono/csrf';
 import { logger } from 'hono/logger';
 import { secureHeaders } from 'hono/secure-headers';
 
-import { createHiveRepository } from './hive/hive.repository.ts';
 import { createHiveRoutes } from './hive/hive.routes.ts';
-import { createHiveService } from './hive/hive.service.ts';
 import { AppError, handleError, handleNotFound } from './http/errors.ts';
 import { rateLimit } from './http/rateLimit.ts';
 import { requireUser } from './http/session.ts';
 import { createMeRoutes } from './me/me.routes.ts';
-import { createPlayersRepository } from './players/players.repository.ts';
 import { createPlayersRoutes } from './players/players.routes.ts';
-import { createPlayersService } from './players/players.service.ts';
 
 import type { Auth } from './auth/auth.ts';
 import type { Database } from './db/client.ts';
 import type { UserEnv } from './http/session.ts';
-import type { ScoreSaberClient } from './scoresaber/client.ts';
+import type { Services } from './services.ts';
 
 type Dependencies = {
   /** The address of the frontend, the only site allowed to send forms */
@@ -27,16 +23,14 @@ type Dependencies = {
   auth: Auth;
   db: Database;
   logRequests?: boolean;
-  /** See players.service.ts */
-  minSyncIntervalMs?: number;
   /** Requests per minute a single account may make */
   requestsPerMinute?: number;
-  scoreSaber: ScoreSaberClient;
+  services: Services;
 };
 
 /**
- * Wires the app together: repositories get the database, services get the
- * repositories, routes get the services.
+ * The HTTP side of the server: middleware and routes on top of the services
+ * (see services.ts).
  *
  * Everything the app needs from outside comes in as an argument. That is why
  * a test can build the same app with a test database, a fake ScoreSaber and
@@ -47,20 +41,9 @@ const createApp = ({
   auth,
   db,
   logRequests = false,
-  minSyncIntervalMs,
   requestsPerMinute = 120,
-  scoreSaber,
+  services: { hiveService, playersService },
 }: Dependencies) => {
-  const playersService = createPlayersService({
-    minSyncIntervalMs,
-    repository: createPlayersRepository(db),
-    scoreSaber,
-  });
-  const hiveService = createHiveService({
-    repository: createHiveRepository(db),
-    playersService,
-  });
-
   const app = new Hono<UserEnv>().basePath('/api');
 
   if (logRequests) app.use(logger());

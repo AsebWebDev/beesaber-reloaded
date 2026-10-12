@@ -22,17 +22,17 @@ const createHiveRoutes = (service: HiveService) =>
     // POST /api/hive  { "playerId": "7656..." }
     .post('/', validate('json', z.object({ playerId })), async (c) => {
       const { playerId: memberId } = c.req.valid('json');
-      const result = await service.addMember(
+      const player = await service.addMember(
         requireMe(c.get('user')),
         memberId
       );
 
-      return c.json(result, 201);
+      return c.json({ player }, 201);
     })
 
     // POST /api/hive/sync
     .post('/sync', async (c) =>
-      c.json({ items: await service.syncAll(requireMe(c.get('user'))) })
+      c.json(await service.syncAll(requireMe(c.get('user'))), 202)
     )
 
     // GET /api/hive/news?limit=20

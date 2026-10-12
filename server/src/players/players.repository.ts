@@ -1,6 +1,25 @@
-import { and, asc, desc, eq, ilike, inArray, max, or, sql } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  isNull,
+  lt,
+  max,
+  or,
+  sql,
+} from 'drizzle-orm';
 
-import { leaderboards, players, scoreEvents, scores } from '../db/schema.ts';
+import { user as users } from '../db/authSchema.ts';
+import {
+  hiveMembers,
+  leaderboards,
+  players,
+  scoreEvents,
+  scores,
+} from '../db/schema.ts';
 
 import type { Database } from '../db/client.ts';
 import type {
@@ -33,12 +52,12 @@ const createPlayersRepository = (db: Database) => {
     return player;
   };
 
-  /** Inserts the player or refreshes the profile. Keeps `scoresSyncedAt`. */
+  /** Inserts the player or refreshes the profile. Keeps the sync columns. */
   const savePlayer = async (row: PlayerRow) => {
     const [player] = await db
       .insert(players)
       .values(row)
-      // `row` has no scoresSyncedAt, so that column keeps its value
+      // `row` has no sync columns, so those keep their values
       .onConflictDoUpdate({ target: players.id, set: row })
       .returning();
 
@@ -46,11 +65,76 @@ const createPlayersRepository = (db: Database) => {
     return player!;
   };
 
-  const markScoresSynced = (playerId: string, at: Date) =>
+  /** A sync of the player is queued or running since `at` */
+  const markSyncStarted = (playerId: string, at: Date) =>
     db
       .update(players)
-      .set({ scoresSyncedAt: at })
+      .set({ syncStartedAt: at })
       .where(eq(players.id, playerId));
+
+  /** The sync is over. Without an error, the scores are up to date as of `at`. */
+  const markSyncFinished = (playerId: string, at: Date, error?: string) =>
+    db
+      .update(players)
+      .set(
+        error === undefined
+          ? { syncStartedAt: null, syncError: null, scoresSyncedAt: at }
+          : { syncStartedAt: null, syncError: error }
+      )
+      .where(eq(players.id, playerId));
+
+  // A player is "tracked" when somebody cares about their scores: they are
+  // in a hive, or an account compares as them.
+  const tracked = or(
+    inArray(
+      players.id,
+      db.select({ id: hiveMembers.memberId }).from(hiveMembers)
+    ),
+    inArray(
+      players.id,
+      db
+        .select({ id: sql<string>`${users.playerId}` })
+        .from(users)
+        .where(sql`${users.playerId} is not null`)
+    )
+  );
+
+  const isTracked = async (playerId: string) => {
+    const [row] = await db
+      .select({ id: players.id })
+      .from(players)
+      .where(and(eq(players.id, playerId), tracked));
+
+    return row !== undefined;
+  };
+
+  /**
+   * Tracked players whose scores were last fetched before `syncedBefore`, or
+   * never. A sync that claims to be running since before `stuckBefore` is
+   * taken for dead and counts as well.
+   */
+  const listStalePlayerIds = async (syncedBefore: Date, stuckBefore: Date) => {
+    const rows = await db
+      .select({ id: players.id })
+      .from(players)
+      .where(
+        and(
+          tracked,
+          or(
+            and(
+              isNull(players.syncStartedAt),
+              or(
+                isNull(players.scoresSyncedAt),
+                lt(players.scoresSyncedAt, syncedBefore)
+              )
+            ),
+            lt(players.syncStartedAt, stuckBefore)
+          )
+        )
+      );
+
+    return rows.map((row) => row.id);
+  };
 
   /** When the newest stored score of the player was set */
   const findNewestScoreDate = async (playerId: string) => {
@@ -203,8 +287,11 @@ const createPlayersRepository = (db: Database) => {
   return {
     findNewestScoreDate,
     findPlayer,
+    isTracked,
     listScores,
-    markScoresSynced,
+    listStalePlayerIds,
+    markSyncFinished,
+    markSyncStarted,
     savePlayer,
     saveScores,
   };

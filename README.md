@@ -9,19 +9,19 @@ played and who scored higher.
 
 The project was built in 2021/22 and is being modernised step by step. **It runs
 end to end on a developer's machine**: sign in, pick your ScoreSaber profile,
-add friends to your hive and compare scores. New scores arrive when you press
-"Sync scores"; fetching them in the background is the next step.
+add friends to your hive and compare scores. New scores of your friends arrive
+by themselves, usually within a minute of being set.
 
-| Phase | Content                                                      | State   |
-| ----- | ------------------------------------------------------------ | ------- |
-| 0     | pnpm workspaces, `client/` `server/` `shared/`               | done    |
-| 1     | Vite instead of Create React App                             | done    |
-| 2     | Vitest, ESLint, Prettier 3, CI                               | done    |
-| 3     | New backend: Hono, Postgres, Drizzle, current ScoreSaber API | done    |
-| 4     | Sign-in with Google, accounts and sessions                   | done    |
-| 5     | New frontend with Tailwind and react-router on the new API   | done    |
-| 6     | Background jobs: live score feed, sync without waiting       | next    |
-| 7     | Production readiness: Docker image, deployment               | planned |
+| Phase | Content                                                      | State |
+| ----- | ------------------------------------------------------------ | ----- |
+| 0     | pnpm workspaces, `client/` `server/` `shared/`               | done  |
+| 1     | Vite instead of Create React App                             | done  |
+| 2     | Vitest, ESLint, Prettier 3, CI                               | done  |
+| 3     | New backend: Hono, Postgres, Drizzle, current ScoreSaber API | done  |
+| 4     | Sign-in with Google, accounts and sessions                   | done  |
+| 5     | New frontend with Tailwind and react-router on the new API   | done  |
+| 6     | Background jobs: live score feed, sync without waiting       | done  |
+| 7     | Production readiness: Docker image, deployment               | next  |
 
 ## Structure
 
@@ -132,14 +132,12 @@ small fake built from real answers.
 
 ### Known limitations
 
-- New scores only arrive when someone presses "Sync scores". Phase 6 changes
-  that.
-- Adding a player with thousands of scores keeps the request open until all of
-  them are fetched, about 20 seconds for 3600 scores.
 - Sign-in with Google needs your own OAuth client, see `server/.env.example`.
   It has not been tested against Google yet.
 - Nothing proves that the ScoreSaber profile you pick is yours. ScoreSaber
   offers sign-in for third-party apps only to approved developers.
+- The job queue and the live feed run inside the API process. That is fine for
+  one instance; several instances would each open their own feed connection.
 
 ## The API
 
@@ -162,7 +160,7 @@ account, so two accounts with the same profile still have a hive each.
 | `GET /players/search?q=`         | Find players on ScoreSaber by name              |
 | `GET /players/:id`               | A player's profile                              |
 | `GET /players/:id/scores`        | A player's scores, in pages; `sort`, `search`   |
-| `POST /players/:id/sync`         | Fetch new scores of a player from ScoreSaber    |
+| `POST /players/:id/sync`         | Queue a fetch of a player's new scores          |
 | `GET`, `POST /auth/*`            | Sign-in, callback and sign-out, by Better Auth  |
 | `GET /me`                        | My account and my ScoreSaber profile            |
 | `PUT /me/player`                 | Pick the ScoreSaber profile I compare as        |
@@ -171,7 +169,34 @@ account, so two accounts with the same profile still have a hive each.
 | `DELETE /hive/:playerId`         | Remove a player from my hive                    |
 | `GET /hive/:playerId/comparison` | Maps we both played, with both scores; `filter` |
 | `GET /hive/news`                 | Scores of bees that went past mine              |
-| `POST /hive/sync`                | Fetch new scores for me and all my bees         |
+| `POST /hive/sync`                | Queue a fetch of new scores, mine and my bees'  |
+
+### How scores get here
+
+Fetching a player's scores can take dozens of requests to ScoreSaber, far too
+long to keep a browser waiting. So requests never fetch scores themselves.
+They put a **job** on a queue and answer at once; a worker does the fetching.
+The queue is [pg-boss](https://github.com/timgit/pg-boss), which stores jobs
+in the Postgres we already have, so they survive a restart and failed ones are
+retried.
+
+Three things put jobs on the queue:
+
+| Source               | When                                                             |
+| -------------------- | ---------------------------------------------------------------- |
+| A user               | Picking a profile, adding a bee, pressing "Sync scores"          |
+| ScoreSaber live feed | A player in someone's hive, or a linked profile, sets a score    |
+| A timer              | Every 15 minutes, for tracked players not fetched for 30 minutes |
+
+The live feed is a WebSocket on which ScoreSaber announces every new score
+worldwide. The server only reads whose score it is and, if somebody here
+follows that player, queues a fetch 40 seconds later; ScoreSaber's own score
+lists lag behind the feed by up to half a minute. The feed is not documented
+and goes down now and then, which is what the timer is for. Set
+`LIVE_FEED=false` in `server/.env` to run without it.
+
+While a fetch is queued or running, the player has `syncStartedAt` set. The
+frontend shows "fetching" and asks again every 1.5 seconds until it is done.
 
 ### Security
 
@@ -202,6 +227,7 @@ What the server does to stay safe, and where:
 | `server/src/scoresaber` | Client for the ScoreSaber API and the mapping to our tables |
 | `server/src/players`    | Players and scores: routes, service, repository             |
 | `server/src/hive`       | Hives and comparisons: routes, service, repository          |
+| `server/src/jobs`       | The job queue for work outside of requests                  |
 | `server/src/http`       | Error format, request validation, session check             |
 | `server/drizzle`        | Generated SQL migrations                                    |
 

@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 
-import { useHive, useNews } from '@/api/queries.ts';
+import { isSyncing, useHive, useNews } from '@/api/queries.ts';
 import { Song } from '@/components/Song.tsx';
 import {
   Avatar,
@@ -61,7 +61,9 @@ const RecordCard = ({ member }: { member: HiveMember }) => {
         <div className="min-w-0">
           <p className="truncate font-semibold text-slate-100">{player.name}</p>
           <p className="text-xs text-slate-400">
-            {shared} shared {shared === 1 ? 'map' : 'maps'}
+            {isSyncing(player)
+              ? 'Fetching scores…'
+              : `${shared} shared ${shared === 1 ? 'map' : 'maps'}`}
           </p>
         </div>
       </div>

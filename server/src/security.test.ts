@@ -138,7 +138,7 @@ describe('requests from other websites', () => {
       body: '',
     });
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(202);
   });
 
   it('sends no headers that would let other sites read the answers', async () => {
@@ -197,7 +197,7 @@ describe('oversized and malformed requests', () => {
 
 describe('flooding', () => {
   it('stops an account after too many requests and says when to return', async () => {
-    const limited = createTestApp({ requestsPerMinute: 3 });
+    const limited = createTestApp({ requestsPerMinute: 3 }).app;
     const user = await createUser('flooder', limited);
 
     for (let request = 0; request < 3; request++)
@@ -213,7 +213,7 @@ describe('flooding', () => {
   });
 
   it('counts every account on its own', async () => {
-    const limited = createTestApp({ requestsPerMinute: 1 });
+    const limited = createTestApp({ requestsPerMinute: 1 }).app;
     const first = await createUser('first', limited);
     const second = await createUser('second', limited);
 
@@ -224,7 +224,7 @@ describe('flooding', () => {
   });
 
   it('does not ask ScoreSaber again when a player was just synced', async () => {
-    const strict = createTestApp({ minSyncIntervalMs: 60_000 });
+    const strict = createTestApp({ minSyncIntervalMs: 60_000 }).app;
     const user = await createUser('syncer', strict);
 
     scoreSaber.setPlayer(ME, 'me', []);
@@ -233,7 +233,7 @@ describe('flooding', () => {
 
     const again = await user(`/api/players/${ME}/sync`, { method: 'POST' });
 
-    expect(await json(again)).toMatchObject({ skipped: true });
+    expect(await json(again)).toEqual({ queued: false });
     expect(scoreSaber.requests).toHaveLength(0);
   });
 

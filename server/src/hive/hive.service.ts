@@ -18,8 +18,9 @@ const MAX_HIVE_SIZE = 50;
 /** The rules of a hive: who may be added, and what happens when they are */
 const createHiveService = ({ playersService, repository }: Dependencies) => {
   /**
-   * Adds a player to my hive. The player's scores are fetched right away, so
-   * the comparison has something to show.
+   * Adds a player to my hive. Their profile is looked up right away, which
+   * also proves that ScoreSaber knows them. Their scores follow in the
+   * background.
    */
   const addMember = async (me: Me, memberId: string) => {
     if (me.playerId === memberId)
@@ -39,11 +40,12 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
         `A hive can have at most ${MAX_HIVE_SIZE} bees`
       );
 
-    const result = await playersService.syncPlayer(memberId);
-
+    await playersService.ensureProfile(memberId);
     await repository.addMember(me.userId, memberId);
+    await playersService.requestSync(memberId);
 
-    return result;
+    // Read again: the sync request has just changed the player
+    return playersService.ensureProfile(memberId);
   };
 
   const removeMember = async (me: Me, memberId: string) => {
@@ -64,15 +66,16 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
     return repository.compare(me.playerId, memberId, options);
   };
 
-  /** Brings me and every bee up to date, one after the other */
+  /** Asks for new scores of me and every bee. Says how many were queued. */
   const syncAll = async (me: Me) => {
     const members = await repository.listMembers(me);
-    const results = [await playersService.syncPlayer(me.playerId)];
+    const playerIds = [me.playerId, ...members.map(({ player }) => player.id)];
+    let queued = 0;
 
-    for (const { player } of members)
-      results.push(await playersService.syncPlayer(player.id));
+    for (const playerId of playerIds)
+      if ((await playersService.requestSync(playerId)).queued) queued += 1;
 
-    return results;
+    return { queued, upToDate: playerIds.length - queued };
   };
 
   return {

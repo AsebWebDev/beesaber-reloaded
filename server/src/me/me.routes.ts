@@ -26,7 +26,7 @@ const createMeRoutes = ({ db, playersService }: Dependencies) =>
         player:
           user.playerId === null
             ? null
-            : await playersService.getOrSyncPlayer(user.playerId),
+            : await playersService.ensureProfile(user.playerId),
       });
     })
 
@@ -37,17 +37,19 @@ const createMeRoutes = ({ db, playersService }: Dependencies) =>
       const user = c.get('user');
       const { playerId: chosenId } = c.req.valid('json');
 
-      // Fetches the profile and all scores. Throws a 404 if ScoreSaber does
+      // Looks the profile up on ScoreSaber. Throws a 404 if ScoreSaber does
       // not know the id, so only existing players can be linked.
-      await playersService.syncPlayer(chosenId);
+      await playersService.ensureProfile(chosenId);
       await db
         .update(users)
         .set({ playerId: chosenId })
         .where(eq(users.id, user.id));
+      // The scores follow in the background
+      await playersService.requestSync(chosenId);
 
       return c.json({
         user: { ...user, playerId: chosenId },
-        player: await playersService.getOrSyncPlayer(chosenId),
+        player: await playersService.ensureProfile(chosenId),
       });
     });
 
