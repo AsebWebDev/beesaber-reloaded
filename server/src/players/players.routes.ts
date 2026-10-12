@@ -3,17 +3,28 @@ import { z } from 'zod';
 
 import { paginated, pagination, playerId, validate } from '../http/validate.ts';
 
+import type { MiddlewareHandler } from 'hono';
+import type { UserEnv } from '../http/session.ts';
 import type { PlayersService } from './players.service.ts';
 
 /**
  * The HTTP side of players: read the request, call the service, shape the
  * answer. No rules and no SQL in here.
+ *
+ * There is deliberately no route to look up or sync an arbitrary player by
+ * id. Both would let any account make the server fetch any number of players
+ * from ScoreSaber. Players enter the system only by being picked as a profile
+ * or added to a hive, and both of those are limited.
  */
-const createPlayersRoutes = (service: PlayersService) =>
-  new Hono()
+const createPlayersRoutes = (
+  service: PlayersService,
+  searchLimit: MiddlewareHandler<UserEnv>
+) =>
+  new Hono<UserEnv>()
     // GET /api/players/search?q=name
     .get(
       '/search',
+      searchLimit,
       validate('query', z.object({ q: z.string().trim().min(3).max(64) })),
       async (c) => {
         const { q } = c.req.valid('query');
@@ -31,14 +42,8 @@ const createPlayersRoutes = (service: PlayersService) =>
       }
     )
 
-    // GET /api/players/:id
-    .get('/:id', validate('param', z.object({ id: playerId })), async (c) => {
-      const { id } = c.req.valid('param');
-
-      return c.json(await service.ensureProfile(id));
-    })
-
     // GET /api/players/:id/scores?sort=recent&page=1&limit=20&search=text
+    // Reads what is stored. For a player we do not know, the list is empty.
     .get(
       '/:id/scores',
       validate('param', z.object({ id: playerId })),
@@ -56,19 +61,6 @@ const createPlayersRoutes = (service: PlayersService) =>
         const { items, total } = await service.listScores(id, query);
 
         return c.json(paginated(items, total, query));
-      }
-    )
-
-    // POST /api/players/:id/sync
-    // Asks for new scores in the background. The answer says whether a sync
-    // was queued; its progress shows in `syncStartedAt` of the player.
-    .post(
-      '/:id/sync',
-      validate('param', z.object({ id: playerId })),
-      async (c) => {
-        const { id } = c.req.valid('param');
-
-        return c.json(await service.requestSync(id), 202);
       }
     );
 

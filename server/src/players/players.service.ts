@@ -1,3 +1,4 @@
+import { ScoreSaberError } from '../scoresaber/client.ts';
 import {
   toLeaderboardRow,
   toPlayerRow,
@@ -34,7 +35,24 @@ type SyncResult = {
   improved: number;
 };
 
+/**
+ * Why a sync failed, as stored on the player and shown to users. A short
+ * code on purpose: the text of an exception can contain SQL, parameters or
+ * the raw answer of another service, and has no business in an API response.
+ */
+type SyncErrorCode =
+  'internal' | 'not_found' | 'scoresaber_unavailable' | 'unexpected_response';
+
+const syncErrorCode = (error: unknown): SyncErrorCode => {
+  if (!(error instanceof ScoreSaberError)) return 'internal';
+  if (error.kind === 'unavailable') return 'scoresaber_unavailable';
+
+  return error.kind;
+};
+
 type Dependencies = {
+  /** Where the details of a failed sync go. The player only gets a code. */
+  logError?: (message: string, error: unknown) => void;
   /**
    * A player is not fetched again within this time after a sync. ScoreSaber
    * caches score lists for 30 seconds anyway, and without the pause anyone
@@ -58,6 +76,7 @@ const STUCK_AFTER_MS = 15 * 60 * 1000;
 const LIVE_SCORE_DELAY_SECONDS = 40;
 
 const createPlayersService = ({
+  logError = (message, error) => console.error(message, error),
   minSyncIntervalMs = 60_000,
   now = () => new Date(),
   queue,
@@ -151,12 +170,13 @@ const createPlayersService = ({
 
       return { firstSync, added, improved };
     } catch (error) {
-      // Note the failure for the frontend, then let the queue see the error
-      // too, so it tries the job again
+      // The details go to the log, the player gets a code, and the queue
+      // sees the error too, so it tries the job again
+      logError(`Sync of player ${playerId} failed`, error);
       await repository.markSyncFinished(
         playerId,
         startedAt,
-        error instanceof Error ? error.message : 'Sync failed'
+        syncErrorCode(error)
       );
 
       throw error;
@@ -210,4 +230,4 @@ const createPlayersService = ({
 type PlayersService = ReturnType<typeof createPlayersService>;
 
 export { createPlayersService };
-export type { PlayersService, SyncRequest, SyncResult };
+export type { PlayersService, SyncErrorCode, SyncRequest, SyncResult };

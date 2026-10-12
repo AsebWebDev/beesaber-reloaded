@@ -106,6 +106,8 @@ type State = {
   listDelayMs: number;
   /** How many more times the hive reports its bee as being fetched */
   pollsUntilSynced: number;
+  /** Makes the server refuse to sign out, as it would when it is down */
+  signOutFails: boolean;
   /** What a click on "Sync scores" queues */
   queuedBySync: number;
   signedIn: boolean;
@@ -120,6 +122,7 @@ const initial = (): State => ({
   pollsUntilSynced: 0,
   queuedBySync: 0,
   signedIn: false,
+  signOutFails: false,
   signIn: { devLogin: true, google: false },
 });
 
@@ -180,6 +183,9 @@ const server = setupServer(
     return HttpResponse.json({ ...session(), redirect: false });
   }),
   http.post('/api/auth/sign-out', () => {
+    if (state.signOutFails)
+      return HttpResponse.json({ message: 'Server error' }, { status: 500 });
+
     state.signedIn = false;
 
     return HttpResponse.json({ success: true });

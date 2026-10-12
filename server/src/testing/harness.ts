@@ -9,6 +9,7 @@ import { createServices, startJobs } from '../services.ts';
 import { createTestDatabase } from './database.ts';
 import { createFakeScoreSaber, FAKE_SCORESABER_URL } from './fakeScoreSaber.ts';
 
+import type { Limits } from '../app.ts';
 import type { Auth } from '../auth/auth.ts';
 import type { JobQueue, SyncJob } from '../jobs/queue.ts';
 
@@ -55,10 +56,21 @@ const APP_URL = 'http://localhost:3000';
 
 type TestAppOptions = {
   auth?: Auth;
+  limits?: Partial<Limits>;
+  /** Receives what a failed sync would write to the server log */
+  logError?: (message: string, error: unknown) => void;
   minSyncIntervalMs?: number;
   now?: () => Date;
   queue?: JobQueue;
-  requestsPerMinute?: number;
+  trustProxy?: boolean;
+};
+
+// No test should run into a limit by accident. Tests about a limit set it.
+const NO_LIMITS: Limits = {
+  perMinute: 100_000,
+  playerActionsPerHour: 100_000,
+  publicPerMinute: 100_000,
+  searchesPerMinute: 100_000,
 };
 
 /**
@@ -67,16 +79,19 @@ type TestAppOptions = {
  */
 const createTestApp = ({
   auth = fakeAuth,
+  limits,
+  // Failing syncs are part of many tests. Keep their logs out of the output.
+  logError = () => {},
   // Tests sync the same player several times in a row
   minSyncIntervalMs = 0,
   now,
   // Jobs run at once, so a test sees their result right after the request
   queue = createInlineQueue(),
-  // No test should run into the limit by accident
-  requestsPerMinute = 10_000,
+  trustProxy,
 }: TestAppOptions = {}) => {
   const services = createServices({
     db: database.db,
+    logError,
     minSyncIntervalMs,
     now,
     queue,
@@ -95,8 +110,9 @@ const createTestApp = ({
       appUrl: APP_URL,
       auth,
       db: database.db,
-      requestsPerMinute,
+      limits: { ...NO_LIMITS, ...limits },
       services,
+      trustProxy,
     }),
     services,
   };

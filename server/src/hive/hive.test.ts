@@ -7,6 +7,7 @@ import {
   linkProfile,
   ME,
   scoreSaber,
+  services,
 } from '../testing/harness.ts';
 
 const BEE = '76561198000000002';
@@ -22,7 +23,7 @@ const addToHive = (playerId: string, as = api) =>
   });
 
 const sync = (playerId: string) =>
-  api(`/api/players/${playerId}/sync`, { method: 'POST' });
+  services.playersService.requestSync(playerId);
 
 beforeEach(async () => {
   // I am ahead on leaderboard 1, behind on 2, and alone on 3

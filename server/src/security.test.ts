@@ -6,6 +6,7 @@ import {
   api,
   app,
   APP_URL,
+  createManualQueue,
   createTestApp,
   createUser,
   database,
@@ -187,7 +188,7 @@ describe('oversized and malformed requests', () => {
   });
 
   it('does not reveal internals in error answers', async () => {
-    const response = await api('/api/players/76561198999999999');
+    const response = await linkProfile('76561198999999999');
     const body: { error: Record<string, unknown> } = await json(response);
 
     expect(Object.keys(body.error).sort()).toEqual(['code', 'message']);
@@ -197,7 +198,7 @@ describe('oversized and malformed requests', () => {
 
 describe('flooding', () => {
   it('stops an account after too many requests and says when to return', async () => {
-    const limited = createTestApp({ requestsPerMinute: 3 }).app;
+    const limited = createTestApp({ limits: { perMinute: 3 } }).app;
     const user = await createUser('flooder', limited);
 
     for (let request = 0; request < 3; request++)
@@ -213,7 +214,7 @@ describe('flooding', () => {
   });
 
   it('counts every account on its own', async () => {
-    const limited = createTestApp({ requestsPerMinute: 1 }).app;
+    const limited = createTestApp({ limits: { perMinute: 1 } }).app;
     const first = await createUser('first', limited);
     const second = await createUser('second', limited);
 
@@ -228,12 +229,12 @@ describe('flooding', () => {
     const user = await createUser('syncer', strict);
 
     scoreSaber.setPlayer(ME, 'me', []);
-    await user(`/api/players/${ME}/sync`, { method: 'POST' });
+    await linkProfile(ME, user);
     scoreSaber.requests.length = 0;
 
-    const again = await user(`/api/players/${ME}/sync`, { method: 'POST' });
+    const again = await user('/api/hive/sync', { method: 'POST' });
 
-    expect(await json(again)).toEqual({ queued: false });
+    expect(await json(again)).toEqual({ queued: 0, upToDate: 1 });
     expect(scoreSaber.requests).toHaveLength(0);
   });
 
@@ -284,5 +285,121 @@ describe('other people’s data', () => {
     const mine: { items: unknown[] } = await json(await api('/api/hive'));
 
     expect(mine.items).toHaveLength(1);
+  });
+});
+
+describe('making the server work for you', () => {
+  it('limits how many searches an account can run', async () => {
+    const limited = createTestApp({ limits: { searchesPerMinute: 2 } }).app;
+    const user = await createUser('searcher', limited);
+
+    expect((await user('/api/players/search?q=abc')).status).toBe(200);
+    expect((await user('/api/players/search?q=abd')).status).toBe(200);
+    expect((await user('/api/players/search?q=abe')).status).toBe(429);
+    // Other routes are not affected by the search budget
+    expect((await user('/api/me')).status).toBe(200);
+  });
+
+  it('gives picking a profile and adding bees one shared budget', async () => {
+    const limited = createTestApp({ limits: { playerActionsPerHour: 2 } }).app;
+    const user = await createUser('collector', limited);
+    const ids = ['76561198000000011', '76561198000000012', '76561198000000013'];
+
+    scoreSaber.setPlayer(ME, 'me', []);
+    for (const id of ids) scoreSaber.setPlayer(id, `player ${id}`, []);
+
+    expect((await linkProfile(ME, user)).status).toBe(200);
+    expect(
+      (await postJson('/api/hive', { playerId: ids[0] }, user)).status
+    ).toBe(201);
+
+    scoreSaber.requests.length = 0;
+
+    const third = await postJson('/api/hive', { playerId: ids[1] }, user);
+
+    expect(third.status).toBe(429);
+    // Refused before the server did anything for it
+    expect(scoreSaber.requests).toHaveLength(0);
+  });
+});
+
+describe('the routes that need no session', () => {
+  const callConfig = (
+    target: ReturnType<typeof createTestApp>['app'],
+    forwardedFor?: string
+  ) =>
+    target.request('/api/config', {
+      headers:
+        forwardedFor === undefined ? {} : { 'x-forwarded-for': forwardedFor },
+    });
+
+  it('are limited per address', async () => {
+    const limited = createTestApp({ limits: { publicPerMinute: 2 } }).app;
+
+    expect((await callConfig(limited)).status).toBe(200);
+    expect((await callConfig(limited)).status).toBe(200);
+
+    const blocked = await callConfig(limited);
+
+    expect(blocked.status).toBe(429);
+    expect(Number(blocked.headers.get('retry-after'))).toBeGreaterThan(0);
+    // Health and sign-in share the budget
+    expect((await limited.request('/api/health')).status).toBe(429);
+    expect((await limited.request('/api/auth/get-session')).status).toBe(429);
+  });
+
+  it('do not believe a forwarded address unless a proxy is configured', async () => {
+    const limited = createTestApp({ limits: { publicPerMinute: 1 } }).app;
+
+    expect((await callConfig(limited, '203.0.113.1')).status).toBe(200);
+    // A different made-up address does not get a fresh budget
+    expect((await callConfig(limited, '203.0.113.2')).status).toBe(429);
+  });
+
+  it('count by the address the proxy reports when one is configured', async () => {
+    const limited = createTestApp({
+      limits: { publicPerMinute: 1 },
+      trustProxy: true,
+    }).app;
+
+    expect((await callConfig(limited, '203.0.113.1')).status).toBe(200);
+    expect((await callConfig(limited, '203.0.113.2')).status).toBe(200);
+    expect((await callConfig(limited, '203.0.113.1')).status).toBe(429);
+    // What the caller put in front of the proxy's entry changes nothing
+    expect(
+      (await callConfig(limited, '198.51.100.9, 203.0.113.1')).status
+    ).toBe(429);
+  });
+});
+
+describe('what a failed sync reveals', () => {
+  it('is a short code, never the text of the error', async () => {
+    const logged: string[] = [];
+    const manual = createManualQueue();
+    const { app: own, services } = createTestApp({
+      logError: (message, error) => logged.push(`${message}: ${String(error)}`),
+      queue: manual.queue,
+    });
+    const user = await createUser('test-user', own);
+    const BEE = '76561198000000002';
+
+    scoreSaber.setPlayer(ME, 'me', []);
+    scoreSaber.setPlayer(BEE, 'bee', []);
+    await linkProfile(ME, user);
+    await postJson('/api/hive', { playerId: BEE }, user);
+    await manual.runAll();
+
+    scoreSaber.breakProfile(BEE, { secretInternalDetail: true });
+    await services.playersService.requestSync(BEE);
+    await manual.runAll();
+
+    const hive = JSON.stringify(await json(await user('/api/hive')));
+
+    expect(hive).toContain('"syncError":"unexpected_response"');
+    expect(hive).not.toMatch(
+      /Invalid input|secretInternalDetail|expected string/
+    );
+    // The details are not lost, they are in the server log
+    expect(logged.join('\n')).toContain('does not look as expected');
   });
 });

@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { requireMe } from '../http/session.ts';
 import { paginated, pagination, playerId, validate } from '../http/validate.ts';
 
+import type { MiddlewareHandler } from 'hono';
 import type { UserEnv } from '../http/session.ts';
 import type { HiveService } from './hive.service.ts';
 
@@ -12,7 +13,11 @@ import type { HiveService } from './hive.service.ts';
  * purpose: it comes from the session, so nobody can read or change somebody
  * else's hive by editing a URL.
  */
-const createHiveRoutes = (service: HiveService) =>
+const createHiveRoutes = (
+  service: HiveService,
+  /** Limits how often a user can make the server fetch a new player */
+  playerActionLimit: MiddlewareHandler<UserEnv>
+) =>
   new Hono<UserEnv>()
     // GET /api/hive
     .get('/', async (c) =>
@@ -20,15 +25,20 @@ const createHiveRoutes = (service: HiveService) =>
     )
 
     // POST /api/hive  { "playerId": "7656..." }
-    .post('/', validate('json', z.object({ playerId })), async (c) => {
-      const { playerId: memberId } = c.req.valid('json');
-      const player = await service.addMember(
-        requireMe(c.get('user')),
-        memberId
-      );
+    .post(
+      '/',
+      playerActionLimit,
+      validate('json', z.object({ playerId })),
+      async (c) => {
+        const { playerId: memberId } = c.req.valid('json');
+        const player = await service.addMember(
+          requireMe(c.get('user')),
+          memberId
+        );
 
-      return c.json({ player }, 201);
-    })
+        return c.json({ player }, 201);
+      }
+    )
 
     // POST /api/hive/sync
     .post('/sync', async (c) =>

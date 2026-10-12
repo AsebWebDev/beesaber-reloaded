@@ -1,14 +1,22 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { scoreEvents } from '../db/schema.ts';
-import { api, app, database, scoreSaber } from '../testing/harness.ts';
+import {
+  api,
+  app,
+  database,
+  linkProfile,
+  scoreSaber,
+  services,
+} from '../testing/harness.ts';
 
 const ALICE = '76561198000000002';
 
 const json = async (response: Response) => (await response.json()) as never;
 
+/** Asks for a sync, the way picking a profile or adding a bee does */
 const sync = (playerId: string) =>
-  api(`/api/players/${playerId}/sync`, { method: 'POST' });
+  services.playersService.requestSync(playerId);
 
 describe('GET /api/health', () => {
   it('reports that the server and its database are up', async () => {
@@ -20,18 +28,14 @@ describe('GET /api/health', () => {
   });
 });
 
-describe('POST /api/players/:id/sync', () => {
+describe('syncing a player', () => {
   it('stores the profile and all scores on the first sync', async () => {
     scoreSaber.setPlayer(ALICE, 'alice', [
       { leaderboardId: 1, score: 500, playedAt: '2024-01-01T10:00:00.000Z' },
       { leaderboardId: 2, score: 700, playedAt: '2024-01-02T10:00:00.000Z' },
     ]);
 
-    const response = await sync(ALICE);
-
-    // 202 Accepted: the request was taken, the work happens in a job
-    expect(response.status).toBe(202);
-    expect(await response.json()).toEqual({ queued: true });
+    expect(await sync(ALICE)).toEqual({ queued: true });
 
     const scores = await api(`/api/players/${ALICE}/scores`);
 
@@ -114,8 +118,8 @@ describe('POST /api/players/:id/sync', () => {
     ).toMatchObject({ total: 230 });
   });
 
-  it('answers 404 for a player ScoreSaber does not know', async () => {
-    const response = await sync('76561198999999999');
+  it('answers 404 when the profile picked is unknown to ScoreSaber', async () => {
+    const response = await linkProfile('76561198999999999');
 
     expect(response.status).toBe(404);
     expect(await response.json()).toEqual({
@@ -127,26 +131,59 @@ describe('POST /api/players/:id/sync', () => {
   });
 
   it('answers 502 when ScoreSaber sends something unexpected', async () => {
+    const logged: unknown[] = [];
     // The server logs what was wrong with the answer. Catch the log, so it
     // can be checked here instead of cluttering the test output.
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const original = console.error;
 
-    scoreSaber.breakProfile(ALICE, { id: ALICE, renamedField: 'alice' });
+    console.error = (...args: unknown[]) => logged.push(args[0]);
 
-    const response = await sync(ALICE);
+    try {
+      scoreSaber.breakProfile(ALICE, { id: ALICE, renamedField: 'alice' });
 
-    expect(response.status).toBe(502);
-    expect(await json(response)).toMatchObject({
-      error: { code: 'scoresaber_unavailable' },
+      const response = await linkProfile(ALICE);
+      const body = JSON.stringify(await json(response));
+
+      expect(response.status).toBe(502);
+      expect(body).toContain('scoresaber_unavailable');
+      // The details go to the log, not to the caller
+      expect(body).not.toContain('renamedField');
+      expect(String(logged[0])).toContain('does not look as expected');
+    } finally {
+      console.error = original;
+    }
+  });
+});
+
+describe('routes that would let anyone fetch any player', () => {
+  it('do not exist: no sync by id', async () => {
+    scoreSaber.setPlayer(ALICE, 'alice', []);
+
+    const response = await api(`/api/players/${ALICE}/sync`, {
+      method: 'POST',
     });
-    // The details go to the log, not to the caller
-    expect(log).toHaveBeenCalledOnce();
-    expect(String(log.mock.calls[0]?.[0])).toContain(
-      'does not look as expected'
-    );
-    expect(JSON.stringify(await json(await sync(ALICE)))).not.toContain(
-      'renamedField'
-    );
+
+    expect(response.status).toBe(404);
+    expect(scoreSaber.requests).toHaveLength(0);
+  });
+
+  it('do not exist: no lookup by id', async () => {
+    scoreSaber.setPlayer(ALICE, 'alice', []);
+
+    const response = await api(`/api/players/${ALICE}`);
+
+    expect(response.status).toBe(404);
+  });
+
+  it('leave the scores of an unknown player empty instead of fetching them', async () => {
+    scoreSaber.setPlayer(ALICE, 'alice', [
+      { leaderboardId: 1, score: 500, playedAt: '2024-01-01T10:00:00.000Z' },
+    ]);
+
+    const response = await api(`/api/players/${ALICE}/scores`);
+
+    expect(await json(response)).toMatchObject({ total: 0, items: [] });
+    expect(scoreSaber.requests).toHaveLength(0);
   });
 });
 

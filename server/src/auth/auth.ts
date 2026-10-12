@@ -65,8 +65,16 @@ const createAuth = (db: Database, config: AuthConfig): Auth => {
             },
           }
         : {},
-    // Accounts with a password exist only for the local test account
+    // DEV_LOGIN switches on accounts with just an email and a password,
+    // without any verification. The configuration only allows that while the
+    // app is served from localhost.
     emailAndPassword: { enabled: config.DEV_LOGIN },
+    // Better Auth has a rate limit of its own. It is off, because it keys on
+    // a forwarded-address header and, without one, puts all visitors into a
+    // single bucket of three sign-ins per ten seconds: one looping client
+    // would lock everybody out. Our own per-address limit in app.ts covers
+    // these routes instead.
+    rateLimit: { enabled: false },
     user: {
       additionalFields: {
         // `input: false`: cannot be set through the sign-up request, only by

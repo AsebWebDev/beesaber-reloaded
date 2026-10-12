@@ -31,6 +31,7 @@ const app = createApp({
   db,
   logRequests: true,
   services,
+  trustProxy: config.TRUST_PROXY,
 });
 
 // Background work: the job queue, and the live feed that puts jobs on it

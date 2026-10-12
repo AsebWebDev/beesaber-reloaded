@@ -9,7 +9,7 @@ import tseslint from 'typescript-eslint';
 export default defineConfig(
   globalIgnores([
     '**/dist',
-    // Generated from ScoreSaber's OpenAPI description by `pnpm gen:api`
+    // Generated from ScoreSaber's OpenAPI description by `pnpm api:update`
     'server/src/scoresaber/openapi.d.ts',
   ]),
 

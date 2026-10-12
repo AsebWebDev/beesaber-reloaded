@@ -10,6 +10,8 @@ import type { ScoreSaberClient } from './scoresaber/client.ts';
 type Dependencies = {
   db: Database;
   /** See players.service.ts */
+  logError?: (message: string, error: unknown) => void;
+  /** See players.service.ts */
   minSyncIntervalMs?: number;
   /** The clock. Tests set it to travel in time. */
   now?: () => Date;
@@ -24,12 +26,14 @@ type Dependencies = {
  */
 const createServices = ({
   db,
+  logError,
   minSyncIntervalMs,
   now,
   queue,
   scoreSaber,
 }: Dependencies) => {
   const playersService = createPlayersService({
+    logError,
     minSyncIntervalMs,
     now,
     queue,

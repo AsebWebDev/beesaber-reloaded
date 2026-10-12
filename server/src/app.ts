@@ -7,7 +7,7 @@ import { secureHeaders } from 'hono/secure-headers';
 
 import { createHiveRoutes } from './hive/hive.routes.ts';
 import { AppError, handleError, handleNotFound } from './http/errors.ts';
-import { rateLimit } from './http/rateLimit.ts';
+import { byAddress, byUser, rateLimit } from './http/rateLimit.ts';
 import { requireUser } from './http/session.ts';
 import { createMeRoutes } from './me/me.routes.ts';
 import { createPlayersRoutes } from './players/players.routes.ts';
@@ -17,15 +17,37 @@ import type { Database } from './db/client.ts';
 import type { UserEnv } from './http/session.ts';
 import type { Services } from './services.ts';
 
+/** How much one caller may do. See createApp for what each one guards. */
+type Limits = {
+  /** Requests per minute of a signed-in account, all routes together */
+  perMinute: number;
+  /** Per account and hour: picking a profile or adding a bee */
+  playerActionsPerHour: number;
+  /** Requests per minute of one address to the routes that need no session */
+  publicPerMinute: number;
+  /** Player searches per minute of an account */
+  searchesPerMinute: number;
+};
+
+const DEFAULT_LIMITS: Limits = {
+  perMinute: 120,
+  playerActionsPerHour: 30,
+  publicPerMinute: 60,
+  searchesPerMinute: 30,
+};
+
+const MINUTE = 60_000;
+
 type Dependencies = {
   /** The address of the frontend, the only site allowed to send forms */
   appUrl: string;
   auth: Auth;
   db: Database;
+  limits?: Partial<Limits>;
   logRequests?: boolean;
-  /** Requests per minute a single account may make */
-  requestsPerMinute?: number;
   services: Services;
+  /** See TRUST_PROXY in config.ts */
+  trustProxy?: boolean;
 };
 
 /**
@@ -40,10 +62,34 @@ const createApp = ({
   appUrl,
   auth,
   db,
+  limits: givenLimits,
   logRequests = false,
-  requestsPerMinute = 120,
   services: { hiveService, playersService },
+  trustProxy = false,
 }: Dependencies) => {
+  const limits = { ...DEFAULT_LIMITS, ...givenLimits };
+
+  // The routes open to everyone have no account to count by, so they are
+  // limited per address. This also keeps sign-in from being hammered.
+  const publicLimit = rateLimit({
+    key: byAddress(trustProxy),
+    limit: limits.publicPerMinute,
+    windowMs: MINUTE,
+  });
+  // Every search is a request to ScoreSaber
+  const searchLimit = rateLimit({
+    key: byUser,
+    limit: limits.searchesPerMinute,
+    windowMs: MINUTE,
+  });
+  // Picking a profile or adding a bee can make the server fetch thousands of
+  // scores. One budget for both, so neither can be used to queue endless work.
+  const playerActionLimit = rateLimit({
+    key: byUser,
+    limit: limits.playerActionsPerHour,
+    windowMs: 60 * MINUTE,
+  });
+
   const app = new Hono<UserEnv>().basePath('/api');
 
   if (logRequests) app.use(logger());
@@ -75,21 +121,25 @@ const createApp = ({
     app
       // Open to everyone: is the server up, which ways to sign in exist,
       // and sign-in itself
-      .get('/health', async (c) => {
+      .get('/health', publicLimit, async (c) => {
         await db.execute(sql`select 1`);
 
         return c.json({ status: 'ok' });
       })
-      .get('/config', (c) => c.json({ signIn: auth.methods }))
-      .on(['GET', 'POST'], '/auth/*', (c) => auth.handler(c.req.raw))
+      .get('/config', publicLimit, (c) => c.json({ signIn: auth.methods }))
+      .on(['GET', 'POST'], '/auth/*', publicLimit, (c) =>
+        auth.handler(c.req.raw)
+      )
 
       // Everything registered below this line needs a session
       .use(requireUser(auth))
-      .use(rateLimit({ limit: requestsPerMinute, windowMs: 60_000 }))
+      .use(
+        rateLimit({ key: byUser, limit: limits.perMinute, windowMs: MINUTE })
+      )
 
-      .route('/me', createMeRoutes({ db, playersService }))
-      .route('/players', createPlayersRoutes(playersService))
-      .route('/hive', createHiveRoutes(hiveService))
+      .route('/me', createMeRoutes({ db, playerActionLimit, playersService }))
+      .route('/players', createPlayersRoutes(playersService, searchLimit))
+      .route('/hive', createHiveRoutes(hiveService, playerActionLimit))
   );
 };
 
@@ -102,4 +152,4 @@ const createApp = ({
 type AppType = ReturnType<typeof createApp>;
 
 export { createApp };
-export type { AppType };
+export type { AppType, Limits };

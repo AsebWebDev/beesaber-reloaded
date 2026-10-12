@@ -91,6 +91,7 @@ const AppLayout = ({ player }: { player: Player }) => {
           </Button>
         </div>
         {sync.isError && <ErrorNote error={sync.error} />}
+        {logout.isError && <ErrorNote error={logout.error} />}
 
         <Outlet />
       </main>

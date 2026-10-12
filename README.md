@@ -14,7 +14,7 @@ by themselves, usually within a minute of being set.
 
 | Phase | Content                                                      | State |
 | ----- | ------------------------------------------------------------ | ----- |
-| 0     | pnpm workspaces, `client/` `server/` `shared/`               | done  |
+| 0     | pnpm workspaces, `client/` and `server/`                     | done  |
 | 1     | Vite instead of Create React App                             | done  |
 | 2     | Vitest, ESLint, Prettier 3, CI                               | done  |
 | 3     | New backend: Hono, Postgres, Drizzle, current ScoreSaber API | done  |
@@ -81,18 +81,19 @@ profile, and add a friend on the "My hive" page.
 
 Run these from the repository root.
 
-| Command           | What it does                                  |
-| ----------------- | --------------------------------------------- |
-| `pnpm client`     | Start the frontend                            |
-| `pnpm server`     | Start the API in watch mode                   |
-| `pnpm db`         | Start the database and wait until it is ready |
-| `pnpm db:migrate` | Apply database migrations                     |
-| `pnpm test`       | Run the tests once                            |
-| `pnpm lint`       | Check the code with ESLint                    |
-| `pnpm lint:fix`   | Let ESLint fix what it can                    |
-| `pnpm typecheck`  | Type-check all packages                       |
-| `pnpm format`     | Format all files with Prettier                |
-| `pnpm build`      | Build all packages                            |
+| Command           | What it does                                                        |
+| ----------------- | ------------------------------------------------------------------- |
+| `pnpm client`     | Start the frontend                                                  |
+| `pnpm server`     | Start the API in watch mode                                         |
+| `pnpm db`         | Start the database and wait until it is ready                       |
+| `pnpm db:migrate` | Apply database migrations                                           |
+| `pnpm api:update` | Fetch ScoreSaber's current API description and regenerate the types |
+| `pnpm test`       | Run the tests once                                                  |
+| `pnpm lint`       | Check the code with ESLint                                          |
+| `pnpm lint:fix`   | Let ESLint fix what it can                                          |
+| `pnpm typecheck`  | Type-check all packages                                             |
+| `pnpm format`     | Format all files with Prettier                                      |
+| `pnpm build`      | Build the frontend for production                                   |
 
 To run a script of a single package, use a filter. This one keeps the tests
 running and repeats them on every change:
@@ -108,11 +109,11 @@ server on port 5001.
 
 Checks run in three places:
 
-| Where           | When                           | What                                     |
-| --------------- | ------------------------------ | ---------------------------------------- |
-| Pre-commit hook | On `git commit`                | ESLint and Prettier, on the staged files |
-| GitHub Actions  | On pull requests and on `main` | Formatting, lint, types, tests, build    |
-| Your terminal   | Whenever you like              | The commands above                       |
+| Where           | When                           | What                                                    |
+| --------------- | ------------------------------ | ------------------------------------------------------- |
+| Pre-commit hook | On `git commit`                | ESLint and Prettier, on the staged files                |
+| GitHub Actions  | On pull requests and on `main` | Dependency audit, formatting, lint, types, tests, build |
+| Your terminal   | Whenever you like              | The commands above                                      |
 
 The hook is installed by `pnpm install`. The workflow is defined in
 `.github/workflows/ci.yml`.
@@ -124,7 +125,8 @@ test as `*.test.ts(x)`.
 The frontend tests render the whole app and use it like a person would. Its
 API calls are answered by a fake built with [msw](https://mswjs.io/)
 (`client/src/testing/fakeApi.ts`); the fake's answers are typed with the real
-server's types, so it cannot drift from the API unnoticed.
+server's types, so a renamed or missing field in them fails the type check.
+Paths, status codes and the behaviour on errors are not checked that way.
 
 The server tests run against a real Postgres, in a database of their own
 (`beesaber_test`), so `pnpm db` has to be running. ScoreSaber is replaced by a
@@ -141,7 +143,7 @@ small fake built from real answers.
 
 ## The API
 
-All paths start with `/api`. Everything except `/health` and `/auth` needs a
+All paths start with `/api`. Everything except `/health`, `/config` and `/auth` needs a
 session and answers `401` without one. The hive routes also need a linked
 ScoreSaber profile and answer `409` until one is picked. Errors always look like
 `{ "error": { "code": "not_found", "message": "..." } }`.
@@ -157,10 +159,9 @@ account, so two accounts with the same profile still have a hive each.
 | Method and path                  | What it does                                    |
 | -------------------------------- | ----------------------------------------------- |
 | `GET /health`                    | Is the server up and can it reach the database  |
+| `GET /config`                    | Which ways to sign in are switched on           |
 | `GET /players/search?q=`         | Find players on ScoreSaber by name              |
-| `GET /players/:id`               | A player's profile                              |
 | `GET /players/:id/scores`        | A player's scores, in pages; `sort`, `search`   |
-| `POST /players/:id/sync`         | Queue a fetch of a player's new scores          |
 | `GET`, `POST /auth/*`            | Sign-in, callback and sign-out, by Better Auth  |
 | `GET /me`                        | My account and my ScoreSaber profile            |
 | `PUT /me/player`                 | Pick the ScoreSaber profile I compare as        |
@@ -202,18 +203,19 @@ frontend shows "fetching" and asks again every 1.5 seconds until it is done.
 
 What the server does to stay safe, and where:
 
-| Risk                              | Protection                                                                      |
-| --------------------------------- | ------------------------------------------------------------------------------- |
-| SQL injection                     | All queries go through Drizzle, which sends values separately from SQL          |
-| Malformed or hostile input        | Every route validates its input with zod before anything else runs              |
-| Stolen or forged sessions         | Random session tokens in `HttpOnly`, `SameSite=Lax` cookies, stored in Postgres |
-| Requests forged by other websites | Origin check for form requests; no CORS headers, so answers stay private        |
-| Reading or changing others' data  | Hive routes take the user from the session, never from the URL                  |
-| Flooding                          | 120 requests per minute per account, body limit of 100 kB                       |
-| Abusing us to hammer ScoreSaber   | A player is synced at most once a minute; hives hold at most 50 bees            |
-| Leaking internals                 | Errors return a code and a message, details only go to the server log           |
-| Vulnerable dependencies           | `pnpm audit` in CI, Dependabot, install scripts blocked by default              |
-| Leaked secrets                    | Secrets only in `server/.env`, which git ignores; checked at startup            |
+| Risk                              | Protection                                                                                                                                                                                                                            |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SQL injection                     | All queries go through Drizzle, which sends values separately from SQL                                                                                                                                                                |
+| Malformed or hostile input        | Every route validates its input with zod before anything else runs                                                                                                                                                                    |
+| Stolen or forged sessions         | Random session tokens in `HttpOnly`, `SameSite=Lax` cookies, stored in Postgres                                                                                                                                                       |
+| Requests forged by other websites | Origin check for form requests; no CORS headers, so answers stay private                                                                                                                                                              |
+| Reading or changing others' data  | Hive routes take the user from the session, never from the URL                                                                                                                                                                        |
+| Flooding                          | Per account: 120 requests a minute. Per address on the routes without a session: 60 a minute. Body limit of 100 kB                                                                                                                    |
+| Abusing us to hammer ScoreSaber   | No route fetches a player by id. Players only enter by being picked as a profile or added to a hive, 30 times an hour per account at most. 30 searches a minute. A player is synced at most once a minute; hives hold at most 50 bees |
+| Leaking internals                 | Errors return a code and a message. A failed sync is stored as a code. Details only go to the server log                                                                                                                              |
+| Opening up by misconfiguration    | Password accounts (`DEV_LOGIN`) and plain http are refused unless `APP_URL` is localhost, whatever `NODE_ENV` says. The dev login is not part of production builds of the frontend                                                    |
+| Vulnerable dependencies           | `pnpm audit` in CI, Dependabot, install scripts blocked by default                                                                                                                                                                    |
+| Leaked secrets                    | Secrets only in `server/.env`, which git ignores; checked at startup                                                                                                                                                                  |
 
 `server/src/security.test.ts` plays the attacker for most of these rows.
 
@@ -249,13 +251,14 @@ Commit the generated migration together with the schema change.
 
 `server/src/scoresaber/openapi.json` is a copy of
 <https://scoresaber.com/api/openapi.json>. The types in `openapi.d.ts` are
-generated from it. To pick up changes, replace the copy and run:
+generated from it. To pick up changes, run:
 
 ```sh
-pnpm --filter @beesaber/server gen:api
+pnpm api:update
 ```
 
-The diff of the two files shows what ScoreSaber changed.
+It lists added, removed and changed endpoints and points out changes to the
+ones the server uses. The diff of the two files shows the details.
 
 ## Dependency install scripts
 

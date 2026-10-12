@@ -11,11 +11,13 @@ const LandingPage = () => {
   const config = useConfig();
   const google = useMutation({ mutationFn: signInWithGoogle });
   const dev = useMutation({
-    mutationFn: signInAsDev,
+    // Undefined in production builds, see authClient.ts
+    mutationFn: () => signInAsDev?.() ?? Promise.resolve(),
     // Now signed in: ask the server again who we are
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['me'] }),
   });
   const signIn = config.data?.signIn;
+  const offersDevLogin = signInAsDev !== undefined && signIn?.devLogin === true;
 
   return (
     <main
@@ -43,7 +45,7 @@ const LandingPage = () => {
             Sign in with Google
           </Button>
         )}
-        {signIn?.devLogin === true && (
+        {offersDevLogin && (
           <Button
             look="ghost"
             disabled={dev.isPending}
@@ -52,7 +54,7 @@ const LandingPage = () => {
             Dev Login
           </Button>
         )}
-        {signIn !== undefined && !signIn.google && !signIn.devLogin && (
+        {signIn !== undefined && !signIn.google && !offersDevLogin && (
           <p className="text-slate-400">
             No way to sign in is configured on the server.
           </p>

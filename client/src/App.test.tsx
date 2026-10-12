@@ -260,6 +260,20 @@ describe('signing out', () => {
 
     expect(await screen.findByTestId('landing-page')).toBeInTheDocument();
   });
+
+  it('does not pretend to have signed out when the server refused', async () => {
+    fakeApi.signedInAs({ signOutFails: true });
+    const { user } = renderApp();
+
+    await user.click(await screen.findByRole('button', { name: 'Sign out' }));
+
+    // The user is told, and stays where they are: still signed in
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'You are still signed in'
+    );
+    expect(screen.queryByTestId('landing-page')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sign out' })).toBeEnabled();
+  });
 });
 
 describe('an unknown address', () => {

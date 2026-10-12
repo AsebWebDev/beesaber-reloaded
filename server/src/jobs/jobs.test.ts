@@ -102,7 +102,8 @@ describe('a sync job that fails', () => {
     const row = await playerRow(BEE);
 
     expect(row?.syncStartedAt).toBeNull();
-    expect(row?.syncError).toContain('does not look as expected');
+    // A code, not the text of the exception
+    expect(row?.syncError).toBe('unexpected_response');
     expect(row?.scoresSyncedAt).toBeNull();
   });
 
