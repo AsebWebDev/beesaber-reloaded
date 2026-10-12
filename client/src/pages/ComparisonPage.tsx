@@ -2,13 +2,13 @@ import { Link, useParams, useSearchParams } from 'react-router';
 
 import { PAGE_SIZE, useComparison, useHive } from '@/api/queries.ts';
 import { Pagination } from '@/components/Pagination.tsx';
+import { SkeletonRows } from '@/components/SkeletonRows.tsx';
 import { Song } from '@/components/Song.tsx';
 import {
   Avatar,
   EmptyState,
   ErrorNote,
   NeonHeading,
-  Spinner,
 } from '@/components/ui.tsx';
 import { formatDelta, formatScore } from '@/lib/format.ts';
 
@@ -39,6 +39,10 @@ const ComparisonPage = () => {
   const hive = useHive();
   const comparison = useComparison(playerId, { filter, page });
   const member = hive.data?.items.find((item) => item.player.id === playerId);
+  // Loading for the first time, or showing the previous list while the one
+  // for a new filter or page is on its way
+  const loading = comparison.isPending || comparison.isPlaceholderData;
+  const items = comparison.data?.items ?? [];
 
   const show = (next: { filter?: ComparisonFilter; page?: number }) =>
     setSearchParams({
@@ -92,9 +96,13 @@ const ComparisonPage = () => {
         ))}
       </div>
 
-      {comparison.isPending && <Spinner />}
       {comparison.isError && <ErrorNote error={comparison.error} />}
-      {comparison.data?.items.length === 0 && (
+      {loading && (
+        <p role="status" className="sr-only">
+          Loading comparison
+        </p>
+      )}
+      {!loading && !comparison.isError && items.length === 0 && (
         <EmptyState>
           {filter === 'all'
             ? 'You have not played any of the same maps yet.'
@@ -102,9 +110,12 @@ const ComparisonPage = () => {
         </EmptyState>
       )}
 
-      {comparison.data !== undefined && comparison.data.items.length > 0 && (
+      {(loading || items.length > 0) && !comparison.isError && (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[40rem] text-left text-sm">
+          <table
+            aria-busy={loading}
+            className="w-full min-w-[40rem] text-left text-sm"
+          >
             <thead className="text-neon-yellow-core text-xs tracking-wider uppercase">
               <tr>
                 <th scope="col" className="px-2 py-2 font-semibold">
@@ -122,37 +133,39 @@ const ComparisonPage = () => {
               </tr>
             </thead>
             <tbody>
-              {comparison.data.items.map(({ leaderboard, mine, theirs }) => {
-                const delta = mine.modifiedScore - theirs.modifiedScore;
+              {loading && <SkeletonRows columns={4} rows={items.length || 8} />}
+              {!loading &&
+                items.map(({ leaderboard, mine, theirs }) => {
+                  const delta = mine.modifiedScore - theirs.modifiedScore;
 
-                return (
-                  <tr
-                    key={leaderboard.id}
-                    className="border-night-line border-t"
-                  >
-                    <td className="w-full max-w-0 px-2 py-2">
-                      <Song leaderboard={leaderboard} />
-                    </td>
-                    <td className="px-2 py-2 text-right tabular-nums">
-                      {formatScore(mine.modifiedScore)}
-                    </td>
-                    <td className="px-2 py-2 text-right tabular-nums">
-                      {formatScore(theirs.modifiedScore)}
-                    </td>
-                    <td
-                      className={`px-2 py-2 text-right font-semibold tabular-nums ${
-                        delta > 0
-                          ? 'text-neon-blue-core'
-                          : delta < 0
-                            ? 'text-neon-red-core'
-                            : 'text-slate-400'
-                      }`}
+                  return (
+                    <tr
+                      key={leaderboard.id}
+                      className="border-night-line border-t"
                     >
-                      {formatDelta(delta)}
-                    </td>
-                  </tr>
-                );
-              })}
+                      <td className="w-full max-w-0 px-2 py-2">
+                        <Song leaderboard={leaderboard} />
+                      </td>
+                      <td className="px-2 py-2 text-right tabular-nums">
+                        {formatScore(mine.modifiedScore)}
+                      </td>
+                      <td className="px-2 py-2 text-right tabular-nums">
+                        {formatScore(theirs.modifiedScore)}
+                      </td>
+                      <td
+                        className={`px-2 py-2 text-right font-semibold tabular-nums ${
+                          delta > 0
+                            ? 'text-neon-blue-core'
+                            : delta < 0
+                              ? 'text-neon-red-core'
+                              : 'text-slate-400'
+                        }`}
+                      >
+                        {formatDelta(delta)}
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>

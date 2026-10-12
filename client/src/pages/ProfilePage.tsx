@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 
 import { PAGE_SIZE, useScores } from '@/api/queries.ts';
 import { Pagination } from '@/components/Pagination.tsx';
+import { SkeletonRows } from '@/components/SkeletonRows.tsx';
 import { Song } from '@/components/Song.tsx';
 import {
   Avatar,
@@ -9,7 +10,6 @@ import {
   EmptyState,
   ErrorNote,
   NeonHeading,
-  Spinner,
 } from '@/components/ui.tsx';
 import {
   countryFlag,
@@ -35,6 +35,10 @@ const ProfilePage = ({ player }: { player: Player }) => {
   const [page, setPage] = useState(1);
   const search = useDebouncedValue(text.trim());
   const scores = useScores(player.id, { page, search, sort });
+  // Loading for the first time, or showing the previous list while the one
+  // for a new sort order, search or page is on its way
+  const loading = scores.isPending || scores.isPlaceholderData;
+  const items = scores.data?.items ?? [];
 
   return (
     <div className="space-y-6">
@@ -93,17 +97,24 @@ const ProfilePage = ({ player }: { player: Player }) => {
         </div>
       </div>
 
-      {scores.isPending && <Spinner />}
       {scores.isError && <ErrorNote error={scores.error} />}
-      {scores.data?.items.length === 0 && (
+      {!loading && !scores.isError && items.length === 0 && (
         <EmptyState>
           {search === '' ? 'No scores yet.' : `No song matches “${search}”.`}
         </EmptyState>
       )}
+      {loading && (
+        <p role="status" className="sr-only">
+          Loading scores
+        </p>
+      )}
 
-      {scores.data !== undefined && scores.data.items.length > 0 && (
+      {(loading || items.length > 0) && !scores.isError && (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[40rem] text-left text-sm">
+          <table
+            aria-busy={loading}
+            className="w-full min-w-[40rem] text-left text-sm"
+          >
             <thead className="text-neon-yellow-core text-xs tracking-wider uppercase">
               <tr>
                 <th scope="col" className="px-2 py-2 font-semibold">
@@ -124,25 +135,30 @@ const ProfilePage = ({ player }: { player: Player }) => {
               </tr>
             </thead>
             <tbody>
-              {scores.data.items.map(({ leaderboard, score }) => (
-                <tr key={leaderboard.id} className="border-night-line border-t">
-                  <td className="w-full max-w-0 px-2 py-2">
-                    <Song leaderboard={leaderboard} />
-                  </td>
-                  <td className="px-2 py-2 text-right font-semibold tabular-nums">
-                    {formatScore(score.modifiedScore)}
-                  </td>
-                  <td className="px-2 py-2 text-right tabular-nums">
-                    {formatAccuracy(score.accuracy)}
-                  </td>
-                  <td className="px-2 py-2 text-right tabular-nums">
-                    #{score.rank}
-                  </td>
-                  <td className="px-2 py-2 text-right whitespace-nowrap text-slate-400">
-                    {timeAgo(score.playedAt)}
-                  </td>
-                </tr>
-              ))}
+              {loading && <SkeletonRows columns={5} rows={items.length || 8} />}
+              {!loading &&
+                items.map(({ leaderboard, score }) => (
+                  <tr
+                    key={leaderboard.id}
+                    className="border-night-line border-t"
+                  >
+                    <td className="w-full max-w-0 px-2 py-2">
+                      <Song leaderboard={leaderboard} />
+                    </td>
+                    <td className="px-2 py-2 text-right font-semibold tabular-nums">
+                      {formatScore(score.modifiedScore)}
+                    </td>
+                    <td className="px-2 py-2 text-right tabular-nums">
+                      {formatAccuracy(score.accuracy)}
+                    </td>
+                    <td className="px-2 py-2 text-right tabular-nums">
+                      #{score.rank}
+                    </td>
+                    <td className="px-2 py-2 text-right whitespace-nowrap text-slate-400">
+                      {timeAgo(score.playedAt)}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
