@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 
 import { PAGE_SIZE, useComparison, useHive } from '@/api/queries.ts';
@@ -11,6 +12,7 @@ import {
   NeonHeading,
 } from '@/components/ui.tsx';
 import { formatDelta, formatScore } from '@/lib/format.ts';
+import { lastPageOf, pageFrom, useLastKnown } from '@/lib/pagination.ts';
 
 import type { ComparisonFilter } from '@/api/queries.ts';
 
@@ -34,15 +36,32 @@ const ComparisonPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const requested = searchParams.get('filter');
   const filter = isFilter(requested) ? requested : 'all';
-  const page = Math.max(1, Number(searchParams.get('page')) || 1);
+  const page = pageFrom(searchParams.get('page'));
 
   const hive = useHive();
   const comparison = useComparison(playerId, { filter, page });
   const member = hive.data?.items.find((item) => item.player.id === playerId);
-  // Loading for the first time, or showing the previous list while the one
-  // for a new filter or page is on its way
-  const loading = comparison.isPending || comparison.isPlaceholderData;
   const items = comparison.data?.items ?? [];
+  const lastPage = lastPageOf(
+    useLastKnown(comparison.data?.total) ?? 0,
+    PAGE_SIZE
+  );
+  // A link to page 9 of a list that has three: go to the last one there is
+  const beyondTheEnd =
+    comparison.data !== undefined &&
+    !comparison.isPlaceholderData &&
+    page > lastPage;
+  // Loading for the first time, or showing the previous list while the one
+  // for a new filter or page is on its way. A list that failed is not
+  // loading: what there is stays on screen, with the error above it.
+  const loading =
+    !comparison.isError &&
+    (comparison.isPending || comparison.isPlaceholderData || beyondTheEnd);
+
+  useEffect(() => {
+    if (beyondTheEnd)
+      setSearchParams({ filter, page: String(lastPage) }, { replace: true });
+  }, [beyondTheEnd, filter, lastPage, setSearchParams]);
 
   const show = (next: { filter?: ComparisonFilter; page?: number }) =>
     setSearchParams({
@@ -96,7 +115,12 @@ const ComparisonPage = () => {
         ))}
       </div>
 
-      {comparison.isError && <ErrorNote error={comparison.error} />}
+      {comparison.isError && (
+        <ErrorNote
+          error={comparison.error}
+          onRetry={() => void comparison.refetch()}
+        />
+      )}
       {loading && (
         <p role="status" className="sr-only">
           Loading comparison
@@ -110,7 +134,7 @@ const ComparisonPage = () => {
         </EmptyState>
       )}
 
-      {(loading || items.length > 0) && !comparison.isError && (
+      {(loading || items.length > 0) && (
         <div className="overflow-x-auto">
           <table
             aria-busy={loading}
@@ -173,7 +197,7 @@ const ComparisonPage = () => {
 
       <Pagination
         page={page}
-        totalPages={Math.ceil((comparison.data?.total ?? 0) / PAGE_SIZE)}
+        totalPages={lastPage}
         onChange={(next) => show({ page: next })}
       />
     </div>

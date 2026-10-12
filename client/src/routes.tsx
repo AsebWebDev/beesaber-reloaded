@@ -1,7 +1,8 @@
 import { Link } from 'react-router';
 
 import { useMe } from '@/api/queries.ts';
-import { EmptyState, ErrorNote, Spinner } from '@/components/ui.tsx';
+import { useSignOut } from '@/auth/useSignOut.ts';
+import { Button, EmptyState, ErrorNote, Spinner } from '@/components/ui.tsx';
 import { AppLayout } from '@/layout/AppLayout.tsx';
 import { ComparisonPage } from '@/pages/ComparisonPage.tsx';
 import { DashboardPage } from '@/pages/DashboardPage.tsx';
@@ -21,22 +22,38 @@ import type { Player } from '@/api/queries.ts';
  *
  * This is convenience, not protection. The server checks every request
  * itself; someone who gets past this sees empty pages and error messages.
+ *
+ * What we know about the user is used for as long as we know it. The
+ * question "who am I" is asked again in the background now and then; when
+ * that fails once, say on a train in a tunnel, the app stays as it is.
  */
 const Gate = () => {
   const me = useMe();
+  const logout = useSignOut();
 
-  if (me.isPending)
+  if (me.data === undefined) {
+    if (!me.isError)
+      return (
+        <div className="flex min-h-screen items-center justify-center">
+          <Spinner />
+        </div>
+      );
+
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Spinner />
-      </div>
+      <main className="mx-auto max-w-md space-y-4 px-6 py-16">
+        <ErrorNote error={me.error} onRetry={() => void me.refetch()} />
+        {logout.isError && <ErrorNote error={logout.error} />}
+        <Button
+          look="ghost"
+          disabled={logout.isPending}
+          onClick={() => logout.mutate()}
+        >
+          Sign out
+        </Button>
+      </main>
     );
-  if (me.isError)
-    return (
-      <div className="mx-auto max-w-md px-6 py-16">
-        <ErrorNote error={me.error} />
-      </div>
-    );
+  }
+
   if (me.data === null) return <LandingPage />;
   if (me.data.player === null) return <OnboardingPage />;
 

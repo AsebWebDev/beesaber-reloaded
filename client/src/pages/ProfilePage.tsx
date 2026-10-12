@@ -1,11 +1,13 @@
 import { useId, useState } from 'react';
 
-import { PAGE_SIZE, useScores } from '@/api/queries.ts';
+import { PAGE_SIZE, useLinkProfile, useScores } from '@/api/queries.ts';
 import { Pagination } from '@/components/Pagination.tsx';
+import { PlayerSearch } from '@/components/PlayerSearch.tsx';
 import { SkeletonRows } from '@/components/SkeletonRows.tsx';
 import { Song } from '@/components/Song.tsx';
 import {
   Avatar,
+  Button,
   Card,
   EmptyState,
   ErrorNote,
@@ -18,6 +20,7 @@ import {
   formatScore,
   timeAgo,
 } from '@/lib/format.ts';
+import { lastPageOf, useLastKnown } from '@/lib/pagination.ts';
 import { useDebouncedValue } from '@/lib/useDebouncedValue.ts';
 
 import type { Player, ScoreSort } from '@/api/queries.ts';
@@ -35,10 +38,19 @@ const ProfilePage = ({ player }: { player: Player }) => {
   const [page, setPage] = useState(1);
   const search = useDebouncedValue(text.trim());
   const scores = useScores(player.id, { page, search, sort });
+  const link = useLinkProfile();
+  const [changing, setChanging] = useState(false);
   // Loading for the first time, or showing the previous list while the one
-  // for a new sort order, search or page is on its way
-  const loading = scores.isPending || scores.isPlaceholderData;
+  // for a new sort order, search or page is on its way. A list that failed
+  // is not loading: what there is stays on screen, with the error above it.
+  const loading =
+    !scores.isError && (scores.isPending || scores.isPlaceholderData);
   const items = scores.data?.items ?? [];
+  const lastPage = lastPageOf(useLastKnown(scores.data?.total) ?? 0, PAGE_SIZE);
+
+  // The list got shorter than the page we are on
+  if (scores.data !== undefined && !scores.isPlaceholderData && page > lastPage)
+    setPage(lastPage);
 
   return (
     <div className="space-y-6">
@@ -55,7 +67,41 @@ const ProfilePage = ({ player }: { player: Player }) => {
             maps played
           </p>
         </div>
+        <Button
+          look="ghost"
+          className="ml-auto"
+          aria-expanded={changing}
+          onClick={() => setChanging(!changing)}
+        >
+          {changing ? 'Keep this profile' : 'Change profile'}
+        </Button>
       </Card>
+
+      {changing && (
+        <Card className="space-y-3">
+          <p className="text-sm text-slate-300">
+            Pick the ScoreSaber profile you want to compare as. Your hive stays
+            as it is; the scores of the new profile are fetched.
+          </p>
+          <PlayerSearch
+            label="Your name on ScoreSaber"
+            actionLabel="This is me"
+            pendingId={link.isPending ? link.variables : undefined}
+            onPick={(found) =>
+              link.mutate(found.id, {
+                onSuccess: () => {
+                  setChanging(false);
+                  setPage(1);
+                },
+              })
+            }
+            disabledReason={(found) =>
+              found.id === player.id ? 'Your current profile' : undefined
+            }
+          />
+          {link.isError && <ErrorNote error={link.error} />}
+        </Card>
+      )}
 
       <div className="flex flex-wrap items-end gap-4">
         <div className="min-w-48 flex-1">
@@ -97,7 +143,9 @@ const ProfilePage = ({ player }: { player: Player }) => {
         </div>
       </div>
 
-      {scores.isError && <ErrorNote error={scores.error} />}
+      {scores.isError && (
+        <ErrorNote error={scores.error} onRetry={() => void scores.refetch()} />
+      )}
       {!loading && !scores.isError && items.length === 0 && (
         <EmptyState>
           {search === '' ? 'No scores yet.' : `No song matches “${search}”.`}
@@ -109,7 +157,7 @@ const ProfilePage = ({ player }: { player: Player }) => {
         </p>
       )}
 
-      {(loading || items.length > 0) && !scores.isError && (
+      {(loading || items.length > 0) && (
         <div className="overflow-x-auto">
           <table
             aria-busy={loading}
@@ -164,11 +212,7 @@ const ProfilePage = ({ player }: { player: Player }) => {
         </div>
       )}
 
-      <Pagination
-        page={page}
-        totalPages={Math.ceil((scores.data?.total ?? 0) / PAGE_SIZE)}
-        onChange={setPage}
-      />
+      <Pagination page={page} totalPages={lastPage} onChange={setPage} />
     </div>
   );
 };

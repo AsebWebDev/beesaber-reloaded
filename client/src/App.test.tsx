@@ -331,3 +331,148 @@ describe('while a list is loading', () => {
     expect(await screen.findByText('Monster')).toBeInTheDocument();
   });
 });
+
+describe('when the server has trouble', () => {
+  it('keeps the app on screen when asking "who am I" fails in the background', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { queryClient } = renderApp();
+
+    await screen.findByText('2 shared maps');
+    fakeApi.set({ failures: { me: 500 } });
+    await queryClient.invalidateQueries({ queryKey: ['me'] });
+
+    expect(queryClient.getQueryState(['me'])?.status).toBe('error');
+    expect(screen.getByText('2 shared maps')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sync scores' })).toBeEnabled();
+  });
+
+  it('offers to try again when it cannot find out who is signed in', async () => {
+    fakeApi.signedInAs({ failures: { me: 500 } });
+    const { user } = renderApp();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The server is having trouble'
+    );
+
+    fakeApi.set({ failures: {} });
+    await user.click(screen.getByRole('button', { name: 'Try again' }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Head to head' })
+    ).toBeInTheDocument();
+  });
+
+  it('keeps the scores on screen when loading them again fails', async () => {
+    fakeApi.signedInAs();
+    const { queryClient, user } = renderApp('/profile');
+
+    await screen.findByText('Monster');
+    fakeApi.set({ failures: { scores: 500 } });
+    await queryClient.invalidateQueries({ queryKey: ['players'] });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The server is having trouble'
+    );
+    expect(screen.getByText('Monster')).toBeInTheDocument();
+
+    fakeApi.set({ failures: {} });
+    await user.click(screen.getByRole('button', { name: 'Try again' }));
+
+    await waitFor(() =>
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    );
+    expect(screen.getByText('Monster')).toBeInTheDocument();
+  });
+
+  it('says so, without placeholder rows, when a new sort order fails to load', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    await screen.findByText('Monster');
+    fakeApi.set({ failures: { scores: 500 } });
+    await user.click(screen.getByRole('button', { name: 'Highest score' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(screen.queryByTestId('skeleton-row')).not.toBeInTheDocument();
+    expect(screen.queryByText('No scores yet.')).not.toBeInTheDocument();
+
+    fakeApi.set({ failures: {} });
+    await user.click(screen.getByRole('button', { name: 'Try again' }));
+
+    expect(await screen.findByText('Monster')).toBeInTheDocument();
+  });
+});
+
+describe('when the session ends while the app is open', () => {
+  it('returns to the landing page with the next answer that says so', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { queryClient, user } = renderApp();
+
+    await screen.findByText('2 shared maps');
+    // The session runs out, or is ended from another device
+    fakeApi.set({ signedIn: false });
+    await user.click(screen.getByRole('link', { name: 'My hive' }));
+
+    expect(await screen.findByTestId('landing-page')).toBeInTheDocument();
+    // Nothing of what was loaded for the user is kept
+    expect(queryClient.getQueryData(['hive', 'members'])).toBeUndefined();
+  });
+});
+
+describe('a page number in the address', () => {
+  it('goes to the last page when the address asks for one beyond it', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { router } = renderApp(`/hive/${fakeApi.BEE.id}?page=99`);
+
+    expect(await screen.findByText('Monster')).toBeInTheDocument();
+    expect(router.state.location.search).toContain('page=1');
+    expect(
+      screen.queryByText(/have not played any of the same maps/)
+    ).not.toBeInTheDocument();
+  });
+
+  it('reads anything that is not a page number as the first page', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp(`/hive/${fakeApi.BEE.id}?page=1.5`);
+
+    expect(await screen.findByText('Monster')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+});
+
+describe('changing who I am', () => {
+  it('lets me pick another ScoreSaber profile on my profile page', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    expect(
+      await screen.findByRole('heading', { name: 'myself' })
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Change profile' }));
+    await user.type(screen.getByLabelText('Your name on ScoreSaber'), 'buzz');
+    await user.click(
+      (await screen.findAllByRole('button', { name: 'This is me' }))[0]!
+    );
+
+    expect(
+      await screen.findByRole('heading', { name: 'buzz' })
+    ).toBeInTheDocument();
+    // The picker closes once it is done
+    expect(
+      screen.queryByLabelText('Your name on ScoreSaber')
+    ).not.toBeInTheDocument();
+  });
+
+  it('can sign out before a profile is picked', async () => {
+    fakeApi.set({ signedIn: true });
+    const { user } = renderApp();
+
+    await screen.findByRole('heading', { name: 'Which player are you?' });
+    expect(screen.getByText(/Signed in as dev@beesaber.local/)).toBeVisible();
+
+    await user.click(screen.getByRole('button', { name: 'Sign out' }));
+
+    expect(await screen.findByTestId('landing-page')).toBeInTheDocument();
+  });
+});

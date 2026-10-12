@@ -108,14 +108,34 @@ const EmptyState = ({ children }: { children: ReactNode }) => (
   </p>
 );
 
-/** Announces a failure. `role="alert"` makes screen readers read it out. */
-const ErrorNote = ({ error }: { error: unknown }) => (
-  <p
+/**
+ * Announces a failure. `role="alert"` makes screen readers read it out.
+ * With `onRetry`, it offers to try again right where it failed.
+ */
+const ErrorNote = ({
+  error,
+  onRetry,
+}: {
+  error: unknown;
+  onRetry?: () => void;
+}) => (
+  <div
     role="alert"
-    className="border-neon-red/60 text-neon-red-core rounded border bg-red-950/40 px-3 py-2 text-sm"
+    className="border-neon-red/60 text-neon-red-core flex flex-wrap items-center justify-between gap-3 rounded border bg-red-950/40 px-3 py-2 text-sm"
   >
-    {error instanceof Error ? error.message : 'Something went wrong'}
-  </p>
+    <span>
+      {error instanceof Error ? error.message : 'Something went wrong'}
+    </span>
+    {onRetry !== undefined && (
+      <button
+        type="button"
+        onClick={onRetry}
+        className="cursor-pointer font-semibold underline"
+      >
+        Try again
+      </button>
+    )}
+  </div>
 );
 
 export { Avatar, Button, Card, EmptyState, ErrorNote, NeonHeading, Spinner };

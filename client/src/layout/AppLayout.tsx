@@ -1,8 +1,8 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { Link, NavLink, Outlet } from 'react-router';
 
 import { useSyncHive, useSyncing } from '@/api/queries.ts';
-import { signOut } from '@/auth/authClient.ts';
+import { useSignOut } from '@/auth/useSignOut.ts';
 import { HexLogo } from '@/components/HexLogo.tsx';
 import { Avatar, Button, ErrorNote } from '@/components/ui.tsx';
 
@@ -14,23 +14,25 @@ const LINKS = [
   { to: '/profile', label: 'My profile' },
 ];
 
+/** How long the answer to a click on "Sync scores" stays on screen */
+const SYNC_RESULT_SHOWN_MS = 8000;
+
 /** The frame around every page for a signed-in user: logo, menu, sync */
 const AppLayout = ({ player }: { player: Player }) => {
-  const queryClient = useQueryClient();
   const sync = useSyncHive();
-  const logout = useMutation({
-    mutationFn: signOut,
-    onSuccess: () => {
-      // Tell everything that shows the user that there is none any more ...
-      queryClient.setQueryData(['me'], null);
-      // ... and forget what was loaded for the one who just left
-      queryClient.removeQueries({
-        predicate: ({ queryKey }) =>
-          queryKey[0] !== 'me' && queryKey[0] !== 'config',
-      });
-    },
-  });
+  const logout = useSignOut();
   const syncing = useSyncing();
+  const { data: syncResult, reset: forgetSyncResult } = sync;
+
+  // "Checked less than a minute ago" is only true for a moment. Left on
+  // screen, it would still claim so an hour later.
+  useEffect(() => {
+    if (syncResult === undefined) return;
+
+    const timer = setTimeout(forgetSyncResult, SYNC_RESULT_SHOWN_MS);
+
+    return () => clearTimeout(timer);
+  }, [syncResult, forgetSyncResult]);
 
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-6 lg:flex-row lg:gap-10">
@@ -80,7 +82,7 @@ const AppLayout = ({ player }: { player: Player }) => {
           <p role="status" className="text-sm text-slate-400">
             {syncing
               ? 'Fetching scores from ScoreSaber…'
-              : sync.data?.queued === 0 &&
+              : syncResult?.queued === 0 &&
                 'Already up to date, checked less than a minute ago.'}
           </p>
           <Button

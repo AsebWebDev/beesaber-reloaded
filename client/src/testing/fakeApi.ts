@@ -99,7 +99,12 @@ const MY_SCORES: ScoreEntry[] = SHARED.map(({ leaderboard: board, mine }) => ({
   score: mine,
 }));
 
+/** The answers a test can make fail */
+type Failing = 'comparison' | 'hive' | 'me' | 'news' | 'scores';
+
 type State = {
+  /** Answers that fail, with the HTTP status they fail with */
+  failures: Partial<Record<Failing, number>>;
   hive: string[];
   news: NewsItem[];
   /** The ScoreSaber profile the account compares as */
@@ -117,6 +122,7 @@ type State = {
 };
 
 const initial = (): State => ({
+  failures: {},
   hive: [],
   listDelayMs: 0,
   news: [],
@@ -135,6 +141,20 @@ const error = (status: number, code: string, message: string) =>
 
 const unauthorized = () => error(401, 'unauthorized', 'Not signed in');
 
+/**
+ * What stands between a request and its answer, like on the real server:
+ * no answer without a session, and none when the test says this one fails.
+ */
+const refusal = (name?: Failing) => {
+  if (!state.signedIn) return unauthorized();
+
+  const status = name === undefined ? undefined : state.failures[name];
+
+  return status === undefined
+    ? undefined
+    : error(status, 'internal_error', 'The server is having trouble');
+};
+
 const me = (): Me => ({
   user: {
     id: 'user-1',
@@ -143,7 +163,10 @@ const me = (): Me => ({
     image: null,
     playerId: state.playerId,
   },
-  player: state.playerId === null ? null : ME,
+  player:
+    state.playerId === null
+      ? null
+      : ([ME, BEE, OTHER].find(({ id }) => id === state.playerId) ?? ME),
 });
 
 const member = (): HiveMember => ({
@@ -196,9 +219,7 @@ const server = setupServer(
     HttpResponse.json(state.signedIn ? session() : null)
   ),
 
-  http.get('/api/me', () =>
-    state.signedIn ? HttpResponse.json(me()) : unauthorized()
-  ),
+  http.get('/api/me', () => refusal('me') ?? HttpResponse.json(me())),
   http.put('/api/me/player', async ({ request }) => {
     const body = (await request.json()) as { playerId: string };
 
@@ -224,6 +245,10 @@ const server = setupServer(
   http.get('/api/players/:id/scores', async ({ request }) => {
     await delay(state.listDelayMs);
 
+    const refused = refusal('scores');
+
+    if (refused !== undefined) return refused;
+
     const url = new URL(request.url);
     const search = url.searchParams.get('search')?.toLowerCase();
     const sorted =
@@ -245,8 +270,11 @@ const server = setupServer(
     );
   }),
 
-  http.get('/api/hive', () =>
-    HttpResponse.json({ items: state.hive.map(() => member()) })
+  http.get(
+    '/api/hive',
+    () =>
+      refusal('hive') ??
+      HttpResponse.json({ items: state.hive.map(() => member()) })
   ),
   http.post('/api/hive', async ({ request }) => {
     const body = (await request.json()) as { playerId: string };
@@ -260,8 +288,15 @@ const server = setupServer(
 
     return new HttpResponse(null, { status: 204 });
   }),
-  http.get('/api/hive/news', () => HttpResponse.json({ items: state.news })),
+  http.get(
+    '/api/hive/news',
+    () => refusal('news') ?? HttpResponse.json({ items: state.news })
+  ),
   http.get('/api/hive/sync', () => {
+    const refused = refusal();
+
+    if (refused !== undefined) return refused;
+
     // Every question brings the end of the sync one step closer
     const syncing =
       state.hive.length > 0 && state.pollsUntilSynced > 0
@@ -280,6 +315,10 @@ const server = setupServer(
   ),
   http.get('/api/hive/:playerId/comparison', async ({ request }) => {
     await delay(state.listDelayMs);
+
+    const refused = refusal('comparison');
+
+    if (refused !== undefined) return refused;
 
     const url = new URL(request.url);
     const filter = url.searchParams.get('filter');

@@ -34,7 +34,9 @@ const HivePage = () => {
           My hive
         </NeonHeading>
         {hive.isPending && <Spinner />}
-        {hive.isError && <ErrorNote error={hive.error} />}
+        {hive.isError && (
+          <ErrorNote error={hive.error} onRetry={() => void hive.refetch()} />
+        )}
         {remove.isError && <ErrorNote error={remove.error} />}
         {hive.data?.items.length === 0 && (
           <EmptyState>No bees yet. Search for a player below.</EmptyState>
@@ -64,8 +66,9 @@ const HivePage = () => {
                   )}
                   {player.syncError !== null && !isSyncing(player) && (
                     <p className="text-neon-red-core text-xs">
-                      The last attempt to fetch their scores failed. It will be
-                      tried again.
+                      {player.syncError === 'not_found'
+                        ? 'ScoreSaber no longer knows this player.'
+                        : 'The last attempt to fetch their scores failed. It will be tried again.'}
                     </p>
                   )}
                 </div>

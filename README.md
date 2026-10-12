@@ -135,7 +135,6 @@ small fake built from real answers.
 ### Known limitations
 
 - Sign-in with Google needs your own OAuth client, see `server/.env.example`.
-  It has not been tested against Google yet.
 - Nothing proves that the ScoreSaber profile you pick is yours. ScoreSaber
   offers sign-in for third-party apps only to approved developers.
 - The job queue and the live feed run inside the API process. That is fine for

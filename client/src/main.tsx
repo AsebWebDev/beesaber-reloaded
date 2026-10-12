@@ -1,24 +1,14 @@
 import './index.css';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 
-import { ApiError } from '@/api/client.ts';
+import { createQueryClient } from '@/api/queryClient.ts';
 import { routes } from '@/routes.tsx';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      // Asking again does not help when the server said "no" (4xx). Only
-      // retry when something may have been temporarily broken.
-      retry: (failures, error) =>
-        !(error instanceof ApiError && error.status < 500) && failures < 2,
-      staleTime: 30_000,
-    },
-  },
-});
+const queryClient = createQueryClient();
 
 const container = document.getElementById('root');
 

@@ -95,7 +95,9 @@ const DashboardPage = () => {
           News
         </NeonHeading>
         {news.isPending && <Spinner />}
-        {news.isError && <ErrorNote error={news.error} />}
+        {news.isError && (
+          <ErrorNote error={news.error} onRetry={() => void news.refetch()} />
+        )}
         {news.data?.items.length === 0 && (
           <EmptyState>
             Nobody has beaten one of your scores lately. Enjoy it while it
@@ -114,7 +116,9 @@ const DashboardPage = () => {
           Head to head
         </NeonHeading>
         {hive.isPending && <Spinner />}
-        {hive.isError && <ErrorNote error={hive.error} />}
+        {hive.isError && (
+          <ErrorNote error={hive.error} onRetry={() => void hive.refetch()} />
+        )}
         {hive.data?.items.length === 0 && (
           <EmptyState>
             Your hive is empty.{' '}
