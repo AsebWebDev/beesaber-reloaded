@@ -7,6 +7,7 @@ import { SkeletonRows } from '@/components/SkeletonRows.tsx';
 import { Song } from '@/components/Song.tsx';
 import {
   Avatar,
+  CellLabel,
   EmptyState,
   ErrorNote,
   NeonHeading,
@@ -97,16 +98,21 @@ const ComparisonPage = () => {
 
   return (
     <div className="space-y-6">
-      <Link to="/hive" className="text-sm text-slate-400 hover:underline">
+      <Link
+        to="/hive"
+        className="inline-block text-sm text-slate-400 hover:underline"
+      >
         ← My hive
       </Link>
 
-      <header className="flex flex-wrap items-center gap-4">
+      {/* Picture and title stay side by side, also on a phone: the title
+          wraps within its own column instead of dropping below the picture */}
+      <header className="flex items-center gap-3 sm:gap-4">
         {member !== undefined && (
           <Avatar src={member.player.avatarUrl} size={56} />
         )}
-        <div>
-          <NeonHeading color="red" className="text-3xl">
+        <div className="min-w-0">
+          <NeonHeading color="red" className="text-2xl break-words sm:text-3xl">
             Me vs {member?.player.name ?? '…'}
           </NeonHeading>
           {member !== undefined && (
@@ -171,27 +177,50 @@ const ComparisonPage = () => {
           className="overflow-x-auto"
         >
           <table
+            role="table"
             aria-busy={loading}
-            className="w-full min-w-[40rem] text-left text-sm"
+            // On a phone every row folds into two lines: the song, and
+            // below it the values. The roles say what the elements are,
+            // since a browser may forget once CSS changes how they are laid out.
+            className="w-full text-left text-sm max-sm:block sm:min-w-[40rem]"
           >
             <caption className="sr-only">{tableName}</caption>
-            <thead className="text-neon-yellow-core text-xs tracking-wider uppercase">
-              <tr>
-                <th scope="col" className="px-2 py-2 font-semibold">
+            <thead
+              role="rowgroup"
+              className="text-neon-yellow-core text-xs tracking-wider uppercase max-sm:sr-only"
+            >
+              <tr role="row">
+                <th
+                  role="columnheader"
+                  scope="col"
+                  className="px-2 py-2 font-semibold"
+                >
                   Map
                 </th>
-                <th scope="col" className="px-2 py-2 text-right font-semibold">
+                <th
+                  role="columnheader"
+                  scope="col"
+                  className="px-2 py-2 text-right font-semibold"
+                >
                   Me
                 </th>
-                <th scope="col" className="px-2 py-2 text-right font-semibold">
+                <th
+                  role="columnheader"
+                  scope="col"
+                  className="px-2 py-2 text-right font-semibold"
+                >
                   {member?.player.name ?? 'Them'}
                 </th>
-                <th scope="col" className="px-2 py-2 text-right font-semibold">
+                <th
+                  role="columnheader"
+                  scope="col"
+                  className="px-2 py-2 text-right font-semibold"
+                >
                   Difference
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody role="rowgroup" className="max-sm:block">
               {loading && <SkeletonRows columns={4} rows={rowsBefore || 8} />}
               {!loading &&
                 items.map(({ leaderboard, mine, theirs }) => {
@@ -199,20 +228,33 @@ const ComparisonPage = () => {
 
                   return (
                     <tr
+                      role="row"
                       key={leaderboard.id}
-                      className="border-night-line border-t"
+                      className="border-night-line border-t max-sm:flex max-sm:flex-wrap max-sm:pb-1"
                     >
-                      <td className="w-full max-w-0 px-2 py-2">
+                      <td
+                        role="cell"
+                        className="w-full max-w-0 px-2 py-2 max-sm:max-w-none max-sm:basis-full"
+                      >
                         <Song leaderboard={leaderboard} />
                       </td>
-                      <td className="px-2 py-2 text-right tabular-nums">
+                      <td
+                        role="cell"
+                        className="px-2 py-2 text-right tabular-nums max-sm:flex-1 max-sm:pt-0 max-sm:text-left"
+                      >
+                        <CellLabel>Me</CellLabel>
                         {formatScore(mine.modifiedScore)}
                       </td>
-                      <td className="px-2 py-2 text-right tabular-nums">
+                      <td
+                        role="cell"
+                        className="px-2 py-2 text-right tabular-nums max-sm:flex-1 max-sm:pt-0 max-sm:text-left"
+                      >
+                        <CellLabel>{member?.player.name ?? 'Them'}</CellLabel>
                         {formatScore(theirs.modifiedScore)}
                       </td>
                       <td
-                        className={`px-2 py-2 text-right font-semibold tabular-nums ${
+                        role="cell"
+                        className={`px-2 py-2 text-right font-semibold tabular-nums max-sm:flex-1 max-sm:pt-0 max-sm:text-left ${
                           delta > 0
                             ? 'text-neon-blue-core'
                             : delta < 0
@@ -220,6 +262,7 @@ const ComparisonPage = () => {
                               : 'text-slate-400'
                         }`}
                       >
+                        <CellLabel>Difference</CellLabel>
                         {formatDelta(delta)}
                       </td>
                     </tr>

@@ -9,6 +9,7 @@ import {
   Avatar,
   Button,
   Card,
+  CellLabel,
   EmptyState,
   ErrorNote,
   NeonHeading,
@@ -128,50 +129,96 @@ const ScoreList = ({ playerId }: { playerId: string }) => {
           className="overflow-x-auto"
         >
           <table
+            role="table"
             aria-busy={loading}
-            className="w-full min-w-[40rem] text-left text-sm"
+            // On a phone every row folds into two lines: the song, and
+            // below it the values. The roles say what the elements are,
+            // since a browser may forget once CSS changes how they are laid out.
+            className="w-full text-left text-sm max-sm:block sm:min-w-[40rem]"
           >
             <caption className="sr-only">My scores</caption>
-            <thead className="text-neon-yellow-core text-xs tracking-wider uppercase">
-              <tr>
-                <th scope="col" className="px-2 py-2 font-semibold">
+            <thead
+              role="rowgroup"
+              className="text-neon-yellow-core text-xs tracking-wider uppercase max-sm:sr-only"
+            >
+              <tr role="row">
+                <th
+                  role="columnheader"
+                  scope="col"
+                  className="px-2 py-2 font-semibold"
+                >
                   Map
                 </th>
-                <th scope="col" className="px-2 py-2 text-right font-semibold">
+                <th
+                  role="columnheader"
+                  scope="col"
+                  className="px-2 py-2 text-right font-semibold"
+                >
                   Score
                 </th>
-                <th scope="col" className="px-2 py-2 text-right font-semibold">
+                <th
+                  role="columnheader"
+                  scope="col"
+                  className="px-2 py-2 text-right font-semibold"
+                >
                   Accuracy
                 </th>
-                <th scope="col" className="px-2 py-2 text-right font-semibold">
+                <th
+                  role="columnheader"
+                  scope="col"
+                  className="px-2 py-2 text-right font-semibold"
+                >
                   Rank
                 </th>
-                <th scope="col" className="px-2 py-2 text-right font-semibold">
+                <th
+                  role="columnheader"
+                  scope="col"
+                  className="px-2 py-2 text-right font-semibold"
+                >
                   Played
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody role="rowgroup" className="max-sm:block">
               {loading && <SkeletonRows columns={5} rows={rowsBefore || 8} />}
               {!loading &&
                 items.map(({ leaderboard, score }) => (
                   <tr
+                    role="row"
                     key={leaderboard.id}
-                    className="border-night-line border-t"
+                    className="border-night-line border-t max-sm:flex max-sm:flex-wrap max-sm:pb-1"
                   >
-                    <td className="w-full max-w-0 px-2 py-2">
+                    <td
+                      role="cell"
+                      className="w-full max-w-0 px-2 py-2 max-sm:max-w-none max-sm:basis-full"
+                    >
                       <Song leaderboard={leaderboard} />
                     </td>
-                    <td className="px-2 py-2 text-right font-semibold tabular-nums">
+                    <td
+                      role="cell"
+                      className="px-2 py-2 text-right font-semibold tabular-nums max-sm:flex-1 max-sm:pt-0 max-sm:text-left"
+                    >
+                      <CellLabel>Score</CellLabel>
                       {formatScore(score.modifiedScore)}
                     </td>
-                    <td className="px-2 py-2 text-right tabular-nums">
+                    <td
+                      role="cell"
+                      className="px-2 py-2 text-right tabular-nums max-sm:flex-1 max-sm:pt-0 max-sm:text-left"
+                    >
+                      <CellLabel>Accuracy</CellLabel>
                       {formatAccuracy(score.accuracy)}
                     </td>
-                    <td className="px-2 py-2 text-right tabular-nums">
-                      #{score.rank}
+                    <td
+                      role="cell"
+                      className="px-2 py-2 text-right tabular-nums max-sm:flex-1 max-sm:pt-0 max-sm:text-left"
+                    >
+                      <CellLabel>Rank</CellLabel>#{score.rank}
                     </td>
-                    <td className="px-2 py-2 text-right whitespace-nowrap text-slate-400">
+                    <td
+                      role="cell"
+                      className="px-2 py-2 text-right whitespace-nowrap text-slate-400 max-sm:flex-1 max-sm:pt-0 max-sm:text-left"
+                    >
+                      <CellLabel>Played</CellLabel>
                       <TimeAgo date={score.playedAt} />
                     </td>
                   </tr>

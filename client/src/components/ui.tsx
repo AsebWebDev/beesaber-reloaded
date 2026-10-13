@@ -173,6 +173,20 @@ const TimeAgo = ({ className, date }: { className?: string; date: string }) => (
   </time>
 );
 
+/**
+ * Names a value in a table row on a phone, where the row is folded into
+ * two lines and the column headings are not on screen. Hidden from screen
+ * readers, which still get the real headings.
+ */
+const CellLabel = ({ children }: { children: ReactNode }) => (
+  <span
+    aria-hidden="true"
+    className="block text-xs font-normal text-slate-400 sm:hidden"
+  >
+    {children}
+  </span>
+);
+
 /** Shown instead of a list that has nothing in it */
 const EmptyState = ({ children }: { children: ReactNode }) => (
   <p className="border-night-line rounded-lg border border-dashed px-4 py-8 text-center text-slate-400">
@@ -214,6 +228,7 @@ export {
   Avatar,
   Button,
   Card,
+  CellLabel,
   EmptyState,
   ErrorNote,
   NeonHeading,

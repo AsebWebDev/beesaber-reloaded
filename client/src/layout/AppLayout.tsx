@@ -58,8 +58,8 @@ const AppLayout = ({
       </a>
 
       <header className="flex flex-wrap items-center gap-x-4 gap-y-3 lg:w-56 lg:shrink-0 lg:flex-col lg:items-start lg:gap-4">
-        <Link to="/" className="flex items-center gap-3">
-          <HexLogo size={44} />
+        <Link to="/" className="flex items-center gap-2 sm:gap-3">
+          <HexLogo size={40} />
           <span className="font-neon text-2xl tracking-wide uppercase sm:text-3xl">
             <span className="glow-red">Bee</span>
             <span className="glow-blue">Saber</span>
@@ -103,6 +103,8 @@ const AppLayout = ({
           </div>
           <Button
             look="ghost"
+            // Smaller on a phone, where it shares a row with the logo
+            className="max-sm:px-3 max-sm:py-1.5 max-sm:text-xs"
             disabled={logout.isPending}
             onClick={() => logout.mutate()}
           >
@@ -118,11 +120,15 @@ const AppLayout = ({
         tabIndex={-1}
         className="min-w-0 flex-1 space-y-6 outline-none"
       >
-        <div className="flex flex-wrap items-center justify-end gap-3">
+        <div className="flex flex-wrap items-center justify-end gap-3 max-sm:-mt-2">
           <p role="status" className="text-sm text-slate-400">
             {sync.message}
           </p>
-          <Button disabled={sync.busy} onClick={sync.start}>
+          <Button
+            disabled={sync.busy}
+            onClick={sync.start}
+            className="max-sm:px-3 max-sm:py-1.5 max-sm:text-xs"
+          >
             Sync scores
           </Button>
         </div>
