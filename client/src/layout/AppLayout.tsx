@@ -57,23 +57,28 @@ const AppLayout = ({
         Skip to content
       </a>
 
-      <header className="flex flex-wrap items-center gap-4 lg:w-56 lg:shrink-0 lg:flex-col lg:items-start">
+      <header className="flex flex-wrap items-center gap-x-4 gap-y-3 lg:w-56 lg:shrink-0 lg:flex-col lg:items-start lg:gap-4">
         <Link to="/" className="flex items-center gap-3">
           <HexLogo size={44} />
-          <span className="font-neon text-3xl tracking-wide uppercase">
+          <span className="font-neon text-2xl tracking-wide uppercase sm:text-3xl">
             <span className="glow-red">Bee</span>
             <span className="glow-blue">Saber</span>
           </span>
         </Link>
 
-        <nav aria-label="Main" className="flex gap-1 lg:w-full lg:flex-col">
+        {/* On a phone the menu is a row of its own below the logo, spread over
+            the full width, so all three entries fit */}
+        <nav
+          aria-label="Main"
+          className="order-last flex w-full flex-wrap justify-between gap-1 lg:order-none lg:flex-col lg:justify-start"
+        >
           {LINKS.map(({ label, to }) => (
             <NavLink
               key={to}
               to={to}
               end={to === '/'}
               className={({ isActive }) =>
-                `font-neon rounded px-2 py-1.5 text-base tracking-wide whitespace-nowrap uppercase transition sm:px-3 sm:text-xl ${
+                `font-neon rounded px-1 py-1.5 text-[clamp(0.8rem,4.2vw,1.125rem)] tracking-wide whitespace-nowrap uppercase transition sm:px-3 sm:text-xl ${
                   // Underlined as well: the glow alone is a difference of colour
                   isActive
                     ? 'glow-yellow underline decoration-2 underline-offset-8'
@@ -87,9 +92,14 @@ const AppLayout = ({
         </nav>
 
         <div className="ml-auto flex items-center gap-3 lg:mt-auto lg:ml-0 lg:w-full lg:flex-col lg:items-start">
-          <div className="flex items-center gap-2 text-sm text-slate-300">
+          {/* On the narrowest phones the picture would push "Sign out" into
+              a line of its own */}
+          <div className="flex items-center gap-2 text-sm text-slate-300 max-[379px]:hidden">
             <Avatar src={player.avatarUrl} size={28} />
-            <span className="max-w-32 truncate">{player.name}</span>
+            {/* Next to the logo there is no room for the name on a phone */}
+            <span className="hidden max-w-32 truncate sm:inline">
+              {player.name}
+            </span>
           </div>
           <Button
             look="ghost"

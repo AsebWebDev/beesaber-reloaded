@@ -31,9 +31,10 @@ const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
       ref={main}
       data-testid="landing-page"
       tabIndex={-1}
-      className="outline-none mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-10 px-6 text-center"
+      className="outline-none mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-10 px-6 py-10 text-center"
     >
-      <h1 className="font-neon text-6xl tracking-wide uppercase sm:text-8xl">
+      {/* Grows with the screen, so the name fits on a phone in one line */}
+      <h1 className="font-neon text-[clamp(2.25rem,13vw,6rem)] leading-none tracking-wide uppercase">
         <span className="glow-red">Bee</span>
         <span className="glow-blue">Saber</span>
       </h1>
