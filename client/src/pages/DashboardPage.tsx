@@ -9,8 +9,9 @@ import {
   ErrorNote,
   NeonHeading,
   Spinner,
+  TimeAgo,
 } from '@/components/ui.tsx';
-import { formatDelta, formatScore, timeAgo } from '@/lib/format.ts';
+import { formatDelta, formatScore } from '@/lib/format.ts';
 import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 import type { HiveMember, NewsItem } from '@/api/queries.ts';
@@ -19,7 +20,7 @@ import type { HiveMember, NewsItem } from '@/api/queries.ts';
 const NewsCard = ({ item }: { item: NewsItem }) => (
   <Card className="space-y-3">
     <p className="flex flex-wrap items-center gap-2 text-sm text-slate-300">
-      <Avatar src={item.player.avatarUrl} name={item.player.name} size={28} />
+      <Avatar src={item.player.avatarUrl} size={28} />
       <Link
         to={`/hive/${item.player.id}`}
         className="text-neon-yellow-core font-semibold hover:underline"
@@ -27,7 +28,7 @@ const NewsCard = ({ item }: { item: NewsItem }) => (
         {item.player.name}
       </Link>
       beat your score
-      <span className="text-slate-400">{timeAgo(item.event.playedAt)}</span>
+      <TimeAgo date={item.event.playedAt} className="text-slate-400" />
     </p>
     <Song leaderboard={item.leaderboard} />
     <p className="text-sm">
@@ -53,14 +54,21 @@ const RecordCard = ({ member }: { member: HiveMember }) => {
   const share = decided === 0 ? 50 : Math.round((winning / decided) * 100);
 
   return (
-    <Link
-      to={`/hive/${player.id}`}
-      className="border-night-line bg-night-raised hover:border-neon-blue block rounded-lg border p-4 transition"
-    >
+    // The whole card can be clicked, but the link is only the name. A link
+    // around everything would be read out as one long run of all its text.
+    <div className="border-night-line bg-night-raised hover:border-neon-blue relative rounded-lg border p-4 transition has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-neon-yellow">
       <div className="flex items-center gap-3">
-        <Avatar src={player.avatarUrl} name={player.name} />
+        <Avatar src={player.avatarUrl} />
         <div className="min-w-0">
-          <p className="truncate font-semibold text-slate-100">{player.name}</p>
+          <p className="truncate font-semibold text-slate-100">
+            <Link
+              to={`/hive/${player.id}`}
+              // Stretches the link's clickable area over the card
+              className="outline-none after:absolute after:inset-0"
+            >
+              {player.name}
+            </Link>
+          </p>
           <p className="text-xs text-slate-400">
             {isSyncing(player)
               ? 'Fetching scores…'
@@ -71,8 +79,8 @@ const RecordCard = ({ member }: { member: HiveMember }) => {
 
       <div
         className="bg-neon-red/70 mt-3 h-2 overflow-hidden rounded-full"
-        role="img"
-        aria-label={`You lead on ${winning}, ${player.name} leads on ${losing}`}
+        // A picture of the two numbers below it, which say the same
+        aria-hidden="true"
       >
         <div className="bg-neon-blue h-full" style={{ width: `${share}%` }} />
       </div>
@@ -80,7 +88,7 @@ const RecordCard = ({ member }: { member: HiveMember }) => {
         <span className="text-neon-blue-core">You lead on {winning}</span>
         <span className="text-neon-red-core">They lead on {losing}</span>
       </p>
-    </Link>
+    </div>
   );
 };
 
@@ -93,8 +101,12 @@ const DashboardPage = () => {
 
   return (
     <div className="space-y-10">
+      {/* The page has two parts of equal weight. Its own title is only
+          needed by those who navigate by headings. */}
+      <h1 className="sr-only">Dashboard</h1>
+
       <section className="space-y-4">
-        <NeonHeading color="red" className="text-3xl">
+        <NeonHeading as="h2" color="red" className="text-3xl">
           News
         </NeonHeading>
         {news.isPending && <Spinner />}

@@ -13,7 +13,10 @@ const OnboardingPage = () => {
   usePageTitle('Pick your profile');
 
   return (
-    <main className="mx-auto max-w-2xl space-y-6 px-6 py-16">
+    <main
+      tabIndex={-1}
+      className="mx-auto max-w-2xl space-y-6 px-6 py-16 outline-none"
+    >
       <NeonHeading color="yellow" className="text-4xl">
         Which player are you?
       </NeonHeading>
@@ -26,6 +29,7 @@ const OnboardingPage = () => {
         <PlayerSearch
           label="Your name on ScoreSaber"
           actionLabel="This is me"
+          actionName={(player) => `This is me: ${player.name}`}
           pendingId={link.isPending ? link.variables : undefined}
           onPick={(player) => link.mutate(player.id)}
         />

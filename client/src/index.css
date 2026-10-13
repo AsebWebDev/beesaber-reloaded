@@ -55,6 +55,12 @@
 }
 
 @layer base {
+  /* Tells the browser to draw its own parts, like scroll bars and the
+     clear button of a search box, for a dark page */
+  html {
+    color-scheme: dark;
+  }
+
   body {
     @apply bg-night min-h-screen text-slate-200 antialiased;
   }

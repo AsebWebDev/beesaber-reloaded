@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 
 import { PAGE_SIZE, useLinkProfile, useScores } from '@/api/queries.ts';
 import { Pagination } from '@/components/Pagination.tsx';
@@ -12,13 +12,13 @@ import {
   EmptyState,
   ErrorNote,
   NeonHeading,
+  TimeAgo,
 } from '@/components/ui.tsx';
 import {
   countryFlag,
   formatAccuracy,
   formatRank,
   formatScore,
-  timeAgo,
 } from '@/lib/format.ts';
 import { lastPageOf, useLastKnown } from '@/lib/pagination.ts';
 import { useDebouncedValue } from '@/lib/useDebouncedValue.ts';
@@ -41,6 +41,9 @@ const ProfilePage = ({ player }: { player: Player }) => {
   const scores = useScores(player.id, { page, search, sort });
   const link = useLinkProfile();
   const [changing, setChanging] = useState(false);
+  const changeButton = useRef<HTMLButtonElement>(null);
+  const [notice, setNotice] = useState('');
+  const total = scores.data?.total;
   // Loading for the first time, or showing the previous list while the one
   // for a new sort order, search or page is on its way. A list that failed
   // is not loading: what there is stays on screen, with the error above it.
@@ -58,7 +61,7 @@ const ProfilePage = ({ player }: { player: Player }) => {
   return (
     <div className="space-y-6">
       <Card className="flex flex-wrap items-center gap-4">
-        <Avatar src={player.avatarUrl} name={player.name} size={72} />
+        <Avatar src={player.avatarUrl} size={72} />
         <div>
           <NeonHeading color="blue" className="text-3xl">
             {player.name}
@@ -73,12 +76,16 @@ const ProfilePage = ({ player }: { player: Player }) => {
         <Button
           look="ghost"
           className="ml-auto"
+          ref={changeButton}
           aria-expanded={changing}
           onClick={() => setChanging(!changing)}
         >
           {changing ? 'Keep this profile' : 'Change profile'}
         </Button>
       </Card>
+      <p role="status" className="sr-only">
+        {notice}
+      </p>
 
       {changing && (
         <Card className="space-y-3">
@@ -89,12 +96,16 @@ const ProfilePage = ({ player }: { player: Player }) => {
           <PlayerSearch
             label="Your name on ScoreSaber"
             actionLabel="This is me"
+            actionName={(found) => `This is me: ${found.name}`}
             pendingId={link.isPending ? link.variables : undefined}
             onPick={(found) =>
               link.mutate(found.id, {
                 onSuccess: () => {
                   setChanging(false);
                   setPage(1);
+                  setNotice(`You now compare as ${found.name}.`);
+                  // The picker closes, and the focus with it
+                  changeButton.current?.focus();
                 },
               })
             }
@@ -154,18 +165,32 @@ const ProfilePage = ({ player }: { player: Player }) => {
           {search === '' ? 'No scores yet.' : `No song matches “${search}”.`}
         </EmptyState>
       )}
-      {loading && (
-        <p role="status" className="sr-only">
-          Loading scores
-        </p>
-      )}
+      {/* Always there, so that a change of its text is read out: first
+          that the list is loading, then what has arrived */}
+      <p role="status" className="sr-only">
+        {loading
+          ? 'Loading scores'
+          : total === undefined
+            ? ''
+            : `${total} ${total === 1 ? 'score' : 'scores'} in this list${
+                lastPage > 1 ? `, page ${page} of ${lastPage}` : ''
+              }.`}
+      </p>
 
       {(loading || items.length > 0) && (
-        <div className="overflow-x-auto">
+        // On a narrow screen the table scrolls sideways. A scrolling area
+        // has to be reachable with the keyboard, or its right half is not.
+        <div
+          role="region"
+          aria-label="My scores"
+          tabIndex={0}
+          className="overflow-x-auto"
+        >
           <table
             aria-busy={loading}
             className="w-full min-w-[40rem] text-left text-sm"
           >
+            <caption className="sr-only">My scores</caption>
             <thead className="text-neon-yellow-core text-xs tracking-wider uppercase">
               <tr>
                 <th scope="col" className="px-2 py-2 font-semibold">
@@ -206,7 +231,7 @@ const ProfilePage = ({ player }: { player: Player }) => {
                       #{score.rank}
                     </td>
                     <td className="px-2 py-2 text-right whitespace-nowrap text-slate-400">
-                      {timeAgo(score.playedAt)}
+                      <TimeAgo date={score.playedAt} />
                     </td>
                   </tr>
                 ))}

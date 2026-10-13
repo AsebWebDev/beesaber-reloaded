@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router';
 
 import { useMe } from '@/api/queries.ts';
@@ -31,6 +32,31 @@ import type { Player } from '@/api/queries.ts';
 const Gate = () => {
   const me = useMe();
   const logout = useSignOut();
+  const screen =
+    me.data === undefined
+      ? me.isError
+        ? 'error'
+        : 'loading'
+      : me.data === null
+        ? 'landing'
+        : me.data.player === null
+          ? 'onboarding'
+          : 'app';
+  const shown = useRef(screen);
+
+  // Signing in, picking a profile and signing out each replace everything
+  // on screen, including whatever had the focus. Without help the focus is
+  // then on nothing: a screen reader stays silent, and the Tab key starts
+  // over. So the new screen gets it. The first screen of a visit does not;
+  // there the browser starts at the top, as on any page.
+  useEffect(() => {
+    const before = shown.current;
+
+    shown.current = screen;
+
+    if (before !== screen && before !== 'loading')
+      document.querySelector<HTMLElement>('main')?.focus();
+  }, [screen]);
 
   if (me.data === undefined) {
     if (!me.isError)
@@ -41,7 +67,10 @@ const Gate = () => {
       );
 
     return (
-      <main className="mx-auto max-w-md space-y-4 px-6 py-16">
+      <main
+        tabIndex={-1}
+        className="mx-auto max-w-md space-y-4 px-6 py-16 outline-none"
+      >
         <ErrorNote error={me.error} onRetry={() => void me.refetch()} />
         {logout.isError && <ErrorNote error={logout.error} />}
         <Button

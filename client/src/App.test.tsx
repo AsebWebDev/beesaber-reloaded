@@ -52,7 +52,9 @@ describe('the first sign-in', () => {
     ).toBeInTheDocument();
 
     await user.type(screen.getByLabelText('Your name on ScoreSaber'), 'myself');
-    await user.click(await screen.findByRole('button', { name: 'This is me' }));
+    await user.click(
+      await screen.findByRole('button', { name: /^This is me/ })
+    );
 
     expect(
       await screen.findByRole('heading', { name: 'Head to head' })
@@ -73,7 +75,7 @@ describe('the first sign-in', () => {
     await new Promise((resolve) => setTimeout(resolve, 600));
 
     expect(
-      screen.queryByRole('button', { name: 'This is me' })
+      screen.queryByRole('button', { name: /^This is me/ })
     ).not.toBeInTheDocument();
   });
 });
@@ -148,7 +150,7 @@ describe('the hive page', () => {
       'buzz'
     );
     await user.click(
-      (await screen.findAllByRole('button', { name: 'Add' }))[0]!
+      (await screen.findAllByRole('button', { name: /^Add / }))[0]!
     );
 
     const remove = await screen.findByRole('button', {
@@ -452,7 +454,7 @@ describe('changing who I am', () => {
     await user.click(screen.getByRole('button', { name: 'Change profile' }));
     await user.type(screen.getByLabelText('Your name on ScoreSaber'), 'buzz');
     await user.click(
-      (await screen.findAllByRole('button', { name: 'This is me' }))[0]!
+      (await screen.findAllByRole('button', { name: /^This is me/ }))[0]!
     );
 
     expect(
@@ -629,7 +631,10 @@ describe('lists that have nothing or fail', () => {
     );
 
     expect(
-      await screen.findByText('No player called “nobody” found.')
+      // The note on screen; the same words also go to screen readers
+      await screen.findByText('No player called “nobody” found.', {
+        ignore: '[role="status"]',
+      })
     ).toBeInTheDocument();
   });
 

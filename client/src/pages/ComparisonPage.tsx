@@ -43,6 +43,8 @@ const ComparisonPage = () => {
   const comparison = useComparison(playerId, { filter, page });
   const member = hive.data?.items.find((item) => item.player.id === playerId);
   const items = comparison.data?.items ?? [];
+  const total = comparison.data?.total;
+  const tableName = `Scores of me and ${member?.player.name ?? 'this bee'}`;
 
   usePageTitle(
     member === undefined ? 'Comparison' : `Me vs ${member.player.name}`
@@ -83,11 +85,7 @@ const ComparisonPage = () => {
 
       <header className="flex flex-wrap items-center gap-4">
         {member !== undefined && (
-          <Avatar
-            src={member.player.avatarUrl}
-            name={member.player.name}
-            size={56}
-          />
+          <Avatar src={member.player.avatarUrl} size={56} />
         )}
         <div>
           <NeonHeading color="red" className="text-3xl">
@@ -126,11 +124,17 @@ const ComparisonPage = () => {
           onRetry={() => void comparison.refetch()}
         />
       )}
-      {loading && (
-        <p role="status" className="sr-only">
-          Loading comparison
-        </p>
-      )}
+      {/* Always there, so that a change of its text is read out: first
+          that the list is loading, then what has arrived */}
+      <p role="status" className="sr-only">
+        {loading
+          ? 'Loading comparison'
+          : total === undefined
+            ? ''
+            : `${total} ${total === 1 ? 'map' : 'maps'} in this list${
+                lastPage > 1 ? `, page ${page} of ${lastPage}` : ''
+              }.`}
+      </p>
       {!loading && !comparison.isError && items.length === 0 && (
         <EmptyState>
           {filter === 'all'
@@ -140,11 +144,19 @@ const ComparisonPage = () => {
       )}
 
       {(loading || items.length > 0) && (
-        <div className="overflow-x-auto">
+        // On a narrow screen the table scrolls sideways. A scrolling area
+        // has to be reachable with the keyboard, or its right half is not.
+        <div
+          role="region"
+          aria-label={tableName}
+          tabIndex={0}
+          className="overflow-x-auto"
+        >
           <table
             aria-busy={loading}
             className="w-full min-w-[40rem] text-left text-sm"
           >
+            <caption className="sr-only">{tableName}</caption>
             <thead className="text-neon-yellow-core text-xs tracking-wider uppercase">
               <tr>
                 <th scope="col" className="px-2 py-2 font-semibold">

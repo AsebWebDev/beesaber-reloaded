@@ -25,7 +25,8 @@ const LandingPage = () => {
   return (
     <main
       data-testid="landing-page"
-      className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-10 px-6 text-center"
+      tabIndex={-1}
+      className="outline-none mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-10 px-6 text-center"
     >
       <h1 className="font-neon text-6xl tracking-wide uppercase sm:text-8xl">
         <span className="glow-red">Bee</span>
@@ -67,7 +68,7 @@ const LandingPage = () => {
         {dev.isError && <ErrorNote error={dev.error} />}
       </div>
 
-      <NeonHeading as="h2" color="yellow" className="text-xl">
+      <NeonHeading as="p" color="yellow" className="text-xl">
         Find your hive
       </NeonHeading>
     </main>

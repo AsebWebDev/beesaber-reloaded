@@ -1,4 +1,6 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { timeAgo } from '@/lib/format.ts';
+
+import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
 
 /**
  * The small building blocks every page uses. Styling is done with Tailwind
@@ -13,20 +15,31 @@ const glow: Record<NeonColor, string> = {
   yellow: 'glow-yellow',
 };
 
-/** A heading that looks like a neon tube */
+/**
+ * A heading that looks like a neon tube. With `as="p"` it only looks like
+ * one: a slogan is not the title of a section, and someone who jumps from
+ * heading to heading should not land on it.
+ *
+ * With `focusRef`, a script can move the focus to it, for when the thing
+ * that had the focus is gone. The Tab key still passes it by.
+ */
 const NeonHeading = ({
   as: Tag = 'h1',
   children,
   className = '',
   color = 'red',
+  focusRef,
 }: {
-  as?: 'h1' | 'h2' | 'h3';
+  as?: 'h1' | 'h2' | 'h3' | 'p';
   children: ReactNode;
   className?: string;
   color?: NeonColor;
+  focusRef?: Ref<HTMLHeadingElement & HTMLParagraphElement>;
 }) => (
   <Tag
-    className={`font-neon tracking-wide uppercase ${glow[color]} ${className}`}
+    ref={focusRef}
+    tabIndex={focusRef === undefined ? undefined : -1}
+    className={`font-neon tracking-wide uppercase outline-none ${glow[color]} ${className}`}
   >
     {children}
   </Tag>
@@ -49,6 +62,7 @@ const Button = ({
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   look?: keyof typeof buttonLook;
+  ref?: Ref<HTMLButtonElement>;
 }) => (
   <button
     type={type}
@@ -73,18 +87,14 @@ const Card = ({
   </div>
 );
 
-const Avatar = ({
-  name,
-  size = 40,
-  src,
-}: {
-  name: string;
-  size?: number;
-  src: string;
-}) => (
+/**
+ * A player's picture. Decoration: it always stands next to the player's
+ * name, so describing it would only make a screen reader say the name twice.
+ */
+const Avatar = ({ size = 40, src }: { size?: number; src: string }) => (
   <img
     src={src}
-    alt={`Avatar of ${name}`}
+    alt=""
     width={size}
     height={size}
     loading="lazy"
@@ -102,6 +112,20 @@ const Spinner = ({ label = 'Loading' }: { label?: string }) => (
     <span className="border-neon-yellow size-4 rounded-full border-2 border-t-transparent motion-safe:animate-spin" />
     {label}…
   </div>
+);
+
+/**
+ * "3 days ago", with the exact moment for machines and, on hover, for
+ * people who want to know.
+ */
+const TimeAgo = ({ className, date }: { className?: string; date: string }) => (
+  <time
+    dateTime={date}
+    title={new Date(date).toLocaleString('en')}
+    className={className}
+  >
+    {timeAgo(date)}
+  </time>
 );
 
 /** Shown instead of a list that has nothing in it */
@@ -141,4 +165,13 @@ const ErrorNote = ({
   </div>
 );
 
-export { Avatar, Button, Card, EmptyState, ErrorNote, NeonHeading, Spinner };
+export {
+  Avatar,
+  Button,
+  Card,
+  EmptyState,
+  ErrorNote,
+  NeonHeading,
+  Spinner,
+  TimeAgo,
+};

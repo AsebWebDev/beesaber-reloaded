@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
 
 import { useSyncHive, useSyncing } from '@/api/queries.ts';
@@ -14,8 +14,11 @@ const LINKS = [
   { to: '/profile', label: 'My profile' },
 ];
 
-/** How long the answer to a click on "Sync scores" stays on screen */
-const SYNC_RESULT_SHOWN_MS = 8000;
+/**
+ * How long "up to date" stays on screen. Long enough to be read at leisure
+ * or reached with a screen reader, short enough not to be untrue.
+ */
+const SYNC_RESULT_SHOWN_MS = 20_000;
 
 /** The frame around every page for a signed-in user: logo, menu, sync */
 const AppLayout = ({ player }: { player: Player }) => {
@@ -26,6 +29,26 @@ const AppLayout = ({ player }: { player: Player }) => {
   const { pathname } = useLocation();
   const main = useRef<HTMLElement>(null);
   const shownPath = useRef(pathname);
+  const [wasSyncing, setWasSyncing] = useState(syncing);
+  const [justFinished, setJustFinished] = useState(false);
+
+  // A sync that ends is worth a word: the "fetching" line just vanishing
+  // is no news to someone who cannot see it vanish.
+  if (wasSyncing !== syncing) {
+    setWasSyncing(syncing);
+    setJustFinished(!syncing);
+  }
+
+  useEffect(() => {
+    if (!justFinished) return;
+
+    const timer = setTimeout(
+      () => setJustFinished(false),
+      SYNC_RESULT_SHOWN_MS
+    );
+
+    return () => clearTimeout(timer);
+  }, [justFinished]);
 
   // A link in this app swaps the page without loading a new document, so
   // the browser does nothing a screen reader or a keyboard user would
@@ -78,7 +101,10 @@ const AppLayout = ({ player }: { player: Player }) => {
               end={to === '/'}
               className={({ isActive }) =>
                 `font-neon rounded px-2 py-1.5 text-base tracking-wide whitespace-nowrap uppercase transition sm:px-3 sm:text-xl ${
-                  isActive ? 'glow-yellow' : 'text-slate-300 hover:text-white'
+                  // Underlined as well: the glow alone is a difference of colour
+                  isActive
+                    ? 'glow-yellow underline decoration-2 underline-offset-8'
+                    : 'text-slate-300 hover:text-white'
                 }`
               }
             >
@@ -89,7 +115,7 @@ const AppLayout = ({ player }: { player: Player }) => {
 
         <div className="ml-auto flex items-center gap-3 lg:mt-auto lg:ml-0 lg:w-full lg:flex-col lg:items-start">
           <div className="flex items-center gap-2 text-sm text-slate-300">
-            <Avatar src={player.avatarUrl} name={player.name} size={28} />
+            <Avatar src={player.avatarUrl} size={28} />
             <span className="max-w-32 truncate">{player.name}</span>
           </div>
           <Button
@@ -113,8 +139,10 @@ const AppLayout = ({ player }: { player: Player }) => {
           <p role="status" className="text-sm text-slate-400">
             {syncing
               ? 'Fetching scores from ScoreSaber…'
-              : syncResult?.queued === 0 &&
-                'Already up to date, checked less than a minute ago.'}
+              : justFinished
+                ? 'Scores are up to date.'
+                : syncResult?.queued === 0 &&
+                  'Already up to date, checked less than a minute ago.'}
           </p>
           <Button
             disabled={sync.isPending || syncing}
