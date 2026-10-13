@@ -105,12 +105,26 @@ class ScoreSaberError extends Error {
 const SCORES_PER_PAGE = 100;
 
 type Options = {
+  /**
+   * Used for the long lists of scores, which only background jobs read.
+   * Given a throttle of its own, they cannot hold up the quick requests a
+   * user is waiting for. Without it, everything goes through `fetch`.
+   */
+  backgroundFetch?: typeof fetch;
   baseUrl: string;
   fetch?: typeof fetch;
 };
 
-const createScoreSaberClient = ({ baseUrl, fetch: customFetch }: Options) => {
+const createScoreSaberClient = ({
+  backgroundFetch,
+  baseUrl,
+  fetch: customFetch,
+}: Options) => {
   const api = createClient<paths>({ baseUrl, fetch: customFetch });
+  const background = createClient<paths>({
+    baseUrl,
+    fetch: backgroundFetch ?? customFetch,
+  });
 
   /** Turns the three ways a call can go wrong into a ScoreSaberError */
   const unwrap = async <Output>(
@@ -180,7 +194,7 @@ const createScoreSaberClient = ({ baseUrl, fetch: customFetch }: Options) => {
     unwrap(
       `Scores of player ${playerId}, page ${page}`,
       scorePageSchema,
-      api.GET('/api/v2/players/{id}/scores', {
+      background.GET('/api/v2/players/{id}/scores', {
         params: {
           path: { id: playerId },
           query: {
@@ -193,24 +207,46 @@ const createScoreSaberClient = ({ baseUrl, fetch: customFetch }: Options) => {
       })
     );
 
-  /** All pages of a player's scores, one after the other */
+  /**
+   * All of a player's scores, a page at a time, oldest first.
+   *
+   * The next page is asked for by time ("everything from the last score I
+   * have seen"), not by page number. A list that is sorted by time changes
+   * while we read it: when the player improves an old score, that entry
+   * jumps to the end and everything behind it moves up by one. Counting
+   * pages would then skip the score that slid across a page boundary, for
+   * good. Asking by time cannot skip anything; the last score of a page
+   * simply shows up again as the first of the next.
+   */
   async function* getScorePages(
     playerId: string,
     { from }: { from?: Date } = {}
   ): AsyncGenerator<ScoreSaberScorePage> {
-    for (let page = 1; ; page++) {
-      const scorePage = await getScorePage(playerId, { page, from });
+    let cursor = from;
+    let page = 1;
+
+    for (;;) {
+      const scorePage = await getScorePage(playerId, { page, from: cursor });
 
       yield scorePage;
 
       // A page that is not full is the last one. The totals in `metadata`
-      // are only a second opinion: ScoreSaber has been seen to count scores
-      // there that it never returns.
-      if (
-        scorePage.data.length < SCORES_PER_PAGE ||
-        page >= scorePage.metadata.totalPages
-      )
-        return;
+      // are not used: ScoreSaber has been seen to count scores there that it
+      // never returns.
+      const last = scorePage.data.at(-1);
+
+      if (last === undefined || scorePage.data.length < SCORES_PER_PAGE) return;
+
+      const lastPlayedAt = new Date(last.score.createdAt);
+
+      if (cursor !== undefined && lastPlayedAt.getTime() === cursor.getTime()) {
+        // A whole page of scores with the same timestamp: time alone does
+        // not get us further, so count pages within that moment
+        page += 1;
+      } else {
+        cursor = lastPlayedAt;
+        page = 1;
+      }
     }
   }
 

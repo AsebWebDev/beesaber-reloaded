@@ -29,19 +29,20 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
         'You cannot add yourself to your hive'
       );
 
-    const alreadyIn = await repository.isMember(me.userId, memberId);
+    await playersService.ensureProfile(memberId);
 
-    if (
-      !alreadyIn &&
-      (await repository.countMembers(me.userId)) >= MAX_HIVE_SIZE
-    )
+    const outcome = await repository.addMember(
+      me.userId,
+      memberId,
+      MAX_HIVE_SIZE
+    );
+
+    if (outcome === 'full')
       throw new AppError(
         'validation_failed',
         `A hive can have at most ${MAX_HIVE_SIZE} bees`
       );
 
-    await playersService.ensureProfile(memberId);
-    await repository.addMember(me.userId, memberId);
     await playersService.requestSync(memberId);
 
     // Read again: the sync request has just changed the player
@@ -68,8 +69,10 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
 
   /** Asks for new scores of me and every bee. Says how many were queued. */
   const syncAll = async (me: Me) => {
-    const members = await repository.listMembers(me);
-    const playerIds = [me.playerId, ...members.map(({ player }) => player.id)];
+    const playerIds = [
+      me.playerId,
+      ...(await repository.listMemberIds(me.userId)),
+    ];
     let queued = 0;
 
     for (const playerId of playerIds)
@@ -78,11 +81,20 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
     return { queued, upToDate: playerIds.length - queued };
   };
 
+  /** Whose scores are being fetched right now, out of me and my bees */
+  const listSyncing = async (me: Me) =>
+    (await repository.listSyncing(me)).flatMap(({ playerId, since }) =>
+      // The query only returns players with a start time; this tells the
+      // compiler so
+      since === null ? [] : [{ playerId, since }]
+    );
+
   return {
     addMember,
     compare,
     listMembers: repository.listMembers,
     listNews: repository.listNews,
+    listSyncing,
     removeMember,
     syncAll,
   };

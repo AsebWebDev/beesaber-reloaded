@@ -15,6 +15,20 @@
       "when": 1791818057652,
       "tag": "0001_sync_state",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791829483185,
+      "tag": "0002_data_correctness",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791830406147,
+      "tag": "0003_indexes_for_live_feed",
+      "breakpoints": true
     }
   ]
 }

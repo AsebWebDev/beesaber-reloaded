@@ -1,9 +1,4 @@
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
 import { api, ApiError, unwrap } from './client.ts';
@@ -33,14 +28,37 @@ type ScoreEntry = InferResponseType<
   (typeof api.players)[':id']['scores']['$get']
 >['items'][number];
 type Leaderboard = ScoreEntry['leaderboard'];
+type ScorePage = InferResponseType<
+  (typeof api.players)[':id']['scores']['$get']
+>;
+type ComparisonPage = InferResponseType<
+  (typeof api.hive)[':playerId']['comparison']['$get']
+>;
+type Config = InferResponseType<typeof api.config.$get>;
+type AddedBee = InferResponseType<typeof api.hive.$post>;
+type SyncRequest = InferResponseType<typeof api.hive.sync.$post>;
+type SyncStatus = InferResponseType<typeof api.hive.sync.$get>;
 type ComparisonEntry = InferResponseType<
   (typeof api.hive)[':playerId']['comparison']['$get']
 >['items'][number];
 
 const PAGE_SIZE = 15;
 
-/** How often to ask again while the server is fetching someone's scores */
-const POLL_WHILE_SYNCING_MS = 1500;
+/** How often to look whether the server has started fetching scores */
+const SYNC_IDLE_INTERVAL_MS = 30_000;
+
+/**
+ * How long to wait before asking again whether a sync is done. Most finish
+ * within seconds, so the first questions come quickly. One that takes
+ * minutes, like the first fetch of a player with thousands of scores, is
+ * asked about less and less often.
+ */
+const syncPollDelay = (elapsedMs: number): number => {
+  if (elapsedMs < 20_000) return 1500;
+  if (elapsedMs < 2 * 60_000) return 5000;
+
+  return 15_000;
+};
 /** How often to look for news that arrived on their own */
 const NEWS_INTERVAL_MS = 60_000;
 
@@ -73,11 +91,6 @@ const useMe = () =>
       }
     },
     staleTime: 60_000,
-    // While my scores are being fetched, keep asking until they are done
-    refetchInterval: ({ state }) =>
-      state.data?.player != null && isSyncing(state.data.player)
-        ? POLL_WHILE_SYNCING_MS
-        : false,
   });
 
 /** Picks the ScoreSaber profile to compare as. Fetches all its scores. */
@@ -120,18 +133,12 @@ const useScores = (
           },
         })
       ),
-    // Keep showing the old page while the next one loads
-    placeholderData: keepPreviousData,
   });
 
 const useHive = () =>
   useQuery({
     queryKey: ['hive', 'members'],
     queryFn: () => unwrap(api.hive.$get()),
-    refetchInterval: ({ state }) =>
-      state.data?.items.some(({ player }) => isSyncing(player)) === true
-        ? POLL_WHILE_SYNCING_MS
-        : false,
   });
 
 const useNews = () =>
@@ -143,33 +150,73 @@ const useNews = () =>
   });
 
 /**
- * Whether scores of me or of a bee are being fetched right now. When that
- * ends, everything on screen is fetched again, because the new scores change
- * records, comparisons and news.
+ * Whose scores the server is fetching right now, out of me and my bees.
+ *
+ * This is the one thing the page keeps asking while it waits. The answer is
+ * a handful of ids, where the hive with its records is a heavy query; asking
+ * for that every second and a half was the old way.
+ */
+const useSyncStatus = () => {
+  // When this browser first saw each player being fetched. The server says
+  // when the fetch started, but by its own clock; a browser whose clock is a
+  // few minutes off would ask far too rarely, or far too often.
+  const firstSeen = useRef(new Map<string, number>());
+
+  return useQuery({
+    queryKey: ['hive', 'sync'],
+    queryFn: () => unwrap(api.hive.sync.$get()),
+    refetchInterval: ({ state }) => {
+      const seen = firstSeen.current;
+      const ids = (state.data?.syncing ?? []).map(({ playerId }) => playerId);
+      const now = Date.now();
+
+      for (const id of [...seen.keys()]) if (!ids.includes(id)) seen.delete(id);
+      for (const id of ids) if (!seen.has(id)) seen.set(id, now);
+
+      return ids.length === 0
+        ? SYNC_IDLE_INTERVAL_MS
+        : syncPollDelay(now - Math.min(...seen.values()));
+    },
+  });
+};
+
+/**
+ * Whether scores of me or of a bee are being fetched right now.
+ *
+ * When the set of players being fetched changes, the places that show a
+ * "fetching" mark are loaded again. When the last one is done, everything on
+ * screen is, because the new scores change records, comparisons and news.
  */
 const useSyncing = (): boolean => {
   const queryClient = useQueryClient();
-  const me = useMe();
-  const hive = useHive();
-  const syncing =
-    (me.data?.player != null && isSyncing(me.data.player)) ||
-    hive.data?.items.some(({ player }) => isSyncing(player)) === true;
-  const wasSyncing = useRef(false);
+  const { data } = useSyncStatus();
+  const players = (data?.syncing ?? []).map(({ playerId }) => playerId);
+  const current = players.sort().join(',');
+  const previous = useRef(current);
 
   useEffect(() => {
-    if (wasSyncing.current && !syncing) void queryClient.invalidateQueries();
+    if (previous.current === current) return;
 
-    wasSyncing.current = syncing;
-  }, [syncing, queryClient]);
+    previous.current = current;
 
-  return syncing;
+    if (current === '') void queryClient.invalidateQueries();
+    else {
+      void queryClient.invalidateQueries({ queryKey: ['me'] });
+      void queryClient.invalidateQueries({ queryKey: ['hive', 'members'] });
+    }
+  }, [current, queryClient]);
+
+  return current !== '';
 };
 
 const useComparison = (
   playerId: string,
-  options: { filter: ComparisonFilter; page: number }
+  options: { filter: ComparisonFilter; page: number },
+  /** False when it is already known that there is nothing to compare */
+  enabled = true
 ) =>
   useQuery({
+    enabled,
     queryKey: ['hive', 'comparison', playerId, options],
     queryFn: () =>
       unwrap(
@@ -182,7 +229,6 @@ const useComparison = (
           },
         })
       ),
-    placeholderData: keepPreviousData,
   });
 
 /** After any change to the hive, everything under the 'hive' key is stale */
@@ -225,10 +271,7 @@ const useSyncHive = () => {
     mutationFn: () => unwrap(api.hive.sync.$post()),
     // Pick up who is being fetched now. useSyncing takes it from there.
     onSuccess: () =>
-      Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['me'] }),
-        queryClient.invalidateQueries({ queryKey: ['hive', 'members'] }),
-      ]),
+      queryClient.invalidateQueries({ queryKey: ['hive', 'sync'] }),
   });
 };
 
@@ -249,8 +292,11 @@ export {
   useSyncing,
 };
 export type {
+  AddedBee,
   ComparisonEntry,
   ComparisonFilter,
+  ComparisonPage,
+  Config,
   FoundPlayer,
   HiveMember,
   Leaderboard,
@@ -258,5 +304,8 @@ export type {
   NewsItem,
   Player,
   ScoreEntry,
+  ScorePage,
   ScoreSort,
+  SyncRequest,
+  SyncStatus,
 };

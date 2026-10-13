@@ -24,5 +24,16 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/testing/setup.ts'],
     restoreMocks: true,
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      // Not the code under test: the test helpers themselves, and types
+      exclude: ['src/testing/**', 'src/**/*.test.{ts,tsx}', 'src/**/*.d.ts'],
+      reporter: ['text-summary', 'html'],
+      // The build fails when coverage drops below these. They sit a little
+      // under what the tests reach today: a safety net against tests going
+      // missing, not a target to chase.
+      thresholds: { lines: 93, branches: 82, functions: 93, statements: 93 },
+    },
   },
 });

@@ -51,6 +51,7 @@ const createFakeScoreSaber = () => {
   const players = new Map<string, { name: string; scores: FakeScore[] }>();
   const brokenProfiles = new Map<string, unknown>();
   const requests: string[] = [];
+  let beforeScoresRequest: ((count: number) => void) | undefined;
 
   const notFound = (id: string) => ({
     statusCode: 404,
@@ -88,10 +89,13 @@ const createFakeScoreSaber = () => {
     })
     .get('/players/:id/scores', (c) => {
       const id = c.req.param('id');
-      const player = players.get(id);
       const url = new URL(c.req.url);
 
       requests.push(`${url.pathname}${url.search}`);
+      // The hook may change the player's scores, so it runs before they are read
+      beforeScoresRequest?.(requests.length);
+
+      const player = players.get(id);
 
       if (player === undefined) return c.json(notFound(id), 404);
 
@@ -131,7 +135,15 @@ const createFakeScoreSaber = () => {
     },
     /** Score requests the fake has seen, as path and query string */
     requests,
+    /**
+     * Calls `hook` at the start of every score request, with the number of
+     * that request. Lets a test change a player's scores between two pages.
+     */
+    onScoresRequest: (hook: (count: number) => void) => {
+      beforeScoresRequest = hook;
+    },
     reset: () => {
+      beforeScoresRequest = undefined;
       players.clear();
       brokenProfiles.clear();
       requests.length = 0;

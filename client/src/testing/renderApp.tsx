@@ -1,8 +1,9 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 
+import { createQueryClient } from '@/api/queryClient.ts';
 import { routes } from '@/routes.tsx';
 
 /**
@@ -10,13 +11,13 @@ import { routes } from '@/routes.tsx';
  * that lives in memory and a fresh cache, so tests do not affect each other.
  */
 const renderApp = (url = '/') => {
-  const queryClient = new QueryClient({
-    // A failed request should fail the test at once, not after three tries
-    defaultOptions: { queries: { retry: false } },
-  });
+  // The app's own client, with two changes: a failed request shows at once
+  // instead of after three tries, and every page asks the server again
+  const queryClient = createQueryClient({ retry: false, staleTime: 0 });
   const router = createMemoryRouter(routes, { initialEntries: [url] });
 
   return {
+    queryClient,
     router,
     user: userEvent.setup(),
     ...render(

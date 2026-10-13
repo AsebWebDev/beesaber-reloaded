@@ -11,6 +11,7 @@
     "api:update": "pnpm --filter @beesaber/server api:update",
     "build": "pnpm -r build",
     "test": "pnpm -r test",
+    "test:coverage": "pnpm -r test:coverage",
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
@@ -38,7 +39,7 @@
   "type": "module",
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "eslint --fix --max-warnings 0",
+      "eslint --fix --max-warnings 0 --no-warn-ignored",
       "prettier --write"
     ],
     "*.{json,md,yml,yaml,html,css}": "prettier --write"

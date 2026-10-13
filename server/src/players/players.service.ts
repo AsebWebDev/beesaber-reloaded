@@ -1,10 +1,11 @@
+import { ScoreSaberError } from '../scoresaber/client.ts';
 import {
   toLeaderboardRow,
   toPlayerRow,
   toScoreRow,
 } from '../scoresaber/mapping.ts';
 
-import type { JobQueue } from '../jobs/queue.ts';
+import type { JobQueue, SyncPriority } from '../jobs/queue.ts';
 import type { ScoreSaberClient } from '../scoresaber/client.ts';
 import type { PlayersRepository } from './players.repository.ts';
 
@@ -34,7 +35,24 @@ type SyncResult = {
   improved: number;
 };
 
+/**
+ * Why a sync failed, as stored on the player and shown to users. A short
+ * code on purpose: the text of an exception can contain SQL, parameters or
+ * the raw answer of another service, and has no business in an API response.
+ */
+type SyncErrorCode =
+  'internal' | 'not_found' | 'scoresaber_unavailable' | 'unexpected_response';
+
+const syncErrorCode = (error: unknown): SyncErrorCode => {
+  if (!(error instanceof ScoreSaberError)) return 'internal';
+  if (error.kind === 'unavailable') return 'scoresaber_unavailable';
+
+  return error.kind;
+};
+
 type Dependencies = {
+  /** Where the details of a failed sync go. The player only gets a code. */
+  logError?: (message: string, error: unknown) => void;
   /**
    * A player is not fetched again within this time after a sync. ScoreSaber
    * caches score lists for 30 seconds anyway, and without the pause anyone
@@ -58,6 +76,7 @@ const STUCK_AFTER_MS = 15 * 60 * 1000;
 const LIVE_SCORE_DELAY_SECONDS = 40;
 
 const createPlayersService = ({
+  logError = (message, error) => console.error(message, error),
   minSyncIntervalMs = 60_000,
   now = () => new Date(),
   queue,
@@ -87,7 +106,13 @@ const createPlayersService = ({
     {
       delaySeconds,
       force = false,
-    }: { delaySeconds?: number; force?: boolean } = {}
+      priority = 'user',
+    }: {
+      delaySeconds?: number;
+      /** Fetch even if the player was synced a moment ago */
+      force?: boolean;
+      priority?: SyncPriority;
+    } = {}
   ): Promise<SyncRequest> => {
     const player = await ensureProfile(playerId);
     const lastSyncedAt = player.scoresSyncedAt;
@@ -105,7 +130,7 @@ const createPlayersService = ({
     if (player.syncStartedAt === null)
       await repository.markSyncStarted(playerId, time);
 
-    await queue.enqueueSync({ playerId, force }, { delaySeconds });
+    await queue.enqueueSync({ playerId }, { delaySeconds, priority });
 
     return { queued: true };
   };
@@ -125,8 +150,8 @@ const createPlayersService = ({
 
       await repository.markSyncStarted(playerId, startedAt);
 
-      // Until the first sync has finished, everything found is history.
-      // After that, every new or improved score is news.
+      // Until the first sync has finished, everything found is history and
+      // is not logged. After that, every new or improved score is an event.
       const firstSync = player.scoresSyncedAt === null;
       // Continue where the stored scores end. On the very first run there is
       // nothing stored and all scores are fetched.
@@ -140,7 +165,7 @@ const createPlayersService = ({
           playerId,
           page.data.map(toLeaderboardRow),
           page.data.map((entry) => toScoreRow(playerId, entry)),
-          { isNews: !firstSync }
+          { logEvents: !firstSync }
         );
 
         added += saved.added;
@@ -151,12 +176,13 @@ const createPlayersService = ({
 
       return { firstSync, added, improved };
     } catch (error) {
-      // Note the failure for the frontend, then let the queue see the error
-      // too, so it tries the job again
+      // The details go to the log, the player gets a code, and the queue
+      // sees the error too, so it tries the job again
+      logError(`Sync of player ${playerId} failed`, error);
       await repository.markSyncFinished(
         playerId,
         startedAt,
-        error instanceof Error ? error.message : 'Sync failed'
+        syncErrorCode(error)
       );
 
       throw error;
@@ -169,14 +195,13 @@ const createPlayersService = ({
    * it was down, and restarts syncs that died halfway.
    */
   const syncStalePlayers = async () => {
-    const time = now().getTime();
-    const playerIds = await repository.listStalePlayerIds(
-      new Date(time - STALE_AFTER_MS),
-      new Date(time - STUCK_AFTER_MS)
-    );
+    const playerIds = await repository.listStalePlayerIds(now(), {
+      staleAfterMs: STALE_AFTER_MS,
+      stuckAfterMs: STUCK_AFTER_MS,
+    });
 
     for (const playerId of playerIds)
-      await requestSync(playerId, { force: true });
+      await requestSync(playerId, { force: true, priority: 'catchUp' });
 
     return playerIds.length;
   };
@@ -191,6 +216,7 @@ const createPlayersService = ({
     await requestSync(playerId, {
       force: true,
       delaySeconds: LIVE_SCORE_DELAY_SECONDS,
+      priority: 'live',
     });
 
     return true;
@@ -210,4 +236,4 @@ const createPlayersService = ({
 type PlayersService = ReturnType<typeof createPlayersService>;
 
 export { createPlayersService };
-export type { PlayersService, SyncRequest, SyncResult };
+export type { PlayersService, SyncErrorCode, SyncRequest, SyncResult };

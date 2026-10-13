@@ -21,11 +21,15 @@ type Me = {
  */
 const requireUser = (auth: Auth) =>
   createMiddleware<UserEnv>(async (c, next) => {
-    const user = await auth.getUser(c.req.raw.headers);
+    const found = await auth.getUser(c.req.raw.headers);
 
-    if (user === null) throw new AppError('unauthorized', 'Not signed in');
+    if (found === null) throw new AppError('unauthorized', 'Not signed in');
 
-    c.set('user', user);
+    // A session that was just extended comes with a new cookie
+    for (const cookie of found.setCookies)
+      c.header('Set-Cookie', cookie, { append: true });
+
+    c.set('user', found.user);
     await next();
   });
 

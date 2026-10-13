@@ -11,10 +11,16 @@ import { PgBoss } from 'pg-boss';
  */
 
 type SyncJob = {
-  /** Fetch even if the player was synced a moment ago */
-  force: boolean;
   playerId: string;
 };
+
+/**
+ * Who is waiting for a sync. When jobs pile up, a user looking at a spinner
+ * goes first, then a score that was just set, and the periodic catch-up last.
+ */
+type SyncPriority = 'catchUp' | 'live' | 'user';
+
+const PRIORITY: Record<SyncPriority, number> = { catchUp: 0, live: 1, user: 2 };
 
 type Handlers = {
   /** Fetches new scores of one player */
@@ -30,7 +36,7 @@ type JobQueue = {
    */
   enqueueSync: (
     job: SyncJob,
-    options?: { delaySeconds?: number }
+    options?: { delaySeconds?: number; priority?: SyncPriority }
   ) => Promise<void>;
   /** Starts working on jobs with the given handlers */
   start: (handlers: Handlers) => Promise<void>;
@@ -51,13 +57,21 @@ const createPgBossQueue = (connectionString: string): JobQueue => {
     name: string,
     options?: Parameters<PgBoss['createQueue']>[1]
   ) => {
-    if ((await boss.getQueue(name)) === null)
+    if ((await boss.getQueue(name)) !== null) return;
+
+    try {
       await boss.createQueue(name, options);
+    } catch (error) {
+      // Two servers starting at the same moment both find no queue and both
+      // create it. The one that comes second has nothing left to do.
+      if ((await boss.getQueue(name)) === null) throw error;
+    }
   };
 
   return {
-    enqueueSync: async (job, { delaySeconds } = {}) => {
+    enqueueSync: async (job, { delaySeconds, priority = 'user' } = {}) => {
       await boss.send(SYNC_QUEUE, job, {
+        priority: PRIORITY[priority],
         // One key per player. With the "stately" policy of the queue, at most
         // one job per player waits and one runs; further requests are dropped.
         singletonKey: job.playerId,
@@ -75,9 +89,15 @@ const createPgBossQueue = (connectionString: string): JobQueue => {
       await ensureQueue(SYNC_QUEUE, { policy: 'stately' });
       await ensureQueue(TICK_QUEUE);
 
-      await boss.work<SyncJob>(SYNC_QUEUE, async (jobs) => {
-        for (const job of jobs) await onSync(job.data);
-      });
+      await boss.work<SyncJob>(
+        SYNC_QUEUE,
+        // Look for work every second instead of every two: someone is often
+        // watching a spinner until this job has run
+        { pollingIntervalSeconds: 1 },
+        async (jobs) => {
+          for (const job of jobs) await onSync(job.data);
+        }
+      );
       await boss.work(TICK_QUEUE, onTick);
       // Cron syntax: every 15 minutes
       await boss.schedule(TICK_QUEUE, '*/15 * * * *');
@@ -117,4 +137,4 @@ const createInlineQueue = (): JobQueue & { tick: () => Promise<void> } => {
 };
 
 export { createInlineQueue, createPgBossQueue };
-export type { Handlers, JobQueue, SyncJob };
+export type { Handlers, JobQueue, SyncJob, SyncPriority };

@@ -20,9 +20,10 @@ const SkeletonRows = ({ columns, rows }: Props) =>
       key={row}
       aria-hidden="true"
       data-testid="skeleton-row"
-      className="border-night-line border-t"
+      // Folds on a phone the way the real rows do
+      className="border-night-line border-t max-sm:flex max-sm:flex-wrap"
     >
-      <td className="w-full max-w-0 px-2 py-2">
+      <td className="w-full max-w-0 px-2 py-2 max-sm:max-w-none max-sm:basis-full">
         <div className="flex items-center gap-3">
           <div className={`${bar} size-11 shrink-0`} />
           <div className="flex-1 space-y-2">
@@ -32,8 +33,8 @@ const SkeletonRows = ({ columns, rows }: Props) =>
         </div>
       </td>
       {Array.from({ length: columns - 1 }, (_, column) => (
-        <td key={column} className="px-2 py-2">
-          <div className={`${bar} ml-auto h-3 w-16`} />
+        <td key={column} className="px-2 py-2 max-sm:flex-1">
+          <div className={`${bar} h-3 w-16 sm:ml-auto`} />
         </td>
       ))}
     </tr>

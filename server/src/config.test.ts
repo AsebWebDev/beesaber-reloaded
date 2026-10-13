@@ -18,6 +18,7 @@ describe('loadConfig', () => {
       LIVE_FEED: true,
       LIVE_FEED_URL: 'wss://scoresaber.com/ws',
       DEV_LOGIN: false,
+      TRUST_PROXY: false,
     });
   });
 
@@ -66,9 +67,42 @@ describe('loadConfig', () => {
     );
   });
 
-  it('refuses the test account sign-in in production', () => {
+  it('refuses password accounts as soon as the app is not served from localhost', () => {
+    // Whatever NODE_ENV says, or does not say
+    for (const NODE_ENV of ['development', 'production', undefined])
+      expect(() =>
+        loadConfig({
+          ...required,
+          ...(NODE_ENV === undefined ? {} : { NODE_ENV }),
+          DEV_LOGIN: 'true',
+          APP_URL: 'https://beesaber.example',
+        })
+      ).toThrow(/DEV_LOGIN/);
+  });
+
+  it('refuses password accounts in production even on localhost', () => {
     expect(() =>
       loadConfig({ ...required, DEV_LOGIN: 'true', NODE_ENV: 'production' })
     ).toThrow(/DEV_LOGIN/);
+  });
+
+  it('wants https for an address that is not this machine', () => {
+    expect(() =>
+      loadConfig({ ...required, APP_URL: 'http://beesaber.example' })
+    ).toThrow(/APP_URL/);
+    expect(
+      loadConfig({ ...required, APP_URL: 'https://beesaber.example' }).APP_URL
+    ).toBe('https://beesaber.example');
+  });
+
+  it('reduces the app address to its origin', () => {
+    // A trailing slash or a path would make the comparison with the Origin
+    // header of requests fail
+    expect(
+      loadConfig({ ...required, APP_URL: 'https://beesaber.example/' }).APP_URL
+    ).toBe('https://beesaber.example');
+    expect(
+      loadConfig({ ...required, APP_URL: 'http://localhost:3000/app' }).APP_URL
+    ).toBe('http://localhost:3000');
   });
 });

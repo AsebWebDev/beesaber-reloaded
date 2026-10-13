@@ -19,6 +19,11 @@ import type { Database } from '../db/client.ts';
  *
  * The cookie holds only a random token. Everything else stays in the
  * database, so a session can be ended on the server at any time.
+ *
+ * A session lasts a week and is extended while it is in use. The extension
+ * happens in step 4, and comes with a new cookie that has to reach the
+ * browser. Otherwise the browser would drop its cookie a week after sign-in,
+ * however active the user was.
  */
 
 /** The signed-in user, as the rest of the server sees them */
@@ -33,8 +38,14 @@ type SessionUser = {
 
 /** What the app needs from sign-in. Tests provide their own version. */
 type Auth = {
-  /** Finds the user behind the session cookie of a request, if any */
-  getUser: (headers: Headers) => Promise<SessionUser | null>;
+  /**
+   * Finds the user behind the session cookie of a request, if any.
+   * `setCookies` are Set-Cookie values to send along with the answer; there
+   * is one whenever the session was just extended.
+   */
+  getUser: (
+    headers: Headers
+  ) => Promise<{ setCookies: string[]; user: SessionUser } | null>;
   /** Answers everything under /api/auth: sign-in, callback, sign-out */
   handler: (request: Request) => Promise<Response>;
   /** Which ways to sign in are switched on. The frontend shows only these. */
@@ -50,7 +61,19 @@ type AuthConfig = Pick<
   | 'GOOGLE_CLIENT_SECRET'
 >;
 
-const createAuth = (db: Database, config: AuthConfig): Auth => {
+type AuthOptions = {
+  /**
+   * A session in use is extended when its last extension is older than this.
+   * Better Auth's default is a day. Tests set 0 to see an extension at once.
+   */
+  sessionUpdateAgeSeconds?: number;
+};
+
+const createAuth = (
+  db: Database,
+  config: AuthConfig,
+  { sessionUpdateAgeSeconds }: AuthOptions = {}
+): Auth => {
   const auth = betterAuth({
     baseURL: config.APP_URL,
     secret: config.AUTH_SECRET,
@@ -65,8 +88,20 @@ const createAuth = (db: Database, config: AuthConfig): Auth => {
             },
           }
         : {},
-    // Accounts with a password exist only for the local test account
+    // DEV_LOGIN switches on accounts with just an email and a password,
+    // without any verification. The configuration only allows that while the
+    // app is served from localhost.
     emailAndPassword: { enabled: config.DEV_LOGIN },
+    // Better Auth has a rate limit of its own. It is off, because it keys on
+    // a forwarded-address header and, without one, puts all visitors into a
+    // single bucket of three sign-ins per ten seconds: one looping client
+    // would lock everybody out. Our own per-address limit in app.ts covers
+    // these routes instead.
+    rateLimit: { enabled: false },
+    session:
+      sessionUpdateAgeSeconds === undefined
+        ? undefined
+        : { updateAge: sessionUpdateAgeSeconds },
     user: {
       additionalFields: {
         // `input: false`: cannot be set through the sign-up request, only by
@@ -83,18 +118,22 @@ const createAuth = (db: Database, config: AuthConfig): Auth => {
     },
     handler: (request) => auth.handler(request),
     getUser: async (headers) => {
-      const session = await auth.api.getSession({ headers });
+      const { headers: answerHeaders, response: session } =
+        await auth.api.getSession({ headers, returnHeaders: true });
 
       if (session === null) return null;
 
       const { email, id, image, name, playerId } = session.user;
 
       return {
-        id,
-        email,
-        name,
-        image: image ?? null,
-        playerId: playerId ?? null,
+        setCookies: answerHeaders.getSetCookie(),
+        user: {
+          id,
+          email,
+          name,
+          image: image ?? null,
+          playerId: playerId ?? null,
+        },
       };
     },
   };

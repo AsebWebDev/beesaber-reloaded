@@ -3,15 +3,12 @@ import { createAuthClient } from 'better-auth/react';
 /**
  * The browser side of Better Auth. It talks to /api/auth on our server,
  * which sets and clears the session cookie.
+ *
+ * Its calls do not throw when the server says no. They return
+ * `{ data, error }`, and every function here turns an `error` into an
+ * exception, so a failure cannot pass for a success.
  */
 const authClient = createAuthClient();
-
-// The local test account. The server only accepts it with DEV_LOGIN=true.
-const DEV_ACCOUNT = {
-  name: 'Dev',
-  email: 'dev@beesaber.local',
-  password: 'local-development-only',
-};
 
 /** Sends the browser to Google. It comes back signed in. */
 const signInWithGoogle = async () => {
@@ -23,21 +20,45 @@ const signInWithGoogle = async () => {
   if (error) throw new Error(error.message ?? 'Sign-in with Google failed');
 };
 
-/** Signs in as the local test account, creating it on first use */
-const signInAsDev = async () => {
-  const { email, password } = DEV_ACCOUNT;
-  const signedIn = await authClient.signIn.email({ email, password });
+/**
+ * Signs in as a local test account, creating it on first use.
+ *
+ * Only exists in development builds. `import.meta.env.DEV` is a constant the
+ * bundler knows, so in a production build this whole branch, including the
+ * account's password, is removed from the code that is shipped. The server
+ * refuses the account anyway unless it runs on localhost with DEV_LOGIN on.
+ */
+const signInAsDev = import.meta.env.DEV
+  ? async () => {
+      const account = {
+        name: 'Dev',
+        email: 'dev@beesaber.local',
+        password: 'local-development-only',
+      };
+      const { email, password } = account;
+      const signedIn = await authClient.signIn.email({ email, password });
 
-  if (!signedIn.error) return;
+      if (!signedIn.error) return;
 
-  const signedUp = await authClient.signUp.email(DEV_ACCOUNT);
+      const signedUp = await authClient.signUp.email(account);
 
-  if (signedUp.error)
-    throw new Error(signedUp.error.message ?? 'Dev sign-in failed');
-};
+      if (signedUp.error)
+        throw new Error(signedUp.error.message ?? 'Dev sign-in failed');
+    }
+  : undefined;
 
+/**
+ * Ends the session on the server. Throws if the server did not confirm it:
+ * showing "signed out" while the session cookie still works would be a lie,
+ * and a dangerous one on a shared computer.
+ */
 const signOut = async () => {
-  await authClient.signOut();
+  const { error } = await authClient.signOut();
+
+  if (error)
+    throw new Error(
+      'Signing out failed. You are still signed in, please try again.'
+    );
 };
 
 export { signInAsDev, signInWithGoogle, signOut };

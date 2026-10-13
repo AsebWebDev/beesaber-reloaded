@@ -72,14 +72,29 @@ const createPlayersRepository = (db: Database) => {
       .set({ syncStartedAt: at })
       .where(eq(players.id, playerId));
 
-  /** The sync is over. Without an error, the scores are up to date as of `at`. */
+  /**
+   * The sync is over. Without an error, the scores are up to date as of
+   * `at`. With one, the failure is counted, which makes the periodic sync
+   * wait longer before the next attempt.
+   */
   const markSyncFinished = (playerId: string, at: Date, error?: string) =>
     db
       .update(players)
       .set(
         error === undefined
-          ? { syncStartedAt: null, syncError: null, scoresSyncedAt: at }
-          : { syncStartedAt: null, syncError: error }
+          ? {
+              syncStartedAt: null,
+              syncError: null,
+              syncFailures: 0,
+              syncFailedAt: null,
+              scoresSyncedAt: at,
+            }
+          : {
+              syncStartedAt: null,
+              syncError: error,
+              syncFailures: sql`${players.syncFailures} + 1`,
+              syncFailedAt: at,
+            }
       )
       .where(eq(players.id, playerId));
 
@@ -109,11 +124,31 @@ const createPlayersRepository = (db: Database) => {
   };
 
   /**
-   * Tracked players whose scores were last fetched before `syncedBefore`, or
-   * never. A sync that claims to be running since before `stuckBefore` is
-   * taken for dead and counts as well.
+   * Tracked players that are due for a sync at `now`:
+   * - never fetched, or last fetched more than `staleAfterMs` ago
+   * - or marked as syncing for more than `stuckAfterMs`, which means the
+   *   sync died
+   *
+   * A player whose last attempts failed is held back: half an hour after the
+   * first failure, an hour after the second, doubling up to a day. A player
+   * who was banned or deleted on ScoreSaber is then asked for once a day
+   * instead of three times every quarter of an hour.
    */
-  const listStalePlayerIds = async (syncedBefore: Date, stuckBefore: Date) => {
+  const listStalePlayerIds = async (
+    now: Date,
+    {
+      staleAfterMs,
+      stuckAfterMs,
+    }: { staleAfterMs: number; stuckAfterMs: number }
+  ) => {
+    const time = now.getTime();
+    const syncedBefore = new Date(time - staleAfterMs);
+    const stuckBefore = new Date(time - stuckAfterMs);
+    const waitedLongEnough = or(
+      eq(players.syncFailures, 0),
+      sql`${players.syncFailedAt} < ${now.toISOString()}::timestamptz - least(power(2, ${players.syncFailures} - 1), 48) * interval '30 minutes'`
+    );
+
     const rows = await db
       .select({ id: players.id })
       .from(players)
@@ -126,7 +161,8 @@ const createPlayersRepository = (db: Database) => {
               or(
                 isNull(players.scoresSyncedAt),
                 lt(players.scoresSyncedAt, syncedBefore)
-              )
+              ),
+              waitedLongEnough
             ),
             lt(players.syncStartedAt, stuckBefore)
           )
@@ -147,7 +183,7 @@ const createPlayersRepository = (db: Database) => {
   };
 
   /**
-   * Stores one page of a player's scores and logs what changed.
+   * Stores one page of a player's scores and, if asked to, logs what changed.
    *
    * Runs in a transaction: either the leaderboards, the scores and the events
    * of the page are all stored, or none of them. A crash in the middle cannot
@@ -157,14 +193,36 @@ const createPlayersRepository = (db: Database) => {
     playerId: string,
     leaderboardRows: LeaderboardRow[],
     scoreRows: ScoreRow[],
-    { isNews }: { isNews: boolean }
+    { logEvents }: { logEvents: boolean }
   ) =>
     db.transaction(async (tx) => {
-      if (scoreRows.length === 0) return { added: 0, improved: 0 };
+      // One row per leaderboard, the best one. We expect ScoreSaber to send
+      // just that, but an upsert fails if a statement touches a row twice.
+      const best = new Map<number, ScoreRow>();
+
+      for (const row of scoreRows) {
+        const known = best.get(row.leaderboardId);
+
+        if (known === undefined || row.modifiedScore > known.modifiedScore)
+          best.set(row.leaderboardId, row);
+      }
+
+      const rows = [...best.values()];
+
+      if (rows.length === 0) return { added: 0, improved: 0 };
+
+      // Two syncs of the same player must not interleave here: both would
+      // read "no score yet" and both would log the same event. The lock is
+      // per player and is released when the transaction ends.
+      await tx.execute(
+        sql`select pg_advisory_xact_lock(hashtext(${`player:${playerId}`}))`
+      );
 
       await tx
         .insert(leaderboards)
-        .values(leaderboardRows)
+        .values([
+          ...new Map(leaderboardRows.map((row) => [row.id, row])).values(),
+        ])
         .onConflictDoUpdate({
           target: leaderboards.id,
           // "excluded" is the row that could not be inserted. Only these
@@ -188,7 +246,7 @@ const createPlayersRepository = (db: Database) => {
             eq(scores.playerId, playerId),
             inArray(
               scores.leaderboardId,
-              scoreRows.map((row) => row.leaderboardId)
+              rows.map((row) => row.leaderboardId)
             )
           )
         );
@@ -196,7 +254,7 @@ const createPlayersRepository = (db: Database) => {
         existing.map((row) => [row.leaderboardId, row.modifiedScore])
       );
 
-      const events = scoreRows.flatMap((row) => {
+      const changes = rows.flatMap((row) => {
         const previousScore = previousScores.get(row.leaderboardId);
 
         // Same or lower score: nothing happened worth logging
@@ -210,14 +268,13 @@ const createPlayersRepository = (db: Database) => {
             previousScore: previousScore ?? null,
             newScore: row.modifiedScore,
             playedAt: row.playedAt,
-            isNews,
           },
         ];
       });
 
       await tx
         .insert(scores)
-        .values(scoreRows)
+        .values(rows)
         .onConflictDoUpdate({
           target: [scores.playerId, scores.leaderboardId],
           set: {
@@ -234,13 +291,18 @@ const createPlayersRepository = (db: Database) => {
             maxCombo: sql`excluded.max_combo`,
             playedAt: sql`excluded.played_at`,
           },
+          // We keep a player's best score. Whatever arrives, a stored score
+          // is never replaced by a worse one.
+          setWhere: sql`excluded.modified_score >= ${scores.modifiedScore}`,
         });
 
-      if (events.length > 0) await tx.insert(scoreEvents).values(events);
+      if (logEvents && changes.length > 0)
+        await tx.insert(scoreEvents).values(changes).onConflictDoNothing();
 
       return {
-        added: events.filter((event) => event.previousScore === null).length,
-        improved: events.filter((event) => event.previousScore !== null).length,
+        added: changes.filter((change) => change.previousScore === null).length,
+        improved: changes.filter((change) => change.previousScore !== null)
+          .length,
       };
     });
 

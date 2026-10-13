@@ -1,28 +1,40 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRef } from 'react';
 
 import { useConfig } from '@/api/queries.ts';
 import { signInAsDev, signInWithGoogle } from '@/auth/authClient.ts';
 import { HexLogo } from '@/components/HexLogo.tsx';
 import { Button, ErrorNote, NeonHeading, Spinner } from '@/components/ui.tsx';
+import { useFocusOnMount } from '@/lib/useFocusOnMount.ts';
+import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 /** What visitors see before they sign in */
-const LandingPage = () => {
+const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
+  const main = useRef<HTMLElement>(null);
   const queryClient = useQueryClient();
   const config = useConfig();
   const google = useMutation({ mutationFn: signInWithGoogle });
   const dev = useMutation({
-    mutationFn: signInAsDev,
+    // Undefined in production builds, see authClient.ts
+    mutationFn: () => signInAsDev?.() ?? Promise.resolve(),
     // Now signed in: ask the server again who we are
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['me'] }),
   });
   const signIn = config.data?.signIn;
+  const offersDevLogin = signInAsDev !== undefined && signIn?.devLogin === true;
+
+  usePageTitle();
+  useFocusOnMount(main, takeFocus);
 
   return (
     <main
+      ref={main}
       data-testid="landing-page"
-      className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-10 px-6 text-center"
+      tabIndex={-1}
+      className="outline-none mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-10 px-6 py-10 text-center"
     >
-      <h1 className="font-neon text-6xl tracking-wide uppercase sm:text-8xl">
+      {/* Grows with the screen, so the name fits on a phone in one line */}
+      <h1 className="font-neon text-[clamp(2.25rem,13vw,6rem)] leading-none tracking-wide uppercase">
         <span className="glow-red">Bee</span>
         <span className="glow-blue">Saber</span>
       </h1>
@@ -43,7 +55,7 @@ const LandingPage = () => {
             Sign in with Google
           </Button>
         )}
-        {signIn?.devLogin === true && (
+        {offersDevLogin && (
           <Button
             look="ghost"
             disabled={dev.isPending}
@@ -52,7 +64,7 @@ const LandingPage = () => {
             Dev Login
           </Button>
         )}
-        {signIn !== undefined && !signIn.google && !signIn.devLogin && (
+        {signIn !== undefined && !signIn.google && !offersDevLogin && (
           <p className="text-slate-400">
             No way to sign in is configured on the server.
           </p>
@@ -62,7 +74,7 @@ const LandingPage = () => {
         {dev.isError && <ErrorNote error={dev.error} />}
       </div>
 
-      <NeonHeading as="h2" color="yellow" className="text-xl">
+      <NeonHeading as="p" color="yellow" className="text-xl">
         Find your hive
       </NeonHeading>
     </main>

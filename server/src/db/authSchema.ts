@@ -3,31 +3,37 @@
  * sign-in providers.
  *
  * Generated with `pnpm dlx auth generate`, then edited by hand in one place:
- * `user.playerId` got a foreign key to our `players` table. Keep that when
- * regenerating.
+ * `user.playerId` got a foreign key to our `players` table and an index.
+ * Keep that when regenerating.
  */
 import { relations } from 'drizzle-orm';
 import { boolean, index, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { players } from './schema.ts';
 
-export const user = pgTable('user', {
-  id: text('id').primaryKey(),
-  name: text('name').notNull(),
-  email: text('email').notNull().unique(),
-  emailVerified: boolean('email_verified').default(false).notNull(),
-  image: text('image'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at')
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  // The ScoreSaber profile this account compares as. Chosen by the user,
-  // not proven to be theirs.
-  playerId: text('player_id').references(() => players.id, {
-    onDelete: 'set null',
-  }),
-});
+export const user = pgTable(
+  'user',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(),
+    email: text('email').notNull().unique(),
+    emailVerified: boolean('email_verified').default(false).notNull(),
+    image: text('image'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+    // The ScoreSaber profile this account compares as. Chosen by the user,
+    // not proven to be theirs.
+    playerId: text('player_id').references(() => players.id, {
+      onDelete: 'set null',
+    }),
+  },
+  // Looked up for every score on the live feed: "does an account compare as
+  // this player?"
+  (table) => [index('user_playerId_idx').on(table.playerId)]
+);
 
 export const session = pgTable(
   'session',

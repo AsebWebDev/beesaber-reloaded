@@ -1,14 +1,22 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { scoreEvents } from '../db/schema.ts';
-import { api, app, database, scoreSaber } from '../testing/harness.ts';
+import {
+  api,
+  app,
+  database,
+  linkProfile,
+  scoreSaber,
+  services,
+} from '../testing/harness.ts';
 
 const ALICE = '76561198000000002';
 
 const json = async (response: Response) => (await response.json()) as never;
 
+/** Asks for a sync, the way picking a profile or adding a bee does */
 const sync = (playerId: string) =>
-  api(`/api/players/${playerId}/sync`, { method: 'POST' });
+  services.playersService.requestSync(playerId);
 
 describe('GET /api/health', () => {
   it('reports that the server and its database are up', async () => {
@@ -20,18 +28,14 @@ describe('GET /api/health', () => {
   });
 });
 
-describe('POST /api/players/:id/sync', () => {
+describe('syncing a player', () => {
   it('stores the profile and all scores on the first sync', async () => {
     scoreSaber.setPlayer(ALICE, 'alice', [
       { leaderboardId: 1, score: 500, playedAt: '2024-01-01T10:00:00.000Z' },
       { leaderboardId: 2, score: 700, playedAt: '2024-01-02T10:00:00.000Z' },
     ]);
 
-    const response = await sync(ALICE);
-
-    // 202 Accepted: the request was taken, the work happens in a job
-    expect(response.status).toBe(202);
-    expect(await response.json()).toEqual({ queued: true });
+    expect(await sync(ALICE)).toEqual({ queued: true });
 
     const scores = await api(`/api/players/${ALICE}/scores`);
 
@@ -59,7 +63,7 @@ describe('POST /api/players/:id/sync', () => {
     );
   });
 
-  it('logs a new and an improved score as news after the first sync', async () => {
+  it('logs new and improved scores once the first sync is done, but not the first sync itself', async () => {
     scoreSaber.setPlayer(ALICE, 'alice', [
       { leaderboardId: 1, score: 500, playedAt: '2024-01-01T10:00:00.000Z' },
     ]);
@@ -79,10 +83,10 @@ describe('POST /api/players/:id/sync', () => {
       .from(scoreEvents)
       .orderBy(scoreEvents.id);
 
+    // Nothing for the 500 of the first sync: that was history
     expect(events).toMatchObject([
-      { leaderboardId: 1, previousScore: null, newScore: 500, isNews: false },
-      { leaderboardId: 1, previousScore: 500, newScore: 650, isNews: true },
-      { leaderboardId: 2, previousScore: null, newScore: 300, isNews: true },
+      { leaderboardId: 1, previousScore: 500, newScore: 650 },
+      { leaderboardId: 2, previousScore: null, newScore: 300 },
     ]);
   });
 
@@ -94,7 +98,7 @@ describe('POST /api/players/:id/sync', () => {
 
     await sync(ALICE);
 
-    expect(await database.db.select().from(scoreEvents)).toHaveLength(1);
+    expect(await database.db.select().from(scoreEvents)).toHaveLength(0);
   });
 
   it('fetches every page of a player with many scores', async () => {
@@ -114,8 +118,90 @@ describe('POST /api/players/:id/sync', () => {
     ).toMatchObject({ total: 230 });
   });
 
-  it('answers 404 for a player ScoreSaber does not know', async () => {
-    const response = await sync('76561198999999999');
+  it('does not lose a score when the list changes between two pages', async () => {
+    const minute = (n: number) =>
+      new Date(Date.UTC(2024, 0, 1, 0, n)).toISOString();
+    const scores = Array.from({ length: 150 }, (_, index) => ({
+      leaderboardId: index + 1,
+      score: 1000,
+      playedAt: minute(index),
+    }));
+
+    scoreSaber.setPlayer(ALICE, 'alice', scores);
+    // While we read page one, Alice improves her oldest score. In a list
+    // sorted by time it moves to the end, and every score behind it moves up
+    // by one: what was first on page two is now last on page one.
+    scoreSaber.onScoresRequest((count) => {
+      if (count === 2)
+        scoreSaber.setPlayer(ALICE, 'alice', [
+          ...scores.slice(1),
+          { leaderboardId: 1, score: 2000, playedAt: minute(500) },
+        ]);
+    });
+
+    await sync(ALICE);
+
+    const all: { total: number } = await json(
+      await api(`/api/players/${ALICE}/scores?limit=1&sort=top`)
+    );
+
+    expect(all.total).toBe(150);
+    expect(all).toMatchObject({
+      items: [{ leaderboard: { id: 1 }, score: { modifiedScore: 2000 } }],
+    });
+  });
+
+  it('logs a score once when two syncs of the same player overlap', async () => {
+    scoreSaber.setPlayer(ALICE, 'alice', [
+      { leaderboardId: 1, score: 500, playedAt: '2024-01-01T10:00:00.000Z' },
+    ]);
+    await sync(ALICE);
+    scoreSaber.setPlayer(ALICE, 'alice', [
+      { leaderboardId: 1, score: 650, playedAt: '2024-02-01T10:00:00.000Z' },
+      { leaderboardId: 2, score: 300, playedAt: '2024-02-02T10:00:00.000Z' },
+    ]);
+
+    await Promise.all([
+      services.playersService.runSync(ALICE),
+      services.playersService.runSync(ALICE),
+      services.playersService.runSync(ALICE),
+    ]);
+
+    expect(await database.db.select().from(scoreEvents)).toHaveLength(2);
+  });
+
+  it('keeps the best score when ScoreSaber sends two plays of one map', async () => {
+    scoreSaber.setPlayer(ALICE, 'alice', [
+      { leaderboardId: 1, score: 700, playedAt: '2024-01-01T10:00:00.000Z' },
+      { leaderboardId: 1, score: 500, playedAt: '2024-01-02T10:00:00.000Z' },
+    ]);
+
+    await sync(ALICE);
+
+    expect(await json(await api(`/api/players/${ALICE}/scores`))).toMatchObject(
+      { total: 1, items: [{ score: { modifiedScore: 700 } }] }
+    );
+  });
+
+  it('never replaces a stored score with a worse one', async () => {
+    scoreSaber.setPlayer(ALICE, 'alice', [
+      { leaderboardId: 1, score: 700, playedAt: '2024-01-01T10:00:00.000Z' },
+    ]);
+    await sync(ALICE);
+    scoreSaber.setPlayer(ALICE, 'alice', [
+      { leaderboardId: 1, score: 400, playedAt: '2024-02-01T10:00:00.000Z' },
+    ]);
+
+    await sync(ALICE);
+
+    expect(await json(await api(`/api/players/${ALICE}/scores`))).toMatchObject(
+      { total: 1, items: [{ score: { modifiedScore: 700 } }] }
+    );
+    expect(await database.db.select().from(scoreEvents)).toHaveLength(0);
+  });
+
+  it('answers 404 when the profile picked is unknown to ScoreSaber', async () => {
+    const response = await linkProfile('76561198999999999');
 
     expect(response.status).toBe(404);
     expect(await response.json()).toEqual({
@@ -127,26 +213,59 @@ describe('POST /api/players/:id/sync', () => {
   });
 
   it('answers 502 when ScoreSaber sends something unexpected', async () => {
+    const logged: unknown[] = [];
     // The server logs what was wrong with the answer. Catch the log, so it
     // can be checked here instead of cluttering the test output.
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const original = console.error;
 
-    scoreSaber.breakProfile(ALICE, { id: ALICE, renamedField: 'alice' });
+    console.error = (...args: unknown[]) => logged.push(args[0]);
 
-    const response = await sync(ALICE);
+    try {
+      scoreSaber.breakProfile(ALICE, { id: ALICE, renamedField: 'alice' });
 
-    expect(response.status).toBe(502);
-    expect(await json(response)).toMatchObject({
-      error: { code: 'scoresaber_unavailable' },
+      const response = await linkProfile(ALICE);
+      const body = JSON.stringify(await json(response));
+
+      expect(response.status).toBe(502);
+      expect(body).toContain('scoresaber_unavailable');
+      // The details go to the log, not to the caller
+      expect(body).not.toContain('renamedField');
+      expect(String(logged[0])).toContain('does not look as expected');
+    } finally {
+      console.error = original;
+    }
+  });
+});
+
+describe('routes that would let anyone fetch any player', () => {
+  it('do not exist: no sync by id', async () => {
+    scoreSaber.setPlayer(ALICE, 'alice', []);
+
+    const response = await api(`/api/players/${ALICE}/sync`, {
+      method: 'POST',
     });
-    // The details go to the log, not to the caller
-    expect(log).toHaveBeenCalledOnce();
-    expect(String(log.mock.calls[0]?.[0])).toContain(
-      'does not look as expected'
-    );
-    expect(JSON.stringify(await json(await sync(ALICE)))).not.toContain(
-      'renamedField'
-    );
+
+    expect(response.status).toBe(404);
+    expect(scoreSaber.requests).toHaveLength(0);
+  });
+
+  it('do not exist: no lookup by id', async () => {
+    scoreSaber.setPlayer(ALICE, 'alice', []);
+
+    const response = await api(`/api/players/${ALICE}`);
+
+    expect(response.status).toBe(404);
+  });
+
+  it('leave the scores of an unknown player empty instead of fetching them', async () => {
+    scoreSaber.setPlayer(ALICE, 'alice', [
+      { leaderboardId: 1, score: 500, playedAt: '2024-01-01T10:00:00.000Z' },
+    ]);
+
+    const response = await api(`/api/players/${ALICE}/scores`);
+
+    expect(await json(response)).toMatchObject({ total: 0, items: [] });
+    expect(scoreSaber.requests).toHaveLength(0);
   });
 });
 

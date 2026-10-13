@@ -12,15 +12,19 @@ import { createAuth } from './auth.ts';
 
 const APP_URL = 'http://localhost:3000';
 
-const createRealApp = (devLogin: boolean) =>
+const createRealApp = (devLogin: boolean, sessionUpdateAgeSeconds?: number) =>
   createTestApp({
-    auth: createAuth(database.db, {
-      APP_URL,
-      AUTH_SECRET: 'a-secret-only-used-by-the-automated-tests',
-      DEV_LOGIN: devLogin,
-      GOOGLE_CLIENT_ID: undefined,
-      GOOGLE_CLIENT_SECRET: undefined,
-    }),
+    auth: createAuth(
+      database.db,
+      {
+        APP_URL,
+        AUTH_SECRET: 'a-secret-only-used-by-the-automated-tests',
+        DEV_LOGIN: devLogin,
+        GOOGLE_CLIENT_ID: undefined,
+        GOOGLE_CLIENT_SECRET: undefined,
+      },
+      { sessionUpdateAgeSeconds }
+    ),
   }).app;
 
 const signUp = (app: ReturnType<typeof createRealApp>) =>
@@ -69,6 +73,30 @@ describe('sign-in with Better Auth', () => {
 
     expect(sessionCookie).toMatch(/HttpOnly/i);
     expect(sessionCookie).toMatch(/SameSite=Lax/i);
+  });
+
+  it('hands the browser a new cookie when a session in use is extended', async () => {
+    // Extend on every use, instead of once a day
+    const app = createRealApp(true, 0);
+    const cookie = cookiesOf(await signUp(app));
+
+    const me = await app.request('/api/me', { headers: { cookie } });
+    const renewed = me.headers
+      .getSetCookie()
+      .find((value) => value.includes('session_token'));
+
+    expect(me.status).toBe(200);
+    expect(renewed).toMatch(/Max-Age=\d+/i);
+    expect(renewed).toMatch(/HttpOnly/i);
+  });
+
+  it('sets no cookie on ordinary requests', async () => {
+    const app = createRealApp(true);
+    const cookie = cookiesOf(await signUp(app));
+
+    const me = await app.request('/api/me', { headers: { cookie } });
+
+    expect(me.headers.getSetCookie()).toEqual([]);
   });
 
   it('closes the protected routes again after signing out', async () => {

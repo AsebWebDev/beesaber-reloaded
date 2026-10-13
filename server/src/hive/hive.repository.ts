@@ -1,4 +1,17 @@
-import { and, asc, desc, eq, gt, isNull, lt, lte, or, sql } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  gt,
+  inArray,
+  isNotNull,
+  isNull,
+  lt,
+  lte,
+  or,
+  sql,
+} from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 import {
@@ -53,18 +66,69 @@ const createHiveRepository = (db: Database) => {
     return row !== undefined;
   };
 
-  const countMembers = async (userId: string) => {
-    const [row] = await db
-      .select({ total: count() })
-      .from(hiveMembers)
-      .where(eq(hiveMembers.userId, userId));
+  /**
+   * Adds a player to the hive unless that would exceed `maxSize`. Adding a
+   * player who is already in is not an error and changes nothing.
+   *
+   * Counting and inserting happen under a lock per user. Without it, two
+   * requests at the same moment could both count 49 and both insert.
+   */
+  const addMember = (userId: string, memberId: string, maxSize: number) =>
+    db.transaction(async (tx) => {
+      await tx.execute(
+        sql`select pg_advisory_xact_lock(hashtext(${`hive:${userId}`}))`
+      );
 
-    return row?.total ?? 0;
+      const members = await tx
+        .select({ memberId: hiveMembers.memberId })
+        .from(hiveMembers)
+        .where(eq(hiveMembers.userId, userId));
+
+      if (members.some((member) => member.memberId === memberId))
+        return 'exists' as const;
+      if (members.length >= maxSize) return 'full' as const;
+
+      await tx.insert(hiveMembers).values({ userId, memberId });
+
+      return 'added' as const;
+    });
+
+  /** Just the ids of the bees, without the head-to-head records */
+  const listMemberIds = async (userId: string) => {
+    const rows = await db
+      .select({ memberId: hiveMembers.memberId })
+      .from(hiveMembers)
+      .where(eq(hiveMembers.userId, userId))
+      .orderBy(asc(hiveMembers.createdAt));
+
+    return rows.map((row) => row.memberId);
   };
 
-  /** Adding a player twice is not an error, the second call changes nothing */
-  const addMember = (userId: string, memberId: string) =>
-    db.insert(hiveMembers).values({ userId, memberId }).onConflictDoNothing();
+  /**
+   * Whose scores are being fetched right now, out of me and my bees. Small
+   * and cheap on purpose: the frontend asks this over and over while it
+   * waits, instead of asking for the whole hive.
+   */
+  const listSyncing = ({ playerId, userId }: Me) =>
+    db
+      .select({ playerId: players.id, since: players.syncStartedAt })
+      .from(players)
+      .where(
+        and(
+          isNotNull(players.syncStartedAt),
+          or(
+            eq(players.id, playerId),
+            inArray(
+              players.id,
+              db
+                .select({ memberId: hiveMembers.memberId })
+                .from(hiveMembers)
+                .where(eq(hiveMembers.userId, userId))
+            )
+          )
+        )
+      )
+      .orderBy(asc(players.id));
 
   /** Returns whether there was a member to remove */
   const removeMember = async (userId: string, memberId: string) => {
@@ -152,6 +216,9 @@ const createHiveRepository = (db: Database) => {
   /**
    * "A bee beat your score": score changes of bees that went past my score
    * and that I have not answered yet.
+   *
+   * Only what happened after the bee joined my hive counts. A bee may have
+   * been tracked for years by someone else; none of that is news to me.
    */
   const listNews = ({ playerId, userId }: Me, limit: number) =>
     db
@@ -164,6 +231,9 @@ const createHiveRepository = (db: Database) => {
         },
         leaderboard: leaderboards,
         myScore: mine.modifiedScore,
+        // What the bee holds now, which can be more than the score of the
+        // event if they improved again since
+        theirScore: theirs.modifiedScore,
       })
       .from(scoreEvents)
       .innerJoin(
@@ -180,18 +250,26 @@ const createHiveRepository = (db: Database) => {
           eq(mine.leaderboardId, scoreEvents.leaderboardId)
         )
       )
+      .innerJoin(
+        theirs,
+        and(
+          eq(theirs.playerId, scoreEvents.playerId),
+          eq(theirs.leaderboardId, scoreEvents.leaderboardId)
+        )
+      )
       .innerJoin(players, eq(players.id, scoreEvents.playerId))
       .innerJoin(leaderboards, eq(leaderboards.id, scoreEvents.leaderboardId))
       .where(
         and(
-          eq(scoreEvents.isNews, true),
-          // The bee is ahead of me now ...
+          gt(scoreEvents.playedAt, hiveMembers.createdAt),
+          // This score took the bee past me ...
           gt(scoreEvents.newScore, mine.modifiedScore),
-          // ... and was not ahead before this score
           or(
             isNull(scoreEvents.previousScore),
             lte(scoreEvents.previousScore, mine.modifiedScore)
-          )
+          ),
+          // ... and the bee is still ahead
+          gt(theirs.modifiedScore, mine.modifiedScore)
         )
       )
       .orderBy(desc(scoreEvents.playedAt), desc(scoreEvents.id))
@@ -200,10 +278,11 @@ const createHiveRepository = (db: Database) => {
   return {
     addMember,
     compare,
-    countMembers,
     isMember,
+    listMemberIds,
     listMembers,
     listNews,
+    listSyncing,
     removeMember,
   };
 };
