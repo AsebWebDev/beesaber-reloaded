@@ -156,6 +156,10 @@ once after signing in. Nothing proves the profile is yours, and nothing needs
 to: all it exposes is public ScoreSaber data. Your hive belongs to your
 account, so two accounts with the same profile still have a hive each.
 
+Deleting an account removes the account, its sessions, its link to Google and
+its hive. Players and their scores stay: they are public ScoreSaber data, and
+other accounts may follow the same players.
+
 | Method and path                  | What it does                                    |
 | -------------------------------- | ----------------------------------------------- |
 | `GET /health`                    | Is the server up and can it reach the database  |
@@ -164,6 +168,7 @@ account, so two accounts with the same profile still have a hive each.
 | `GET /players/:id/scores`        | A player's scores, in pages; `sort`, `search`   |
 | `GET`, `POST /auth/*`            | Sign-in, callback and sign-out, by Better Auth  |
 | `GET /me`                        | My account and my ScoreSaber profile            |
+| `DELETE /me`                     | Delete my account, its sessions and its hive    |
 | `PUT /me/player`                 | Pick the ScoreSaber profile I compare as        |
 | `GET /hive`                      | My bees, each with the head-to-head record      |
 | `POST /hive`                     | Add a player to my hive                         |

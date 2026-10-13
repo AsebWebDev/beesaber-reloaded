@@ -304,6 +304,16 @@ const server = setupServer(
   ),
 
   http.get('/api/me', () => refusal('me') ?? HttpResponse.json(me())),
+  http.delete('/api/me', () => {
+    const refused = refusal();
+
+    if (refused !== undefined) return refused;
+
+    state.signedIn = false;
+    state.devAccount = 'missing';
+
+    return new HttpResponse(null, { status: 204 });
+  }),
   http.put('/api/me/player', async ({ request }) => {
     const body = (await request.json()) as { playerId: string };
 

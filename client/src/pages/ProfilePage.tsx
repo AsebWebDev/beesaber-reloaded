@@ -6,6 +6,7 @@ import {
   useLinkProfile,
   useScores,
 } from '@/api/queries.ts';
+import { useDeleteAccount } from '@/auth/useDeleteAccount.ts';
 import { Pagination } from '@/components/Pagination.tsx';
 import { PlayerSearch } from '@/components/PlayerSearch.tsx';
 import { SkeletonRows } from '@/components/SkeletonRows.tsx';
@@ -253,6 +254,53 @@ const ScoreList = ({
   );
 };
 
+/**
+ * Deleting the account, behind a second step: the first button only opens
+ * the question, the button that deletes appears with it.
+ */
+const DeleteAccount = () => {
+  const remove = useDeleteAccount();
+  const [asking, setAsking] = useState(false);
+
+  return (
+    <Card className="space-y-3">
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="min-w-48 flex-1">
+          <h2 className="font-semibold text-slate-100">Delete account</h2>
+          <p className="text-sm text-slate-400">
+            Removes your BeeSaber account and your hive. Nothing changes on
+            ScoreSaber.
+          </p>
+        </div>
+        <Button
+          look="ghost"
+          aria-expanded={asking}
+          disabled={remove.isPending}
+          onClick={() => setAsking(!asking)}
+        >
+          {asking ? 'Keep my account' : 'Delete account'}
+        </Button>
+      </div>
+
+      {asking && (
+        <div className="border-night-line flex flex-wrap items-center gap-4 border-t pt-3">
+          <p className="min-w-48 flex-1 text-sm text-slate-300">
+            Delete your account for good? This cannot be undone.
+          </p>
+          <Button
+            look="danger"
+            disabled={remove.isPending}
+            onClick={() => remove.mutate()}
+          >
+            Yes, delete my account
+          </Button>
+        </div>
+      )}
+      {remove.isError && <ErrorNote error={remove.error} />}
+    </Card>
+  );
+};
+
 /** My ScoreSaber profile and my scores */
 const ProfilePage = ({ player }: { player: Player }) => {
   const link = useLinkProfile();
@@ -330,6 +378,8 @@ const ProfilePage = ({ player }: { player: Player }) => {
         playerId={player.id}
         syncing={isSyncing(player)}
       />
+
+      <DeleteAccount />
     </div>
   );
 };

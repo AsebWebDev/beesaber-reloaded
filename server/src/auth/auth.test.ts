@@ -115,6 +115,36 @@ describe('sign-in with Better Auth', () => {
     expect(me.status).toBe(401);
   });
 
+  it('ends the session with the account and frees the email for a new one', async () => {
+    const app = createRealApp(true);
+    const cookie = cookiesOf(await signUp(app));
+
+    const deleted = await app.request('/api/me', {
+      method: 'DELETE',
+      headers: { cookie, origin: APP_URL },
+    });
+
+    expect(deleted.status).toBe(204);
+
+    const me = await app.request('/api/me', { headers: { cookie } });
+
+    expect(me.status).toBe(401);
+
+    // The browser still holds the cookie of the session that is gone.
+    // Signing out makes it drop the cookie.
+    const signedOut = await app.request('/api/auth/sign-out', {
+      method: 'POST',
+      headers: { cookie, origin: APP_URL },
+    });
+    const dropped = signedOut.headers
+      .getSetCookie()
+      .find((value) => value.includes('session_token'));
+
+    expect(signedOut.status).toBe(200);
+    expect(dropped).toMatch(/Max-Age=0/i);
+    expect((await signUp(app)).status).toBe(200);
+  });
+
   it('does not let a made-up cookie in', async () => {
     const me = await createRealApp(true).request('/api/me', {
       headers: { cookie: 'better-auth.session_token=made-up' },
