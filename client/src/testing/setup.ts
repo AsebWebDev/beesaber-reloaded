@@ -12,6 +12,9 @@ beforeAll(() => fakeApi.server.listen({ onUnhandledFrame: 'error' }));
 afterEach(() => {
   cleanup();
   fakeApi.reset();
+  // Answers a single test swapped in, and listeners it attached
+  fakeApi.server.resetHandlers();
+  fakeApi.server.events.removeAllListeners();
 });
 
 afterAll(() => fakeApi.server.close());

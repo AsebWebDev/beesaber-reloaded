@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
 
-import { useSyncHive, useSyncing } from '@/api/queries.ts';
 import { useSignOut } from '@/auth/useSignOut.ts';
 import { HexLogo } from '@/components/HexLogo.tsx';
 import { Avatar, Button, ErrorNote } from '@/components/ui.tsx';
+import { useFocusOnMount } from '@/lib/useFocusOnMount.ts';
+
+import { useSyncControl } from './useSyncControl.ts';
 
 import type { Player } from '@/api/queries.ts';
 
@@ -14,41 +16,22 @@ const LINKS = [
   { to: '/profile', label: 'My profile' },
 ];
 
-/**
- * How long "up to date" stays on screen. Long enough to be read at leisure
- * or reached with a screen reader, short enough not to be untrue.
- */
-const SYNC_RESULT_SHOWN_MS = 20_000;
-
 /** The frame around every page for a signed-in user: logo, menu, sync */
-const AppLayout = ({ player }: { player: Player }) => {
-  const sync = useSyncHive();
+const AppLayout = ({
+  player,
+  takeFocus = false,
+}: {
+  player: Player;
+  /** True when this replaces another screen, see the gate in routes.tsx */
+  takeFocus?: boolean;
+}) => {
+  const sync = useSyncControl();
   const logout = useSignOut();
-  const syncing = useSyncing();
-  const { data: syncResult, reset: forgetSyncResult } = sync;
   const { pathname } = useLocation();
   const main = useRef<HTMLElement>(null);
   const shownPath = useRef(pathname);
-  const [wasSyncing, setWasSyncing] = useState(syncing);
-  const [justFinished, setJustFinished] = useState(false);
 
-  // A sync that ends is worth a word: the "fetching" line just vanishing
-  // is no news to someone who cannot see it vanish.
-  if (wasSyncing !== syncing) {
-    setWasSyncing(syncing);
-    setJustFinished(!syncing);
-  }
-
-  useEffect(() => {
-    if (!justFinished) return;
-
-    const timer = setTimeout(
-      () => setJustFinished(false),
-      SYNC_RESULT_SHOWN_MS
-    );
-
-    return () => clearTimeout(timer);
-  }, [justFinished]);
+  useFocusOnMount(main, takeFocus);
 
   // A link in this app swaps the page without loading a new document, so
   // the browser does nothing a screen reader or a keyboard user would
@@ -62,16 +45,6 @@ const AppLayout = ({ player }: { player: Player }) => {
     shownPath.current = pathname;
     main.current?.focus();
   }, [pathname]);
-
-  // "Checked less than a minute ago" is only true for a moment. Left on
-  // screen, it would still claim so an hour later.
-  useEffect(() => {
-    if (syncResult === undefined) return;
-
-    const timer = setTimeout(forgetSyncResult, SYNC_RESULT_SHOWN_MS);
-
-    return () => clearTimeout(timer);
-  }, [syncResult, forgetSyncResult]);
 
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-6 lg:flex-row lg:gap-10">
@@ -137,21 +110,13 @@ const AppLayout = ({ player }: { player: Player }) => {
       >
         <div className="flex flex-wrap items-center justify-end gap-3">
           <p role="status" className="text-sm text-slate-400">
-            {syncing
-              ? 'Fetching scores from ScoreSaber…'
-              : justFinished
-                ? 'Scores are up to date.'
-                : syncResult?.queued === 0 &&
-                  'Already up to date, checked less than a minute ago.'}
+            {sync.message}
           </p>
-          <Button
-            disabled={sync.isPending || syncing}
-            onClick={() => sync.mutate()}
-          >
+          <Button disabled={sync.busy} onClick={sync.start}>
             Sync scores
           </Button>
         </div>
-        {sync.isError && <ErrorNote error={sync.error} />}
+        {sync.error !== undefined && <ErrorNote error={sync.error} />}
         {logout.isError && <ErrorNote error={logout.error} />}
 
         <Outlet />

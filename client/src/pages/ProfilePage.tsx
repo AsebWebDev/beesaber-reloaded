@@ -31,92 +31,40 @@ const SORTS: { label: string; value: ScoreSort }[] = [
   { value: 'top', label: 'Highest score' },
 ];
 
-/** My ScoreSaber profile and my scores, searchable and sortable */
-const ProfilePage = ({ player }: { player: Player }) => {
+/** A player's scores as a table that can be searched, sorted and paged */
+const ScoreList = ({ playerId }: { playerId: string }) => {
   const searchId = useId();
   const [sort, setSort] = useState<ScoreSort>('recent');
   const [text, setText] = useState('');
-  const [page, setPage] = useState(1);
   const search = useDebouncedValue(text.trim());
-  const scores = useScores(player.id, { page, search, sort });
-  const link = useLinkProfile();
-  const [changing, setChanging] = useState(false);
-  const changeButton = useRef<HTMLButtonElement>(null);
-  const [notice, setNotice] = useState('');
-  const total = scores.data?.total;
-  // Loading for the first time, or showing the previous list while the one
-  // for a new sort order, search or page is on its way. A list that failed
-  // is not loading: what there is stays on screen, with the error above it.
-  const loading =
-    !scores.isError && (scores.isPending || scores.isPlaceholderData);
-  const items = scores.data?.items ?? [];
 
-  usePageTitle('My profile');
-  const lastPage = lastPageOf(useLastKnown(scores.data?.total) ?? 0, PAGE_SIZE);
+  // A page number only means something within one list. It is stored with
+  // the list it belongs to, so a new search or sort order starts on page 1
+  // in the same moment it takes effect. Setting the page to 1 when a key is
+  // pressed would come too early: the search waits for typing to pause, and
+  // until then page 1 of the old list would be fetched for nothing.
+  const list = `${sort}|${search}`;
+  const [paging, setPaging] = useState({ list, page: 1 });
+  const page = paging.list === list ? paging.page : 1;
+  const setPage = (next: number) => setPaging({ list, page: next });
+
+  const scores = useScores(playerId, { page, search, sort });
+  // True for the first load and for every new search, sort order or page.
+  // A list that failed is not loading: what there is stays on screen, with
+  // the error above it.
+  const loading = scores.isPending;
+  const items = scores.data?.items ?? [];
+  const total = scores.data?.total;
+  // While a list loads or has failed it has no total and no rows. What was
+  // there before keeps the page buttons and the height of the table.
+  const lastPage = lastPageOf(useLastKnown(total) ?? 0, PAGE_SIZE);
+  const rowsBefore = useLastKnown(scores.data?.items.length);
 
   // The list got shorter than the page we are on
-  if (scores.data !== undefined && !scores.isPlaceholderData && page > lastPage)
-    setPage(lastPage);
+  if (total !== undefined && page > lastPage) setPage(lastPage);
 
   return (
-    <div className="space-y-6">
-      <Card className="flex flex-wrap items-center gap-4">
-        <Avatar src={player.avatarUrl} size={72} />
-        <div>
-          <NeonHeading color="blue" className="text-3xl">
-            {player.name}
-          </NeonHeading>
-          <p className="text-sm text-slate-400">
-            {countryFlag(player.country)} {formatRank(player.rank)} · #
-            {player.countryRank} in {player.country} ·{' '}
-            {formatScore(Math.round(player.totalPp))} pp · {player.totalPlayed}{' '}
-            maps played
-          </p>
-        </div>
-        <Button
-          look="ghost"
-          className="ml-auto"
-          ref={changeButton}
-          aria-expanded={changing}
-          onClick={() => setChanging(!changing)}
-        >
-          {changing ? 'Keep this profile' : 'Change profile'}
-        </Button>
-      </Card>
-      <p role="status" className="sr-only">
-        {notice}
-      </p>
-
-      {changing && (
-        <Card className="space-y-3">
-          <p className="text-sm text-slate-300">
-            Pick the ScoreSaber profile you want to compare as. Your hive stays
-            as it is; the scores of the new profile are fetched.
-          </p>
-          <PlayerSearch
-            label="Your name on ScoreSaber"
-            actionLabel="This is me"
-            actionName={(found) => `This is me: ${found.name}`}
-            pendingId={link.isPending ? link.variables : undefined}
-            onPick={(found) =>
-              link.mutate(found.id, {
-                onSuccess: () => {
-                  setChanging(false);
-                  setPage(1);
-                  setNotice(`You now compare as ${found.name}.`);
-                  // The picker closes, and the focus with it
-                  changeButton.current?.focus();
-                },
-              })
-            }
-            disabledReason={(found) =>
-              found.id === player.id ? 'Your current profile' : undefined
-            }
-          />
-          {link.isError && <ErrorNote error={link.error} />}
-        </Card>
-      )}
-
+    <>
       <div className="flex flex-wrap items-end gap-4">
         <div className="min-w-48 flex-1">
           <label htmlFor={searchId} className="block text-sm text-slate-300">
@@ -126,11 +74,7 @@ const ProfilePage = ({ player }: { player: Player }) => {
             id={searchId}
             type="search"
             value={text}
-            onChange={(event) => {
-              setText(event.target.value);
-              // A new search starts on its first page
-              setPage(1);
-            }}
+            onChange={(event) => setText(event.target.value)}
             placeholder="Song or artist"
             className="border-night-control bg-night focus:border-neon-blue mt-1 w-full rounded border px-3 py-2 text-slate-100 placeholder:text-slate-400"
           />
@@ -141,10 +85,7 @@ const ProfilePage = ({ player }: { player: Player }) => {
               key={value}
               type="button"
               aria-pressed={sort === value}
-              onClick={() => {
-                setSort(value);
-                setPage(1);
-              }}
+              onClick={() => setSort(value)}
               className={`cursor-pointer rounded-full border px-3 py-1 text-sm transition ${
                 sort === value
                   ? 'border-neon-blue bg-neon-blue text-white'
@@ -211,7 +152,7 @@ const ProfilePage = ({ player }: { player: Player }) => {
               </tr>
             </thead>
             <tbody>
-              {loading && <SkeletonRows columns={5} rows={items.length || 8} />}
+              {loading && <SkeletonRows columns={5} rows={rowsBefore || 8} />}
               {!loading &&
                 items.map(({ leaderboard, score }) => (
                   <tr
@@ -241,6 +182,83 @@ const ProfilePage = ({ player }: { player: Player }) => {
       )}
 
       <Pagination page={page} totalPages={lastPage} onChange={setPage} />
+    </>
+  );
+};
+
+/** My ScoreSaber profile and my scores */
+const ProfilePage = ({ player }: { player: Player }) => {
+  const link = useLinkProfile();
+  const [changing, setChanging] = useState(false);
+  const changeButton = useRef<HTMLButtonElement>(null);
+  // What just happened, for people who do not see the page change
+  const [notice, setNotice] = useState('');
+
+  usePageTitle('My profile');
+
+  return (
+    <div className="space-y-6">
+      <Card className="flex flex-wrap items-center gap-4">
+        <Avatar src={player.avatarUrl} size={72} />
+        <div>
+          <NeonHeading color="blue" className="text-3xl">
+            {player.name}
+          </NeonHeading>
+          <p className="text-sm text-slate-400">
+            {countryFlag(player.country)} {formatRank(player.rank)} · #
+            {player.countryRank} in {player.country} ·{' '}
+            {formatScore(Math.round(player.totalPp))} pp · {player.totalPlayed}{' '}
+            maps played
+          </p>
+        </div>
+        <Button
+          look="ghost"
+          className="ml-auto"
+          ref={changeButton}
+          aria-expanded={changing}
+          onClick={() => setChanging(!changing)}
+        >
+          {changing ? 'Keep this profile' : 'Change profile'}
+        </Button>
+      </Card>
+      <p role="status" className="sr-only">
+        {notice}
+      </p>
+
+      {changing && (
+        <Card className="space-y-3">
+          <p className="text-sm text-slate-300">
+            Pick the ScoreSaber profile you want to compare as. Your hive stays
+            as it is; the scores of the new profile are fetched.
+          </p>
+          <PlayerSearch
+            label="Your name on ScoreSaber"
+            actionLabel="This is me"
+            actionName={(found) => `This is me: ${found.name}`}
+            pendingId={link.isPending ? link.variables : undefined}
+            onPick={(found) =>
+              link.mutate(found.id, {
+                onSuccess: () => {
+                  setChanging(false);
+                  setNotice(`You now compare as ${found.name}.`);
+                  // The picker closes, and the focus with it
+                  changeButton.current?.focus();
+                },
+              })
+            }
+            disabledReason={(found) =>
+              found.id === player.id ? 'Your current profile' : undefined
+            }
+          />
+          {link.isError && <ErrorNote error={link.error} />}
+        </Card>
+      )}
+
+      {/* The key ties the list to the player. With another player it is a
+          new list: React throws away the search text, the sort order and the
+          page of the old one, instead of applying them to scores they were
+          never meant for. */}
+      <ScoreList key={player.id} playerId={player.id} />
     </div>
   );
 };

@@ -40,30 +40,32 @@ const ComparisonPage = () => {
   const page = pageFrom(searchParams.get('page'));
 
   const hive = useHive();
-  const comparison = useComparison(playerId, { filter, page });
   const member = hive.data?.items.find((item) => item.player.id === playerId);
+  // The hive is known, and this player is not in it: an old link, a typo in
+  // the address, or a bee that was removed in the meantime
+  const notInHive = hive.data !== undefined && member === undefined;
+  const comparison = useComparison(playerId, { filter, page }, !notInHive);
   const items = comparison.data?.items ?? [];
   const total = comparison.data?.total;
   const tableName = `Scores of me and ${member?.player.name ?? 'this bee'}`;
+  // While a list loads or has failed it has no total and no rows. What was
+  // there before keeps the page buttons and the height of the table.
+  const lastPage = lastPageOf(useLastKnown(total) ?? 0, PAGE_SIZE);
+  const rowsBefore = useLastKnown(comparison.data?.items.length);
+  // A link to page 9 of a list that has three: go to the last one there is
+  const beyondTheEnd = total !== undefined && page > lastPage;
+  // True for the first load and for every new filter or page. A list that
+  // failed is not loading: what there is stays on screen, with the error
+  // above it.
+  const loading = comparison.isPending || beyondTheEnd;
 
   usePageTitle(
-    member === undefined ? 'Comparison' : `Me vs ${member.player.name}`
+    notInHive
+      ? 'Not in your hive'
+      : member === undefined
+        ? 'Comparison'
+        : `Me vs ${member.player.name}`
   );
-  const lastPage = lastPageOf(
-    useLastKnown(comparison.data?.total) ?? 0,
-    PAGE_SIZE
-  );
-  // A link to page 9 of a list that has three: go to the last one there is
-  const beyondTheEnd =
-    comparison.data !== undefined &&
-    !comparison.isPlaceholderData &&
-    page > lastPage;
-  // Loading for the first time, or showing the previous list while the one
-  // for a new filter or page is on its way. A list that failed is not
-  // loading: what there is stays on screen, with the error above it.
-  const loading =
-    !comparison.isError &&
-    (comparison.isPending || comparison.isPlaceholderData || beyondTheEnd);
 
   useEffect(() => {
     if (beyondTheEnd)
@@ -76,6 +78,22 @@ const ComparisonPage = () => {
       // A new filter starts on its first page
       page: String(next.filter === undefined ? (next.page ?? page) : 1),
     });
+
+  if (notInHive)
+    return (
+      <div className="space-y-6">
+        <NeonHeading color="red" className="text-3xl">
+          Not in your hive
+        </NeonHeading>
+        <EmptyState>
+          You can only compare with players in your hive, and this one is not.{' '}
+          <Link to="/hive" className="text-neon-yellow-core underline">
+            Go to my hive
+          </Link>{' '}
+          to add them.
+        </EmptyState>
+      </div>
+    );
 
   return (
     <div className="space-y-6">
@@ -174,7 +192,7 @@ const ComparisonPage = () => {
               </tr>
             </thead>
             <tbody>
-              {loading && <SkeletonRows columns={4} rows={items.length || 8} />}
+              {loading && <SkeletonRows columns={4} rows={rowsBefore || 8} />}
               {!loading &&
                 items.map(({ leaderboard, mine, theirs }) => {
                   const delta = mine.modifiedScore - theirs.modifiedScore;

@@ -1,13 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRef } from 'react';
 
 import { useConfig } from '@/api/queries.ts';
 import { signInAsDev, signInWithGoogle } from '@/auth/authClient.ts';
 import { HexLogo } from '@/components/HexLogo.tsx';
 import { Button, ErrorNote, NeonHeading, Spinner } from '@/components/ui.tsx';
+import { useFocusOnMount } from '@/lib/useFocusOnMount.ts';
 import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 /** What visitors see before they sign in */
-const LandingPage = () => {
+const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
+  const main = useRef<HTMLElement>(null);
   const queryClient = useQueryClient();
   const config = useConfig();
   const google = useMutation({ mutationFn: signInWithGoogle });
@@ -17,13 +20,15 @@ const LandingPage = () => {
     // Now signed in: ask the server again who we are
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['me'] }),
   });
-  usePageTitle();
-
   const signIn = config.data?.signIn;
   const offersDevLogin = signInAsDev !== undefined && signIn?.devLogin === true;
 
+  usePageTitle();
+  useFocusOnMount(main, takeFocus);
+
   return (
     <main
+      ref={main}
       data-testid="landing-page"
       tabIndex={-1}
       className="outline-none mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-10 px-6 text-center"

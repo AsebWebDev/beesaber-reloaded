@@ -1,5 +1,6 @@
-import { screen, waitFor, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { http, HttpResponse } from 'msw';
+import { describe, expect, it, vi } from 'vitest';
 
 import { fakeApi } from '@/testing/fakeApi.ts';
 import { renderApp } from '@/testing/renderApp.tsx';
@@ -717,5 +718,131 @@ describe('for people who do not use a mouse or a screen', () => {
     expect(skip).toHaveFocus();
     expect(skip).toHaveAttribute('href', '#content');
     expect(screen.getByRole('main')).toHaveAttribute('id', 'content');
+  });
+});
+
+describe('when a page breaks while it is drawn', () => {
+  it('shows a page of its own with a way on, not a stack trace', async () => {
+    // The server sends news in a shape this code does not know
+    fakeApi.server.use(
+      http.get('/api/hive/news', () =>
+        HttpResponse.json({ items: [{ unexpected: true }] })
+      )
+    );
+    // React and the router report the error to the console, loudly
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    fakeApi.signedInAs();
+    renderApp();
+
+    expect(
+      await screen.findByRole('heading', { name: 'Something went wrong' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Reload' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Back to the start' })
+    ).toHaveAttribute('href', '/');
+    expect(document.body).not.toHaveTextContent(/TypeError|at .*\.tsx/);
+    expect(document.title).toBe('Something went wrong · BeeSaber');
+    expect(logged).toHaveBeenCalled();
+  });
+});
+
+describe('a list and the settings that belong to it', () => {
+  it('forgets search and sort order when I change who I am', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    await screen.findByText('Monster');
+    await user.type(screen.getByLabelText('Filter songs'), 'super');
+    await user.click(screen.getByRole('button', { name: 'Highest score' }));
+
+    await user.click(screen.getByRole('button', { name: 'Change profile' }));
+    await user.type(screen.getByLabelText('Your name on ScoreSaber'), 'buzz');
+    await user.click(
+      (await screen.findAllByRole('button', { name: /^This is me/ }))[0]!
+    );
+    await screen.findByRole('heading', { name: 'buzz' });
+
+    expect(screen.getByLabelText('Filter songs')).toHaveValue('');
+    expect(screen.getByRole('button', { name: 'Latest' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+  });
+
+  it('asks the server once when a search is typed on a later page', async () => {
+    fakeApi.signedInAs({ extraScores: 18 });
+    const { user } = renderApp('/profile');
+
+    await screen.findByText('Page 1 of 2');
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+    await screen.findByText('Page 2 of 2');
+
+    const asked: string[] = [];
+
+    fakeApi.server.events.on('request:start', ({ request }) => {
+      const { pathname, search } = new URL(request.url);
+
+      if (pathname.endsWith('/scores')) asked.push(search);
+    });
+
+    await user.type(screen.getByLabelText('Filter songs'), 'super');
+    await waitFor(() =>
+      expect(screen.queryByText(/^Page /)).not.toBeInTheDocument()
+    );
+
+    // Not page 1 of the old list first, and then again with the search
+    expect(asked).toEqual(['?page=1&limit=15&sort=recent&search=super']);
+  });
+});
+
+describe('the comparison with someone who is not in my hive', () => {
+  it('says so and points to the hive, without asking the server to compare', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+
+    const asked: string[] = [];
+
+    fakeApi.server.events.on('request:start', ({ request }) =>
+      asked.push(new URL(request.url).pathname)
+    );
+    renderApp('/hive/999');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Not in your hive' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Go to my hive' })).toHaveAttribute(
+      'href',
+      '/hive'
+    );
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    expect(document.title).toBe('Not in your hive · BeeSaber');
+    expect(
+      asked.filter((path) => path.endsWith('/comparison')).length
+    ).toBeLessThanOrEqual(1);
+  });
+});
+
+describe('a picture that cannot be loaded', () => {
+  it('is replaced by a plain box of the same size', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp('/hive');
+
+    await screen.findByRole('button', { name: /Remove buzz/ });
+
+    const avatar = document.querySelector<HTMLImageElement>(
+      `img[src="${fakeApi.BEE.avatarUrl}"]`
+    )!;
+
+    expect(avatar).toHaveAttribute('referrerpolicy', 'no-referrer');
+
+    fireEvent.error(avatar);
+
+    expect(avatar).not.toBeInTheDocument();
+    expect(screen.getByTestId('picture-missing')).toHaveStyle({
+      width: '40px',
+      height: '40px',
+    });
   });
 });

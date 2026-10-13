@@ -369,7 +369,9 @@ const server = setupServer(
     // Every question brings the end of the sync one step closer
     const syncing =
       state.hive.length > 0 && state.pollsUntilSynced > 0
-        ? [{ playerId: BEE.id, since: new Date().toISOString() }]
+        ? // Long ago on purpose. How often the page asks must not depend
+          // on comparing the server's clock with the browser's.
+          [{ playerId: BEE.id, since: '2024-03-01T10:00:00.000Z' }]
         : [];
 
     state.pollsUntilSynced = Math.max(0, state.pollsUntilSynced - 1);

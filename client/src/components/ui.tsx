@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { timeAgo } from '@/lib/format.ts';
 
 import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
@@ -34,10 +36,11 @@ const NeonHeading = ({
   children: ReactNode;
   className?: string;
   color?: NeonColor;
-  focusRef?: Ref<HTMLHeadingElement & HTMLParagraphElement>;
+  focusRef?: Ref<HTMLElement>;
 }) => (
   <Tag
-    ref={focusRef}
+    // One ref type for the four tags it can be
+    ref={focusRef as Ref<HTMLHeadingElement & HTMLParagraphElement>}
     tabIndex={focusRef === undefined ? undefined : -1}
     className={`font-neon tracking-wide uppercase outline-none ${glow[color]} ${className}`}
   >
@@ -88,18 +91,59 @@ const Card = ({
 );
 
 /**
+ * A square picture that lives on another server: an avatar or a cover from
+ * ScoreSaber's image store.
+ *
+ * - If it cannot be loaded, a plain box of the same size takes its place
+ *   instead of the browser's "broken image" mark.
+ * - The other server is not told which page asked for the picture.
+ * - It has no description, because it never stands alone: the name or the
+ *   title is right next to it.
+ */
+const Picture = ({
+  className = '',
+  size,
+  src,
+}: {
+  className?: string;
+  size: number;
+  src: string;
+}) => {
+  // Remembered per address, so a new picture gets a new chance
+  const [failedSrc, setFailedSrc] = useState<string>();
+  const box = { width: size, height: size };
+
+  return failedSrc === src ? (
+    <span
+      aria-hidden="true"
+      data-testid="picture-missing"
+      className={`bg-night-line inline-block shrink-0 ${className}`}
+      style={box}
+    />
+  ) : (
+    <img
+      src={src}
+      alt=""
+      width={size}
+      height={size}
+      loading="lazy"
+      referrerPolicy="no-referrer"
+      onError={() => setFailedSrc(src)}
+      className={`bg-night shrink-0 object-cover ${className}`}
+      style={box}
+    />
+  );
+};
+
+/**
  * A player's picture. Decoration: it always stands next to the player's
  * name, so describing it would only make a screen reader say the name twice.
  */
 const Avatar = ({ size = 40, src }: { size?: number; src: string }) => (
-  <img
+  <Picture
     src={src}
-    alt=""
-    width={size}
-    height={size}
-    loading="lazy"
-    className="border-night-line shrink-0 rounded-full border object-cover"
-    style={{ width: size, height: size }}
+    size={size}
+    className="border-night-line rounded-full border"
   />
 );
 
@@ -121,7 +165,8 @@ const Spinner = ({ label = 'Loading' }: { label?: string }) => (
 const TimeAgo = ({ className, date }: { className?: string; date: string }) => (
   <time
     dateTime={date}
-    title={new Date(date).toLocaleString('en')}
+    // In the visitor's own way of writing dates
+    title={new Date(date).toLocaleString()}
     className={className}
   >
     {timeAgo(date)}
@@ -172,6 +217,7 @@ export {
   EmptyState,
   ErrorNote,
   NeonHeading,
+  Picture,
   Spinner,
   TimeAgo,
 };

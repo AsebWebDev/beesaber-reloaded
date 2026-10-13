@@ -1,19 +1,25 @@
+import { useRef } from 'react';
+
 import { useLinkProfile, useMe } from '@/api/queries.ts';
 import { useSignOut } from '@/auth/useSignOut.ts';
 import { PlayerSearch } from '@/components/PlayerSearch.tsx';
 import { Button, Card, ErrorNote, NeonHeading } from '@/components/ui.tsx';
+import { useFocusOnMount } from '@/lib/useFocusOnMount.ts';
 import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 /** After the first sign-in: which ScoreSaber profile is yours? */
-const OnboardingPage = () => {
+const OnboardingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
+  const main = useRef<HTMLElement>(null);
   const link = useLinkProfile();
   const me = useMe();
   const logout = useSignOut();
 
   usePageTitle('Pick your profile');
+  useFocusOnMount(main, takeFocus);
 
   return (
     <main
+      ref={main}
       tabIndex={-1}
       className="mx-auto max-w-2xl space-y-6 px-6 py-16 outline-none"
     >

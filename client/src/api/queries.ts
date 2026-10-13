@@ -1,9 +1,4 @@
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
 import { api, ApiError, unwrap } from './client.ts';
@@ -138,8 +133,6 @@ const useScores = (
           },
         })
       ),
-    // Keep showing the old page while the next one loads
-    placeholderData: keepPreviousData,
   });
 
 const useHive = () =>
@@ -163,20 +156,29 @@ const useNews = () =>
  * a handful of ids, where the hive with its records is a heavy query; asking
  * for that every second and a half was the old way.
  */
-const useSyncStatus = () =>
-  useQuery({
+const useSyncStatus = () => {
+  // When this browser first saw each player being fetched. The server says
+  // when the fetch started, but by its own clock; a browser whose clock is a
+  // few minutes off would ask far too rarely, or far too often.
+  const firstSeen = useRef(new Map<string, number>());
+
+  return useQuery({
     queryKey: ['hive', 'sync'],
     queryFn: () => unwrap(api.hive.sync.$get()),
     refetchInterval: ({ state }) => {
-      const started = (state.data?.syncing ?? []).map(({ since }) =>
-        Date.parse(since)
-      );
+      const seen = firstSeen.current;
+      const ids = (state.data?.syncing ?? []).map(({ playerId }) => playerId);
+      const now = Date.now();
 
-      return started.length === 0
+      for (const id of [...seen.keys()]) if (!ids.includes(id)) seen.delete(id);
+      for (const id of ids) if (!seen.has(id)) seen.set(id, now);
+
+      return ids.length === 0
         ? SYNC_IDLE_INTERVAL_MS
-        : syncPollDelay(Date.now() - Math.min(...started));
+        : syncPollDelay(now - Math.min(...seen.values()));
     },
   });
+};
 
 /**
  * Whether scores of me or of a bee are being fetched right now.
@@ -209,9 +211,12 @@ const useSyncing = (): boolean => {
 
 const useComparison = (
   playerId: string,
-  options: { filter: ComparisonFilter; page: number }
+  options: { filter: ComparisonFilter; page: number },
+  /** False when it is already known that there is nothing to compare */
+  enabled = true
 ) =>
   useQuery({
+    enabled,
     queryKey: ['hive', 'comparison', playerId, options],
     queryFn: () =>
       unwrap(
@@ -224,7 +229,6 @@ const useComparison = (
           },
         })
       ),
-    placeholderData: keepPreviousData,
   });
 
 /** After any change to the hive, everything under the 'hive' key is stale */
