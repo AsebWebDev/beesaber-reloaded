@@ -1,6 +1,11 @@
 import { useId, useRef, useState } from 'react';
 
-import { PAGE_SIZE, useLinkProfile, useScores } from '@/api/queries.ts';
+import {
+  isSyncing,
+  PAGE_SIZE,
+  useLinkProfile,
+  useScores,
+} from '@/api/queries.ts';
 import { Pagination } from '@/components/Pagination.tsx';
 import { PlayerSearch } from '@/components/PlayerSearch.tsx';
 import { SkeletonRows } from '@/components/SkeletonRows.tsx';
@@ -33,7 +38,14 @@ const SORTS: { label: string; value: ScoreSort }[] = [
 ];
 
 /** A player's scores as a table that can be searched, sorted and paged */
-const ScoreList = ({ playerId }: { playerId: string }) => {
+const ScoreList = ({
+  playerId,
+  syncing,
+}: {
+  playerId: string;
+  /** True while the server fetches this player's scores from ScoreSaber */
+  syncing: boolean;
+}) => {
   const searchId = useId();
   const [sort, setSort] = useState<ScoreSort>('recent');
   const [text, setText] = useState('');
@@ -50,11 +62,19 @@ const ScoreList = ({ playerId }: { playerId: string }) => {
   const setPage = (next: number) => setPaging({ list, page: next });
 
   const scores = useScores(playerId, { page, search, sort });
+  const items = scores.data?.items ?? [];
+  // While the server fetches the scores from ScoreSaber, a list without
+  // rows is not empty: it has not arrived. It is asked for again when the
+  // fetch is done, and until that answer is in, the old one still stands.
+  const awaitingScores =
+    search === '' &&
+    items.length === 0 &&
+    !scores.isError &&
+    (syncing || scores.isFetching);
   // True for the first load and for every new search, sort order or page.
   // A list that failed is not loading: what there is stays on screen, with
   // the error above it.
-  const loading = scores.isPending;
-  const items = scores.data?.items ?? [];
+  const loading = scores.isPending || awaitingScores;
   const total = scores.data?.total;
   // While a list loads or has failed it has no total and no rows. What was
   // there before keeps the page buttons and the height of the table.
@@ -305,7 +325,11 @@ const ProfilePage = ({ player }: { player: Player }) => {
           new list: React throws away the search text, the sort order and the
           page of the old one, instead of applying them to scores they were
           never meant for. */}
-      <ScoreList key={player.id} playerId={player.id} />
+      <ScoreList
+        key={player.id}
+        playerId={player.id}
+        syncing={isSyncing(player)}
+      />
     </div>
   );
 };

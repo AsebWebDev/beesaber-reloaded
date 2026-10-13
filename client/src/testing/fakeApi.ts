@@ -130,6 +130,8 @@ type State = {
   playerId: string | null;
   /** How long lists of scores take to answer, in milliseconds */
   listDelayMs: number;
+  /** How many more times the server says my own scores are being fetched */
+  myPollsUntilSynced: number;
   /** How many more times the server says the bee is being fetched */
   pollsUntilSynced: number;
   /** Makes the server refuse to sign out, as it would when it is down */
@@ -148,6 +150,7 @@ const initial = (): State => ({
   failures: {},
   hive: [],
   listDelayMs: 0,
+  myPollsUntilSynced: 0,
   news: [],
   playerId: null,
   pollsUntilSynced: 0,
@@ -159,14 +162,20 @@ const initial = (): State => ({
 
 let state = initial();
 
-/** My scores: the two shared maps, and as many more as the test asked for */
-const myScores = (): ScoreEntry[] => [
-  ...MY_SCORES,
-  ...Array.from({ length: state.extraScores }, (_, index) => ({
-    leaderboard: leaderboard(100 + index, `Extra song ${index + 1}`),
-    score: score(ME.id, 100 + index, 1000 - index),
-  })),
-];
+/**
+ * My scores: the two shared maps, and as many more as the test asked for.
+ * None at all while they are still being fetched from ScoreSaber.
+ */
+const myScores = (): ScoreEntry[] =>
+  state.myPollsUntilSynced > 0
+    ? []
+    : [
+        ...MY_SCORES,
+        ...Array.from({ length: state.extraScores }, (_, index) => ({
+          leaderboard: leaderboard(100 + index, `Extra song ${index + 1}`),
+          score: score(ME.id, 100 + index, 1000 - index),
+        })),
+      ];
 
 const error = (status: number, code: string, message: string) =>
   HttpResponse.json({ error: { code, message } }, { status });
@@ -187,19 +196,26 @@ const refusal = (name?: Failing) => {
     : error(status, 'internal_error', 'The server is having trouble');
 };
 
-const me = (): Me => ({
-  user: {
-    id: 'user-1',
-    email: 'dev@beesaber.local',
-    name: 'Dev',
-    image: null,
-    playerId: state.playerId,
-  },
-  player:
+const me = (): Me => {
+  const linked =
     state.playerId === null
       ? null
-      : ([ME, BEE, OTHER].find(({ id }) => id === state.playerId) ?? ME),
-});
+      : ([ME, BEE, OTHER].find(({ id }) => id === state.playerId) ?? ME);
+
+  return {
+    user: {
+      id: 'user-1',
+      email: 'dev@beesaber.local',
+      name: 'Dev',
+      image: null,
+      playerId: state.playerId,
+    },
+    player:
+      linked !== null && state.myPollsUntilSynced > 0
+        ? { ...linked, syncStartedAt: '2024-03-01T10:00:00.000Z' }
+        : linked,
+  };
+};
 
 const member = (): HiveMember => ({
   player:
@@ -366,14 +382,18 @@ const server = setupServer(
 
     if (refused !== undefined) return refused;
 
-    // Every question brings the end of the sync one step closer
-    const syncing =
-      state.hive.length > 0 && state.pollsUntilSynced > 0
-        ? // Long ago on purpose. How often the page asks must not depend
-          // on comparing the server's clock with the browser's.
-          [{ playerId: BEE.id, since: '2024-03-01T10:00:00.000Z' }]
-        : [];
+    // Long ago on purpose. How often the page asks must not depend on
+    // comparing the server's clock with the browser's.
+    const since = '2024-03-01T10:00:00.000Z';
+    const syncing = [
+      ...(state.myPollsUntilSynced > 0 ? [{ playerId: ME.id, since }] : []),
+      ...(state.hive.length > 0 && state.pollsUntilSynced > 0
+        ? [{ playerId: BEE.id, since }]
+        : []),
+    ];
 
+    // Every question brings the end of the sync one step closer
+    state.myPollsUntilSynced = Math.max(0, state.myPollsUntilSynced - 1);
     state.pollsUntilSynced = Math.max(0, state.pollsUntilSynced - 1);
 
     return HttpResponse.json({ syncing } satisfies SyncStatus);

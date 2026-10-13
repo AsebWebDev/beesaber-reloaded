@@ -333,6 +333,23 @@ describe('while a list is loading', () => {
     expect(screen.queryByText('No scores yet.')).not.toBeInTheDocument();
     expect(await screen.findByText('Monster')).toBeInTheDocument();
   });
+
+  it('shows placeholder rows while my scores are fetched from ScoreSaber', async () => {
+    // The list itself answers at once, with nothing in it yet. The server
+    // says twice that my scores are being fetched, then that it is done.
+    fakeApi.signedInAs({ myPollsUntilSynced: 2 });
+    renderApp('/profile');
+
+    expect(await screen.findAllByTestId('skeleton-row')).toHaveLength(8);
+    expect(screen.getByText('Loading scores')).toHaveRole('status');
+    expect(screen.queryByText('No scores yet.')).not.toBeInTheDocument();
+
+    // Without anyone clicking, the scores take the place of the placeholders
+    expect(
+      await screen.findByText('Monster', {}, { timeout: 6000 })
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('skeleton-row')).not.toBeInTheDocument();
+  }, 10_000);
 });
 
 describe('when the server has trouble', () => {
