@@ -126,6 +126,16 @@ describe('requests from other websites', () => {
     expect(response.status).toBe(403);
   });
 
+  it('refuses to delete an account on behalf of a foreign site', async () => {
+    const response = await api('/api/me', {
+      method: 'DELETE',
+      headers: { origin: 'https://evil.example' },
+    });
+
+    expect(response.status).toBe(403);
+    expect((await api('/api/me')).status).toBe(200);
+  });
+
   it('accepts the same form from our own frontend', async () => {
     scoreSaber.setPlayer(ME, 'me', []);
     await linkProfile(ME);

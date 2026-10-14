@@ -1,6 +1,12 @@
 import { useId, useRef, useState } from 'react';
 
-import { PAGE_SIZE, useLinkProfile, useScores } from '@/api/queries.ts';
+import {
+  isSyncing,
+  PAGE_SIZE,
+  useLinkProfile,
+  useScores,
+} from '@/api/queries.ts';
+import { useDeleteAccount } from '@/auth/useDeleteAccount.ts';
 import { Pagination } from '@/components/Pagination.tsx';
 import { PlayerSearch } from '@/components/PlayerSearch.tsx';
 import { SkeletonRows } from '@/components/SkeletonRows.tsx';
@@ -33,7 +39,14 @@ const SORTS: { label: string; value: ScoreSort }[] = [
 ];
 
 /** A player's scores as a table that can be searched, sorted and paged */
-const ScoreList = ({ playerId }: { playerId: string }) => {
+const ScoreList = ({
+  playerId,
+  syncing,
+}: {
+  playerId: string;
+  /** True while the server fetches this player's scores from ScoreSaber */
+  syncing: boolean;
+}) => {
   const searchId = useId();
   const [sort, setSort] = useState<ScoreSort>('recent');
   const [text, setText] = useState('');
@@ -50,11 +63,19 @@ const ScoreList = ({ playerId }: { playerId: string }) => {
   const setPage = (next: number) => setPaging({ list, page: next });
 
   const scores = useScores(playerId, { page, search, sort });
+  const items = scores.data?.items ?? [];
+  // While the server fetches the scores from ScoreSaber, a list without
+  // rows is not empty: it has not arrived. It is asked for again when the
+  // fetch is done, and until that answer is in, the old one still stands.
+  const awaitingScores =
+    search === '' &&
+    items.length === 0 &&
+    !scores.isError &&
+    (syncing || scores.isFetching);
   // True for the first load and for every new search, sort order or page.
   // A list that failed is not loading: what there is stays on screen, with
   // the error above it.
-  const loading = scores.isPending;
-  const items = scores.data?.items ?? [];
+  const loading = scores.isPending || awaitingScores;
   const total = scores.data?.total;
   // While a list loads or has failed it has no total and no rows. What was
   // there before keeps the page buttons and the height of the table.
@@ -233,6 +254,53 @@ const ScoreList = ({ playerId }: { playerId: string }) => {
   );
 };
 
+/**
+ * Deleting the account, behind a second step: the first button only opens
+ * the question, the button that deletes appears with it.
+ */
+const DeleteAccount = () => {
+  const remove = useDeleteAccount();
+  const [asking, setAsking] = useState(false);
+
+  return (
+    <Card className="space-y-3">
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="min-w-48 flex-1">
+          <h2 className="font-semibold text-slate-100">Delete account</h2>
+          <p className="text-sm text-slate-400">
+            Removes your BeeSaber account and your hive. Nothing changes on
+            ScoreSaber.
+          </p>
+        </div>
+        <Button
+          look="ghost"
+          aria-expanded={asking}
+          disabled={remove.isPending}
+          onClick={() => setAsking(!asking)}
+        >
+          {asking ? 'Keep my account' : 'Delete account'}
+        </Button>
+      </div>
+
+      {asking && (
+        <div className="border-night-line flex flex-wrap items-center gap-4 border-t pt-3">
+          <p className="min-w-48 flex-1 text-sm text-slate-300">
+            Delete your account for good? This cannot be undone.
+          </p>
+          <Button
+            look="danger"
+            disabled={remove.isPending}
+            onClick={() => remove.mutate()}
+          >
+            Yes, delete my account
+          </Button>
+        </div>
+      )}
+      {remove.isError && <ErrorNote error={remove.error} />}
+    </Card>
+  );
+};
+
 /** My ScoreSaber profile and my scores */
 const ProfilePage = ({ player }: { player: Player }) => {
   const link = useLinkProfile();
@@ -305,7 +373,13 @@ const ProfilePage = ({ player }: { player: Player }) => {
           new list: React throws away the search text, the sort order and the
           page of the old one, instead of applying them to scores they were
           never meant for. */}
-      <ScoreList key={player.id} playerId={player.id} />
+      <ScoreList
+        key={player.id}
+        playerId={player.id}
+        syncing={isSyncing(player)}
+      />
+
+      <DeleteAccount />
     </div>
   );
 };

@@ -279,6 +279,67 @@ describe('signing out', () => {
   });
 });
 
+describe('deleting my account', () => {
+  it('asks first, then deletes it and returns to the landing page', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Delete account' })
+    );
+
+    // Nothing has happened yet: the question is on screen
+    expect(screen.getByText(/This cannot be undone/)).toBeInTheDocument();
+    expect(fakeApi.state().signedIn).toBe(true);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Yes, delete my account' })
+    );
+
+    expect(await screen.findByTestId('landing-page')).toBeInTheDocument();
+    expect(fakeApi.state().devAccount).toBe('missing');
+  });
+
+  it('keeps the account when I change my mind', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Delete account' })
+    );
+    await user.click(screen.getByRole('button', { name: 'Keep my account' }));
+
+    expect(
+      screen.queryByRole('button', { name: 'Yes, delete my account' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Delete account' })
+    ).toHaveAttribute('aria-expanded', 'false');
+    expect(fakeApi.state().signedIn).toBe(true);
+  });
+
+  it('does not pretend to have deleted it when the server refused', async () => {
+    fakeApi.signedInAs();
+    fakeApi.server.use(
+      http.delete('/api/me', () => new HttpResponse(null, { status: 500 }))
+    );
+    const { user } = renderApp('/profile');
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Delete account' })
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Yes, delete my account' })
+    );
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'It still exists'
+    );
+    expect(screen.queryByTestId('landing-page')).not.toBeInTheDocument();
+    expect(fakeApi.state().signedIn).toBe(true);
+  });
+});
+
 describe('an unknown address', () => {
   it('says so and links back', async () => {
     fakeApi.signedInAs();
@@ -333,6 +394,23 @@ describe('while a list is loading', () => {
     expect(screen.queryByText('No scores yet.')).not.toBeInTheDocument();
     expect(await screen.findByText('Monster')).toBeInTheDocument();
   });
+
+  it('shows placeholder rows while my scores are fetched from ScoreSaber', async () => {
+    // The list itself answers at once, with nothing in it yet. The server
+    // says twice that my scores are being fetched, then that it is done.
+    fakeApi.signedInAs({ myPollsUntilSynced: 2 });
+    renderApp('/profile');
+
+    expect(await screen.findAllByTestId('skeleton-row')).toHaveLength(8);
+    expect(screen.getByText('Loading scores')).toHaveRole('status');
+    expect(screen.queryByText('No scores yet.')).not.toBeInTheDocument();
+
+    // Without anyone clicking, the scores take the place of the placeholders
+    expect(
+      await screen.findByText('Monster', {}, { timeout: 6000 })
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('skeleton-row')).not.toBeInTheDocument();
+  }, 10_000);
 });
 
 describe('when the server has trouble', () => {

@@ -38,6 +38,17 @@ const createMeRoutes = ({
       });
     })
 
+    // DELETE /api/me
+    // Deletes the account for good. The database removes what belongs to
+    // it along with the row: the sessions, the link to Google, the hive.
+    // Players and their scores stay. They are public ScoreSaber data, and
+    // other accounts may have the same players in their hives.
+    .delete('/', async (c) => {
+      await db.delete(users).where(eq(users.id, c.get('user').id));
+
+      return c.body(null, 204);
+    })
+
     // PUT /api/me/player  { "playerId": "7656..." }
     // Picks the ScoreSaber profile to compare as. Nothing proves that the
     // profile belongs to the user; all it exposes is public data.
