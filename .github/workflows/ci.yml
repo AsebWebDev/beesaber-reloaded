@@ -93,6 +93,59 @@ jobs:
       - name: Build
         run: pnpm build
 
+  # Builds the image the way a deployment would and starts it against a
+  # database, without uploading it anywhere. A broken Dockerfile shows here,
+  # not on the day of a release.
+  image:
+    name: Docker image builds and starts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: beesaber
+          POSTGRES_PASSWORD: beesaber
+          POSTGRES_DB: beesaber
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U beesaber -d beesaber"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build the image
+        run: docker build --tag beesaber:ci .
+
+      # The container shares the network of the runner, so it reaches the
+      # database at localhost
+      - name: Start the image
+        run: >-
+          docker run --detach --name app --network host
+          --env DATABASE_URL=postgres://beesaber:beesaber@localhost:5432/beesaber
+          --env APP_URL=http://localhost:5001
+          --env AUTH_SECRET=a-secret-only-used-by-this-check-0123456789
+          --env LIVE_FEED=false
+          beesaber:ci
+
+      - name: Wait until it answers
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail http://localhost:5001/api/health; then
+              curl --silent --fail --output /dev/null http://localhost:5001/
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs app
+          exit 1
+
   # A job of its own, and not required for merging: a vulnerability that is
   # published today in a dependency has nothing to do with the change under
   # review, and should not hide whether that change works. It still shows up

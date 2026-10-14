@@ -21,7 +21,7 @@ by themselves, usually within a minute of being set.
 | 4     | Sign-in with Google, accounts and sessions                   | done  |
 | 5     | New frontend with Tailwind and react-router on the new API   | done  |
 | 6     | Background jobs: live score feed, sync without waiting       | done  |
-| 7     | Production readiness: Docker image, deployment               | next  |
+| 7     | Production readiness: Docker image, deployment               | doing |
 
 ## Structure
 
@@ -62,7 +62,6 @@ in the browser.
 pnpm install
 pnpm db                             # start Postgres in Docker
 cp server/.env.example server/.env  # then set AUTH_SECRET, see the comments in the file
-pnpm db:migrate                     # create the tables
 ```
 
 Then, in two terminals:
@@ -71,6 +70,9 @@ Then, in two terminals:
 pnpm server    # the API on http://localhost:5001/api
 pnpm client    # the app on http://localhost:3000
 ```
+
+The server creates the tables when it starts, see
+[Running in production](#running-in-production).
 
 Open <http://localhost:3000>. With `DEV_LOGIN=true` in `server/.env` there is a
 **Dev Login** button that signs you in as a local test account, so you need no
@@ -86,7 +88,9 @@ Run these from the repository root.
 | `pnpm client`        | Start the frontend                                                  |
 | `pnpm server`        | Start the API in watch mode                                         |
 | `pnpm db`            | Start the database and wait until it is ready                       |
-| `pnpm db:migrate`    | Apply database migrations                                           |
+| `pnpm db:migrate`    | Apply database migrations without starting the server               |
+| `pnpm app`           | Build the Docker image and run it on http://localhost:8080          |
+| `pnpm app:stop`      | Stop the app started with `pnpm app`                                |
 | `pnpm api:update`    | Fetch ScoreSaber's current API description and regenerate the types |
 | `pnpm test`          | Run the tests once                                                  |
 | `pnpm test:coverage` | Run the tests and report which code they do not reach               |
@@ -110,11 +114,11 @@ server on port 5001.
 
 Checks run in three places:
 
-| Where           | When                           | What                                                    |
-| --------------- | ------------------------------ | ------------------------------------------------------- |
-| Pre-commit hook | On `git commit`                | ESLint and Prettier, on the staged files                |
-| GitHub Actions  | On pull requests and on `main` | Dependency audit, formatting, lint, types, tests, build |
-| Your terminal   | Whenever you like              | The commands above                                      |
+| Where           | When                           | What                                                                  |
+| --------------- | ------------------------------ | --------------------------------------------------------------------- |
+| Pre-commit hook | On `git commit`                | ESLint and Prettier, on the staged files                              |
+| GitHub Actions  | On pull requests and on `main` | Dependency audit, formatting, lint, types, tests, build, Docker image |
+| Your terminal   | Whenever you like              | The commands above                                                    |
 
 The hook is installed by `pnpm install`. The workflow is defined in
 `.github/workflows/ci.yml`.
@@ -138,8 +142,60 @@ small fake built from real answers.
 - Sign-in with Google needs your own OAuth client, see `server/.env.example`.
 - Nothing proves that the ScoreSaber profile you pick is yours. ScoreSaber
   offers sign-in for third-party apps only to approved developers.
-- The job queue and the live feed run inside the API process. That is fine for
-  one instance; several instances would each open their own feed connection.
+- Exactly one instance of the server may run, see
+  [Running in production](#running-in-production).
+
+## Running in production
+
+The `Dockerfile` builds one image that holds the whole app: the API, the built
+frontend and the database migrations. One Node process serves both under one
+address, which the session cookie and the absence of CORS headers rely on.
+Requests under `/api` go to the API; any other address gets the frontend, and
+React draws the page it asks for.
+
+The image holds no build tools and no tests, and never a `.env` file. It runs
+as the unprivileged `node` user.
+
+When the server starts, it applies the database migrations the database has
+not seen yet, before it does anything else. If they fail, it stops instead of
+running against the wrong tables. Two processes that start at once take turns.
+
+To try the image on your machine, with the settings from `server/.env` and the
+development database:
+
+```sh
+pnpm db        # if it is not running yet
+pnpm app       # builds the image and starts it on http://localhost:8080
+pnpm app:stop
+```
+
+The image is a production build, so it has no dev login. To sign in with
+Google, add `http://localhost:8080/api/auth/callback/google` to the redirect
+URIs of your OAuth client.
+
+### Settings
+
+What has to be set where the image runs:
+
+| Variable                                   | In production                                                                                                                                                       |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                             | The connection string of the production database                                                                                                                    |
+| `APP_URL`                                  | The address people open, with `https`. Sign-in redirects go there, and only this site may send forms to the API                                                     |
+| `AUTH_SECRET`                              | A secret of its own, at least 32 characters, never the one from development. Whoever knows it can forge a session                                                   |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | An OAuth client with `<APP_URL>/api/auth/callback/google` among its redirect URIs                                                                                   |
+| `TRUST_PROXY`                              | `true` when a reverse proxy or a platform's ingress stands in front and sets `X-Forwarded-For`. Without it, the rate limit counts every visitor as the same address |
+| `PORT`                                     | `5001`, unless the platform needs another                                                                                                                           |
+| `DEV_LOGIN`                                | Leave unset. The server refuses to start with it unless `APP_URL` is localhost                                                                                      |
+
+`FRONTEND_DIR` and `NODE_ENV` are set by the image. `/api/health` answers
+`ok` when the server runs and reaches the database, for health checks and
+uptime monitors.
+
+### One instance
+
+The rate limits count in the memory of the process, and the job queue and the
+live feed run inside it. Two instances would each allow the full number of
+requests and each open a connection to the live feed. Run exactly one.
 
 ## The API
 
