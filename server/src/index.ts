@@ -4,6 +4,8 @@ import { createApp } from './app.ts';
 import { createAuth } from './auth/auth.ts';
 import { loadConfig } from './config.ts';
 import { createDatabase } from './db/client.ts';
+import { runMigrations } from './db/migrate.ts';
+import { withFrontend } from './http/frontend.ts';
 import { createPgBossQueue } from './jobs/queue.ts';
 import { createScoreSaberClient } from './scoresaber/client.ts';
 import { createLiveFeed } from './scoresaber/liveFeed.ts';
@@ -13,6 +15,13 @@ import { createServices, startJobs } from './services.ts';
 // The entry point: read the configuration, connect to the outside world,
 // start listening. Everything else is built from these pieces.
 const config = loadConfig();
+
+// The code of this version expects the tables of this version. If they
+// cannot be brought up to date, the server stops here instead of running
+// against the wrong schema.
+await runMigrations(config.DATABASE_URL);
+console.log('Database is up to date');
+
 const { db, close } = createDatabase(config.DATABASE_URL);
 const queue = createPgBossQueue(config.DATABASE_URL);
 
@@ -53,8 +62,18 @@ const liveFeed = createLiveFeed({
 if (config.LIVE_FEED) liveFeed.start();
 else console.log('Live feed is off: LIVE_FEED=false');
 
-const server = serve({ fetch: app.fetch, port: config.PORT }, ({ port }) => {
+const site =
+  config.FRONTEND_DIR === undefined
+    ? app
+    : withFrontend(app, config.FRONTEND_DIR);
+
+const server = serve({ fetch: site.fetch, port: config.PORT }, ({ port }) => {
   console.log(`API listening on http://localhost:${port}/api`);
+
+  if (config.FRONTEND_DIR !== undefined)
+    console.log(
+      `Frontend from ${config.FRONTEND_DIR} on http://localhost:${port}`
+    );
 
   if (config.GOOGLE_CLIENT_ID === undefined)
     console.log('Sign-in with Google is off: GOOGLE_CLIENT_ID is not set');

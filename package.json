@@ -7,6 +7,8 @@
     "client": "pnpm --filter @beesaber/client dev",
     "server": "pnpm --filter @beesaber/server dev",
     "db": "docker compose up -d --wait",
+    "app": "docker compose --profile app up -d --build --wait",
+    "app:stop": "docker compose --profile app stop app",
     "db:migrate": "pnpm --filter @beesaber/server db:migrate",
     "api:update": "pnpm --filter @beesaber/server api:update",
     "build": "pnpm -r build",

@@ -12,10 +12,19 @@ const schema = { ...appSchema, ...authSchema };
  * Returns `close` as well, so a script or a test can end the pool and let the
  * process exit.
  */
-const createDatabase = (url: string) => {
+const createDatabase = (
+  url: string,
+  {
+    maxConnections,
+  }: {
+    /** How many connections the pool may open. postgres.js allows 10. */
+    maxConnections?: number;
+  } = {}
+) => {
   const connection = postgres(url, {
     // Postgres sends notices for harmless things like "table already exists"
     onnotice: () => {},
+    ...(maxConnections === undefined ? {} : { max: maxConnections }),
   });
   const db = drizzle(connection, { schema, casing: 'snake_case' });
 

@@ -24,5 +24,28 @@ services:
       timeout: 3s
       retries: 10
 
+  # The app as the image from the Dockerfile, the way it runs in production.
+  # Not started by `pnpm db`, only with `pnpm app`.
+  app:
+    profiles: [app]
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # The same settings as the development server, AUTH_SECRET and the
+    # Google sign-in among them. The lines below replace what has to differ.
+    env_file: server/.env
+    environment:
+      # Inside Docker, the database is reached by the name of its service
+      DATABASE_URL: postgres://beesaber:beesaber@postgres:5432/beesaber
+      # The address the browser opens; port 8080 on this machine
+      APP_URL: http://localhost:8080
+      # The image is a production build, which has no dev login
+      DEV_LOGIN: 'false'
+      # Where the Dockerfile put the frontend; server/.env leaves this empty
+      FRONTEND_DIR: /app/public
+    ports:
+      - '127.0.0.1:8080:5001'
+
 volumes:
   postgres-data:

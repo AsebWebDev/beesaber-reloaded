@@ -10,6 +10,7 @@
     "db:studio": "drizzle-kit studio",
     "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "gen:api": "openapi-typescript src/scoresaber/openapi.json -o src/scoresaber/openapi.d.ts",
+    "start": "node --env-file-if-exists=.env src/index.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",

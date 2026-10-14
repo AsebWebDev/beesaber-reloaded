@@ -19,6 +19,10 @@ const schema = z
       .enum(['development', 'test', 'production'])
       .default('development'),
     PORT: z.coerce.number().int().min(1).max(65535).default(5001),
+    // The built frontend (`pnpm build` puts it into client/dist). When set,
+    // this server hands it out along with the API, at one address. Left
+    // unset in development, where Vite serves the frontend.
+    FRONTEND_DIR: z.string().optional(),
     DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
     SCORESABER_URL: z.url().default('https://scoresaber.com'),
     // The WebSocket on which ScoreSaber announces every new score. With
