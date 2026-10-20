@@ -81,6 +81,15 @@ const server = serve({ fetch: site.fetch, port: config.PORT }, ({ port }) => {
     console.log('DEV_LOGIN is on: the local test account can sign in');
 });
 
+// After a pause, like a restart or a wake-up from scale-to-zero, the scores
+// of tracked players may be far behind. Catch up now instead of at the next
+// tick of the timer, which can be 15 minutes away. Requests are answered in
+// the meantime, and a failure here only costs the head start.
+services.playersService
+  .syncStalePlayers()
+  .then((count) => console.log(`Catching up: ${count} players with old scores`))
+  .catch((error: unknown) => console.error('Catching up failed', error));
+
 /** How long a shutdown may take before the process ends regardless */
 const SHUTDOWN_DEADLINE_MS = 15_000;
 
