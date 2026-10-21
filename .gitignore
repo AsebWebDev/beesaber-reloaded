@@ -18,3 +18,11 @@ coverage
 
 # misc
 .DS_Store
+
+# Terraform: downloaded providers, the state and local settings. The state
+# lists every resource and will hold secrets like the database password.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
