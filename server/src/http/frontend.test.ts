@@ -108,6 +108,18 @@ describe('the server with the built frontend', () => {
     expect(response.headers.get('x-frame-options')).toBe('SAMEORIGIN');
   });
 
+  it('tells the browser to run only the app’s own scripts on its pages', async () => {
+    const policy = (await site.request('/hive/1')).headers.get(
+      'content-security-policy'
+    );
+
+    expect(policy).toContain("script-src 'self'");
+    expect(policy).toContain("object-src 'none'");
+    expect(policy).toContain("frame-ancestors 'none'");
+    // No inline scripts, not even as a fallback through default-src
+    expect(policy).not.toMatch(/script-src[^;]*unsafe/);
+  });
+
   it('refuses to start without a built frontend', () => {
     expect(() => withFrontend(api, join(root, 'missing'))).toThrow(
       /pnpm build/

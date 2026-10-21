@@ -25,6 +25,32 @@ const cacheFor = (
     if (c.res.ok && applies(c.res)) c.res.headers.set('Cache-Control', value);
   };
 
+/**
+ * What a page of the app may load, and from where. If someone manages to
+ * smuggle markup into a page, say through a player name, the browser still
+ * refuses to run a script that is not one of our own files.
+ *
+ * The built frontend has no inline scripts or style blocks. Pictures of
+ * players and songs come from ScoreSaber's CDN. React sets a few style
+ * attributes, like the width of a bar; style attributes cannot run code, so
+ * they are allowed while style blocks are not.
+ */
+const CONTENT_SECURITY_POLICY = {
+  defaultSrc: ["'self'"],
+  scriptSrc: ["'self'"],
+  styleSrc: ["'self'"],
+  styleSrcAttr: ["'unsafe-inline'"],
+  imgSrc: ["'self'", 'https://cdn.scoresaber.com'],
+  fontSrc: ["'self'"],
+  connectSrc: ["'self'"],
+  objectSrc: ["'none'"],
+  baseUri: ["'self'"],
+  formAction: ["'self'"],
+  // No other site may show the app in a frame, where a visitor could be
+  // tricked into clicking on it unseen
+  frameAncestors: ["'none'"],
+};
+
 /** A path whose last part has a dot, like /assets/index-1a2b.js */
 const looksLikeFile = (path: string) => /\.[^/]*$/.test(path);
 
@@ -50,7 +76,7 @@ const withFrontend = (api: Api, root: string) => {
       // caller's address from.
       .all('/api/*', (c) => api.fetch(c.req.raw, c.env))
 
-      .use(secureHeaders())
+      .use(secureHeaders({ contentSecurityPolicy: CONTENT_SECURITY_POLICY }))
       // The names of the built files contain a hash of their content, so a
       // changed file gets a new name. A browser can keep these for good.
       .use('/assets/*', cacheFor('public, max-age=31536000, immutable'))
