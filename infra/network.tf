@@ -35,6 +35,10 @@ resource "azurerm_subnet" "database" {
   resource_group_name  = azurerm_resource_group.main.name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = ["10.10.2.0/24"]
+  # PostgreSQL adds this itself when it moves in: its backups and write-ahead
+  # log go to Azure Storage on this direct path. Without it here, Terraform
+  # would take it away again.
+  service_endpoints = ["Microsoft.Storage"]
 
   delegation {
     name = "postgresql"

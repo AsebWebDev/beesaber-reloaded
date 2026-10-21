@@ -6,7 +6,7 @@ variable "subscription_id" {
 variable "location" {
   description = "The Azure region for everything"
   type        = string
-  default     = "germanywestcentral"
+  default     = "francecentral"
 }
 
 variable "name" {
