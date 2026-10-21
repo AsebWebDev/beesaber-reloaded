@@ -2,11 +2,14 @@
 # Node process. Built in stages, so the image that runs holds only what
 # running needs, not the tools that built it.
 
+# The base image is pinned to the exact content it had when it was tested.
+# Dependabot proposes a newer one when there is one.
+
 # ---------------------------------------------------------------------------
 # Base for the stages that install packages: Node with pnpm, in the version
 # that package.json asks for
 # ---------------------------------------------------------------------------
-FROM node:24-alpine AS pnpm
+FROM node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f AS pnpm
 
 RUN corepack enable pnpm
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
@@ -41,10 +44,23 @@ FROM pnpm AS server-packages
 RUN pnpm install --frozen-lockfile --ignore-scripts --prod \
   --filter @beesaber/server
 
+# better-auth names build tools such as drizzle-kit as optional peers, and
+# pnpm links them because the workspace has them. The server never runs
+# them. What they bring along includes esbuild, whose Go programs carry the
+# known vulnerabilities of Go into the image. Without them, they cannot.
+RUN rm -rf node_modules/.pnpm/esbuild@* node_modules/.pnpm/@esbuild+*
+
 # ---------------------------------------------------------------------------
 # Stage: what runs
 # ---------------------------------------------------------------------------
-FROM node:24-alpine
+FROM node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f
+
+# Security fixes of Alpine that came out after the base image was built.
+# npm and corepack come with the base image but play no part in running
+# the app, and what is not there cannot have a vulnerability.
+RUN apk upgrade --no-cache \
+  && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 
 ENV NODE_ENV=production
 ENV FRONTEND_DIR=/app/public

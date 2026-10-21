@@ -123,6 +123,29 @@ jobs:
       - name: Build the image
         run: docker build --tag beesaber:ci .
 
+      # Trivy runs from its own image, pinned like the actions above, instead
+      # of through a third-party action with access to the repository.
+
+      # Known vulnerabilities in the image: in Alpine's packages, in Node and
+      # in the npm packages. Serious ones that already have a fix fail the
+      # check. For the others there is nothing to do until a fix exists.
+      - name: Scan the image for known vulnerabilities
+        run: >-
+          docker run --rm
+          --volume /var/run/docker.sock:/var/run/docker.sock
+          aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c
+          image --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed
+          beesaber:ci
+
+      # Insecure settings in the Dockerfile and the Terraform files, like a
+      # container running as root or storage open to everyone. Everything
+      # found is listed; serious findings fail the check.
+      - name: Scan the configuration for insecure settings
+        run: >-
+          docker run --rm --volume "$PWD:/src:ro"
+          aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c
+          config --exit-code 1 --severity HIGH,CRITICAL /src
+
       # The container shares the network of the runner, so it reaches the
       # database at localhost
       - name: Start the image
