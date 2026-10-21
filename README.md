@@ -114,14 +114,21 @@ server on port 5001.
 
 Checks run in three places:
 
-| Where           | When                           | What                                                                  |
-| --------------- | ------------------------------ | --------------------------------------------------------------------- |
-| Pre-commit hook | On `git commit`                | ESLint and Prettier, on the staged files                              |
-| GitHub Actions  | On pull requests and on `main` | Dependency audit, formatting, lint, types, tests, build, Docker image |
-| Your terminal   | Whenever you like              | The commands above                                                    |
+| Where           | When                           | What                                                                                  |
+| --------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
+| Pre-commit hook | On `git commit`                | ESLint and Prettier, on the staged files                                              |
+| GitHub Actions  | On pull requests and on `main` | Dependency audit, formatting, lint, types, tests, build, Docker image, security scans |
+| Your terminal   | Whenever you like              | The commands above                                                                    |
 
 The hook is installed by `pnpm install`. The workflow is defined in
 `.github/workflows/ci.yml`.
+
+The Docker job builds the image, starts it against a database and scans it
+with [Trivy](https://trivy.dev/): for known vulnerabilities in the image, and
+for insecure settings in the Dockerfile and the Terraform files. Serious
+findings that already have a fix fail the check. The image leaves out what
+running the app does not need, npm and the build tools among them, so their
+vulnerabilities cannot be in it.
 
 Tests are written with [Vitest](https://vitest.dev/) and
 [Testing Library](https://testing-library.com/) and live next to the code they
