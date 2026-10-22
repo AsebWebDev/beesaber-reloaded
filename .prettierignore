@@ -12,3 +12,6 @@ pnpm-lock.yaml
 server/src/scoresaber/openapi.json
 server/src/scoresaber/openapi.d.ts
 server/drizzle
+
+# Terraform downloads and settings that stay on this machine
+.terraform

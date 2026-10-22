@@ -1,0 +1,24 @@
+# Copy to terraform.tfvars, which git ignores, and fill in your values.
+
+# Your subscription id: az account show --query id -o tsv
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+# The image to run, tagged with the commit it was built from
+image = "ghcr.io/asebwebdev/beesaber:0000000"
+
+# true while learning: the app stops when nobody uses it
+cost_saving = true
+
+# An OAuth client of type "Web application" made for this deployment, at
+# https://console.cloud.google.com/auth/clients, with the redirect URI
+#   https://<app address>/api/auth/callback/google
+# Only its id goes here. Its secret goes into the key vault, never into a
+# file; see infra/README.md.
+google_client_id = "000000000000-xxxxxxxx.apps.googleusercontent.com"
+
+# Your public IP address, so you may put secrets into the key vault.
+# Find it with: curl https://api.ipify.org
+admin_ip_ranges = ["203.0.113.7"]
+
+# Where the budget emails go
+budget_alert_email = "you@example.org"

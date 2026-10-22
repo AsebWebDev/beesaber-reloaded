@@ -180,6 +180,9 @@ The image is a production build, so it has no dev login. To sign in with
 Google, add `http://localhost:8080/api/auth/callback/google` to the redirect
 URIs of your OAuth client.
 
+How BeeSaber runs on Azure, and how to set that up, is described in
+[infra/README.md](infra/README.md).
+
 ### Settings
 
 What has to be set where the image runs:
