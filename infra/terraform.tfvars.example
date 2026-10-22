@@ -19,3 +19,6 @@ google_client_id = "000000000000-xxxxxxxx.apps.googleusercontent.com"
 # Your public IP address, so you may put secrets into the key vault.
 # Find it with: curl https://api.ipify.org
 admin_ip_ranges = ["203.0.113.7"]
+
+# Where the budget emails go
+budget_alert_email = "you@example.org"

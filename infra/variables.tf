@@ -36,3 +36,14 @@ variable "admin_ip_ranges" {
   type        = list(string)
   default     = []
 }
+
+variable "budget_amount" {
+  description = "Monthly budget in the subscription's currency. Emails go out at half of it, at all of it, and when the month is forecast to reach it."
+  type        = number
+  default     = 10
+}
+
+variable "budget_alert_email" {
+  description = "Where the budget emails go"
+  type        = string
+}
