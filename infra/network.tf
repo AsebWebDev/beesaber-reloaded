@@ -16,6 +16,9 @@ resource "azurerm_subnet" "apps" {
   resource_group_name  = azurerm_resource_group.main.name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = ["10.10.0.0/23"]
+  # A direct path to the key vault inside Azure's network. The vault lets
+  # this subnet in and turns the rest of the internet away.
+  service_endpoints = ["Microsoft.KeyVault"]
 
   # Handed over to Container Apps, which places its own network interfaces
   # in it. Nothing else can be put there.
