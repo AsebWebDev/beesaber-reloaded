@@ -9,11 +9,15 @@ creates:
 | Log Analytics workspace            | `log-beesaber`                | The app's logs, 30 days, capped at 0.15 GB a day                                   |
 | Virtual network                    | `vnet-beesaber`               | Private network with one subnet for the app and one for the database               |
 | Private DNS zone                   | `beesaber.private.…`          | Resolves the database's name inside the network only                               |
+| Network security group             | `nsg-database`                | Lets only the app subnet reach the database                                        |
 | PostgreSQL Flexible Server         | `psql-beesaber`               | The database, B1ms, without a public endpoint                                      |
 | Key vault                          | `kv-beesaber`                 | Secrets that come from outside, like the Google client secret                      |
 | Managed identity                   | `id-beesaber`                 | The app's identity; it may read secrets from the vault                             |
 | Container Apps environment and app | `cae-beesaber`, `ca-beesaber` | Runs the Docker image, with HTTPS and health checks                                |
 | Budget                             | `budget-beesaber`             | Emails when the month's costs reach half the budget, all of it, or are forecast to |
+
+The key vault's access log and the database server's log, with every
+sign-in, go to the Log Analytics workspace.
 
 Azure adds two resource groups of its own: `rg-beesaber-apps-infra` for the
 Container Apps environment's network parts, and `NetworkWatcherRG`. Neither

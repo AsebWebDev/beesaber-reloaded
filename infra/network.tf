@@ -72,3 +72,56 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgres" {
   registration_enabled = false
   tags                 = local.tags
 }
+
+# A firewall in front of the database subnet. Without it, anything placed in
+# the network later could reach the database; with it, only the app can.
+resource "azurerm_network_security_group" "database" {
+  name                = "nsg-database"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  tags                = local.tags
+
+  security_rule {
+    name                       = "allow-app-to-postgres"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefixes    = azurerm_subnet.apps.address_prefixes
+    source_port_range          = "*"
+    destination_address_prefix = "*"
+    destination_port_range     = "5432"
+  }
+
+  # Azure's own traffic between the parts of the database service in its
+  # subnet
+  security_rule {
+    name                       = "allow-within-database-subnet"
+    priority                   = 110
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_address_prefixes    = azurerm_subnet.database.address_prefixes
+    source_port_range          = "*"
+    destination_address_prefix = "*"
+    destination_port_range     = "*"
+  }
+
+  # Overrides Azure's built-in rule that lets everything in the network in
+  security_rule {
+    name                       = "deny-rest-of-network"
+    priority                   = 4000
+    direction                  = "Inbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_address_prefix      = "VirtualNetwork"
+    source_port_range          = "*"
+    destination_address_prefix = "*"
+    destination_port_range     = "*"
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "database" {
+  subnet_id                 = azurerm_subnet.database.id
+  network_security_group_id = azurerm_network_security_group.database.id
+}
