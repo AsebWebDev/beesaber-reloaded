@@ -162,9 +162,10 @@ the checks have passed:
 
 1. The image that was built and scanned is pushed to the registry, tagged
    with the commit.
-2. The job `Deploy to Azure` waits for approval: open the run on GitHub and
-   choose "Review deployments". It runs in the GitHub environment
-   `production`, which only `main` may deploy to.
+2. The job `Deploy to Azure` runs in the GitHub environment `production`,
+   which only `main` may deploy to. A merge to `main` goes live without
+   anyone approving it. To make deployments wait for approval again, add a
+   required reviewer to the environment in the repository's settings.
 3. It signs in to Azure as `id-beesaber-deploy`, without a password, and
    switches the app to the image's digest. That identity may update this one
    app and nothing else.
@@ -189,7 +190,7 @@ first and find the fault afterwards:
    runs of the `CI` workflow on GitHub.
 2. In the Actions tab, choose the workflow `Roll back`, then "Run workflow",
    and give that commit. It deploys the image CI published for it, the same
-   way as every deployment, approval included.
+   way as every deployment.
 3. Revert the faulty change on `main` (`git revert`). Otherwise the next
    deployment brings it back.
 

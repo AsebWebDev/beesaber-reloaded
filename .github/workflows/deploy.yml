@@ -19,8 +19,9 @@ jobs:
     name: Deploy to Azure
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # Waits for a reviewer's approval, and only from this environment does
-    # Azure accept the job's sign-in
+    # Only main may deploy to this environment, and only from it does Azure
+    # accept the job's sign-in. A required reviewer could be added to it to
+    # make deployments wait for approval.
     environment:
       name: production
       url: ${{ steps.check.outputs.url }}
