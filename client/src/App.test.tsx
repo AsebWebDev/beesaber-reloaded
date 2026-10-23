@@ -35,6 +35,17 @@ describe('before signing in', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('says that only invited friends can sign in', async () => {
+    renderApp();
+
+    expect(
+      await screen.findByText(/BeeSaber is a private, non-commercial project/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/open only to friends of the developer/)
+    ).toBeInTheDocument();
+  });
+
   it('shows the landing page whatever URL was opened', async () => {
     renderApp('/hive');
 

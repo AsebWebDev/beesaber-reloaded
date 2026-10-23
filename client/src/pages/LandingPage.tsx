@@ -46,6 +46,16 @@ const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
         ahead of you, and hear about it when someone beats your score.
       </p>
 
+      {/* Strangers who try to sign in get a bare refusal from Google, since
+          sign-in is limited to invited accounts. This says why beforehand. */}
+      <p className="max-w-xl text-sm text-slate-400">
+        <strong className="text-slate-300">
+          BeeSaber is a private, non-commercial project.
+        </strong>{' '}
+        Sign-in is open only to friends of the developer who have been invited.
+        If you were not invited, Google will not let you sign in.
+      </p>
+
       <div className="flex flex-col items-center gap-3">
         {config.isPending && <Spinner />}
         {config.isError && <ErrorNote error={config.error} />}
