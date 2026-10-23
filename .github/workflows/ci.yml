@@ -162,7 +162,7 @@ jobs:
 
       - name: Wait until it answers
         run: |
-          for attempt in $(seq 1 30); do
+          for _ in $(seq 1 30); do
             if curl --silent --fail http://localhost:5001/api/health; then
               curl --silent --fail --output /dev/null http://localhost:5001/
               exit 0
@@ -288,7 +288,7 @@ jobs:
         run: |
           fqdn=$(az containerapp show --resource-group rg-beesaber             --name ca-beesaber --query properties.configuration.ingress.fqdn             --output tsv)
           echo "url=https://$fqdn" >> "$GITHUB_OUTPUT"
-          for attempt in $(seq 1 20); do
+          for _ in $(seq 1 20); do
             if curl --silent --fail --max-time 60 "https://$fqdn/api/health"; then
               exit 0
             fi
