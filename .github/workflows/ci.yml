@@ -244,8 +244,8 @@ jobs:
           echo "image=$digest" >> "$GITHUB_OUTPUT"
           echo "Published $digest"
 
-  # Switches the app in Azure to the published image, after approval. The
-  # steps live in deploy.yml, which rolling back uses as well.
+  # Switches the app in Azure to the published image. The steps live in
+  # deploy.yml, which rolling back uses as well.
   deploy:
     name: Deploy
     needs: publish

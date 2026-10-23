@@ -3,7 +3,7 @@ name: Roll back
 # Puts an earlier version back, by the commit it was built from: in the
 # Actions tab, choose this workflow, "Run workflow", and give the commit of
 # the last version that worked. It goes the same way as every deployment
-# (deploy.yml), approval included.
+# (deploy.yml).
 #
 # This only changes what runs. The faulty change is still on main and comes
 # back with the next deployment until it is reverted there.
