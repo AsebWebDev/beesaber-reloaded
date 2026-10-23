@@ -41,8 +41,9 @@ resource "random_password" "auth_secret" {
 
 locals {
   app_name = "ca-${var.name}"
-  # Every app in the environment gets an address below its default domain
-  app_url = "https://${local.app_name}.${azurerm_container_app_environment.main.default_domain}"
+  # The address people open, see domain.tf. Azure's own address of the app,
+  # below the environment's default domain, keeps working.
+  app_url = "https://${var.domain}"
   # The server's public name points into the private DNS zone, so it only
   # resolves inside the network. verify-full encrypts and also checks that
   # the certificate belongs to this server; with "require", postgres.js

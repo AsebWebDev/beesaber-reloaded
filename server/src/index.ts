@@ -5,6 +5,7 @@ import { createAuth } from './auth/auth.ts';
 import { loadConfig } from './config.ts';
 import { createDatabase } from './db/client.ts';
 import { runMigrations } from './db/migrate.ts';
+import { withCanonicalHost } from './http/canonicalHost.ts';
 import { withFrontend } from './http/frontend.ts';
 import { createPgBossQueue } from './jobs/queue.ts';
 import { createScoreSaberClient } from './scoresaber/client.ts';
@@ -62,10 +63,12 @@ const liveFeed = createLiveFeed({
 if (config.LIVE_FEED) liveFeed.start();
 else console.log('Live feed is off: LIVE_FEED=false');
 
-const site =
+const site = withCanonicalHost(
   config.FRONTEND_DIR === undefined
     ? app
-    : withFrontend(app, config.FRONTEND_DIR);
+    : withFrontend(app, config.FRONTEND_DIR),
+  config.APP_URL
+);
 
 const server = serve({ fetch: site.fetch, port: config.PORT }, ({ port }) => {
   console.log(`API listening on http://localhost:${port}/api`);
