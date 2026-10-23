@@ -46,6 +46,14 @@ describe('before signing in', () => {
     ).toBeInTheDocument();
   });
 
+  it('says that it is not affiliated with the makers of Beat Saber', async () => {
+    renderApp();
+
+    expect(
+      await screen.findByText(/not affiliated with Beat Games or Meta/)
+    ).toBeInTheDocument();
+  });
+
   it('shows the landing page whatever URL was opened', async () => {
     renderApp('/hive');
 
