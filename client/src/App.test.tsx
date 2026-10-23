@@ -46,6 +46,14 @@ describe('before signing in', () => {
     ).toBeInTheDocument();
   });
 
+  it('says that it is not affiliated with the makers of Beat Saber', async () => {
+    renderApp();
+
+    expect(
+      await screen.findByText(/not affiliated with Beat Games or Meta/)
+    ).toBeInTheDocument();
+  });
+
   it('shows the landing page whatever URL was opened', async () => {
     renderApp('/hive');
 
@@ -550,10 +558,13 @@ describe('changing who I am', () => {
     expect(
       await screen.findByRole('heading', { name: 'buzz' })
     ).toBeInTheDocument();
-    // The picker closes once it is done
-    expect(
-      screen.queryByLabelText('Your name on ScoreSaber')
-    ).not.toBeInTheDocument();
+    // The picker closes once it is done. The new name can show up a moment
+    // before that, since the profile is updated first.
+    await waitFor(() =>
+      expect(
+        screen.queryByLabelText('Your name on ScoreSaber')
+      ).not.toBeInTheDocument()
+    );
   });
 
   it('can sign out before a profile is picked', async () => {

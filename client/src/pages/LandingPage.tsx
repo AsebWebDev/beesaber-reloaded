@@ -87,6 +87,12 @@ const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
       <NeonHeading as="p" color="yellow" className="text-xl">
         Find your hive
       </NeonHeading>
+
+      {/* The name plays on Beat Saber, so it says whose game that is */}
+      <p className="max-w-xl text-xs text-slate-400">
+        BeeSaber is a fan project and not affiliated with Beat Games or Meta.
+        Beat Saber is a trademark of Meta Platforms, Inc.
+      </p>
     </main>
   );
 };
