@@ -1,0 +1,61 @@
+name: Roll back
+
+# Puts an earlier version back, by the commit it was built from: in the
+# Actions tab, choose this workflow, "Run workflow", and give the commit of
+# the last version that worked. It goes the same way as every deployment
+# (deploy.yml), approval included.
+#
+# This only changes what runs. The faulty change is still on main and comes
+# back with the next deployment until it is reverted there.
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Commit of the version to run again (the first 7 characters are enough)
+        type: string
+        required: true
+
+permissions: {}
+
+jobs:
+  find:
+    name: Find the image of that commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      image: ${{ steps.find.outputs.image }}
+
+    steps:
+      # CI published the image tagged with the commit's first 7 characters.
+      # What gets deployed is its digest, which cannot be moved to another
+      # image.
+      - name: Look it up in the registry
+        id: find
+        env:
+          COMMIT: ${{ inputs.commit }}
+        run: |
+          if ! [[ "$COMMIT" =~ ^[0-9a-f]{7,40}$ ]]; then
+            echo "::error::Not a commit: $COMMIT"
+            exit 1
+          fi
+          name="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/beesaber"
+          digest=$(docker buildx imagetools inspect "$name:${COMMIT::7}" \
+            --format '{{json .Manifest.Digest}}' | tr -d '"')
+          if [ -z "$digest" ]; then
+            echo "::error::No published image for commit ${COMMIT::7}"
+            exit 1
+          fi
+          echo "image=$name@$digest" >> "$GITHUB_OUTPUT"
+          echo "Rolling back to $name:${COMMIT::7} ($digest)"
+
+  deploy:
+    name: Deploy
+    needs: find
+    uses: ./.github/workflows/deploy.yml
+    with:
+      image: ${{ needs.find.outputs.image }}
+    # The production environment's Azure ids
+    secrets: inherit
+    permissions:
+      id-token: write
