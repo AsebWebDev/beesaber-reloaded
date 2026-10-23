@@ -157,8 +157,28 @@ Things to look out for in a plan:
 
 ### A new version of the app
 
-Push an image tagged with the new commit, set `image` in `terraform.tfvars`
-to it, and apply. The new version replaces the old one.
+Every merge to `main` is deployed by CI (`.github/workflows/ci.yml`), once
+the checks have passed:
+
+1. The image that was built and scanned is pushed to the registry, tagged
+   with the commit.
+2. The job `Deploy to Azure` waits for approval: open the run on GitHub and
+   choose "Review deployments". It runs in the GitHub environment
+   `production`, which only `main` may deploy to.
+3. It signs in to Azure as `id-beesaber-deploy`, without a password, and
+   switches the app to the image's digest. That identity may update this one
+   app and nothing else.
+4. It checks that the new version answers. Until it does, the old version
+   keeps serving.
+
+Terraform sets the first image from `image` in `terraform.tfvars` and leaves
+it alone after that.
+
+The `production` environment needs the secrets `AZURE_CLIENT_ID`
+(`terraform output deploy_client_id`), `AZURE_TENANT_ID`
+(`terraform output tenant_id`) and `AZURE_SUBSCRIPTION_ID`. They are not
+secret, but the workflow logs of a public repository are public, and GitHub
+masks secrets in them.
 
 ### Cost saving
 

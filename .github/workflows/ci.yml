@@ -5,10 +5,11 @@ on:
     branches: [main]
   pull_request:
 
-# A newer push to the same branch makes the older run pointless, so cancel it
+# A newer push to a pull request makes the older run pointless, so cancel it.
+# On main the runs go on: one of them may be deploying.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -129,13 +130,15 @@ jobs:
       # Known vulnerabilities in the image: in Alpine's packages, in Node and
       # in the npm packages. Serious ones that already have a fix fail the
       # check. For the others there is nothing to do until a fix exists.
-      - name: Scan the image for known vulnerabilities
+      # Also secrets, like a key or a password in a file: the image is
+      # public, so none may ever end up in it.
+      - name: Scan the image for known vulnerabilities and secrets
         run: >-
           docker run --rm
           --volume /var/run/docker.sock:/var/run/docker.sock
           aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c
-          image --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed
-          beesaber:ci
+          image --scanners vuln,secret --exit-code 1 --severity HIGH,CRITICAL
+          --ignore-unfixed beesaber:ci
 
       # Insecure settings in the Dockerfile and the Terraform files, like a
       # container running as root or storage open to everyone. Everything
@@ -169,6 +172,21 @@ jobs:
           docker logs app
           exit 1
 
+      # On main, the image checked above is the one that gets published and
+      # deployed, rather than a second build of the same code that could
+      # differ from it
+      - name: Keep the image for publishing
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: docker save beesaber:ci | gzip > image.tar.gz
+
+      - name: Hand the image to the publish job
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: image
+          path: image.tar.gz
+          retention-days: 1
+
   # A job of its own, and not required for merging: a vulnerability that is
   # published today in a dependency has nothing to do with the change under
   # review, and should not hide whether that change works. It still shows up
@@ -188,3 +206,92 @@ jobs:
       # Only dependencies that ship to users, and only serious problems
       - name: Check dependencies for known vulnerabilities
         run: pnpm audit --prod --audit-level high
+
+  # Only on main, once the checks above have passed: the checked image goes
+  # to the GitHub Container Registry. Its own job, because it is the only one
+  # that may write packages.
+  publish:
+    name: Publish the image
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [check, image]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      packages: write
+    outputs:
+      image: ${{ steps.push.outputs.image }}
+
+    steps:
+      - name: Take over the checked image
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: image
+
+      # Tagged with the commit, so the registry shows which code it is. What
+      # gets deployed is the digest, a fingerprint of the content: a tag can
+      # be moved to another image, a digest cannot.
+      - name: Push it
+        id: push
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gunzip --stdout image.tar.gz | docker load
+          name="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/beesaber"
+          docker tag beesaber:ci "$name:${GITHUB_SHA::7}"
+          echo "$GH_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          docker push "$name:${GITHUB_SHA::7}"
+          digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$name:${GITHUB_SHA::7}")
+          echo "image=$digest" >> "$GITHUB_OUTPUT"
+          echo "Published $digest"
+
+  # Switches the app in Azure to the new image. Runs in the "production"
+  # environment, where it waits for a reviewer's approval, and where alone
+  # Azure accepts the job's sign-in.
+  deploy:
+    name: Deploy to Azure
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: ${{ steps.check.outputs.url }}
+    # One deployment at a time, and a running one is never cancelled
+    concurrency:
+      group: production
+      cancel-in-progress: false
+    permissions:
+      # Lets the job ask GitHub for the token that Azure trusts
+      id-token: write
+
+    steps:
+      - name: Sign in to Azure
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # A new revision of the app starts with the new image. Azure moves the
+      # traffic over once it reports healthy; until then the old one serves.
+      - name: Switch the app to the new image
+        env:
+          IMAGE: ${{ needs.publish.outputs.image }}
+        run: >-
+          az containerapp update
+          --resource-group rg-beesaber --name ca-beesaber
+          --image "$IMAGE" --output none
+
+      # With cost saving on, the app may be stopped, so the first request
+      # also wakes it, which can take a while
+      - name: Check that the new version answers
+        id: check
+        run: |
+          fqdn=$(az containerapp show --resource-group rg-beesaber             --name ca-beesaber --query properties.configuration.ingress.fqdn             --output tsv)
+          echo "url=https://$fqdn" >> "$GITHUB_OUTPUT"
+          for attempt in $(seq 1 20); do
+            if curl --silent --fail --max-time 60 "https://$fqdn/api/health"; then
+              exit 0
+            fi
+            sleep 10
+          done
+          exit 1
