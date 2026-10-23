@@ -33,10 +33,6 @@ const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
       tabIndex={-1}
       className="outline-none mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-10 px-6 py-10 text-center"
     >
-      <p className="border-neon-red text-neon-red-core rounded border px-4 py-2">
-        This version is wrong on purpose: rollback exercise.
-      </p>
-
       {/* Grows with the screen, so the name fits on a phone in one line */}
       <h1 className="font-neon text-[clamp(2.25rem,13vw,6rem)] leading-none tracking-wide uppercase">
         <span className="glow-red">Bee</span>
