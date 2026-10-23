@@ -1,0 +1,86 @@
+name: Deploy
+
+# Switches the app in Azure to an image and checks that the new version
+# really runs. Called after every merge to main (ci.yml) and to roll back
+# (rollback.yml), so both go the same way.
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: The image to run, by digest
+        type: string
+        required: true
+
+permissions: {}
+
+jobs:
+  deploy:
+    name: Deploy to Azure
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Waits for a reviewer's approval, and only from this environment does
+    # Azure accept the job's sign-in
+    environment:
+      name: production
+      url: ${{ steps.check.outputs.url }}
+    # One deployment at a time, and a running one is never cancelled
+    concurrency:
+      group: production
+      cancel-in-progress: false
+    permissions:
+      # Lets the job ask GitHub for the token that Azure trusts
+      id-token: write
+
+    steps:
+      - name: Sign in to Azure
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # A new revision of the app starts with the image. Azure moves the
+      # traffic over once it reports healthy; until then the old one serves.
+      - name: Switch the app to the image
+        env:
+          IMAGE: ${{ inputs.image }}
+        run: >-
+          az containerapp update
+          --resource-group rg-beesaber --name ca-beesaber
+          --image "$IMAGE" --output none
+
+      # "The app answers" is not enough: if the new revision fails, the old
+      # one keeps answering. Checked is the new revision itself: it runs the
+      # image, it is healthy, and it gets all the traffic. With cost saving
+      # on, the app may be stopped, so each round also sends a request,
+      # which wakes it.
+      - name: Check that the new version runs
+        id: check
+        env:
+          IMAGE: ${{ inputs.image }}
+        run: |
+          app=(--resource-group rg-beesaber --name ca-beesaber)
+          fqdn=$(az containerapp show "${app[@]}" \
+            --query properties.configuration.ingress.fqdn --output tsv)
+          revision=$(az containerapp show "${app[@]}" \
+            --query properties.latestRevisionName --output tsv)
+          echo "url=https://$fqdn" >> "$GITHUB_OUTPUT"
+
+          for _ in $(seq 1 30); do
+            curl --silent --max-time 60 --output /dev/null \
+              "https://$fqdn/api/health" || true
+            # Joined into one line: as a list, Azure prints each on its own
+            read -r health traffic image < <(az containerapp revision show \
+              "${app[@]}" --revision "$revision" --output tsv --query \
+              "join(' ', [properties.healthState, to_string(properties.trafficWeight), properties.template.containers[0].image])")
+            echo "$revision: health=$health traffic=$traffic"
+            if [ "$health" = Healthy ] && [ "$traffic" = 100 ] \
+              && [ "$image" = "$IMAGE" ]; then
+              exit 0
+            fi
+            sleep 10
+          done
+
+          echo "::error::Revision $revision did not become healthy with all the traffic. The previous revision keeps serving; see the app's logs in Azure."
+          exit 1

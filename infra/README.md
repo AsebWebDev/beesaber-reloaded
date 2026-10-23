@@ -168,8 +168,8 @@ the checks have passed:
 3. It signs in to Azure as `id-beesaber-deploy`, without a password, and
    switches the app to the image's digest. That identity may update this one
    app and nothing else.
-4. It checks that the new version answers. Until it does, the old version
-   keeps serving.
+4. It checks that the newest revision runs that image, is healthy and gets
+   all the traffic. Until then, the previous version keeps serving.
 
 Terraform sets the first image from `image` in `terraform.tfvars` and leaves
 it alone after that.
@@ -179,6 +179,19 @@ The `production` environment needs the secrets `AZURE_CLIENT_ID`
 (`terraform output tenant_id`) and `AZURE_SUBSCRIPTION_ID`. They are not
 secret, but the workflow logs of a public repository are public, and GitHub
 masks secrets in them.
+
+### Rolling back
+
+When a deployed version misbehaves, put the last one that worked back
+first and find the fault afterwards:
+
+1. Find the commit of the last good version, for example in the list of
+   runs of the `CI` workflow on GitHub.
+2. In the Actions tab, choose the workflow `Roll back`, then "Run workflow",
+   and give that commit. It deploys the image CI published for it, the same
+   way as every deployment, approval included.
+3. Revert the faulty change on `main` (`git revert`). Otherwise the next
+   deployment brings it back.
 
 ### Cost saving
 

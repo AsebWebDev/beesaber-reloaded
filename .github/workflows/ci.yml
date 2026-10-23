@@ -244,54 +244,15 @@ jobs:
           echo "image=$digest" >> "$GITHUB_OUTPUT"
           echo "Published $digest"
 
-  # Switches the app in Azure to the new image. Runs in the "production"
-  # environment, where it waits for a reviewer's approval, and where alone
-  # Azure accepts the job's sign-in.
+  # Switches the app in Azure to the published image, after approval. The
+  # steps live in deploy.yml, which rolling back uses as well.
   deploy:
-    name: Deploy to Azure
+    name: Deploy
     needs: publish
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment:
-      name: production
-      url: ${{ steps.check.outputs.url }}
-    # One deployment at a time, and a running one is never cancelled
-    concurrency:
-      group: production
-      cancel-in-progress: false
+    uses: ./.github/workflows/deploy.yml
+    with:
+      image: ${{ needs.publish.outputs.image }}
+    # The production environment's Azure ids
+    secrets: inherit
     permissions:
-      # Lets the job ask GitHub for the token that Azure trusts
       id-token: write
-
-    steps:
-      - name: Sign in to Azure
-        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      # A new revision of the app starts with the new image. Azure moves the
-      # traffic over once it reports healthy; until then the old one serves.
-      - name: Switch the app to the new image
-        env:
-          IMAGE: ${{ needs.publish.outputs.image }}
-        run: >-
-          az containerapp update
-          --resource-group rg-beesaber --name ca-beesaber
-          --image "$IMAGE" --output none
-
-      # With cost saving on, the app may be stopped, so the first request
-      # also wakes it, which can take a while
-      - name: Check that the new version answers
-        id: check
-        run: |
-          fqdn=$(az containerapp show --resource-group rg-beesaber             --name ca-beesaber --query properties.configuration.ingress.fqdn             --output tsv)
-          echo "url=https://$fqdn" >> "$GITHUB_OUTPUT"
-          for _ in $(seq 1 20); do
-            if curl --silent --fail --max-time 60 "https://$fqdn/api/health"; then
-              exit 0
-            fi
-            sleep 10
-          done
-          exit 1
