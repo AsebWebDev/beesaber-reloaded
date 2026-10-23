@@ -179,6 +179,13 @@ resource "azurerm_container_app" "main" {
 
   # The app may only start reading once it is allowed to
   depends_on = [azurerm_role_assignment.app_reads_secrets]
+
+  lifecycle {
+    # Which image runs is decided by the deployment in CI (deploy.tf), which
+    # sets a new one on every release. Terraform sets the first one and then
+    # leaves it alone, or every apply would roll the app back.
+    ignore_changes = [template[0].container[0].image]
+  }
 }
 
 output "app_url" {
