@@ -91,22 +91,34 @@ An empty answer means servers can be created there. Any text, such as
      -target=azurerm_container_app_environment.main
    ```
 
-   The app's address is `https://ca-beesaber.<default domain>`:
+4. **The domain's DNS.** Set `domain` in `terraform.tfvars` if it is not
+   `beesaber.de`, and add these records at the domain's registrar:
+
+   | Name        | Type  | Value                                    |
+   | ----------- | ----- | ---------------------------------------- |
+   | `@`         | A     | the environment's static IP              |
+   | `www`       | CNAME | `ca-beesaber.<default domain>`           |
+   | `asuid`     | TXT   | the environment's domain verification id |
+   | `asuid.www` | TXT   | the same id                              |
 
    ```sh
-   az containerapp env show --resource-group rg-beesaber \
-     --name cae-beesaber --query properties.defaultDomain --output tsv
+   az containerapp env show --resource-group rg-beesaber --name cae-beesaber \
+     --query "properties.[staticIp, defaultDomain, customDomainConfiguration.customDomainVerificationId]" \
+     --output tsv
    ```
 
-4. **Sign-in with Google.** Create an OAuth client of type "Web
+   The TXT records prove to Azure that whoever controls the domain wants it
+   on this environment, so nobody else can attach it to their app.
+
+5. **Sign-in with Google.** Create an OAuth client of type "Web
    application" at <https://console.cloud.google.com/auth/clients>, made for
    this deployment only, with the redirect URI
-   `https://<app address>/api/auth/callback/google`. Put its client id into
+   `https://<domain>/api/auth/callback/google`. Put its client id into
    `terraform.tfvars`. Put its secret into the vault, in the portal: open
    `kv-beesaber`, then Secrets, Generate/Import, name it
    `google-client-secret`. It is never written to a file.
 
-5. **The image.** The registry has to hold the image before the app can
+6. **The image.** The registry has to hold the image before the app can
    start. Build it from a clean checkout of `main` and tag it with the
    commit:
 
@@ -122,16 +134,33 @@ An empty answer means servers can be created there. Any text, such as
    settings, so Azure can pull it without credentials. The image holds no
    secrets; they reach the container from Azure when it starts.
 
-6. **Everything else.** Empty `admin_ip_ranges` again, which closes the
+7. **Everything else.** Empty `admin_ip_ranges` again, which closes the
    vault to every address, then:
 
    ```sh
    terraform apply
-   terraform output app_url
    ```
 
    The first start takes about half a minute: Azure pulls the image, and the
-   server applies the database migrations before it answers.
+   server applies the database migrations before it answers. The
+   certificates take a few minutes more.
+
+8. **The certificates.** Azure issues a certificate only for a domain that
+   is already on the app, so Terraform adds the domains without one. Once
+   the apply is done, bind each certificate to its domain. This changes the
+   ingress only; the app keeps running:
+
+   ```sh
+   for pair in "beesaber.de beesaber-de HTTP" "www.beesaber.de www-beesaber-de CNAME"; do
+     set -- $pair
+     az containerapp hostname bind --resource-group rg-beesaber \
+       --name ca-beesaber --environment cae-beesaber \
+       --hostname "$1" --certificate "$2" --validation-method "$3"
+   done
+   ```
+
+   Azure renews the certificates by itself. The app sends visitors of the
+   www address on to the domain itself.
 
 ## Making changes
 
