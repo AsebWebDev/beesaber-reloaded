@@ -558,10 +558,13 @@ describe('changing who I am', () => {
     expect(
       await screen.findByRole('heading', { name: 'buzz' })
     ).toBeInTheDocument();
-    // The picker closes once it is done
-    expect(
-      screen.queryByLabelText('Your name on ScoreSaber')
-    ).not.toBeInTheDocument();
+    // The picker closes once it is done. The new name can show up a moment
+    // before that, since the profile is updated first.
+    await waitFor(() =>
+      expect(
+        screen.queryByLabelText('Your name on ScoreSaber')
+      ).not.toBeInTheDocument()
+    );
   });
 
   it('can sign out before a profile is picked', async () => {
