@@ -2,10 +2,10 @@
 # patching and backing it up. It lives in the database subnet and has no
 # address on the internet.
 
-# Long and random. Letters and digits only, because it becomes part of the
-# connection string, where other characters would need escaping. It ends up
-# in the Terraform state, which is why the state is kept encrypted in Azure.
-# To be replaced by sign-in with a managed identity, which needs no password.
+# The server's built-in administrator needs a password, even though the app
+# signs in with its managed identity and nobody uses this one. Long and
+# random; it ends up in the Terraform state, which is why the state is kept
+# encrypted in Azure.
 resource "random_password" "database" {
   length  = 48
   special = false
