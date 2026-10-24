@@ -46,11 +46,21 @@ describe('before signing in', () => {
     ).toBeInTheDocument();
   });
 
-  it('says that it is not affiliated with the makers of Beat Saber', async () => {
+  it('names ScoreSaber as the source of the scores', async () => {
     renderApp();
 
     expect(
-      await screen.findByText(/not affiliated with Beat Games or Meta/)
+      await screen.findByRole('link', { name: 'ScoreSaber' })
+    ).toHaveAttribute('href', 'https://scoresaber.com');
+  });
+
+  it('says that it is not affiliated with ScoreSaber or the makers of Beat Saber', async () => {
+    renderApp();
+
+    expect(
+      await screen.findByText(
+        /not affiliated with ScoreSaber, Beat Games or Meta/
+      )
     ).toBeInTheDocument();
   });
 

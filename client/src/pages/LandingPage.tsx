@@ -88,10 +88,15 @@ const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
         Find your hive
       </NeonHeading>
 
-      {/* The name plays on Beat Saber, so it says whose game that is */}
+      {/* Every score and player comes from ScoreSaber, so it says so. The
+          name plays on Beat Saber, so it says whose game that is. */}
       <p className="max-w-xl text-xs text-slate-400">
-        BeeSaber is a fan project and not affiliated with Beat Games or Meta.
-        Beat Saber is a trademark of Meta Platforms, Inc.
+        Scores and players come from{' '}
+        <a href="https://scoresaber.com" className="underline">
+          ScoreSaber
+        </a>
+        . BeeSaber is a fan project and not affiliated with ScoreSaber, Beat
+        Games or Meta. Beat Saber is a trademark of Meta Platforms, Inc.
       </p>
     </main>
   );
