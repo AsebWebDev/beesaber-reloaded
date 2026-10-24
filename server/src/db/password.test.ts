@@ -49,6 +49,39 @@ describe('the database password from tokens', () => {
     expect(await password()).toBe('token-2');
   });
 
+  it('asks once when many connections need a new token at the same time', async () => {
+    let time = 0;
+    const now = () => time;
+    const source = fakeSource(now);
+    const password = createTokenPassword(source, now);
+
+    await password();
+    time += 56 * MINUTE;
+
+    const passwords = await Promise.all([password(), password(), password()]);
+
+    expect(passwords).toEqual(['token-2', 'token-2', 'token-2']);
+    expect(source).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps using the old token while it is valid when a new one cannot be had', async () => {
+    let time = 0;
+    const now = () => time;
+    const source = fakeSource(now);
+    const password = createTokenPassword(source, now);
+
+    await password();
+    time += 56 * MINUTE;
+    source.mockRejectedValueOnce(new Error('Azure is unreachable'));
+
+    expect(await password()).toBe('token-1');
+
+    time += 5 * MINUTE;
+    source.mockRejectedValueOnce(new Error('Azure is unreachable'));
+
+    await expect(password()).rejects.toThrow('Azure is unreachable');
+  });
+
   it('asks again after a failed request', async () => {
     const source = fakeSource(Date.now);
     const password = createTokenPassword(source);

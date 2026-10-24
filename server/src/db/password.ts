@@ -84,26 +84,31 @@ const createTokenPassword = (
   source: TokenSource,
   now: () => number = Date.now
 ): DatabasePassword => {
-  let current: Promise<Token> | undefined;
+  let current: Token | undefined;
+  let pending: Promise<Token> | undefined;
 
-  const request = () => {
-    const pending = source();
-
-    current = pending;
-    // A failed request is not kept, so the next connection asks again
-    pending.catch(() => {
-      if (current === pending) current = undefined;
-    });
-
-    return pending;
-  };
+  // Connections that need a new token at the same time wait for one request
+  const refresh = () =>
+    (pending ??= source()
+      .then((token) => (current = token))
+      .finally(() => {
+        pending = undefined;
+      }));
 
   return async () => {
-    let token = await (current ?? request());
+    if (current !== undefined && current.expiresAt - now() >= REFRESH_MARGIN_MS)
+      return current.token;
 
-    if (token.expiresAt - now() < REFRESH_MARGIN_MS) token = await request();
+    try {
+      return (await refresh()).token;
+    } catch (error) {
+      // The old token still works for a few minutes, and the next
+      // connection asks again
+      if (current !== undefined && current.expiresAt > now())
+        return current.token;
 
-    return token.token;
+      throw error;
+    }
   };
 };
 
