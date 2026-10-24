@@ -39,6 +39,15 @@ resource "azurerm_postgresql_flexible_server" "main" {
   administrator_login    = "beesaber"
   administrator_password = random_password.database.result
 
+  # Sign-in with a token from Microsoft Entra ID, which identities like the
+  # app's get without any password. Passwords still work until the app has
+  # moved over.
+  authentication {
+    active_directory_auth_enabled = true
+    password_auth_enabled         = true
+    tenant_id                     = data.azurerm_client_config.current.tenant_id
+  }
+
   tags = local.tags
 
   # The DNS zone has to be linked to the network before the server can
@@ -53,6 +62,18 @@ resource "azurerm_postgresql_flexible_server" "main" {
     # server must not be recreated just because nothing asked for one
     ignore_changes = [zone]
   }
+}
+
+# The person running Terraform administers the database with their Entra
+# account. Only such an administrator may turn other Entra identities, like
+# the app's, into database roles.
+resource "azurerm_postgresql_flexible_server_active_directory_administrator" "admin" {
+  server_name         = azurerm_postgresql_flexible_server.main.name
+  resource_group_name = azurerm_resource_group.main.name
+  tenant_id           = data.azurerm_client_config.current.tenant_id
+  object_id           = data.azurerm_client_config.current.object_id
+  principal_name      = var.database_admin
+  principal_type      = "User"
 }
 
 # The database inside the server that the app uses

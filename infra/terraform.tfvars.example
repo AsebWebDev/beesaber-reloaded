@@ -11,7 +11,7 @@ cost_saving = true
 
 # An OAuth client of type "Web application" made for this deployment, at
 # https://console.cloud.google.com/auth/clients, with the redirect URI
-#   https://<app address>/api/auth/callback/google
+#   https://<domain>/api/auth/callback/google
 # Only its id goes here. Its secret goes into the key vault, never into a
 # file; see infra/README.md.
 google_client_id = "000000000000-xxxxxxxx.apps.googleusercontent.com"
@@ -22,3 +22,7 @@ admin_ip_ranges = ["203.0.113.7"]
 
 # Where the budget emails go
 budget_alert_email = "you@example.org"
+
+# Your Entra user name, your role in the database:
+# az ad signed-in-user show --query userPrincipalName -o tsv
+database_admin = "you_example.org#EXT#@you.onmicrosoft.com"

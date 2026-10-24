@@ -48,6 +48,11 @@ variable "budget_alert_email" {
   type        = string
 }
 
+variable "database_admin" {
+  description = "Your Entra user name, which becomes your role in the database: az ad signed-in-user show --query userPrincipalName -o tsv"
+  type        = string
+}
+
 variable "domain" {
   description = "The app's own domain, without www, like beesaber.de. Its DNS needs an A record to the environment's static IP, a CNAME for www to the app's default address, and TXT records asuid and asuid.www with the app's domain verification id; see infra/README.md."
   type        = string
