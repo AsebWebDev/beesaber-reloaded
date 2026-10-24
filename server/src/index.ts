@@ -5,6 +5,7 @@ import { createAuth } from './auth/auth.ts';
 import { loadConfig } from './config.ts';
 import { createDatabase } from './db/client.ts';
 import { runMigrations } from './db/migrate.ts';
+import { databasePassword } from './db/password.ts';
 import { withCanonicalHost } from './http/canonicalHost.ts';
 import { withFrontend } from './http/frontend.ts';
 import { createPgBossQueue } from './jobs/queue.ts';
@@ -16,15 +17,16 @@ import { createServices, startJobs } from './services.ts';
 // The entry point: read the configuration, connect to the outside world,
 // start listening. Everything else is built from these pieces.
 const config = loadConfig();
+const password = databasePassword(config.DATABASE_IDENTITY_CLIENT_ID);
 
 // The code of this version expects the tables of this version. If they
 // cannot be brought up to date, the server stops here instead of running
 // against the wrong schema.
-await runMigrations(config.DATABASE_URL);
+await runMigrations(config.DATABASE_URL, password);
 console.log('Database is up to date');
 
-const { db, close } = createDatabase(config.DATABASE_URL);
-const queue = createPgBossQueue(config.DATABASE_URL);
+const { db, close } = createDatabase(config.DATABASE_URL, { password });
+const queue = createPgBossQueue(config.DATABASE_URL, password);
 
 const services = createServices({
   db,

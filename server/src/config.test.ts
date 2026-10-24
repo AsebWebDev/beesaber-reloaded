@@ -33,6 +33,18 @@ describe('loadConfig', () => {
     expect(config.GOOGLE_CLIENT_ID).toBeUndefined();
   });
 
+  it('takes the client id of a managed identity for the database', () => {
+    const clientId = '510285c0-0000-4000-8000-000000000000';
+
+    expect(
+      loadConfig({ ...required, DATABASE_IDENTITY_CLIENT_ID: clientId })
+        .DATABASE_IDENTITY_CLIENT_ID
+    ).toBe(clientId);
+    expect(() =>
+      loadConfig({ ...required, DATABASE_IDENTITY_CLIENT_ID: 'id-beesaber' })
+    ).toThrow(/DATABASE_IDENTITY_CLIENT_ID/);
+  });
+
   it('names the variable that is missing', () => {
     expect(() => loadConfig({ AUTH_SECRET: required.AUTH_SECRET })).toThrow(
       /DATABASE_URL/

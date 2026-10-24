@@ -1,5 +1,7 @@
 import { PgBoss } from 'pg-boss';
 
+import type { DatabasePassword } from '../db/password.ts';
+
 /**
  * Work that happens outside of a request.
  *
@@ -46,9 +48,34 @@ type JobQueue = {
 const SYNC_QUEUE = 'sync-player';
 const TICK_QUEUE = 'sync-stale';
 
+/**
+ * How pg-boss connects. node-postgres, which it uses, takes the password
+ * from a connection string over one given beside it, even when the string
+ * has none. So with a password function, the parts go in one by one.
+ */
+const connectionOptions = (url: string, password?: DatabasePassword) => {
+  if (password === undefined) return { connectionString: url };
+
+  const { hostname, port, pathname, username } = new URL(url);
+
+  return {
+    host: hostname,
+    port: port === '' ? 5432 : Number(port),
+    database: decodeURIComponent(pathname.slice(1)),
+    user: decodeURIComponent(username),
+    password,
+    // Tokens only go out encrypted, to a server whose certificate and name
+    // check out, like sslmode=verify-full
+    ssl: true,
+  };
+};
+
 /** The real queue: jobs are stored in Postgres by pg-boss */
-const createPgBossQueue = (connectionString: string): JobQueue => {
-  const boss = new PgBoss({ connectionString });
+const createPgBossQueue = (
+  url: string,
+  password?: DatabasePassword
+): JobQueue => {
+  const boss = new PgBoss(connectionOptions(url, password));
 
   // Without a listener, an error event would crash the process
   boss.on('error', (error) => console.error('Job queue error', error));
@@ -136,5 +163,5 @@ const createInlineQueue = (): JobQueue & { tick: () => Promise<void> } => {
   };
 };
 
-export { createInlineQueue, createPgBossQueue };
+export { connectionOptions, createInlineQueue, createPgBossQueue };
 export type { Handlers, JobQueue, SyncJob, SyncPriority };
