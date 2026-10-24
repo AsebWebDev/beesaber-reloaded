@@ -4,6 +4,9 @@ import { fileURLToPath } from 'node:url';
 
 import { loadConfig } from '../config.ts';
 import { createDatabase } from './client.ts';
+import { databasePassword } from './password.ts';
+
+import type { DatabasePassword } from './password.ts';
 
 const migrationsFolder = fileURLToPath(
   new URL('../../drizzle', import.meta.url)
@@ -22,8 +25,8 @@ const MIGRATION_LOCK = 4_242_001;
  * The lock belongs to a connection, so this opens one of its own: in a pool,
  * the next query may go out on another connection.
  */
-const runMigrations = async (url: string) => {
-  const { db, close } = createDatabase(url, { maxConnections: 1 });
+const runMigrations = async (url: string, password?: DatabasePassword) => {
+  const { db, close } = createDatabase(url, { maxConnections: 1, password });
 
   try {
     await db.execute(sql`select pg_advisory_lock(${MIGRATION_LOCK})`);
@@ -36,7 +39,12 @@ const runMigrations = async (url: string) => {
 
 // Only when started directly (`pnpm db:migrate`), not when imported
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  await runMigrations(loadConfig().DATABASE_URL);
+  const config = loadConfig();
+
+  await runMigrations(
+    config.DATABASE_URL,
+    databasePassword(config.DATABASE_IDENTITY_CLIENT_ID)
+  );
   console.log('Migrations applied');
 }
 

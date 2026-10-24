@@ -24,6 +24,10 @@ const schema = z
     // unset in development, where Vite serves the frontend.
     FRONTEND_DIR: z.string().optional(),
     DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
+    // The client id of a managed identity in Azure. When set, the server
+    // signs in to the database as that identity, with tokens instead of the
+    // password in DATABASE_URL.
+    DATABASE_IDENTITY_CLIENT_ID: z.uuid().optional(),
     SCORESABER_URL: z.url().default('https://scoresaber.com'),
     // The WebSocket on which ScoreSaber announces every new score. With
     // LIVE_FEED=false, scores arrive with the periodic sync only.

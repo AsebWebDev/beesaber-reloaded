@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { TEST_DATABASE_URL } from '../testing/database.ts';
-import { createPgBossQueue } from './queue.ts';
+import { connectionOptions, createPgBossQueue } from './queue.ts';
 
 import type { JobQueue, SyncJob } from './queue.ts';
 
@@ -51,4 +51,30 @@ describe('the pg-boss queue', () => {
 
     expect(received).toEqual([{ playerId }]);
   }, 30_000);
+});
+
+describe('how pg-boss connects', () => {
+  it('uses the connection string as it is when it holds the password', () => {
+    expect(connectionOptions('postgres://app:secret@db:5432/beesaber')).toEqual(
+      { connectionString: 'postgres://app:secret@db:5432/beesaber' }
+    );
+  });
+
+  it('hands over the parts one by one with a password function, encrypted', () => {
+    const password = () => Promise.resolve('token');
+
+    expect(
+      connectionOptions(
+        'postgres://id-beesaber@psql.example.org/beesaber?sslmode=verify-full',
+        password
+      )
+    ).toEqual({
+      host: 'psql.example.org',
+      port: 5432,
+      database: 'beesaber',
+      user: 'id-beesaber',
+      password,
+      ssl: true,
+    });
+  });
 });

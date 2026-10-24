@@ -190,6 +190,7 @@ What has to be set where the image runs:
 | Variable                                   | In production                                                                                                                                                       |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `DATABASE_URL`                             | The connection string of the production database                                                                                                                    |
+| `DATABASE_IDENTITY_CLIENT_ID`              | In Azure: the client id of the app's managed identity. The server then signs in to the database with its tokens, and `DATABASE_URL` holds no password               |
 | `APP_URL`                                  | The address people open, with `https`. Sign-in redirects go there, and only this site may send forms to the API                                                     |
 | `AUTH_SECRET`                              | A secret of its own, at least 32 characters, never the one from development. Whoever knows it can forge a session                                                   |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | An OAuth client with `<APP_URL>/api/auth/callback/google` among its redirect URIs                                                                                   |
