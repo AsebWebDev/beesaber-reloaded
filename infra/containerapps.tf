@@ -44,13 +44,14 @@ locals {
   # The address people open, see domain.tf. Azure's own address of the app,
   # below the environment's default domain, keeps working.
   app_url = "https://${var.domain}"
+  # The app signs in as its identity, with a token instead of a password
+  # (DATABASE_IDENTITY_CLIENT_ID below), so the address holds no secret.
   # The server's public name points into the private DNS zone, so it only
   # resolves inside the network. verify-full encrypts and also checks that
   # the certificate belongs to this server; with "require", postgres.js
   # would encrypt without checking who answers.
   database_url = join("", [
-    "postgres://", azurerm_postgresql_flexible_server.main.administrator_login,
-    ":", random_password.database.result,
+    "postgres://", azurerm_user_assigned_identity.app.name,
     "@", azurerm_postgresql_flexible_server.main.fqdn,
     ":5432/", azurerm_postgresql_flexible_server_database.beesaber.name,
     "?sslmode=verify-full",
@@ -65,19 +66,16 @@ resource "azurerm_container_app" "main" {
   # One version of the app at a time. A new image replaces the old one.
   revision_mode = "Single"
 
-  # The app's identity, which it uses to read its secrets from the vault
+  # The app's identity, which it uses to read its secrets from the vault and
+  # to sign in to the database
   identity {
     type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.app.id]
   }
 
   # Stored encrypted by Azure and handed to the container as environment
-  # variables. They never appear in the image. The first two are made by
-  # Terraform; the third comes from the vault (keyvault.tf).
-  secret {
-    name  = "database-url"
-    value = local.database_url
-  }
+  # variables. They never appear in the image. The first is made by
+  # Terraform; the second comes from the vault (keyvault.tf).
   secret {
     name  = "auth-secret"
     value = random_password.auth_secret.result
@@ -105,8 +103,12 @@ resource "azurerm_container_app" "main" {
       memory = "0.5Gi"
 
       env {
-        name        = "DATABASE_URL"
-        secret_name = "database-url"
+        name  = "DATABASE_URL"
+        value = local.database_url
+      }
+      env {
+        name  = "DATABASE_IDENTITY_CLIENT_ID"
+        value = azurerm_user_assigned_identity.app.client_id
       }
       env {
         name        = "AUTH_SECRET"

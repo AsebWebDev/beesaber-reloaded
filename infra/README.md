@@ -162,6 +162,39 @@ An empty answer means servers can be created there. Any text, such as
    Azure renews the certificates by itself. The app sends visitors of the
    www address on to the domain itself.
 
+9. **The app's role in the database.** The app signs in as its managed
+   identity `id-beesaber`, with tokens; the server accepts no passwords.
+   The identity needs a role in Postgres, which only the database's Entra
+   administrator (you, `database_admin`) can create. Until it exists, the
+   app fails to start, and Azure keeps trying.
+
+   ```sql
+   -- in the database postgres
+   select * from pgaadauth_create_principal('id-beesaber', false, false);
+   -- in the database beesaber: the app creates its tables itself, in its
+   -- migrations, and so owns them
+   grant create on database beesaber to "id-beesaber";
+   grant usage, create on schema public to "id-beesaber";
+   ```
+
+   The database has no address outside the network, so this runs in a
+   one-off job in the environment: a [Container Apps job][jobs] with the
+   image `postgres:18-alpine`, started by hand, that pipes the statements
+   into `psql`. It signs in as you, with `PGUSER` set to your Entra user
+   name and `PGPASSWORD` to a token, handed to the job as a secret:
+
+   ```sh
+   az account get-access-token --resource-type oss-rdbms \
+     --query accessToken --output tsv
+   ```
+
+   Set `PGHOST` to the server's name, `PGSSLMODE=verify-full` and
+   `PGSSLROOTCERT=system`. The token is valid for about an hour. Read the
+   job's output in Log Analytics (`ContainerAppConsoleLogs_CL`), then
+   delete the job.
+
+[jobs]: https://learn.microsoft.com/azure/container-apps/jobs
+
 ## Making changes
 
 Always read the plan before applying it, and apply exactly the plan that
