@@ -2,10 +2,10 @@
 # patching and backing it up. It lives in the database subnet and has no
 # address on the internet.
 
-# The server's built-in administrator needs a password, even though the app
-# signs in with its managed identity and nobody uses this one. Long and
-# random; it ends up in the Terraform state, which is why the state is kept
-# encrypted in Azure.
+# Azure creates the server with a built-in administrator, which needs a
+# password. Since the server only accepts tokens (below), the password opens
+# nothing. Long and random all the same; it ends up in the Terraform state,
+# which is why the state is kept encrypted in Azure.
 resource "random_password" "database" {
   length  = 48
   special = false
@@ -39,12 +39,13 @@ resource "azurerm_postgresql_flexible_server" "main" {
   administrator_login    = "beesaber"
   administrator_password = random_password.database.result
 
-  # Sign-in with a token from Microsoft Entra ID, which identities like the
-  # app's get without any password. Passwords still work until the app has
-  # moved over.
+  # Sign-in only with a token from Microsoft Entra ID, which identities like
+  # the app's get without any password. A token is short-lived and names who
+  # signs in; a password would work for whoever found it, for as long as
+  # nobody changed it.
   authentication {
     active_directory_auth_enabled = true
-    password_auth_enabled         = true
+    password_auth_enabled         = false
     tenant_id                     = data.azurerm_client_config.current.tenant_id
   }
 
