@@ -120,6 +120,16 @@ An empty answer means servers can be created there. Any text, such as
    `kv-beesaber`, then Secrets, Generate/Import, name it
    `google-client-secret`. It is never written to a file.
 
+   The secret that signs the session cookies goes into the vault too, as a
+   random value that nobody ever sees:
+
+   ```sh
+   az keyvault secret set --vault-name kv-beesaber --name auth-secret \
+     --value "$(openssl rand -base64 48)" --output none
+   ```
+
+   Running the same command again replaces it, which signs everybody out.
+
 6. **The image.** The registry has to hold the image before the app can
    start. Build it from a clean checkout of `main` and tag it with the
    commit:
@@ -281,9 +291,17 @@ The vault accepts no address except the app's subnet. To change a secret,
 open it for yourself for the time it takes:
 
 1. Put your current public address into `admin_ip_ranges` and apply.
-2. Change the secret in the portal. The app picks up the newest version of
-   a secret within about half an hour, or at its next restart.
-3. Empty `admin_ip_ranges` and apply.
+2. Change the secret in the portal, or with `az keyvault secret set`.
+3. Restart the app, which reads its secrets only when it starts:
+
+   ```sh
+   az containerapp revision restart --resource-group rg-beesaber \
+     --name ca-beesaber --revision "$(az containerapp show \
+     --resource-group rg-beesaber --name ca-beesaber \
+     --query properties.latestRevisionName --output tsv)"
+   ```
+
+4. Empty `admin_ip_ranges` and apply.
 
 ## Costs
 

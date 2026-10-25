@@ -34,7 +34,7 @@ describe('loadConfig', () => {
   });
 
   it('takes the client id of a managed identity for the database', () => {
-    const clientId = '510285c0-0000-4000-8000-000000000000';
+    const clientId = '00000000-0000-4000-8000-000000000001';
 
     expect(
       loadConfig({ ...required, DATABASE_IDENTITY_CLIENT_ID: clientId })

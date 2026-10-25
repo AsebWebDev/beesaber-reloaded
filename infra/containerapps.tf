@@ -32,13 +32,6 @@ resource "azurerm_container_app_environment" "main" {
   tags = local.tags
 }
 
-# Signs the session cookies. Whoever knows it could forge a session, so it is
-# generated here and handed to the app as a secret.
-resource "random_password" "auth_secret" {
-  length  = 48
-  special = false
-}
-
 locals {
   app_name = "ca-${var.name}"
   # The address people open, see domain.tf. Azure's own address of the app,
@@ -73,16 +66,19 @@ resource "azurerm_container_app" "main" {
     identity_ids = [azurerm_user_assigned_identity.app.id]
   }
 
-  # Stored encrypted by Azure and handed to the container as environment
-  # variables. They never appear in the image. The first is made by
-  # Terraform; the second comes from the vault (keyvault.tf).
+  # Handed to the container as environment variables; they never appear in
+  # the image. Both are references to the vault, not values: Azure fetches
+  # them with the app's identity, and Terraform never sees them. Without a
+  # version, a reference follows the newest one, so a new secret in the vault
+  # reaches the app without a change here.
+
+  # Signs the session cookies. Whoever knows it could forge a session.
+  # Changing it signs everybody out.
   secret {
-    name  = "auth-secret"
-    value = random_password.auth_secret.result
+    name                = "auth-secret"
+    key_vault_secret_id = "${azurerm_key_vault.main.vault_uri}secrets/auth-secret"
+    identity            = azurerm_user_assigned_identity.app.id
   }
-  # A reference to the vault, not the value: Azure fetches it with the app's
-  # identity. Without a version, it follows the newest one, so a new secret
-  # in the vault reaches the app without a change here.
   secret {
     name                = "google-client-secret"
     key_vault_secret_id = "${azurerm_key_vault.main.vault_uri}secrets/google-client-secret"
