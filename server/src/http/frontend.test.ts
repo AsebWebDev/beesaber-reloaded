@@ -15,6 +15,11 @@ writeFileSync(
   '<!doctype html><title>BeeSaber</title>'
 );
 writeFileSync(join(root, 'assets', 'index-1a2b.js'), 'console.log("app")');
+// The compressed copies the build writes next to the files. Their content
+// does not matter here, only which one is handed out.
+writeFileSync(join(root, 'assets', 'index-1a2b.js.br'), 'brotli bytes');
+writeFileSync(join(root, 'assets', 'index-1a2b.js.gz'), 'gzip bytes');
+writeFileSync(join(root, 'index.html.br'), 'brotli page');
 writeFileSync(join(root, 'favicon.ico'), 'icon');
 
 // Outside the folder that is handed out
@@ -81,6 +86,40 @@ describe('the server with the built frontend', () => {
 
     expect(file.headers.get('cache-control')).toContain('immutable');
     expect(page.headers.get('cache-control')).toBe('no-cache');
+  });
+
+  it('hands out the smallest compressed copy that the browser understands', async () => {
+    const brotli = await site.request('/assets/index-1a2b.js', {
+      headers: { 'Accept-Encoding': 'gzip, deflate, br' },
+    });
+    const gzip = await site.request('/assets/index-1a2b.js', {
+      headers: { 'Accept-Encoding': 'gzip' },
+    });
+
+    expect(brotli.headers.get('content-encoding')).toBe('br');
+    expect(await brotli.text()).toBe('brotli bytes');
+    expect(gzip.headers.get('content-encoding')).toBe('gzip');
+    expect(await gzip.text()).toBe('gzip bytes');
+    // Caches between browser and server must keep the copies apart
+    expect(brotli.headers.get('vary')).toContain('Accept-Encoding');
+    expect(brotli.headers.get('content-type')).toMatch(/javascript/);
+  });
+
+  it('hands out the file as it is to a browser that asks for no compression', async () => {
+    const response = await site.request('/assets/index-1a2b.js');
+
+    expect(response.headers.get('content-encoding')).toBeNull();
+    expect(await response.text()).toBe('console.log("app")');
+  });
+
+  it('compresses the page for any address of the app as well', async () => {
+    const response = await site.request('/hive/1', {
+      headers: { 'Accept-Encoding': 'br' },
+    });
+
+    expect(response.headers.get('content-encoding')).toBe('br');
+    expect(response.headers.get('content-type')).toMatch(/^text\/html/);
+    expect(await response.text()).toBe('brotli page');
   });
 
   it('does not cache a 404', async () => {
