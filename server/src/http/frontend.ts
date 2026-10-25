@@ -88,7 +88,10 @@ const withFrontend = (api: Api, root: string) => {
         )
       )
 
-      .use(serveStatic({ root }))
+      // The build puts a Brotli and a gzip copy next to every text file
+      // (client/build/precompress.ts). A browser that understands one of
+      // them gets it, a third of the size; the others get the file as it is.
+      .use(serveStatic({ root, precompressed: true }))
       // A file that does not exist is not a page. Answering with the page
       // would hand the browser HTML where it expects a script or a picture.
       .get('*', (c, next) =>
@@ -97,7 +100,7 @@ const withFrontend = (api: Api, root: string) => {
       // Every other address is a page of the app, like /hive/123. The
       // browser gets index.html, which loads React, and React draws the page
       // the address asks for.
-      .get('*', serveStatic({ root, path: 'index.html' }))
+      .get('*', serveStatic({ root, path: 'index.html', precompressed: true }))
   );
 };
 
