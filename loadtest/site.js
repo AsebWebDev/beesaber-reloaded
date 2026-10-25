@@ -39,12 +39,15 @@ export const options = {
       ],
     },
   },
+  // The test is there to find the number of visitors at which the answers
+  // get slow, so slow answers do not fail it; the summary shows them. What
+  // fails it are errors, other than the API's deliberate 429.
   thresholds: {
-    // A page that takes longer than this feels slow
-    'http_req_duration{kind:page}': ['p(95)<500'],
-    'http_req_duration{kind:file}': ['p(95)<500'],
-    // Errors other than the API's deliberate 429
     http_req_failed: ['rate<0.01'],
+    // Always met: k6 lists pages and files apart in its summary only for
+    // metrics that have a threshold
+    'http_req_duration{kind:page}': ['max>=0'],
+    'http_req_duration{kind:file}': ['max>=0'],
   },
 };
 

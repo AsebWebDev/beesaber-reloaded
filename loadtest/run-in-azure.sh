@@ -56,12 +56,16 @@ properties:
             value: $script
 YAML
 
+# Installed before the job exists, so that a create that fails half-way is
+# cleaned up too. A job that does not exist is no error here; whatever made
+# the script stop is what it reports.
+trap 'rm -f "$spec"; echo "Deleting $job"; az containerapp job delete --resource-group "$group" --name "$job" --yes --output none 2>/dev/null || true' EXIT
+
 echo "Creating $job"
 # On Windows, az needs the file's Windows path; elsewhere there is no cygpath
 az containerapp job create --resource-group "$group" --name "$job" \
   --yaml "$(cygpath --windows "$spec" 2>/dev/null || echo "$spec")" \
   --output none
-trap 'rm -f "$spec"; echo "Deleting $job"; az containerapp job delete --resource-group "$group" --name "$job" --yes --output none' EXIT
 
 execution=$(az containerapp job start --resource-group "$group" --name "$job" \
   --query name --output tsv)
