@@ -93,4 +93,15 @@ for _ in $(seq 1 20); do
   if grep -q "iterations" <<<"$output"; then break; fi
   sleep 30
 done
+
+if ! grep -q "iterations" <<<"$output"; then
+  echo "No summary from k6 in the job's log" >&2
+  exit 1
+fi
 echo "${output//$'\t'PrimaryResult/}"
+
+# k6 ends with an error when its thresholds are crossed, and the job with it
+if [ "$status" != Succeeded ]; then
+  echo "The job ended $status" >&2
+  exit 1
+fi
