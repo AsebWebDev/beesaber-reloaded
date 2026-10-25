@@ -44,7 +44,7 @@ variable "budget_amount" {
 }
 
 variable "budget_alert_email" {
-  description = "Where the budget emails go"
+  description = "Where the budget emails and the alerts go"
   type        = string
 }
 

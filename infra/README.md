@@ -3,18 +3,20 @@
 This folder describes BeeSaber's Azure environment as Terraform code. It
 creates:
 
-| Resource                           | Name                          | Purpose                                                                            |
-| ---------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------- |
-| Resource group                     | `rg-beesaber`                 | Holds everything below                                                             |
-| Log Analytics workspace            | `log-beesaber`                | The app's logs, 30 days, capped at 0.15 GB a day                                   |
-| Virtual network                    | `vnet-beesaber`               | Private network with one subnet for the app and one for the database               |
-| Private DNS zone                   | `beesaber.private.…`          | Resolves the database's name inside the network only                               |
-| Network security group             | `nsg-database`                | Lets only the app subnet reach the database                                        |
-| PostgreSQL Flexible Server         | `psql-beesaber`               | The database, B1ms, without a public endpoint                                      |
-| Key vault                          | `kv-beesaber`                 | Secrets that come from outside, like the Google client secret                      |
-| Managed identity                   | `id-beesaber`                 | The app's identity; it may read secrets from the vault                             |
-| Container Apps environment and app | `cae-beesaber`, `ca-beesaber` | Runs the Docker image, with HTTPS and health checks                                |
-| Budget                             | `budget-beesaber`             | Emails when the month's costs reach half the budget, all of it, or are forecast to |
+| Resource                           | Name                                    | Purpose                                                                            |
+| ---------------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------- |
+| Resource group                     | `rg-beesaber`                           | Holds everything below                                                             |
+| Log Analytics workspace            | `log-beesaber`                          | The app's logs, 30 days, capped at 0.15 GB a day                                   |
+| Virtual network                    | `vnet-beesaber`                         | Private network with one subnet for the app and one for the database               |
+| Private DNS zone                   | `beesaber.private.…`                    | Resolves the database's name inside the network only                               |
+| Network security group             | `nsg-database`                          | Lets only the app subnet reach the database                                        |
+| PostgreSQL Flexible Server         | `psql-beesaber`                         | The database, B1ms, without a public endpoint                                      |
+| Key vault                          | `kv-beesaber`                           | Secrets that come from outside, like the Google client secret                      |
+| Managed identity                   | `id-beesaber`                           | The app's identity; it may read secrets from the vault                             |
+| Container Apps environment and app | `cae-beesaber`, `ca-beesaber`           | Runs the Docker image, with HTTPS and health checks                                |
+| Budget                             | `budget-beesaber`                       | Emails when the month's costs reach half the budget, all of it, or are forecast to |
+| Action group and alerts            | `ag-beesaber-owner`, `alert-beesaber-*` | Email when the app restarts, errs or runs out of memory, or the database fills up  |
+| Availability test                  | `appi-beesaber`                         | Calls `/api/health` from Paris and Amsterdam; only with cost saving off            |
 
 The key vault's access log and the database server's log, with every
 sign-in, go to the Log Analytics workspace.
@@ -264,7 +266,11 @@ feed is off; the server catches up on stale scores when it starts.
 
 `cost_saving = false` keeps one instance running all the time with the live
 feed on, as production with many users would. It costs about 12 to 15 € a
-month.
+month, and the availability test about 10 € more. The test runs only in this
+mode: with cost saving on, its calls would keep waking the app up.
+
+An alert sends one email when it fires and one when it resolves, not one
+per check.
 
 The app never runs as more than one instance; see "One instance" in the
 main README.
@@ -287,6 +293,8 @@ open it for yourself for the time it takes:
 | Container App, cost saving on              | Within Container Apps' free monthly grant at low use |
 | Container App, cost saving off             | About 12 to 15 € a month                             |
 | Log Analytics                              | Within the free 5 GB a month                         |
+| Alerts on metrics, emails                  | Free: up to 10 watched metrics, 1000 emails a month  |
+| Availability test, cost saving off         | About 10 € a month: two places, every 5 minutes      |
 | Private DNS zone                           | About 0.50 € a month                                 |
 | Key vault, storage account, network        | Cents                                                |
 
