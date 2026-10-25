@@ -285,6 +285,42 @@ per check.
 The app never runs as more than one instance; see "One instance" in the
 main README.
 
+### Restoring the database
+
+Azure backs the database up every day and keeps every change in between,
+for 7 days. It can restore any moment of those days, to the second, into a
+**new** server; the old one stays as it is.
+
+1. Restore to a moment before the damage, into the same subnet and DNS zone:
+
+   ```sh
+   az postgres flexible-server restore --resource-group rg-beesaber \
+     --name psql-beesaber-restore --source-server psql-beesaber \
+     --restore-time 2026-10-25T10:05:28Z \
+     --subnet "$(az network vnet subnet show --resource-group rg-beesaber \
+       --vnet-name vnet-beesaber --name snet-database --query id --output tsv)" \
+     --private-dns-zone "$(az postgres flexible-server show \
+       --resource-group rg-beesaber --name psql-beesaber \
+       --query network.privateDnsZoneArmResourceId --output tsv)"
+   ```
+
+   The new server brings everything along: Entra sign-in only, the same
+   Entra administrator, the app's role and its tables. In the drill on
+   2026-10-25 it was ready after 8 and a half minutes.
+
+2. Check it before trusting it, with a one-off job as in setup step 9: the
+   newest `players.scores_synced_at` has to lie before the moment chosen.
+
+3. Point the app at it: change the host in `DATABASE_URL` to
+   `psql-beesaber-restore.postgres.database.azure.com`. The quickest way is
+   `az containerapp update --set-env-vars`; Terraform still describes the old
+   server, so the next apply would switch back. To keep the restored server
+   for good, bring it into Terraform (`terraform import`) in place of the
+   old one, which needs `prevent_destroy` lifted for the swap.
+
+To practise, stop after step 2 and delete the restored server again:
+`az postgres flexible-server delete --name psql-beesaber-restore`.
+
 ### Changing a secret
 
 The vault accepts no address except the app's subnet. To change a secret,
