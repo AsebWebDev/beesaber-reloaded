@@ -73,7 +73,9 @@ resource "azurerm_container_app" "main" {
   # reaches the app without a change here.
 
   # Signs the session cookies. Whoever knows it could forge a session.
-  # Changing it signs everybody out.
+  # Changing it signs everybody out. It has to be in the vault before the
+  # app is created or changed (infra/README.md, step 5): Azure cannot start
+  # a revision with a reference that leads nowhere.
   secret {
     name                = "auth-secret"
     key_vault_secret_id = "${azurerm_key_vault.main.vault_uri}secrets/auth-secret"
