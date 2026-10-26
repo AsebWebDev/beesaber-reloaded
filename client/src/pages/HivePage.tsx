@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
 import {
@@ -23,6 +24,7 @@ import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 /** Who is in my hive, with adding and removing */
 const HivePage = () => {
+  const { t } = useTranslation();
   const me = useMe();
   const hive = useHive();
   const add = useAddBee();
@@ -32,13 +34,13 @@ const HivePage = () => {
   // What just happened, for people who do not see the list change
   const [notice, setNotice] = useState('');
 
-  usePageTitle('My hive');
+  usePageTitle(t('hive.title'));
 
   return (
     <div className="space-y-10">
       <section className="space-y-4">
         <NeonHeading color="yellow" className="text-3xl" focusRef={heading}>
-          My hive
+          {t('hive.title')}
         </NeonHeading>
         <p role="status" className="sr-only">
           {notice}
@@ -49,7 +51,7 @@ const HivePage = () => {
         )}
         {remove.isError && <ErrorNote error={remove.error} />}
         {hive.data?.items.length === 0 && (
-          <EmptyState>No bees yet. Search for a player below.</EmptyState>
+          <EmptyState>{t('hive.empty')}</EmptyState>
         )}
 
         <ul className="space-y-2">
@@ -66,19 +68,22 @@ const HivePage = () => {
                   </Link>
                   {isSyncing(player) ? (
                     <p className="text-neon-yellow-core text-xs">
-                      Fetching scores from ScoreSaber…
+                      {t('hive.fetching')}
                     </p>
                   ) : (
                     <p className="text-xs text-slate-400">
-                      {formatRank(player.rank)} · {player.totalPlayed} maps
-                      played · {shared} shared with you
+                      {t('hive.stats', {
+                        rank: formatRank(player.rank),
+                        played: player.totalPlayed,
+                        shared,
+                      })}
                     </p>
                   )}
                   {player.syncError !== null && !isSyncing(player) && (
                     <p className="text-neon-red-core text-xs">
                       {player.syncError === 'not_found'
-                        ? 'ScoreSaber no longer knows this player.'
-                        : 'The last attempt to fetch their scores failed. It will be tried again.'}
+                        ? t('hive.syncGone')
+                        : t('hive.syncFailed')}
                     </p>
                   )}
                 </div>
@@ -88,15 +93,15 @@ const HivePage = () => {
                   onClick={() =>
                     remove.mutate(player.id, {
                       onSuccess: () => {
-                        setNotice(`${player.name} was removed from your hive.`);
+                        setNotice(t('hive.removed', { name: player.name }));
                         // The button that was pressed is gone with its row
                         heading.current?.focus();
                       },
                     })
                   }
-                  aria-label={`Remove ${player.name} from my hive`}
+                  aria-label={t('hive.removeFor', { name: player.name })}
                 >
-                  Remove
+                  {t('hive.remove')}
                 </Button>
               </Card>
             </li>
@@ -106,23 +111,23 @@ const HivePage = () => {
 
       <section className="space-y-4">
         <NeonHeading as="h2" color="blue" className="text-2xl">
-          Add a bee
+          {t('hive.addHeading')}
         </NeonHeading>
         <Card>
           <PlayerSearch
-            label="Find a player on ScoreSaber"
-            actionLabel="Add"
-            actionName={(player) => `Add ${player.name} to my hive`}
+            label={t('hive.searchLabel')}
+            actionLabel={t('hive.add')}
+            actionName={(player) => t('hive.addFor', { name: player.name })}
             pendingId={add.isPending ? add.variables : undefined}
             onPick={(player) =>
               add.mutate(player.id, {
                 onSuccess: () =>
-                  setNotice(`${player.name} was added to your hive.`),
+                  setNotice(t('hive.added', { name: player.name })),
               })
             }
             disabledReason={(player) => {
-              if (player.id === me.data?.player?.id) return 'That is you';
-              if (memberIds.has(player.id)) return 'In your hive';
+              if (player.id === me.data?.player?.id) return t('hive.isYou');
+              if (memberIds.has(player.id)) return t('hive.inHive');
 
               return undefined;
             }}

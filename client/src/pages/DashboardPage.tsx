@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
 import { isSyncing, useHive, useNews } from '@/api/queries.ts';
@@ -17,38 +18,48 @@ import { usePageTitle } from '@/lib/usePageTitle.ts';
 import type { HiveMember, NewsItem } from '@/api/queries.ts';
 
 /** "A bee went past your score", one card per event */
-const NewsCard = ({ item }: { item: NewsItem }) => (
-  <Card className="space-y-3">
-    <p className="flex flex-wrap items-center gap-2 text-sm text-slate-300">
-      <Avatar src={item.player.avatarUrl} size={28} />
-      <Link
-        to={`/hive/${item.player.id}`}
-        className="text-neon-yellow-core font-semibold hover:underline"
-      >
-        {item.player.name}
-      </Link>
-      beat your score
-      <TimeAgo date={item.event.playedAt} className="text-slate-400" />
-    </p>
-    <Song leaderboard={item.leaderboard} />
-    <p className="text-sm">
-      <span className="text-slate-400">Theirs </span>
-      <span className="font-semibold text-slate-100">
-        {formatScore(item.theirScore)}
-      </span>
-      <span className="text-slate-400"> · yours </span>
-      <span className="font-semibold text-slate-100">
-        {formatScore(item.myScore)}
-      </span>
-      <span className="text-neon-red-core ml-2 font-semibold">
-        {formatDelta(item.myScore - item.theirScore)}
-      </span>
-    </p>
-  </Card>
-);
+const NewsCard = ({ item }: { item: NewsItem }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Card className="space-y-3">
+      <p className="flex flex-wrap items-center gap-2 text-sm text-slate-300">
+        <Avatar src={item.player.avatarUrl} size={28} />
+        <Trans
+          i18nKey="dashboard.beatYourScore"
+          values={{ name: item.player.name }}
+          components={{
+            player: (
+              <Link
+                to={`/hive/${item.player.id}`}
+                className="text-neon-yellow-core font-semibold hover:underline"
+              />
+            ),
+          }}
+        />
+        <TimeAgo date={item.event.playedAt} className="text-slate-400" />
+      </p>
+      <Song leaderboard={item.leaderboard} />
+      <p className="text-sm">
+        <span className="text-slate-400">{t('dashboard.theirs')} </span>
+        <span className="font-semibold text-slate-100">
+          {formatScore(item.theirScore)}
+        </span>
+        <span className="text-slate-400"> · {t('dashboard.yours')} </span>
+        <span className="font-semibold text-slate-100">
+          {formatScore(item.myScore)}
+        </span>
+        <span className="text-neon-red-core ml-2 font-semibold">
+          {formatDelta(item.myScore - item.theirScore)}
+        </span>
+      </p>
+    </Card>
+  );
+};
 
 /** One bee with the head-to-head record as a bar: my wins against theirs */
 const RecordCard = ({ member }: { member: HiveMember }) => {
+  const { t } = useTranslation();
   const { losing, player, shared, winning } = member;
   const decided = winning + losing;
   const share = decided === 0 ? 50 : Math.round((winning / decided) * 100);
@@ -71,8 +82,8 @@ const RecordCard = ({ member }: { member: HiveMember }) => {
           </p>
           <p className="text-xs text-slate-400">
             {isSyncing(player)
-              ? 'Fetching scores…'
-              : `${shared} shared ${shared === 1 ? 'map' : 'maps'}`}
+              ? t('dashboard.fetching')
+              : t('dashboard.sharedMaps', { count: shared })}
           </p>
         </div>
       </div>
@@ -85,8 +96,12 @@ const RecordCard = ({ member }: { member: HiveMember }) => {
         <div className="bg-neon-blue h-full" style={{ width: `${share}%` }} />
       </div>
       <p className="mt-1 flex justify-between text-xs">
-        <span className="text-neon-blue-core">You lead on {winning}</span>
-        <span className="text-neon-red-core">They lead on {losing}</span>
+        <span className="text-neon-blue-core">
+          {t('dashboard.youLead', { number: winning })}
+        </span>
+        <span className="text-neon-red-core">
+          {t('dashboard.theyLead', { number: losing })}
+        </span>
       </p>
     </div>
   );
@@ -94,30 +109,28 @@ const RecordCard = ({ member }: { member: HiveMember }) => {
 
 /** The start page after signing in: what happened, and how you stand */
 const DashboardPage = () => {
+  const { t } = useTranslation();
   const news = useNews();
   const hive = useHive();
 
-  usePageTitle('Dashboard');
+  usePageTitle(t('dashboard.title'));
 
   return (
     <div className="space-y-10">
       {/* The page has two parts of equal weight. Its own title is only
           needed by those who navigate by headings. */}
-      <h1 className="sr-only">Dashboard</h1>
+      <h1 className="sr-only">{t('dashboard.title')}</h1>
 
       <section className="space-y-4">
         <NeonHeading as="h2" color="red" className="text-3xl">
-          News
+          {t('dashboard.news')}
         </NeonHeading>
         {news.isPending && <Spinner />}
         {news.isError && (
           <ErrorNote error={news.error} onRetry={() => void news.refetch()} />
         )}
         {news.data?.items.length === 0 && (
-          <EmptyState>
-            Nobody has beaten one of your scores lately. Enjoy it while it
-            lasts.
-          </EmptyState>
+          <EmptyState>{t('dashboard.noNews')}</EmptyState>
         )}
         <div className="grid gap-3 lg:grid-cols-2">
           {news.data?.items.map((item) => (
@@ -128,7 +141,7 @@ const DashboardPage = () => {
 
       <section className="space-y-4">
         <NeonHeading as="h2" color="blue" className="text-3xl">
-          Head to head
+          {t('dashboard.headToHead')}
         </NeonHeading>
         {hive.isPending && <Spinner />}
         {hive.isError && (
@@ -136,11 +149,17 @@ const DashboardPage = () => {
         )}
         {hive.data?.items.length === 0 && (
           <EmptyState>
-            Your hive is empty.{' '}
-            <Link to="/hive" className="text-neon-yellow-core underline">
-              Add a bee
-            </Link>{' '}
-            to compare scores.
+            <Trans
+              i18nKey="dashboard.emptyHive"
+              components={{
+                hive: (
+                  <Link
+                    to="/hive"
+                    className="text-neon-yellow-core underline"
+                  />
+                ),
+              }}
+            />
           </EmptyState>
         )}
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
