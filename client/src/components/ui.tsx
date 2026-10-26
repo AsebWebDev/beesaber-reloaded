@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { errorText } from '@/i18n/errors.ts';
-import { timeAgo } from '@/lib/format.ts';
+import { formatDateTime, timeAgo } from '@/lib/format.ts';
 
 import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
 
@@ -169,12 +169,7 @@ const Spinner = ({ label }: { label?: string }) => {
  * people who want to know.
  */
 const TimeAgo = ({ className, date }: { className?: string; date: string }) => (
-  <time
-    dateTime={date}
-    // In the visitor's own way of writing dates
-    title={new Date(date).toLocaleString()}
-    className={className}
-  >
+  <time dateTime={date} title={formatDateTime(date)} className={className}>
     {timeAgo(date)}
   </time>
 );

@@ -189,6 +189,12 @@ const en = {
     question: 'Delete your account for good? This cannot be undone.',
     text: 'Removes your BeeSaber account and your hive. Nothing changes on ScoreSaber.',
   },
+  // Numbers and times in running text (client/src/lib/format.ts)
+  format: {
+    now: 'now',
+    rank: 'Rank #{{rank}}',
+    unranked: 'Unranked',
+  },
   song: {
     byline: '{{author}} · mapped by {{mapper}}',
   },
