@@ -367,6 +367,25 @@ describe('deleting my account', () => {
     expect(screen.queryByTestId('landing-page')).not.toBeInTheDocument();
     expect(fakeApi.state().signedIn).toBe(true);
   });
+
+  it('goes back to the landing page when the session ended before deleting', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Delete account' })
+    );
+    // The session runs out, or is ended on another device, before the
+    // question is answered
+    fakeApi.set({ signedIn: false });
+    await user.click(
+      screen.getByRole('button', { name: 'Yes, delete my account' })
+    );
+
+    // Like any other request that finds no session, not "it still exists"
+    expect(await screen.findByTestId('landing-page')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 });
 
 describe('an unknown address', () => {
