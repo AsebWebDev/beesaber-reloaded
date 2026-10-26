@@ -7,7 +7,9 @@
  * the ending, with a `count`, and i18next picks the form the language needs.
  *
  * A tag like `<home>…</home>` marks where the app puts a link or another
- * element around part of a text. Never name one after an HTML element that
+ * element around part of a text; `<player/>` marks where it puts an element
+ * that brings its own content, like a player's name, which must never be part
+ * of the text itself. Never name one after an HTML element that
  * has no content, like `link`, `img` or `br`: i18next reads those as
  * empty and leaves the text outside of them.
  */
@@ -77,7 +79,7 @@ const en = {
     working: 'Working…',
   },
   dashboard: {
-    beatYourScore: '<player>{{name}}</player> beat your score',
+    beatYourScore: '<player/> beat your score <when/>',
     emptyHive: 'Your hive is empty. <hive>Add a bee</hive> to compare scores.',
     fetching: 'Fetching scores…',
     headToHead: 'Head to head',

@@ -74,7 +74,7 @@ const de: Translation = {
     working: 'Moment…',
   },
   dashboard: {
-    beatYourScore: '<player>{{name}}</player> hat deinen Score geschlagen',
+    beatYourScore: '<player/> hat <when/> deinen Score geschlagen',
     emptyHive:
       'Deine Hive ist leer. <hive>Füge eine Biene hinzu</hive>, um Scores zu vergleichen.',
     fetching: 'Scores werden abgerufen…',

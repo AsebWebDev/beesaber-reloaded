@@ -89,7 +89,7 @@ describe('the translations', () => {
 
   it('keep every placeholder of the English text', () => {
     const placeholders = (text: string) =>
-      [...text.matchAll(/{{(\w+)}}|<(\w+)>/g)]
+      [...text.matchAll(/{{(\w+)}}|<(\w+)\/?>/g)]
         .map(([, value, tag]) => value ?? tag)
         .sort();
     const english = new Map(flatten(en));

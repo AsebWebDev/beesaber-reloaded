@@ -2,6 +2,7 @@ import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 
+import { i18n } from '@/i18n/i18n.ts';
 import { fakeApi } from '@/testing/fakeApi.ts';
 import { renderApp } from '@/testing/renderApp.tsx';
 
@@ -1062,5 +1063,36 @@ describe('the language', () => {
       'lang',
       'en'
     );
+  });
+});
+
+describe('a player name that looks like markup', () => {
+  it.each(['<3 Bee', 'x</player>y', '<i>it</i>'])(
+    'shows %s as it is in the news',
+    async (name) => {
+      const news = fakeApi.news();
+
+      fakeApi.signedInAs({
+        news: [{ ...news, player: { ...news.player, name } }],
+      });
+      renderApp();
+
+      expect(await screen.findByRole('link', { name })).toHaveAttribute(
+        'href',
+        `/hive/${fakeApi.BEE.id}`
+      );
+    }
+  );
+
+  it('puts the time inside the German sentence', async () => {
+    await i18n.changeLanguage('de');
+    fakeApi.signedInAs({ news: [fakeApi.news()] });
+    renderApp();
+
+    const line = (
+      await screen.findByRole('link', { name: fakeApi.BEE.name })
+    ).closest('p')!;
+
+    expect(line).toHaveTextContent(/^buzz hat vor .+ deinen Score geschlagen$/);
   });
 });

@@ -25,19 +25,25 @@ const NewsCard = ({ item }: { item: NewsItem }) => {
     <Card className="space-y-3">
       <p className="flex flex-wrap items-center gap-2 text-sm text-slate-300">
         <Avatar src={item.player.avatarUrl} size={28} />
+        {/* The name is the link's own content, not part of the text.
+            Put into the text, a name like "<3 Bee" would be read as markup
+            and lost, since ScoreSaber names are free text. */}
         <Trans
           i18nKey="dashboard.beatYourScore"
-          values={{ name: item.player.name }}
           components={{
             player: (
               <Link
                 to={`/hive/${item.player.id}`}
                 className="text-neon-yellow-core font-semibold hover:underline"
-              />
+              >
+                {item.player.name}
+              </Link>
+            ),
+            when: (
+              <TimeAgo date={item.event.playedAt} className="text-slate-400" />
             ),
           }}
         />
-        <TimeAgo date={item.event.playedAt} className="text-slate-400" />
       </p>
       <Song leaderboard={item.leaderboard} />
       <p className="text-sm">
