@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useLinkProfile, useMe } from '@/api/queries.ts';
 import { useSignOut } from '@/auth/useSignOut.ts';
@@ -9,12 +10,13 @@ import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 /** After the first sign-in: which ScoreSaber profile is yours? */
 const OnboardingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
+  const { t } = useTranslation();
   const main = useRef<HTMLElement>(null);
   const link = useLinkProfile();
   const me = useMe();
   const logout = useSignOut();
 
-  usePageTitle('Pick your profile');
+  usePageTitle(t('onboarding.title'));
   useFocusOnMount(main, takeFocus);
 
   return (
@@ -24,18 +26,17 @@ const OnboardingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
       className="mx-auto max-w-2xl space-y-6 px-6 py-16 outline-none"
     >
       <NeonHeading color="yellow" className="text-4xl">
-        Which player are you?
+        {t('onboarding.heading')}
       </NeonHeading>
-      <p className="text-slate-300">
-        BeeSaber compares scores from ScoreSaber. Find your profile there, and
-        we fetch your scores. You can change this later on your profile page.
-      </p>
+      <p className="text-slate-300">{t('onboarding.intro')}</p>
 
       <Card>
         <PlayerSearch
-          label="Your name on ScoreSaber"
-          actionLabel="This is me"
-          actionName={(player) => `This is me: ${player.name}`}
+          label={t('pickProfile.searchLabel')}
+          actionLabel={t('pickProfile.action')}
+          actionName={(player) =>
+            t('pickProfile.actionFor', { name: player.name })
+          }
           pendingId={link.isPending ? link.variables : undefined}
           onPick={(player) => link.mutate(player.id)}
         />
@@ -44,13 +45,17 @@ const OnboardingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
       {link.isError && <ErrorNote error={link.error} />}
 
       <div className="flex flex-wrap items-center gap-3 text-sm text-slate-400">
-        {me.data != null && <span>Signed in as {me.data.user.email}.</span>}
+        {me.data != null && (
+          <span>
+            {t('onboarding.signedInAs', { email: me.data.user.email })}
+          </span>
+        )}
         <Button
           look="ghost"
           disabled={logout.isPending}
           onClick={() => logout.mutate()}
         >
-          Sign out
+          {t('common.signOut')}
         </Button>
       </div>
       {logout.isError && <ErrorNote error={logout.error} />}

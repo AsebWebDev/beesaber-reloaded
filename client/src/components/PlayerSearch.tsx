@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { usePlayerSearch } from '@/api/queries.ts';
 import { countryFlag, formatRank } from '@/lib/format.ts';
@@ -37,6 +38,7 @@ const PlayerSearch = ({
   onPick,
   pendingId,
 }: Props) => {
+  const { t } = useTranslation();
   const inputId = useId();
   const hintId = useId();
   const input = useRef<HTMLInputElement>(null);
@@ -76,14 +78,14 @@ const PlayerSearch = ({
         type="search"
         value={text}
         onChange={(event) => setText(event.target.value)}
-        placeholder="Player name"
+        placeholder={t('playerSearch.placeholder')}
         autoComplete="off"
         aria-describedby={hintId}
         className="border-night-control bg-night focus:border-neon-blue w-full rounded border px-3 py-2 text-slate-100 placeholder:text-slate-400"
       />
       {/* Not in the placeholder, which is gone as soon as someone types */}
       <p id={hintId} className="text-xs text-slate-400">
-        Type at least {MIN_LENGTH} characters.
+        {t('playerSearch.hint', { count: MIN_LENGTH })}
       </p>
 
       {/* Always there, so that a change of its text is read out. Results
@@ -92,13 +94,15 @@ const PlayerSearch = ({
         {name.length < MIN_LENGTH || search.isFetching || found === undefined
           ? ''
           : found === 0
-            ? `No player called “${name}” found.`
-            : `${found} ${found === 1 ? 'player' : 'players'} found.`}
+            ? t('playerSearch.nobody', { name })
+            : t('playerSearch.found', { count: found })}
       </p>
 
-      {search.isFetching && <Spinner label="Searching" />}
+      {search.isFetching && <Spinner label={t('playerSearch.searching')} />}
       {search.isError && <ErrorNote error={search.error} />}
-      {found === 0 && <EmptyState>No player called “{name}” found.</EmptyState>}
+      {found === 0 && (
+        <EmptyState>{t('playerSearch.nobody', { name })}</EmptyState>
+      )}
 
       <ul className="space-y-2">
         {search.data?.items.map((player) => {
@@ -124,7 +128,9 @@ const PlayerSearch = ({
                   onClick={() => onPick(player)}
                   aria-label={actionName(player)}
                 >
-                  {pendingId === player.id ? 'Working…' : actionLabel}
+                  {pendingId === player.id
+                    ? t('playerSearch.working')
+                    : actionLabel}
                 </Button>
               ) : (
                 <span className="text-sm text-slate-400">{reason}</span>
