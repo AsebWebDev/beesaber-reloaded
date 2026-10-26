@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { timeAgo } from '@/lib/format.ts';
 
@@ -147,16 +148,20 @@ const Avatar = ({ size = 40, src }: { size?: number; src: string }) => (
   />
 );
 
-const Spinner = ({ label = 'Loading' }: { label?: string }) => (
-  <div
-    role="status"
-    className="flex items-center gap-3 py-6 text-sm text-slate-400"
-  >
-    {/* Stands still for people who asked their system for less motion */}
-    <span className="border-neon-yellow size-4 rounded-full border-2 border-t-transparent motion-safe:animate-spin" />
-    {label}…
-  </div>
-);
+const Spinner = ({ label }: { label?: string }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div
+      role="status"
+      className="flex items-center gap-3 py-6 text-sm text-slate-400"
+    >
+      {/* Stands still for people who asked their system for less motion */}
+      <span className="border-neon-yellow size-4 rounded-full border-2 border-t-transparent motion-safe:animate-spin" />
+      {label ?? t('common.loading')}…
+    </div>
+  );
+};
 
 /**
  * "3 days ago", with the exact moment for machines and, on hover, for
