@@ -635,7 +635,7 @@ describe('signing in', () => {
     );
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Google did not answer'
+      'Sign-in with Google failed.'
     );
     expect(screen.getByTestId('landing-page')).toBeInTheDocument();
   });
@@ -659,7 +659,7 @@ describe('signing in', () => {
     await user.click(await screen.findByRole('button', { name: 'Dev Login' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Email and password sign up is not enabled'
+      'Signing in with the test account failed.'
     );
     expect(screen.getByTestId('landing-page')).toBeInTheDocument();
   });

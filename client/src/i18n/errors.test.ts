@@ -28,19 +28,30 @@ describe('errorText', () => {
     ).toBe('A hive can have at most 50 bees.');
   });
 
-  it('shows the server message for a code it has no text for', () => {
+  it('never shows the English message of a code it has no text for', () => {
     expect(errorText(new ApiError(418, 'teapot', 'I am a teapot'), t)).toBe(
-      'I am a teapot'
+      'Something went wrong'
+    );
+    // A proxy's HTML error page has no code at all
+    expect(
+      errorText(new ApiError(502, 'unknown', 'Something went wrong'), t)
+    ).toBe('The server is having trouble. Please try again later.');
+  });
+
+  it('says it in German, too, for a code it has no text for', async () => {
+    await i18n.changeLanguage('de');
+
+    expect(errorText(new ApiError(418, 'teapot', 'I am a teapot'), t)).toBe(
+      'Etwas ist schiefgelaufen'
     );
   });
 
-  it('names a failure in the browser by its key, with what another service said', () => {
-    expect(errorText(new LocalizedError('signOutFailed'), t)).toBe(
-      'Signing out failed. You are still signed in, please try again.'
-    );
-    expect(
-      errorText(new LocalizedError('googleFailed', 'Google did not answer'), t)
-    ).toBe('Sign-in with Google failed. Google did not answer');
+  it('names a failure in the browser by its key, without what another service said', () => {
+    const failed = new LocalizedError('googleFailed', 'Google did not answer');
+
+    expect(errorText(failed, t)).toBe('Sign-in with Google failed.');
+    // Still there for whoever reads the console
+    expect(failed.message).toContain('Google did not answer');
   });
 
   it('says the server could not be reached when no answer came at all', () => {
@@ -50,7 +61,7 @@ describe('errorText', () => {
   });
 
   it('still says something for anything else', () => {
-    expect(errorText(new Error('Boom'), t)).toBe('Boom');
+    expect(errorText(new Error('Boom'), t)).toBe('Something went wrong');
     expect(errorText('not even an error', t)).toBe('Something went wrong');
   });
 });

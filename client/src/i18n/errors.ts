@@ -22,7 +22,9 @@ const isKnownCode = (code: string): code is ApiErrorCode =>
 
 /**
  * A failure in the browser, named by the key of its text. `detail` is what
- * another service said about it, shown after the text as it came.
+ * another service said about it. It is kept in the message, for whoever looks
+ * at the console, but not shown: it is English whatever the language, and
+ * rarely means anything to a visitor.
  */
 class LocalizedError extends Error {
   readonly detail: string | undefined;
@@ -36,25 +38,29 @@ class LocalizedError extends Error {
   }
 }
 
-/** The text that tells the visitor what went wrong */
+/**
+ * The text that tells the visitor what went wrong. Always one of the app's
+ * own texts, in the visitor's language: never the English of a server
+ * message, a library or the browser.
+ */
 const errorText = (error: unknown, t: TFunction): string => {
-  if (error instanceof LocalizedError) {
-    const text = t(`errors.local.${error.key}`);
+  if (error instanceof LocalizedError) return t(`errors.local.${error.key}`);
 
-    return error.detail === undefined ? text : `${text} ${error.detail}`;
+  if (error instanceof ApiError) {
+    if (isKnownCode(error.code))
+      return t(`errors.api.${error.code}`, { ...error.details });
+
+    // A code this version does not know yet, or an answer that was not our
+    // API's at all, like the HTML error page of a proxy in front of it
+    return error.status >= 500
+      ? t('errors.api.internal_error')
+      : t('common.somethingWentWrong');
   }
-
-  if (error instanceof ApiError)
-    return isKnownCode(error.code)
-      ? t(`errors.api.${error.code}`, { ...error.details })
-      : error.message;
 
   // What fetch throws when no answer comes at all: no network, or the
   // server is down. The browser's own words for it ("Failed to fetch")
   // help nobody.
   if (error instanceof TypeError) return t('errors.network');
-
-  if (error instanceof Error) return error.message;
 
   return t('common.somethingWentWrong');
 };
