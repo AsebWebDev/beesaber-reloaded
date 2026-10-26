@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { difficultyName } from '@/lib/format.ts';
 
 import { Picture } from './ui.tsx';
@@ -21,19 +23,26 @@ const DifficultyBadge = ({ difficulty }: { difficulty: number }) => (
 );
 
 /** Cover, title and difficulty of a map, as one table cell's content */
-const Song = ({ leaderboard }: { leaderboard: Leaderboard }) => (
-  <div className="flex min-w-0 items-center gap-3">
-    <Picture src={leaderboard.coverUrl} size={44} className="rounded" />
-    <div className="min-w-0">
-      <p className="truncate font-medium text-slate-100">
-        {leaderboard.songName}
-      </p>
-      <p className="truncate text-xs text-slate-400">
-        {leaderboard.songAuthorName} · mapped by {leaderboard.levelAuthorName}
-      </p>
+const Song = ({ leaderboard }: { leaderboard: Leaderboard }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex min-w-0 items-center gap-3">
+      <Picture src={leaderboard.coverUrl} size={44} className="rounded" />
+      <div className="min-w-0">
+        <p className="truncate font-medium text-slate-100">
+          {leaderboard.songName}
+        </p>
+        <p className="truncate text-xs text-slate-400">
+          {t('song.byline', {
+            author: leaderboard.songAuthorName,
+            mapper: leaderboard.levelAuthorName,
+          })}
+        </p>
+      </div>
+      <DifficultyBadge difficulty={leaderboard.difficulty} />
     </div>
-    <DifficultyBadge difficulty={leaderboard.difficulty} />
-  </div>
-);
+  );
+};
 
 export { DifficultyBadge, Song };

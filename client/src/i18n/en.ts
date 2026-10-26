@@ -144,6 +144,54 @@ const en = {
     thisBee: 'this bee',
     title: 'Comparison',
   },
+  profile: {
+    change: 'Change profile',
+    changed: 'You now compare as {{name}}.',
+    changeIntro:
+      'Pick the ScoreSaber profile you want to compare as. Your hive stays as it is; the scores of the new profile are fetched.',
+    current: 'Your current profile',
+    keep: 'Keep this profile',
+    stats:
+      '{{rank}} · #{{countryRank}} in {{country}} · {{pp}} pp · {{played}} maps played',
+    title: 'My profile',
+  },
+  scores: {
+    columns: {
+      accuracy: 'Accuracy',
+      map: 'Map',
+      played: 'Played',
+      rank: 'Rank',
+      score: 'Score',
+    },
+    empty: 'No scores yet.',
+    filterLabel: 'Filter songs',
+    filterPlaceholder: 'Song or artist',
+    listed_one: '{{count}} score in this list.',
+    listed_other: '{{count}} scores in this list.',
+    listedPaged_one:
+      '{{count}} score in this list, page {{page}} of {{total}}.',
+    listedPaged_other:
+      '{{count}} scores in this list, page {{page}} of {{total}}.',
+    loading: 'Loading scores',
+    noMatch: 'No song matches “{{search}}”.',
+    sort: {
+      label: 'Sort by',
+      recent: 'Latest',
+      top: 'Highest score',
+    },
+    tableName: 'My scores',
+  },
+  deleteAccount: {
+    confirm: 'Yes, delete my account',
+    heading: 'Delete account',
+    keep: 'Keep my account',
+    open: 'Delete account',
+    question: 'Delete your account for good? This cannot be undone.',
+    text: 'Removes your BeeSaber account and your hive. Nothing changes on ScoreSaber.',
+  },
+  song: {
+    byline: '{{author}} · mapped by {{mapper}}',
+  },
   pagination: {
     label: 'Pages',
     next: 'Next',

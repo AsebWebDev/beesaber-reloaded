@@ -1,4 +1,5 @@
 import { useId, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   isSyncing,
@@ -33,10 +34,10 @@ import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 import type { Player, ScoreSort } from '@/api/queries.ts';
 
-const SORTS: { label: string; value: ScoreSort }[] = [
-  { value: 'recent', label: 'Latest' },
-  { value: 'top', label: 'Highest score' },
-];
+const SORTS = [
+  { value: 'recent', label: 'scores.sort.recent' },
+  { value: 'top', label: 'scores.sort.top' },
+] as const satisfies { label: string; value: ScoreSort }[];
 
 /** A player's scores as a table that can be searched, sorted and paged */
 const ScoreList = ({
@@ -47,6 +48,7 @@ const ScoreList = ({
   /** True while the server fetches this player's scores from ScoreSaber */
   syncing: boolean;
 }) => {
+  const { t } = useTranslation();
   const searchId = useId();
   const [sort, setSort] = useState<ScoreSort>('recent');
   const [text, setText] = useState('');
@@ -90,18 +92,22 @@ const ScoreList = ({
       <div className="flex flex-wrap items-end gap-4">
         <div className="min-w-48 flex-1">
           <label htmlFor={searchId} className="block text-sm text-slate-300">
-            Filter songs
+            {t('scores.filterLabel')}
           </label>
           <input
             id={searchId}
             type="search"
             value={text}
             onChange={(event) => setText(event.target.value)}
-            placeholder="Song or artist"
+            placeholder={t('scores.filterPlaceholder')}
             className="border-night-control bg-night focus:border-neon-blue mt-1 w-full rounded border px-3 py-2 text-slate-100 placeholder:text-slate-400"
           />
         </div>
-        <div role="group" aria-label="Sort by" className="flex gap-2">
+        <div
+          role="group"
+          aria-label={t('scores.sort.label')}
+          className="flex gap-2"
+        >
           {SORTS.map(({ label, value }) => (
             <button
               key={value}
@@ -114,7 +120,7 @@ const ScoreList = ({
                   : 'border-night-control text-slate-300 hover:border-slate-300'
               }`}
             >
-              {label}
+              {t(label)}
             </button>
           ))}
         </div>
@@ -125,19 +131,19 @@ const ScoreList = ({
       )}
       {!loading && !scores.isError && items.length === 0 && (
         <EmptyState>
-          {search === '' ? 'No scores yet.' : `No song matches “${search}”.`}
+          {search === '' ? t('scores.empty') : t('scores.noMatch', { search })}
         </EmptyState>
       )}
       {/* Always there, so that a change of its text is read out: first
           that the list is loading, then what has arrived */}
       <p role="status" className="sr-only">
         {loading
-          ? 'Loading scores'
+          ? t('scores.loading')
           : total === undefined
             ? ''
-            : `${total} ${total === 1 ? 'score' : 'scores'} in this list${
-                lastPage > 1 ? `, page ${page} of ${lastPage}` : ''
-              }.`}
+            : lastPage > 1
+              ? t('scores.listedPaged', { count: total, page, total: lastPage })
+              : t('scores.listed', { count: total })}
       </p>
 
       {(loading || items.length > 0) && (
@@ -145,7 +151,7 @@ const ScoreList = ({
         // has to be reachable with the keyboard, or its right half is not.
         <div
           role="region"
-          aria-label="My scores"
+          aria-label={t('scores.tableName')}
           tabIndex={0}
           className="overflow-x-auto"
         >
@@ -157,7 +163,7 @@ const ScoreList = ({
             // since a browser may forget once CSS changes how they are laid out.
             className="w-full text-left text-sm max-sm:block sm:min-w-[40rem]"
           >
-            <caption className="sr-only">My scores</caption>
+            <caption className="sr-only">{t('scores.tableName')}</caption>
             <thead
               role="rowgroup"
               className="text-neon-yellow-core text-xs tracking-wider uppercase max-sm:sr-only"
@@ -168,35 +174,35 @@ const ScoreList = ({
                   scope="col"
                   className="px-2 py-2 font-semibold"
                 >
-                  Map
+                  {t('scores.columns.map')}
                 </th>
                 <th
                   role="columnheader"
                   scope="col"
                   className="px-2 py-2 text-right font-semibold"
                 >
-                  Score
+                  {t('scores.columns.score')}
                 </th>
                 <th
                   role="columnheader"
                   scope="col"
                   className="px-2 py-2 text-right font-semibold"
                 >
-                  Accuracy
+                  {t('scores.columns.accuracy')}
                 </th>
                 <th
                   role="columnheader"
                   scope="col"
                   className="px-2 py-2 text-right font-semibold"
                 >
-                  Rank
+                  {t('scores.columns.rank')}
                 </th>
                 <th
                   role="columnheader"
                   scope="col"
                   className="px-2 py-2 text-right font-semibold"
                 >
-                  Played
+                  {t('scores.columns.played')}
                 </th>
               </tr>
             </thead>
@@ -219,27 +225,28 @@ const ScoreList = ({
                       role="cell"
                       className="px-2 py-2 text-right font-semibold tabular-nums max-sm:flex-1 max-sm:pt-0 max-sm:text-left"
                     >
-                      <CellLabel>Score</CellLabel>
+                      <CellLabel>{t('scores.columns.score')}</CellLabel>
                       {formatScore(score.modifiedScore)}
                     </td>
                     <td
                       role="cell"
                       className="px-2 py-2 text-right tabular-nums max-sm:flex-1 max-sm:pt-0 max-sm:text-left"
                     >
-                      <CellLabel>Accuracy</CellLabel>
+                      <CellLabel>{t('scores.columns.accuracy')}</CellLabel>
                       {formatAccuracy(score.accuracy)}
                     </td>
                     <td
                       role="cell"
                       className="px-2 py-2 text-right tabular-nums max-sm:flex-1 max-sm:pt-0 max-sm:text-left"
                     >
-                      <CellLabel>Rank</CellLabel>#{score.rank}
+                      <CellLabel>{t('scores.columns.rank')}</CellLabel>#
+                      {score.rank}
                     </td>
                     <td
                       role="cell"
                       className="px-2 py-2 text-right whitespace-nowrap text-slate-400 max-sm:flex-1 max-sm:pt-0 max-sm:text-left"
                     >
-                      <CellLabel>Played</CellLabel>
+                      <CellLabel>{t('scores.columns.played')}</CellLabel>
                       <TimeAgo date={score.playedAt} />
                     </td>
                   </tr>
@@ -259,6 +266,7 @@ const ScoreList = ({
  * the question, the button that deletes appears with it.
  */
 const DeleteAccount = () => {
+  const { t } = useTranslation();
   const remove = useDeleteAccount();
   const [asking, setAsking] = useState(false);
 
@@ -266,11 +274,10 @@ const DeleteAccount = () => {
     <Card className="space-y-3">
       <div className="flex flex-wrap items-center gap-4">
         <div className="min-w-48 flex-1">
-          <h2 className="font-semibold text-slate-100">Delete account</h2>
-          <p className="text-sm text-slate-400">
-            Removes your BeeSaber account and your hive. Nothing changes on
-            ScoreSaber.
-          </p>
+          <h2 className="font-semibold text-slate-100">
+            {t('deleteAccount.heading')}
+          </h2>
+          <p className="text-sm text-slate-400">{t('deleteAccount.text')}</p>
         </div>
         <Button
           look="ghost"
@@ -278,21 +285,21 @@ const DeleteAccount = () => {
           disabled={remove.isPending}
           onClick={() => setAsking(!asking)}
         >
-          {asking ? 'Keep my account' : 'Delete account'}
+          {asking ? t('deleteAccount.keep') : t('deleteAccount.open')}
         </Button>
       </div>
 
       {asking && (
         <div className="border-night-line flex flex-wrap items-center gap-4 border-t pt-3">
           <p className="min-w-48 flex-1 text-sm text-slate-300">
-            Delete your account for good? This cannot be undone.
+            {t('deleteAccount.question')}
           </p>
           <Button
             look="danger"
             disabled={remove.isPending}
             onClick={() => remove.mutate()}
           >
-            Yes, delete my account
+            {t('deleteAccount.confirm')}
           </Button>
         </div>
       )}
@@ -303,13 +310,14 @@ const DeleteAccount = () => {
 
 /** My ScoreSaber profile and my scores */
 const ProfilePage = ({ player }: { player: Player }) => {
+  const { t } = useTranslation();
   const link = useLinkProfile();
   const [changing, setChanging] = useState(false);
   const changeButton = useRef<HTMLButtonElement>(null);
   // What just happened, for people who do not see the page change
   const [notice, setNotice] = useState('');
 
-  usePageTitle('My profile');
+  usePageTitle(t('profile.title'));
 
   return (
     <div className="space-y-6">
@@ -320,10 +328,14 @@ const ProfilePage = ({ player }: { player: Player }) => {
             {player.name}
           </NeonHeading>
           <p className="text-sm text-slate-400">
-            {countryFlag(player.country)} {formatRank(player.rank)} · #
-            {player.countryRank} in {player.country} ·{' '}
-            {formatScore(Math.round(player.totalPp))} pp · {player.totalPlayed}{' '}
-            maps played
+            {countryFlag(player.country)}{' '}
+            {t('profile.stats', {
+              rank: formatRank(player.rank),
+              countryRank: player.countryRank,
+              country: player.country,
+              pp: formatScore(Math.round(player.totalPp)),
+              played: player.totalPlayed,
+            })}
           </p>
         </div>
         <Button
@@ -333,7 +345,7 @@ const ProfilePage = ({ player }: { player: Player }) => {
           aria-expanded={changing}
           onClick={() => setChanging(!changing)}
         >
-          {changing ? 'Keep this profile' : 'Change profile'}
+          {changing ? t('profile.keep') : t('profile.change')}
         </Button>
       </Card>
       <p role="status" className="sr-only">
@@ -342,27 +354,26 @@ const ProfilePage = ({ player }: { player: Player }) => {
 
       {changing && (
         <Card className="space-y-3">
-          <p className="text-sm text-slate-300">
-            Pick the ScoreSaber profile you want to compare as. Your hive stays
-            as it is; the scores of the new profile are fetched.
-          </p>
+          <p className="text-sm text-slate-300">{t('profile.changeIntro')}</p>
           <PlayerSearch
-            label="Your name on ScoreSaber"
-            actionLabel="This is me"
-            actionName={(found) => `This is me: ${found.name}`}
+            label={t('pickProfile.searchLabel')}
+            actionLabel={t('pickProfile.action')}
+            actionName={(found) =>
+              t('pickProfile.actionFor', { name: found.name })
+            }
             pendingId={link.isPending ? link.variables : undefined}
             onPick={(found) =>
               link.mutate(found.id, {
                 onSuccess: () => {
                   setChanging(false);
-                  setNotice(`You now compare as ${found.name}.`);
+                  setNotice(t('profile.changed', { name: found.name }));
                   // The picker closes, and the focus with it
                   changeButton.current?.focus();
                 },
               })
             }
             disabledReason={(found) =>
-              found.id === player.id ? 'Your current profile' : undefined
+              found.id === player.id ? t('profile.current') : undefined
             }
           />
           {link.isError && <ErrorNote error={link.error} />}
