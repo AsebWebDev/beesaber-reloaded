@@ -209,25 +209,31 @@ const ErrorNote = ({
 }: {
   error: unknown;
   onRetry?: () => void;
-}) => (
-  <div
-    role="alert"
-    className="border-neon-red/60 text-neon-red-core flex flex-wrap items-center justify-between gap-3 rounded border bg-red-950/40 px-3 py-2 text-sm"
-  >
-    <span>
-      {error instanceof Error ? error.message : 'Something went wrong'}
-    </span>
-    {onRetry !== undefined && (
-      <button
-        type="button"
-        onClick={onRetry}
-        className="cursor-pointer font-semibold underline"
-      >
-        Try again
-      </button>
-    )}
-  </div>
-);
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <div
+      role="alert"
+      className="border-neon-red/60 text-neon-red-core flex flex-wrap items-center justify-between gap-3 rounded border bg-red-950/40 px-3 py-2 text-sm"
+    >
+      <span>
+        {error instanceof Error
+          ? error.message
+          : t('common.somethingWentWrong')}
+      </span>
+      {onRetry !== undefined && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="cursor-pointer font-semibold underline"
+        >
+          {t('common.tryAgain')}
+        </button>
+      )}
+    </div>
+  );
+};
 
 export {
   Avatar,

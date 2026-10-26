@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { Link, useRouteError } from 'react-router';
 
 import { useMe } from '@/api/queries.ts';
@@ -33,6 +34,7 @@ const LoadError = ({
   onRetry: () => void;
   takeFocus: boolean;
 }) => {
+  const { t } = useTranslation();
   const logout = useSignOut();
   const main = useRef<HTMLElement>(null);
 
@@ -51,7 +53,7 @@ const LoadError = ({
         disabled={logout.isPending}
         onClick={() => logout.mutate()}
       >
-        Sign out
+        {t('common.signOut')}
       </Button>
     </main>
   );
@@ -121,14 +123,18 @@ const Profile = () => {
 };
 
 const NotFound = () => {
-  usePageTitle('Page not found');
+  const { t } = useTranslation();
+
+  usePageTitle(t('notFound.title'));
 
   return (
     <EmptyState>
-      There is nothing at this address.{' '}
-      <Link to="/" className="text-neon-yellow-core underline">
-        Back to the dashboard
-      </Link>
+      <Trans
+        i18nKey="notFound.text"
+        components={{
+          home: <Link to="/" className="text-neon-yellow-core underline" />,
+        }}
+      />
     </EmptyState>
   );
 };
@@ -143,9 +149,10 @@ const NotFound = () => {
  * broken the rest of the app with it.
  */
 const Crash = () => {
+  const { t } = useTranslation();
   const error = useRouteError();
 
-  usePageTitle('Something went wrong');
+  usePageTitle(t('crash.title'));
   // The details are for whoever opens the console, not for the visitor
   useEffect(() => {
     console.error(error);
@@ -154,19 +161,19 @@ const Crash = () => {
   return (
     <main className="mx-auto max-w-md space-y-6 px-6 py-16 text-center">
       <NeonHeading color="red" className="text-4xl">
-        Something went wrong
+        {t('crash.title')}
       </NeonHeading>
-      <p className="text-slate-300">
-        This page could not be shown. Loading it again usually helps.
-      </p>
+      <p className="text-slate-300">{t('crash.text')}</p>
       <div className="flex flex-wrap justify-center gap-3">
-        <Button onClick={() => window.location.reload()}>Reload</Button>
+        <Button onClick={() => window.location.reload()}>
+          {t('crash.reload')}
+        </Button>
         {/* A plain link on purpose: it loads the app from scratch */}
         <a
           href="/"
           className="border-night-control rounded border px-4 py-2 text-sm font-semibold tracking-wider text-slate-300 uppercase hover:border-slate-300"
         >
-          Back to the start
+          {t('crash.backToStart')}
         </a>
       </div>
     </main>
