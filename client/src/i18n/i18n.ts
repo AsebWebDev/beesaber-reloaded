@@ -87,5 +87,12 @@ const setLanguage = async (language: Language) => {
   await i18n.changeLanguage(language);
 };
 
-export { browserLanguage, currentLanguage, i18n, LANGUAGES, setLanguage };
+export {
+  browserLanguage,
+  currentLanguage,
+  detectLanguage,
+  i18n,
+  LANGUAGES,
+  setLanguage,
+};
 export type { Language };

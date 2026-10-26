@@ -5,6 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useConfig } from '@/api/queries.ts';
 import { signInAsDev, signInWithGoogle } from '@/auth/authClient.ts';
 import { HexLogo } from '@/components/HexLogo.tsx';
+import { LanguageSwitch } from '@/components/LanguageSwitch.tsx';
 import { Button, ErrorNote, NeonHeading, Spinner } from '@/components/ui.tsx';
 import { useFocusOnMount } from '@/lib/useFocusOnMount.ts';
 import { usePageTitle } from '@/lib/usePageTitle.ts';
@@ -83,6 +84,9 @@ const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
       <NeonHeading as="p" color="yellow" className="text-xl">
         {t('landing.slogan')}
       </NeonHeading>
+
+      {/* Before signing in, too: the browser's language is a guess */}
+      <LanguageSwitch />
 
       {/* Every score and player comes from ScoreSaber, so it says so. The
           name plays on Beat Saber, so it says whose game that is. */}

@@ -995,3 +995,53 @@ describe('what an error says', () => {
     );
   });
 });
+
+describe('the language', () => {
+  it('switches the whole app on the profile page and keeps the choice', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    await screen.findByText('Monster');
+    await user.click(screen.getByRole('button', { name: 'Deutsch' }));
+
+    // The menu, the page and the numbers in it
+    expect(
+      await screen.findByRole('link', { name: 'Übersicht' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Sprache' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('900.000')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Deutsch' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+    expect(document.documentElement.lang).toBe('de');
+    expect(document.title).toBe('Mein Profil · BeeSaber');
+    expect(localStorage.getItem('beesaber.language')).toBe('de');
+  });
+
+  it('can be switched before signing in', async () => {
+    fakeApi.set({ signIn: { devLogin: false, google: true } });
+    const { user } = renderApp();
+
+    await user.click(await screen.findByRole('button', { name: 'Deutsch' }));
+
+    expect(
+      await screen.findByRole('button', { name: 'Mit Google anmelden' })
+    ).toBeInTheDocument();
+  });
+
+  it('names each language in that language, and marks it as such', async () => {
+    fakeApi.signedInAs();
+    renderApp('/profile');
+
+    expect(
+      await screen.findByRole('button', { name: 'Deutsch' })
+    ).toHaveAttribute('lang', 'de');
+    expect(screen.getByRole('button', { name: 'English' })).toHaveAttribute(
+      'lang',
+      'en'
+    );
+  });
+});

@@ -181,6 +181,10 @@ const en = {
     },
     tableName: 'My scores',
   },
+  language: {
+    heading: 'Language',
+    label: 'Language',
+  },
   deleteAccount: {
     confirm: 'Yes, delete my account',
     heading: 'Delete account',

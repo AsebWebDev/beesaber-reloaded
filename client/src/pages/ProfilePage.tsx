@@ -8,6 +8,7 @@ import {
   useScores,
 } from '@/api/queries.ts';
 import { useDeleteAccount } from '@/auth/useDeleteAccount.ts';
+import { LanguageSwitch } from '@/components/LanguageSwitch.tsx';
 import { Pagination } from '@/components/Pagination.tsx';
 import { PlayerSearch } from '@/components/PlayerSearch.tsx';
 import { SkeletonRows } from '@/components/SkeletonRows.tsx';
@@ -389,6 +390,13 @@ const ProfilePage = ({ player }: { player: Player }) => {
         playerId={player.id}
         syncing={isSyncing(player)}
       />
+
+      <Card className="flex flex-wrap items-center gap-4">
+        <h2 className="min-w-48 flex-1 font-semibold text-slate-100">
+          {t('language.heading')}
+        </h2>
+        <LanguageSwitch />
+      </Card>
 
       <DeleteAccount />
     </div>

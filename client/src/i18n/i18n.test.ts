@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { browserLanguage, i18n } from './i18n.ts';
+import { browserLanguage, detectLanguage, i18n } from './i18n.ts';
 
 describe('browserLanguage', () => {
   it('takes the first of the browser languages the app has', () => {
@@ -17,6 +17,21 @@ describe('browserLanguage', () => {
   it('finds nothing when the app has none of them', () => {
     expect(browserLanguage(['fr', 'ja'])).toBeUndefined();
     expect(browserLanguage([])).toBeUndefined();
+  });
+});
+
+describe('detectLanguage', () => {
+  it('prefers the language picked in this browser over the browser language', () => {
+    localStorage.setItem('beesaber.language', 'de');
+
+    expect(detectLanguage()).toBe('de');
+  });
+
+  it('ignores a stored value that is not a language the app has', () => {
+    localStorage.setItem('beesaber.language', 'klingon');
+
+    // The test browser says English
+    expect(detectLanguage()).toBe('en');
   });
 });
 

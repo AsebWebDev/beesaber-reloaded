@@ -180,6 +180,10 @@ const de: Translation = {
     },
     tableName: 'Meine Scores',
   },
+  language: {
+    heading: 'Sprache',
+    label: 'Sprache',
+  },
   deleteAccount: {
     confirm: 'Ja, mein Konto löschen',
     heading: 'Konto löschen',
