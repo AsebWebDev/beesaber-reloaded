@@ -241,7 +241,7 @@ const ScoreList = ({
                       className="px-2 py-2 text-right tabular-nums max-sm:flex-1 max-sm:pt-0 max-sm:text-left"
                     >
                       <CellLabel>{t('scores.columns.rank')}</CellLabel>#
-                      {score.rank}
+                      {formatScore(score.rank)}
                     </td>
                     <td
                       role="cell"
