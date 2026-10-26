@@ -216,6 +216,7 @@ const de: Translation = {
       scoresaber_unavailable:
         'ScoreSaber ist gerade nicht erreichbar. Bitte versuch es später noch einmal.',
       unauthorized: 'Du bist nicht angemeldet.',
+      unknown_map: 'BeeSaber kennt diese Map nicht.',
       unknown_player: 'ScoreSaber kennt dieses Profil nicht.',
       validation_failed:
         'Die Anfrage wurde nicht angenommen. Bitte prüf deine Eingabe.',

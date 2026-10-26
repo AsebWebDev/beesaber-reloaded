@@ -82,6 +82,19 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
     return { queued, upToDate: playerIds.length - queued };
   };
 
+  /** How I and my bees stand on one map */
+  const mapRanking = async (me: Me, leaderboardId: number) => {
+    const ranking = await repository.mapRanking(me, leaderboardId);
+
+    if (ranking === undefined)
+      throw new AppError(
+        'unknown_map',
+        'Nobody tracked here has played this map'
+      );
+
+    return ranking;
+  };
+
   /** Whose scores are being fetched right now, out of me and my bees */
   const listSyncing = async (me: Me) =>
     (await repository.listSyncing(me)).flatMap(({ playerId, since }) =>
@@ -96,6 +109,7 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
     listMembers: repository.listMembers,
     listNews: repository.listNews,
     listSyncing,
+    mapRanking,
     removeMember,
     syncAll,
   };

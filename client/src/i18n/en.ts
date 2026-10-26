@@ -220,6 +220,7 @@ const en = {
       scoresaber_unavailable:
         'ScoreSaber cannot be reached right now. Please try again later.',
       unauthorized: 'You are not signed in.',
+      unknown_map: 'BeeSaber does not know this map.',
       unknown_player: 'ScoreSaber does not know this player.',
       validation_failed:
         'The request was not accepted. Please check what you entered.',

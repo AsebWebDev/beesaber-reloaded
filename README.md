@@ -271,6 +271,7 @@ other accounts may follow the same players.
 | `POST /hive`                     | Add a player to my hive                         |
 | `DELETE /hive/:playerId`         | Remove a player from my hive                    |
 | `GET /hive/:playerId/comparison` | Maps we both played, with both scores; `filter` |
+| `GET /hive/maps/:leaderboardId`  | Me and my bees on one map, best score first     |
 | `GET /hive/news`                 | Scores of bees that went past mine              |
 | `POST /hive/sync`                | Queue a fetch of new scores, mine and my bees'  |
 | `GET /hive/sync`                 | Whose scores are being fetched right now        |

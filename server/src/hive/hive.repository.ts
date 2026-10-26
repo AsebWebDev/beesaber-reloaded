@@ -130,6 +130,66 @@ const createHiveRepository = (db: Database) => {
       )
       .orderBy(asc(players.id));
 
+  /**
+   * One map, and how I and my bees stand on it: everyone of us who played
+   * it, best score first. Players with the same score share a place.
+   * Nothing when the map is unknown here, because nobody tracked has
+   * played it.
+   */
+  const mapRanking = async (
+    { playerId, userId }: Me,
+    leaderboardId: number
+  ) => {
+    const [leaderboard] = await db
+      .select()
+      .from(leaderboards)
+      .where(eq(leaderboards.id, leaderboardId));
+
+    if (leaderboard === undefined) return undefined;
+
+    const entries = await db
+      .select({
+        place:
+          sql<number>`rank() over (order by ${scores.modifiedScore} desc)`.mapWith(
+            Number
+          ),
+        isMe: sql<boolean>`${scores.playerId} = ${playerId}`,
+        player: {
+          id: players.id,
+          name: players.name,
+          avatarUrl: players.avatarUrl,
+          country: players.country,
+        },
+        score: {
+          modifiedScore: scores.modifiedScore,
+          accuracy: scores.accuracy,
+          fullCombo: scores.fullCombo,
+          playedAt: scores.playedAt,
+        },
+      })
+      .from(scores)
+      .innerJoin(players, eq(players.id, scores.playerId))
+      .where(
+        and(
+          eq(scores.leaderboardId, leaderboardId),
+          or(
+            eq(scores.playerId, playerId),
+            inArray(
+              scores.playerId,
+              db
+                .select({ memberId: hiveMembers.memberId })
+                .from(hiveMembers)
+                .where(eq(hiveMembers.userId, userId))
+            )
+          )
+        )
+      )
+      // On a tie, whoever got there first is listed first
+      .orderBy(desc(scores.modifiedScore), asc(scores.playedAt));
+
+    return { leaderboard, entries };
+  };
+
   /** Returns whether there was a member to remove */
   const removeMember = async (userId: string, memberId: string) => {
     const removed = await db
@@ -283,6 +343,7 @@ const createHiveRepository = (db: Database) => {
     listMembers,
     listNews,
     listSyncing,
+    mapRanking,
     removeMember,
   };
 };

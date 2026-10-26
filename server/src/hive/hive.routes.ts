@@ -65,6 +65,22 @@ const createHiveRoutes = (
       }
     )
 
+    // GET /api/hive/maps/1234: how I and my bees stand on one map
+    .get(
+      '/maps/:leaderboardId',
+      validate(
+        'param',
+        z.object({ leaderboardId: z.coerce.number().int().min(1) })
+      ),
+      async (c) =>
+        c.json(
+          await service.mapRanking(
+            requireMe(c.get('user')),
+            c.req.valid('param').leaderboardId
+          )
+        )
+    )
+
     // GET /api/hive/:playerId/comparison?filter=losing&page=1&limit=20
     .get(
       '/:playerId/comparison',

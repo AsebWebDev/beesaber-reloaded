@@ -439,3 +439,104 @@ describe('who can be in a hive', () => {
     ]);
   });
 });
+
+describe('GET /api/hive/maps/:leaderboardId', () => {
+  type Ranking = {
+    entries: {
+      isMe: boolean;
+      place: number;
+      player: { id: string };
+      score: { modifiedScore: number };
+    }[];
+    leaderboard: { id: number; songName: string };
+  };
+
+  const ranking = async (leaderboardId: number | string, as = api) =>
+    as(`/api/hive/maps/${leaderboardId}`);
+
+  it('lists me and my bees who played the map, best first', async () => {
+    await addToHive(BEE);
+
+    const response = await ranking(2);
+
+    expect(response.status).toBe(200);
+
+    const body: Ranking = await json(response);
+
+    expect(body.leaderboard).toMatchObject({ id: 2, songName: 'Song 2' });
+    expect(
+      body.entries.map(({ isMe, place, player, score }) => [
+        place,
+        player.id,
+        score.modifiedScore,
+        isMe,
+      ])
+    ).toEqual([
+      [1, BEE, 500, false],
+      [2, ME, 400, true],
+    ]);
+  });
+
+  it('leaves out bees who have not played it, and players of other hives', async () => {
+    const other = await createUser('other-user');
+
+    scoreSaber.setPlayer(STRANGER, 'stranger', [
+      { leaderboardId: 3, score: 999, playedAt: '2024-01-07T10:00:00.000Z' },
+    ]);
+    await linkProfile(STRANGER, other);
+    await addToHive(BEE);
+
+    // The bee has no score on 3, the stranger is in no hive of mine
+    const body: Ranking = await json(await ranking(3));
+
+    expect(body.entries.map(({ player }) => player.id)).toEqual([ME]);
+  });
+
+  it('gives the same place to the same score', async () => {
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 1, score: 900, playedAt: '2024-01-04T10:00:00.000Z' },
+    ]);
+    await addToHive(BEE);
+
+    const body: Ranking = await json(await ranking(1));
+
+    // I got there first, so I am listed first
+    expect(body.entries.map(({ place, player }) => [place, player.id])).toEqual(
+      [
+        [1, ME],
+        [1, BEE],
+      ]
+    );
+  });
+
+  it('shows a known map that nobody in my hive has played, empty', async () => {
+    // Leaderboard 4 is known from the bee, who is not in my hive
+    await sync(BEE);
+
+    const response = await ranking(4);
+
+    expect(response.status).toBe(200);
+    expect(await json(response)).toMatchObject({
+      leaderboard: { id: 4 },
+      entries: [],
+    });
+  });
+
+  it('answers 404 for a map nobody tracked here has played', async () => {
+    const response = await ranking(999_999);
+
+    expect(response.status).toBe(404);
+    expect(await json(response)).toMatchObject({
+      error: { code: 'unknown_map' },
+    });
+  });
+
+  it('rejects an id that is not a number', async () => {
+    const response = await ranking('abc');
+
+    expect(response.status).toBe(400);
+    expect(await json(response)).toMatchObject({
+      error: { code: 'validation_failed' },
+    });
+  });
+});
