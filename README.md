@@ -152,6 +152,33 @@ small fake built from real answers.
 - Exactly one instance of the server may run, see
   [Running in production](#running-in-production).
 
+## Languages
+
+The app speaks English and German, with
+[react-i18next](https://react.i18next.com/). It picks the language a visitor
+chose on the landing or profile page, kept in their browser; otherwise the
+first of their browser's languages it has; otherwise English.
+
+The texts live in `client/src/i18n/`, one TypeScript file per language.
+`en.ts` is the source: its keys are types, so `t('layout.dashbord')` is a
+compile error. Every other language has to have exactly the same keys, or
+the type check fails. Two tests add what types cannot see: a German text
+that is just the English one, and a placeholder like `{{name}}` that got
+lost in translation. The accessibility tests run every page in every
+language.
+
+- **A new text** goes into `en.ts` and `de.ts` under the same key, and into
+  the component as `t('the.key')`. Texts with a link inside are one text
+  with a tag around the linked words, rendered with `<Trans>`. Never name a
+  tag after an HTML element without content, like `link` or `br`.
+- **Numbers and times** go through `client/src/lib/format.ts`, which writes
+  them the way the current language does.
+- **Errors from the server** are shown by their code (`errors.api` in
+  `en.ts`); a new code in `server/src/http/errors.ts` needs a text there.
+- **A new language** is a new file typed as `Translation`, added to
+  `LANGUAGES` and `resources` in `i18n.ts` and to the names in
+  `LanguageSwitch.tsx`.
+
 ## Running in production
 
 The `Dockerfile` builds one image that holds the whole app: the API, the built

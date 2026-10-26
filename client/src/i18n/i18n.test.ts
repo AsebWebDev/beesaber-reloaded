@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { de } from './de.ts';
+import { en } from './en.ts';
 import { browserLanguage, detectLanguage, i18n } from './i18n.ts';
 
 describe('browserLanguage', () => {
@@ -55,5 +57,49 @@ describe('the German texts', () => {
     expect(i18n.t('dashboard.sharedMaps', { count: 22 })).toBe(
       '22 gemeinsame Maps'
     );
+  });
+});
+
+describe('the translations', () => {
+  type Texts = { [key: string]: string | Texts };
+
+  /** Every text with its full key, like "layout.sync.button" */
+  const flatten = (texts: Texts, prefix = ''): [string, string][] =>
+    Object.entries(texts).flatMap(([key, value]) =>
+      typeof value === 'string'
+        ? [[`${prefix}${key}`, value] as [string, string]]
+        : flatten(value, `${prefix}${key}.`)
+    );
+
+  it('translate every text, except words German uses as they are', () => {
+    const english = new Map(flatten(en));
+    const same = flatten(de)
+      .filter(([key, text]) => english.get(key) === text)
+      .map(([key]) => key);
+
+    // A text copied over from English to get past the type check shows up
+    // here. These few are the same word in both languages.
+    expect(same).toEqual([
+      'comparison.columns.map',
+      'comparison.filter.label',
+      'scores.columns.map',
+      'scores.columns.score',
+    ]);
+  });
+
+  it('keep every placeholder of the English text', () => {
+    const placeholders = (text: string) =>
+      [...text.matchAll(/{{(\w+)}}|<(\w+)>/g)]
+        .map(([, value, tag]) => value ?? tag)
+        .sort();
+    const english = new Map(flatten(en));
+    const differing = flatten(de)
+      .filter(
+        ([key, text]) =>
+          placeholders(text).join() !== placeholders(english.get(key)!).join()
+      )
+      .map(([key]) => key);
+
+    expect(differing).toEqual([]);
   });
 });
