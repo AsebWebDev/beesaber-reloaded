@@ -152,7 +152,7 @@ const en = {
   map: {
     columns: {
       accuracy: 'Accuracy',
-      gap: 'Behind the top',
+      gap: 'Behind',
       played: 'Played',
       player: 'Player',
       score: 'Score',

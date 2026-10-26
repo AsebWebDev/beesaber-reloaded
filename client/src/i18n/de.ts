@@ -147,7 +147,7 @@ const de: Translation = {
   map: {
     columns: {
       accuracy: 'Genauigkeit',
-      gap: 'Abstand zur Spitze',
+      gap: 'Rückstand',
       played: 'Gespielt',
       player: 'Spieler',
       score: 'Score',
