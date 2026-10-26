@@ -236,4 +236,15 @@ const en = {
   },
 };
 
+/**
+ * What every language has to give: the same keys as English, each with a
+ * text. A missing key or one too many is a type error.
+ */
+type Translation<Texts = typeof en> = {
+  [Key in keyof Texts]: Texts[Key] extends string
+    ? string
+    : Translation<Texts[Key]>;
+};
+
 export { en };
+export type { Translation };

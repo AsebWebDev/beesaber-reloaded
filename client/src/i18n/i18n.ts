@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
+import { de } from './de.ts';
 import { en } from './en.ts';
 
 /**
@@ -11,7 +12,7 @@ import { en } from './en.ts';
  * also what a text falls back to if a language lacks it.
  */
 
-const LANGUAGES = ['en'] as const;
+const LANGUAGES = ['en', 'de'] as const;
 
 type Language = (typeof LANGUAGES)[number];
 
@@ -50,7 +51,7 @@ const detectLanguage = (): Language =>
 const i18n = i18next.createInstance();
 
 void i18n.use(initReactI18next).init({
-  resources: { en: { translation: en } },
+  resources: { en: { translation: en }, de: { translation: de } },
   lng: detectLanguage(),
   fallbackLng: 'en',
   // The texts are part of the bundle, so they are there at once. Without

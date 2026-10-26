@@ -1,4 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+import { i18n } from '@/i18n/i18n.ts';
 
 import {
   countryFlag,
@@ -91,5 +93,39 @@ describe('countryFlag', () => {
   it('returns nothing for something that is not a country code', () => {
     expect(countryFlag('')).toBe('');
     expect(countryFlag('GER')).toBe('');
+  });
+});
+
+describe('in German', () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('de');
+  });
+
+  afterEach(async () => {
+    await i18n.changeLanguage('en');
+  });
+
+  it('groups digits with dots', () => {
+    expect(formatScore(1234567)).toBe('1.234.567');
+    expect(formatDelta(-1500)).toBe('−1.500');
+  });
+
+  it('writes percentages with a comma and a space', () => {
+    // A narrow no-break space between number and sign, as German writes it
+    expect(formatAccuracy(0.9785)).toMatch(/^97,85\s%$/u);
+  });
+
+  it('says rank and time in German', () => {
+    const now = new Date('2024-06-15T12:00:00.000Z');
+
+    expect(formatRank(9024)).toBe('Rang 9.024');
+    expect(formatRank(0)).toBe('Ohne Rang');
+    expect(timeAgo('2024-06-12T12:00:00.000Z', now)).toBe('vor 3 Tagen');
+    expect(timeAgo('2024-06-14T12:00:00.000Z', now)).toBe('gestern');
+    expect(timeAgo('2024-06-15T11:59:30.000Z', now)).toBe('gerade eben');
+  });
+
+  it('keeps the names of the difficulties as players know them', () => {
+    expect(difficultyName(9)).toBe('Expert+');
   });
 });
