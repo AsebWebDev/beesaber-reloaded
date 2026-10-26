@@ -1142,3 +1142,32 @@ describe('a pick that takes a moment', () => {
     ).toBeDisabled();
   });
 });
+
+describe('a profile that is gone while the app is open', () => {
+  it('asks for a profile again when the server says none is linked', async () => {
+    // The profile was unlinked meanwhile, say from another device
+    fakeApi.server.use(
+      http.delete('/api/hive/:playerId', () =>
+        HttpResponse.json(
+          {
+            error: {
+              code: 'no_player_linked',
+              message: 'Pick your ScoreSaber profile first',
+            },
+          },
+          { status: 409 }
+        )
+      )
+    );
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp('/hive');
+
+    await screen.findByRole('button', { name: /Remove buzz/ });
+    fakeApi.set({ playerId: null });
+    await user.click(screen.getByRole('button', { name: /Remove buzz/ }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Which player are you?' })
+    ).toBeInTheDocument();
+  });
+});

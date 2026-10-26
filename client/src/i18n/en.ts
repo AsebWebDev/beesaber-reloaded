@@ -13,6 +13,8 @@
  * has no content, like `link`, `img` or `br`: i18next reads those as
  * empty and leaves the text outside of them.
  */
+import type { ErrorCode } from '@beesaber/server';
+
 const en = {
   common: {
     loading: 'Loading',
@@ -221,7 +223,9 @@ const en = {
       unknown_player: 'ScoreSaber does not know this player.',
       validation_failed:
         'The request was not accepted. Please check what you entered.',
-    },
+      // A code the server sends without a text here, or a text for a code
+      // it does not send, fails the type check
+    } satisfies Record<ErrorCode, string>,
     // Failures in the browser
     local: {
       deleteAccountFailed:
@@ -240,7 +244,9 @@ const en = {
     position: 'Page {{page}} of {{total}}',
     previous: 'Previous',
   },
-};
+  // `as const` keeps every text as its exact words, so i18next can tell from
+  // the type which values a text needs, and a missing one is a type error
+} as const;
 
 /**
  * What every language has to give: the same keys as English, each with a

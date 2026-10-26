@@ -294,6 +294,9 @@ describe('other people’s data', () => {
     const removal = await other(`/api/hive/${BEE}`, { method: 'DELETE' });
 
     expect(removal.status).toBe(404);
+    expect(await removal.json()).toMatchObject({
+      error: { code: 'not_in_hive' },
+    });
 
     // ... and my hive is untouched
     const mine: { items: unknown[] } = await json(await api('/api/hive'));
