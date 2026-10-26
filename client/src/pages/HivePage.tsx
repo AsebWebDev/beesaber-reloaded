@@ -31,8 +31,12 @@ const HivePage = () => {
   const remove = useRemoveBee();
   const memberIds = new Set(hive.data?.items.map((item) => item.player.id));
   const heading = useRef<HTMLHeadingElement & HTMLParagraphElement>(null);
-  // What just happened, for people who do not see the list change
-  const [notice, setNotice] = useState('');
+  // What just happened, for people who do not see the list change. Kept
+  // as what happened, not as a text, so it follows a change of language.
+  const [notice, setNotice] = useState<{
+    name: string;
+    what: 'added' | 'removed';
+  }>();
 
   usePageTitle(t('hive.title'));
 
@@ -43,7 +47,10 @@ const HivePage = () => {
           {t('hive.title')}
         </NeonHeading>
         <p role="status" className="sr-only">
-          {notice}
+          {notice !== undefined &&
+            t(notice.what === 'added' ? 'hive.added' : 'hive.removed', {
+              name: notice.name,
+            })}
         </p>
         {hive.isPending && <Spinner />}
         {hive.isError && (
@@ -98,7 +105,7 @@ const HivePage = () => {
                   onClick={() =>
                     remove.mutate(player.id, {
                       onSuccess: () => {
-                        setNotice(t('hive.removed', { name: player.name }));
+                        setNotice({ what: 'removed', name: player.name });
                         // The button that was pressed is gone with its row
                         heading.current?.focus();
                       },
@@ -127,7 +134,7 @@ const HivePage = () => {
             onPick={(player) =>
               add.mutate(player.id, {
                 onSuccess: () =>
-                  setNotice(t('hive.added', { name: player.name })),
+                  setNotice({ what: 'added', name: player.name }),
               })
             }
             disabledReason={(player) => {

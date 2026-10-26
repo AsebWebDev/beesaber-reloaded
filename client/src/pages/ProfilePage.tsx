@@ -323,8 +323,9 @@ const ProfilePage = ({ player }: { player: Player }) => {
   const link = useLinkProfile();
   const [changing, setChanging] = useState(false);
   const changeButton = useRef<HTMLButtonElement>(null);
-  // What just happened, for people who do not see the page change
-  const [notice, setNotice] = useState('');
+  // The profile just picked, for people who do not see the page change.
+  // Kept as a name, not as a text, so it follows a change of language.
+  const [pickedName, setPickedName] = useState<string>();
 
   usePageTitle(t('profile.title'));
 
@@ -363,7 +364,7 @@ const ProfilePage = ({ player }: { player: Player }) => {
         </Button>
       </Card>
       <p role="status" className="sr-only">
-        {notice}
+        {pickedName !== undefined && t('profile.changed', { name: pickedName })}
       </p>
 
       {changing && (
@@ -380,7 +381,7 @@ const ProfilePage = ({ player }: { player: Player }) => {
               link.mutate(found.id, {
                 onSuccess: () => {
                   setChanging(false);
-                  setNotice(t('profile.changed', { name: found.name }));
+                  setPickedName(found.name);
                   // The picker closes, and the focus with it
                   changeButton.current?.focus();
                 },

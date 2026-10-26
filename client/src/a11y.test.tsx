@@ -437,3 +437,26 @@ describe('what things are called', () => {
     );
   });
 });
+
+describe('a notice and a change of language', () => {
+  it('says what happened in the language switched to afterwards', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Change profile' })
+    );
+    await user.type(screen.getByLabelText('Your name on ScoreSaber'), 'buzz');
+    await user.click(
+      (await screen.findAllByRole('button', { name: /^This is me/ }))[0]!
+    );
+    await screen.findByRole('heading', { name: 'buzz' });
+    expect(said('You now compare as buzz.')).toBe(true);
+
+    await user.click(screen.getByRole('button', { name: 'Deutsch' }));
+
+    await waitFor(() =>
+      expect(said('Du vergleichst jetzt als buzz.')).toBe(true)
+    );
+  });
+});
