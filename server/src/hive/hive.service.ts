@@ -25,7 +25,7 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
   const addMember = async (me: Me, memberId: string) => {
     if (me.playerId === memberId)
       throw new AppError(
-        'validation_failed',
+        'cannot_add_self',
         'You cannot add yourself to your hive'
       );
 
@@ -39,8 +39,9 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
 
     if (outcome === 'full')
       throw new AppError(
-        'validation_failed',
-        `A hive can have at most ${MAX_HIVE_SIZE} bees`
+        'hive_full',
+        `A hive can have at most ${MAX_HIVE_SIZE} bees`,
+        { maxSize: MAX_HIVE_SIZE }
       );
 
     await playersService.requestSync(memberId);
@@ -53,7 +54,7 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
     const removed = await repository.removeMember(me.userId, memberId);
 
     if (!removed)
-      throw new AppError('not_found', 'This player is not in your hive');
+      throw new AppError('not_in_hive', 'This player is not in your hive');
   };
 
   const compare = async (
@@ -62,7 +63,7 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
     options: ComparisonOptions
   ) => {
     if (!(await repository.isMember(me.userId, memberId)))
-      throw new AppError('not_found', 'This player is not in your hive');
+      throw new AppError('not_in_hive', 'This player is not in your hive');
 
     return repository.compare(me.playerId, memberId, options);
   };

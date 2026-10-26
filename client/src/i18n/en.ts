@@ -192,6 +192,36 @@ const en = {
   song: {
     byline: '{{author}} · mapped by {{mapper}}',
   },
+  errors: {
+    // One text for each code the server sends (server/src/http/errors.ts)
+    api: {
+      cannot_add_self: 'You cannot add yourself to your hive.',
+      forbidden: 'This is not allowed.',
+      hive_full: 'A hive can have at most {{maxSize}} bees.',
+      internal_error: 'The server is having trouble. Please try again later.',
+      no_player_linked: 'Pick your ScoreSaber profile first.',
+      not_found: 'There is nothing here.',
+      not_in_hive: 'This player is not in your hive.',
+      rate_limited: 'That was a lot at once. Wait a moment, then try again.',
+      scoresaber_unavailable:
+        'ScoreSaber cannot be reached right now. Please try again later.',
+      unauthorized: 'You are not signed in.',
+      unknown_player: 'ScoreSaber does not know this player.',
+      validation_failed:
+        'The request was not accepted. Please check what you entered.',
+    },
+    // Failures in the browser
+    local: {
+      deleteAccountFailed:
+        'Deleting the account failed. It still exists, please try again.',
+      devSignInFailed: 'Signing in with the test account failed.',
+      googleFailed: 'Sign-in with Google failed.',
+      signOutFailed:
+        'Signing out failed. You are still signed in, please try again.',
+    },
+    network:
+      'The server could not be reached. Check your connection and try again.',
+  },
   pagination: {
     label: 'Pages',
     next: 'Next',

@@ -213,7 +213,10 @@ requests and each open a connection to the live feed. Run exactly one.
 All paths start with `/api`. Everything except `/health`, `/config` and `/auth` needs a
 session and answers `401` without one. The hive routes also need a linked
 ScoreSaber profile and answer `409` until one is picked. Errors always look like
-`{ "error": { "code": "not_found", "message": "..." } }`.
+`{ "error": { "code": "not_in_hive", "message": "..." } }`. The codes are listed
+in `server/src/http/errors.ts`; the message is English and meant for logs. The
+frontend shows a text of its own for each code, in the visitor's language
+(`errors.api` in `client/src/i18n/en.ts`).
 
 ### Accounts and profiles
 

@@ -77,7 +77,7 @@ describe('POST /api/hive', () => {
 
     expect(response.status).toBe(400);
     expect(await json(response)).toMatchObject({
-      error: { code: 'validation_failed' },
+      error: { code: 'cannot_add_self' },
     });
   });
 

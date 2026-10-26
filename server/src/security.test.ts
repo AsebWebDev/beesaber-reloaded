@@ -267,6 +267,10 @@ describe('flooding', () => {
     });
 
     expect(oneTooMany.status).toBe(400);
+    // With the limit, so the frontend can name it
+    expect(await oneTooMany.json()).toMatchObject({
+      error: { code: 'hive_full', details: { maxSize: MAX_HIVE_SIZE } },
+    });
 
     // Adding someone who is already in is still fine
     const again = await postJson('/api/hive', { playerId: idOf(0) });

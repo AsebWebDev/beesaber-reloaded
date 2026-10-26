@@ -956,3 +956,42 @@ describe('a picture that cannot be loaded', () => {
     });
   });
 });
+
+describe('what an error says', () => {
+  it('tells what the server meant, not just that something failed', async () => {
+    // Someone removed the bee in another tab a moment ago
+    fakeApi.server.use(
+      http.delete('/api/hive/:playerId', () =>
+        HttpResponse.json(
+          {
+            error: {
+              code: 'not_in_hive',
+              message: 'This player is not in your hive',
+            },
+          },
+          { status: 404 }
+        )
+      )
+    );
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp('/hive');
+
+    await user.click(
+      await screen.findByRole('button', { name: /Remove buzz/ })
+    );
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'This player is not in your hive.'
+    );
+  });
+
+  it('says when the server cannot be reached at all', async () => {
+    fakeApi.server.use(http.get('/api/hive/news', () => HttpResponse.error()));
+    fakeApi.signedInAs();
+    renderApp();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The server could not be reached'
+    );
+  });
+});

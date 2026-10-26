@@ -1,5 +1,7 @@
 import { createAuthClient } from 'better-auth/react';
 
+import { LocalizedError } from '@/i18n/errors.ts';
+
 /**
  * The browser side of Better Auth. It talks to /api/auth on our server,
  * which sets and clears the session cookie.
@@ -17,7 +19,7 @@ const signInWithGoogle = async () => {
     callbackURL: '/',
   });
 
-  if (error) throw new Error(error.message ?? 'Sign-in with Google failed');
+  if (error) throw new LocalizedError('googleFailed', error.message);
 };
 
 /**
@@ -43,7 +45,7 @@ const signInAsDev = import.meta.env.DEV
       const signedUp = await authClient.signUp.email(account);
 
       if (signedUp.error)
-        throw new Error(signedUp.error.message ?? 'Dev sign-in failed');
+        throw new LocalizedError('devSignInFailed', signedUp.error.message);
     }
   : undefined;
 
@@ -55,10 +57,7 @@ const signInAsDev = import.meta.env.DEV
 const signOut = async () => {
   const { error } = await authClient.signOut();
 
-  if (error)
-    throw new Error(
-      'Signing out failed. You are still signed in, please try again.'
-    );
+  if (error) throw new LocalizedError('signOutFailed');
 };
 
 export { signInAsDev, signInWithGoogle, signOut };

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { errorText } from '@/i18n/errors.ts';
 import { timeAgo } from '@/lib/format.ts';
 
 import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
@@ -217,11 +218,7 @@ const ErrorNote = ({
       role="alert"
       className="border-neon-red/60 text-neon-red-core flex flex-wrap items-center justify-between gap-3 rounded border bg-red-950/40 px-3 py-2 text-sm"
     >
-      <span>
-        {error instanceof Error
-          ? error.message
-          : t('common.somethingWentWrong')}
-      </span>
+      <span>{errorText(error, t)}</span>
       {onRetry !== undefined && (
         <button
           type="button"

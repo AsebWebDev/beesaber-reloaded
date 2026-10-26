@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
-import { api, ApiError, unwrap } from './client.ts';
+import { api, ApiError, apiErrorOf, unwrap } from './client.ts';
 
 import type { InferResponseType } from 'hono/client';
 
@@ -255,12 +255,7 @@ const useRemoveBee = () =>
       param: { playerId },
     });
 
-    if (!response.ok)
-      throw new ApiError(
-        response.status,
-        'unknown',
-        'Could not remove the bee'
-      );
+    if (!response.ok) throw await apiErrorOf(response);
   });
 
 /** Asks the server to look for new scores of me and all my bees */
