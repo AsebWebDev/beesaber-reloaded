@@ -18,7 +18,7 @@ jobs:
   review:
     name: Review
     # Drafts are not ready to be read. Dependabot's pull requests get no
-    # secrets, and dependency-prs handles them.
+    # secrets, so a review of them could not sign in.
     if: >-
       !github.event.pull_request.draft
       && github.actor != 'dependabot[bot]'
