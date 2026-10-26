@@ -531,12 +531,15 @@ describe('GET /api/hive/maps/:leaderboardId', () => {
     });
   });
 
-  it('rejects an id that is not a number', async () => {
-    const response = await ranking('abc');
+  it.each(['abc', '0', '3000000000'])(
+    'rejects %s, which cannot be a map',
+    async (id) => {
+      const response = await ranking(id);
 
-    expect(response.status).toBe(400);
-    expect(await json(response)).toMatchObject({
-      error: { code: 'validation_failed' },
-    });
-  });
+      expect(response.status).toBe(400);
+      expect(await json(response)).toMatchObject({
+        error: { code: 'validation_failed' },
+      });
+    }
+  );
 });

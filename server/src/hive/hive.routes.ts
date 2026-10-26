@@ -70,7 +70,12 @@ const createHiveRoutes = (
       '/maps/:leaderboardId',
       validate(
         'param',
-        z.object({ leaderboardId: z.coerce.number().int().min(1) })
+        z.object({
+          // Up to the largest value of the integer column it is looked up
+          // in. Beyond that the database refuses the query, which would end
+          // as a 500 instead of a "not found".
+          leaderboardId: z.coerce.number().int().min(1).max(2_147_483_647),
+        })
       ),
       async (c) =>
         c.json(
