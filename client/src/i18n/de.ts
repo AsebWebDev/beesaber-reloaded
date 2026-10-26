@@ -15,6 +15,8 @@ const de: Translation = {
     signOut: 'Abmelden',
     somethingWentWrong: 'Etwas ist schiefgelaufen',
     tryAgain: 'Erneut versuchen',
+    mapsPlayed_one: '{{number}} Map gespielt',
+    mapsPlayed_other: '{{number}} Maps gespielt',
   },
   layout: {
     dashboard: 'Übersicht',
@@ -82,8 +84,8 @@ const de: Translation = {
     news: 'Neuigkeiten',
     noNews:
       'Niemand hat in letzter Zeit einen deiner Scores geschlagen. Genieß es, solange es anhält.',
-    sharedMaps_one: '{{count}} gemeinsame Map',
-    sharedMaps_other: '{{count}} gemeinsame Maps',
+    sharedMaps_one: '{{number}} gemeinsame Map',
+    sharedMaps_other: '{{number}} gemeinsame Maps',
     theirs: 'Biene',
     theyLead: 'Biene vorn: {{number}}',
     title: 'Übersicht',
@@ -103,7 +105,7 @@ const de: Translation = {
     removeFor: '{{name}} aus meiner Hive entfernen',
     removed: '{{name}} wurde aus deiner Hive entfernt.',
     searchLabel: 'Spieler auf ScoreSaber suchen',
-    stats: '{{rank}} · {{played}} Maps gespielt · {{shared}} gemeinsam mit dir',
+    sharedWithYou: '{{number}} gemeinsam mit dir',
     syncFailed:
       'Der letzte Abruf der Scores ist fehlgeschlagen. Er wird wiederholt.',
     syncGone: 'ScoreSaber kennt diesen Spieler nicht mehr.',
@@ -126,19 +128,18 @@ const de: Translation = {
       winning: 'Wo ich vorne liege',
     },
     heading: 'Ich vs. {{name}}',
-    listed_one: '{{count}} Map in dieser Liste.',
-    listed_other: '{{count}} Maps in dieser Liste.',
+    listed_one: '{{number}} Map in dieser Liste.',
+    listed_other: '{{number}} Maps in dieser Liste.',
     listedPaged_one:
-      '{{count}} Map in dieser Liste, Seite {{page}} von {{total}}.',
+      '{{number}} Map in dieser Liste, Seite {{page}} von {{total}}.',
     listedPaged_other:
-      '{{count}} Maps in dieser Liste, Seite {{page}} von {{total}}.',
+      '{{number}} Maps in dieser Liste, Seite {{page}} von {{total}}.',
     loading: 'Vergleich wird geladen',
     notInHive: {
       text: 'Vergleichen kannst du nur mit Spielern in deiner Hive, und dieser gehört nicht dazu. <hive>Zu meiner Hive</hive>, um ihn hinzuzufügen.',
       title: 'Nicht in deiner Hive',
     },
-    summary:
-      '{{shared}} gemeinsame Maps · du führst auf {{winning}}, die Biene auf {{losing}}',
+    leads: 'du führst bei {{winning}}, die Biene bei {{losing}}',
     tableName: 'Scores von mir und {{name}}',
     thisBee: 'dieser Biene',
     title: 'Vergleich',
@@ -150,8 +151,7 @@ const de: Translation = {
       'Wähle das ScoreSaber-Profil, als das du vergleichen willst. Deine Hive bleibt, wie sie ist; die Scores des neuen Profils werden abgerufen.',
     current: 'Dein aktuelles Profil',
     keep: 'Profil behalten',
-    stats:
-      '{{rank}} · Platz {{countryRank}} in {{country}} · {{pp}} pp · {{played}} Maps gespielt',
+    countryRank: 'Rang {{rank}} in {{country}}',
     title: 'Mein Profil',
   },
   scores: {
@@ -165,12 +165,12 @@ const de: Translation = {
     empty: 'Noch keine Scores.',
     filterLabel: 'Songs filtern',
     filterPlaceholder: 'Song oder Künstler',
-    listed_one: '{{count}} Score in dieser Liste.',
-    listed_other: '{{count}} Scores in dieser Liste.',
+    listed_one: '{{number}} Score in dieser Liste.',
+    listed_other: '{{number}} Scores in dieser Liste.',
     listedPaged_one:
-      '{{count}} Score in dieser Liste, Seite {{page}} von {{total}}.',
+      '{{number}} Score in dieser Liste, Seite {{page}} von {{total}}.',
     listedPaged_other:
-      '{{count}} Scores in dieser Liste, Seite {{page}} von {{total}}.',
+      '{{number}} Scores in dieser Liste, Seite {{page}} von {{total}}.',
     loading: 'Scores werden geladen',
     noMatch: 'Kein Song passt zu „{{search}}“.',
     sort: {

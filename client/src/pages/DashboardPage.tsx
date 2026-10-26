@@ -89,7 +89,10 @@ const RecordCard = ({ member }: { member: HiveMember }) => {
           <p className="text-xs text-slate-400">
             {isSyncing(player)
               ? t('dashboard.fetching')
-              : t('dashboard.sharedMaps', { count: shared })}
+              : t('dashboard.sharedMaps', {
+                  count: shared,
+                  number: formatScore(shared),
+                })}
           </p>
         </div>
       </div>
@@ -103,10 +106,10 @@ const RecordCard = ({ member }: { member: HiveMember }) => {
       </div>
       <p className="mt-1 flex justify-between text-xs">
         <span className="text-neon-blue-core">
-          {t('dashboard.youLead', { number: winning })}
+          {t('dashboard.youLead', { number: formatScore(winning) })}
         </span>
         <span className="text-neon-red-core">
-          {t('dashboard.theyLead', { number: losing })}
+          {t('dashboard.theyLead', { number: formatScore(losing) })}
         </span>
       </p>
     </div>

@@ -51,10 +51,10 @@ describe('the German texts', () => {
   it('have the singular and plural where German needs them', async () => {
     await i18n.changeLanguage('de');
 
-    expect(i18n.t('dashboard.sharedMaps', { count: 1 })).toBe(
+    expect(i18n.t('dashboard.sharedMaps', { count: 1, number: '1' })).toBe(
       '1 gemeinsame Map'
     );
-    expect(i18n.t('dashboard.sharedMaps', { count: 22 })).toBe(
+    expect(i18n.t('dashboard.sharedMaps', { count: 22, number: '22' })).toBe(
       '22 gemeinsame Maps'
     );
   });
@@ -101,5 +101,28 @@ describe('the translations', () => {
       .map(([key]) => key);
 
     expect(differing).toEqual([]);
+  });
+});
+
+describe('counted texts', () => {
+  it('say one thing in the singular and more in the plural', async () => {
+    expect(i18n.t('common.mapsPlayed', { count: 1, number: '1' })).toBe(
+      '1 map played'
+    );
+    expect(i18n.t('dashboard.sharedMaps', { count: 1, number: '1' })).toBe(
+      '1 shared map'
+    );
+    expect(i18n.t('scores.listed', { count: 1234, number: '1,234' })).toBe(
+      '1,234 scores in this list.'
+    );
+
+    await i18n.changeLanguage('de');
+
+    expect(i18n.t('common.mapsPlayed', { count: 1, number: '1' })).toBe(
+      '1 Map gespielt'
+    );
+    expect(i18n.t('common.mapsPlayed', { count: 2345, number: '2.345' })).toBe(
+      '2.345 Maps gespielt'
+    );
   });
 });

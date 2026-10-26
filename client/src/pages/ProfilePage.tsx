@@ -143,8 +143,16 @@ const ScoreList = ({
           : total === undefined
             ? ''
             : lastPage > 1
-              ? t('scores.listedPaged', { count: total, page, total: lastPage })
-              : t('scores.listed', { count: total })}
+              ? t('scores.listedPaged', {
+                  count: total,
+                  number: formatScore(total),
+                  page,
+                  total: lastPage,
+                })
+              : t('scores.listed', {
+                  count: total,
+                  number: formatScore(total),
+                })}
       </p>
 
       {(loading || items.length > 0) && (
@@ -330,13 +338,18 @@ const ProfilePage = ({ player }: { player: Player }) => {
           </NeonHeading>
           <p className="text-sm text-slate-400">
             {countryFlag(player.country)}{' '}
-            {t('profile.stats', {
-              rank: formatRank(player.rank),
-              countryRank: player.countryRank,
-              country: player.country,
-              pp: formatScore(Math.round(player.totalPp)),
-              played: player.totalPlayed,
-            })}
+            {[
+              formatRank(player.rank),
+              t('profile.countryRank', {
+                rank: formatScore(player.countryRank),
+                country: player.country,
+              }),
+              `${formatScore(Math.round(player.totalPp))} pp`,
+              t('common.mapsPlayed', {
+                count: player.totalPlayed,
+                number: formatScore(player.totalPlayed),
+              }),
+            ].join(' · ')}
           </p>
         </div>
         <Button

@@ -1096,3 +1096,24 @@ describe('a player name that looks like markup', () => {
     expect(line).toHaveTextContent(/^buzz hat vor .+ deinen Score geschlagen$/);
   });
 });
+
+describe('numbers inside sentences', () => {
+  it('are grouped and counted the way the language does it', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    expect(
+      await screen.findByText(
+        /Rank #1,234 · #56 in DE · 4,322 pp · 475 maps played/
+      )
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Deutsch' }));
+
+    expect(
+      await screen.findByText(
+        /Rang 1\.234 · Rang 56 in DE · 4\.322 pp · 475 Maps gespielt/
+      )
+    ).toBeInTheDocument();
+  });
+});

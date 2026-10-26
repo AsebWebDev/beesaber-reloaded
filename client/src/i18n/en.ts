@@ -19,6 +19,8 @@ const en = {
     signOut: 'Sign out',
     somethingWentWrong: 'Something went wrong',
     tryAgain: 'Try again',
+    mapsPlayed_one: '{{number}} map played',
+    mapsPlayed_other: '{{number}} maps played',
   },
   layout: {
     dashboard: 'Dashboard',
@@ -86,8 +88,8 @@ const en = {
     news: 'News',
     noNews:
       'Nobody has beaten one of your scores lately. Enjoy it while it lasts.',
-    sharedMaps_one: '{{count}} shared map',
-    sharedMaps_other: '{{count}} shared maps',
+    sharedMaps_one: '{{number}} shared map',
+    sharedMaps_other: '{{number}} shared maps',
     theirs: 'Theirs',
     theyLead: 'They lead on {{number}}',
     title: 'Dashboard',
@@ -107,7 +109,7 @@ const en = {
     removeFor: 'Remove {{name}} from my hive',
     removed: '{{name}} was removed from your hive.',
     searchLabel: 'Find a player on ScoreSaber',
-    stats: '{{rank}} · {{played}} maps played · {{shared}} shared with you',
+    sharedWithYou: '{{number}} shared with you',
     syncFailed:
       'The last attempt to fetch their scores failed. It will be tried again.',
     syncGone: 'ScoreSaber no longer knows this player.',
@@ -130,18 +132,17 @@ const en = {
       winning: 'Where I am ahead',
     },
     heading: 'Me vs {{name}}',
-    listed_one: '{{count}} map in this list.',
-    listed_other: '{{count}} maps in this list.',
-    listedPaged_one: '{{count}} map in this list, page {{page}} of {{total}}.',
+    listed_one: '{{number}} map in this list.',
+    listed_other: '{{number}} maps in this list.',
+    listedPaged_one: '{{number}} map in this list, page {{page}} of {{total}}.',
     listedPaged_other:
-      '{{count}} maps in this list, page {{page}} of {{total}}.',
+      '{{number}} maps in this list, page {{page}} of {{total}}.',
     loading: 'Loading comparison',
     notInHive: {
       text: 'You can only compare with players in your hive, and this one is not. <hive>Go to my hive</hive> to add them.',
       title: 'Not in your hive',
     },
-    summary:
-      '{{shared}} shared maps · you lead on {{winning}}, they lead on {{losing}}',
+    leads: 'you lead on {{winning}}, they lead on {{losing}}',
     tableName: 'Scores of me and {{name}}',
     thisBee: 'this bee',
     title: 'Comparison',
@@ -153,8 +154,7 @@ const en = {
       'Pick the ScoreSaber profile you want to compare as. Your hive stays as it is; the scores of the new profile are fetched.',
     current: 'Your current profile',
     keep: 'Keep this profile',
-    stats:
-      '{{rank}} · #{{countryRank}} in {{country}} · {{pp}} pp · {{played}} maps played',
+    countryRank: '#{{rank}} in {{country}}',
     title: 'My profile',
   },
   scores: {
@@ -168,12 +168,12 @@ const en = {
     empty: 'No scores yet.',
     filterLabel: 'Filter songs',
     filterPlaceholder: 'Song or artist',
-    listed_one: '{{count}} score in this list.',
-    listed_other: '{{count}} scores in this list.',
+    listed_one: '{{number}} score in this list.',
+    listed_other: '{{number}} scores in this list.',
     listedPaged_one:
-      '{{count}} score in this list, page {{page}} of {{total}}.',
+      '{{number}} score in this list, page {{page}} of {{total}}.',
     listedPaged_other:
-      '{{count}} scores in this list, page {{page}} of {{total}}.',
+      '{{number}} scores in this list, page {{page}} of {{total}}.',
     loading: 'Loading scores',
     noMatch: 'No song matches “{{search}}”.',
     sort: {

@@ -124,10 +124,14 @@ const ComparisonPage = () => {
           </NeonHeading>
           {member !== undefined && (
             <p className="text-sm text-slate-400">
-              {t('comparison.summary', {
-                shared: member.shared,
-                winning: member.winning,
-                losing: member.losing,
+              {t('dashboard.sharedMaps', {
+                count: member.shared,
+                number: formatScore(member.shared),
+              })}
+              {' · '}
+              {t('comparison.leads', {
+                winning: formatScore(member.winning),
+                losing: formatScore(member.losing),
               })}
             </p>
           )}
@@ -172,10 +176,14 @@ const ComparisonPage = () => {
             : lastPage > 1
               ? t('comparison.listedPaged', {
                   count: total,
+                  number: formatScore(total),
                   page,
                   total: lastPage,
                 })
-              : t('comparison.listed', { count: total })}
+              : t('comparison.listed', {
+                  count: total,
+                  number: formatScore(total),
+                })}
       </p>
       {!loading && !comparison.isError && items.length === 0 && (
         <EmptyState>

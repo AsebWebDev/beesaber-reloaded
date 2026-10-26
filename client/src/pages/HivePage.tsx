@@ -19,7 +19,7 @@ import {
   NeonHeading,
   Spinner,
 } from '@/components/ui.tsx';
-import { countryFlag, formatRank } from '@/lib/format.ts';
+import { countryFlag, formatRank, formatScore } from '@/lib/format.ts';
 import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 /** Who is in my hive, with adding and removing */
@@ -72,11 +72,16 @@ const HivePage = () => {
                     </p>
                   ) : (
                     <p className="text-xs text-slate-400">
-                      {t('hive.stats', {
-                        rank: formatRank(player.rank),
-                        played: player.totalPlayed,
-                        shared,
-                      })}
+                      {[
+                        formatRank(player.rank),
+                        t('common.mapsPlayed', {
+                          count: player.totalPlayed,
+                          number: formatScore(player.totalPlayed),
+                        }),
+                        t('hive.sharedWithYou', {
+                          number: formatScore(shared),
+                        }),
+                      ].join(' · ')}
                     </p>
                   )}
                   {player.syncError !== null && !isSyncing(player) && (
