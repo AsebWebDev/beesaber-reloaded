@@ -43,7 +43,7 @@ const de: Translation = {
   },
   landing: {
     credits:
-      'Scores und Spieler stammen von <scoresaber>ScoreSaber</scoresaber>. BeeSaber ist ein Fanprojekt und gehört weder zu ScoreSaber noch zu Beat Games oder Meta. Beat Saber ist eine Marke der Meta Platforms, Inc.',
+      'Scores und Spieler stammen von <scoresaber>ScoreSaber</scoresaber>. BeeSaber ist ein Fanprojekt und steht in keiner Verbindung zu ScoreSaber, Beat Games oder Meta. Beat Saber ist eine Marke der Meta Platforms, Inc.',
     devLogin: 'Dev-Login',
     google: 'Mit Google anmelden',
     noSignIn: 'Auf dem Server ist keine Anmeldung eingerichtet.',
@@ -54,9 +54,9 @@ const de: Translation = {
       'Vergleiche deine Beat-Saber-Scores mit deinen Freunden. Sieh, wo sie vor dir liegen, und erfahre es, wenn jemand deinen Score schlägt.',
   },
   onboarding: {
-    heading: 'Welcher Spieler bist du?',
+    heading: 'Wer bist du auf ScoreSaber?',
     intro:
-      'BeeSaber vergleicht Scores von ScoreSaber. Such dort dein Profil, und wir holen deine Scores. Du kannst das später auf deiner Profilseite ändern.',
+      'BeeSaber vergleicht Scores von ScoreSaber. Such unten dein ScoreSaber-Profil, dann holen wir deine Scores. Du kannst das später auf deiner Profilseite ändern.',
     signedInAs: 'Angemeldet als {{email}}.',
     title: 'Profil wählen',
   },
@@ -80,17 +80,17 @@ const de: Translation = {
     emptyHive:
       'Deine Hive ist leer. <hive>Füge eine Biene hinzu</hive>, um Scores zu vergleichen.',
     fetching: 'Scores werden abgerufen…',
-    headToHead: 'Kopf an Kopf',
+    headToHead: 'Direktvergleich',
     news: 'Neuigkeiten',
     noNews:
       'Niemand hat in letzter Zeit einen deiner Scores geschlagen. Genieß es, solange es anhält.',
     sharedMaps_one: '{{number}} gemeinsame Map',
     sharedMaps_other: '{{number}} gemeinsame Maps',
-    theirs: 'Biene',
-    theyLead: 'Biene vorn: {{number}}',
+    theirs: 'Score der Biene',
+    theyLead: 'Biene vorne: {{number}}',
     title: 'Übersicht',
-    youLead: 'Du vorn: {{number}}',
-    yours: 'du',
+    youLead: 'Du vorne: {{number}}',
+    yours: 'deiner',
   },
   hive: {
     add: 'Hinzufügen',
@@ -108,7 +108,7 @@ const de: Translation = {
     sharedWithYou: '{{number}} gemeinsam mit dir',
     syncFailed:
       'Der letzte Abruf der Scores ist fehlgeschlagen. Er wird wiederholt.',
-    syncGone: 'ScoreSaber kennt diesen Spieler nicht mehr.',
+    syncGone: 'ScoreSaber kennt dieses Profil nicht mehr.',
     title: 'Meine Hive',
   },
   comparison: {
@@ -136,11 +136,11 @@ const de: Translation = {
       '{{number}} Maps in dieser Liste, Seite {{page}} von {{total}}.',
     loading: 'Vergleich wird geladen',
     notInHive: {
-      text: 'Vergleichen kannst du nur mit Spielern in deiner Hive, und dieser gehört nicht dazu. <hive>Zu meiner Hive</hive>, um ihn hinzuzufügen.',
+      text: 'Du kannst nur mit Bienen aus deiner Hive vergleichen, und diese gehört nicht dazu. <hive>Öffne deine Hive</hive>, um sie hinzuzufügen.',
       title: 'Nicht in deiner Hive',
     },
     leads: 'du führst bei {{winning}}, die Biene bei {{losing}}',
-    tableName: 'Scores von mir und {{name}}',
+    tableName: 'Scores: ich gegen {{name}}',
     thisBee: 'dieser Biene',
     title: 'Vergleich',
   },
@@ -210,13 +210,13 @@ const de: Translation = {
         'Der Server hat gerade Probleme. Bitte versuch es später noch einmal.',
       no_player_linked: 'Wähle zuerst dein ScoreSaber-Profil.',
       not_found: 'Hier gibt es nichts.',
-      not_in_hive: 'Dieser Spieler ist nicht in deiner Hive.',
+      not_in_hive: 'Diese Biene ist nicht in deiner Hive.',
       rate_limited:
         'Das war viel auf einmal. Warte einen Moment und versuch es dann noch einmal.',
       scoresaber_unavailable:
         'ScoreSaber ist gerade nicht erreichbar. Bitte versuch es später noch einmal.',
       unauthorized: 'Du bist nicht angemeldet.',
-      unknown_player: 'ScoreSaber kennt diesen Spieler nicht.',
+      unknown_player: 'ScoreSaber kennt dieses Profil nicht.',
       validation_failed:
         'Die Anfrage wurde nicht angenommen. Bitte prüf deine Eingabe.',
     },
@@ -226,7 +226,7 @@ const de: Translation = {
       devSignInFailed: 'Die Anmeldung mit dem Testkonto ist fehlgeschlagen.',
       googleFailed: 'Die Anmeldung mit Google ist fehlgeschlagen.',
       signOutFailed:
-        'Abmelden ist fehlgeschlagen. Du bist noch angemeldet, bitte versuch es noch einmal.',
+        'Das Abmelden ist fehlgeschlagen. Du bist noch angemeldet, bitte versuch es noch einmal.',
     },
     network:
       'Der Server ist nicht erreichbar. Prüf deine Verbindung und versuch es noch einmal.',

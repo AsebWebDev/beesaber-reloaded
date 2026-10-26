@@ -1,5 +1,5 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
-import { http, HttpResponse } from 'msw';
+import { delay, http, HttpResponse } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 
 import { i18n } from '@/i18n/i18n.ts';
@@ -941,10 +941,9 @@ describe('the comparison with someone who is not in my hive', () => {
     expect(
       await screen.findByRole('heading', { name: 'Not in your hive' })
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Go to my hive' })).toHaveAttribute(
-      'href',
-      '/hive'
-    );
+    expect(
+      screen.getByRole('link', { name: 'Go to your hive' })
+    ).toHaveAttribute('href', '/hive');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
     expect(document.title).toBe('Not in your hive · BeeSaber');
@@ -1115,5 +1114,31 @@ describe('numbers inside sentences', () => {
         /Rang 1\.234 · Rang 56 in DE · 4\.322 pp · 475 Maps gespielt/
       )
     ).toBeInTheDocument();
+  });
+});
+
+describe('a pick that takes a moment', () => {
+  it('names the pressed button by what it shows while it works', async () => {
+    fakeApi.server.use(
+      http.post('/api/hive', async () => {
+        await delay(300);
+
+        return HttpResponse.json({ player: fakeApi.BEE }, { status: 201 });
+      })
+    );
+    fakeApi.signedInAs();
+    const { user } = renderApp('/hive');
+
+    await user.type(
+      await screen.findByLabelText('Find a player on ScoreSaber'),
+      'buzz'
+    );
+    await user.click(
+      await screen.findByRole('button', { name: 'Add buzz to my hive' })
+    );
+
+    expect(
+      await screen.findByRole('button', { name: 'Working…' })
+    ).toBeDisabled();
   });
 });

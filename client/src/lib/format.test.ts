@@ -80,8 +80,8 @@ describe('timeAgo', () => {
     expect(timeAgo('2024-06-14T12:00:00.000Z', now)).toBe('yesterday');
   });
 
-  it('says "now" for the last minute', () => {
-    expect(timeAgo('2024-06-15T11:59:30.000Z', now)).toBe('now');
+  it('says "just now" for the last minute', () => {
+    expect(timeAgo('2024-06-15T11:59:30.000Z', now)).toBe('just now');
   });
 });
 

@@ -60,7 +60,7 @@ const en = {
   onboarding: {
     heading: 'Which player are you?',
     intro:
-      'BeeSaber compares scores from ScoreSaber. Find your profile there, and we fetch your scores. You can change this later on your profile page.',
+      'BeeSaber compares scores from ScoreSaber. Find your ScoreSaber profile below, and we fetch your scores. You can change this later on your profile page.',
     signedInAs: 'Signed in as {{email}}.',
     title: 'Pick your profile',
   },
@@ -139,11 +139,11 @@ const en = {
       '{{number}} maps in this list, page {{page}} of {{total}}.',
     loading: 'Loading comparison',
     notInHive: {
-      text: 'You can only compare with players in your hive, and this one is not. <hive>Go to my hive</hive> to add them.',
+      text: 'You can only compare with players in your hive, and this one is not. <hive>Go to your hive</hive> to add them.',
       title: 'Not in your hive',
     },
     leads: 'you lead on {{winning}}, they lead on {{losing}}',
-    tableName: 'Scores of me and {{name}}',
+    tableName: 'Scores: me vs {{name}}',
     thisBee: 'this bee',
     title: 'Comparison',
   },
@@ -197,7 +197,7 @@ const en = {
   },
   // Numbers and times in running text (client/src/lib/format.ts)
   format: {
-    now: 'now',
+    now: 'just now',
     rank: 'Rank #{{rank}}',
     unranked: 'Unranked',
   },

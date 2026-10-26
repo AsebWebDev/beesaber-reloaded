@@ -392,10 +392,10 @@ describe('what things are called', () => {
     await screen.findByText('Monster');
 
     expect(
-      screen.getByRole('table', { name: 'Scores of me and buzz' })
+      screen.getByRole('table', { name: 'Scores: me vs buzz' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('region', { name: 'Scores of me and buzz' })
+      screen.getByRole('region', { name: 'Scores: me vs buzz' })
     ).toHaveAttribute('tabindex', '0');
   });
 

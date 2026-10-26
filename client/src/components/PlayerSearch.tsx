@@ -126,7 +126,10 @@ const PlayerSearch = ({
                 <Button
                   disabled={pending}
                   onClick={() => onPick(player)}
-                  aria-label={actionName(player)}
+                  // While it works, the visible text says so, and is its name
+                  aria-label={
+                    pendingId === player.id ? undefined : actionName(player)
+                  }
                 >
                   {pendingId === player.id
                     ? t('playerSearch.working')
