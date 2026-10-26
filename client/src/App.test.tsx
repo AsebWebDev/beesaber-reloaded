@@ -1227,3 +1227,31 @@ describe('the hive ranking of a map', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });
+
+describe('a song title', () => {
+  it('leads from the comparison to the hive ranking of its map', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp(`/hive/${fakeApi.BEE.id}`);
+
+    await user.click(await screen.findByRole('link', { name: 'Monster' }));
+
+    expect(
+      await screen.findByRole('table', { name: 'Hive ranking for Monster' })
+    ).toBeInTheDocument();
+  });
+
+  it('leads there from the news and from my scores, too', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id], news: [fakeApi.news()] });
+    const { user } = renderApp();
+
+    expect(
+      await screen.findByRole('link', { name: 'Superstar' })
+    ).toHaveAttribute('href', '/maps/2');
+
+    await user.click(screen.getByRole('link', { name: 'My profile' }));
+
+    expect(
+      await screen.findByRole('link', { name: 'Monster' })
+    ).toHaveAttribute('href', '/maps/1');
+  });
+});
