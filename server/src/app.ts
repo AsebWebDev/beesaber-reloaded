@@ -153,3 +153,5 @@ type AppType = ReturnType<typeof createApp>;
 
 export { createApp };
 export type { AppType, Limits };
+// The codes of the API's errors, so the frontend can have a text for each
+export type { ErrorCode } from './http/errors.ts';

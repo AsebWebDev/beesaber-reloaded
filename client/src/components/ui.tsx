@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { timeAgo } from '@/lib/format.ts';
+import { errorText } from '@/i18n/errors.ts';
+import { formatDateTime, timeAgo } from '@/lib/format.ts';
 
 import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
 
@@ -147,28 +149,27 @@ const Avatar = ({ size = 40, src }: { size?: number; src: string }) => (
   />
 );
 
-const Spinner = ({ label = 'Loading' }: { label?: string }) => (
-  <div
-    role="status"
-    className="flex items-center gap-3 py-6 text-sm text-slate-400"
-  >
-    {/* Stands still for people who asked their system for less motion */}
-    <span className="border-neon-yellow size-4 rounded-full border-2 border-t-transparent motion-safe:animate-spin" />
-    {label}…
-  </div>
-);
+const Spinner = ({ label }: { label?: string }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div
+      role="status"
+      className="flex items-center gap-3 py-6 text-sm text-slate-400"
+    >
+      {/* Stands still for people who asked their system for less motion */}
+      <span className="border-neon-yellow size-4 rounded-full border-2 border-t-transparent motion-safe:animate-spin" />
+      {label ?? t('common.loading')}…
+    </div>
+  );
+};
 
 /**
  * "3 days ago", with the exact moment for machines and, on hover, for
  * people who want to know.
  */
 const TimeAgo = ({ className, date }: { className?: string; date: string }) => (
-  <time
-    dateTime={date}
-    // In the visitor's own way of writing dates
-    title={new Date(date).toLocaleString()}
-    className={className}
-  >
+  <time dateTime={date} title={formatDateTime(date)} className={className}>
     {timeAgo(date)}
   </time>
 );
@@ -204,25 +205,27 @@ const ErrorNote = ({
 }: {
   error: unknown;
   onRetry?: () => void;
-}) => (
-  <div
-    role="alert"
-    className="border-neon-red/60 text-neon-red-core flex flex-wrap items-center justify-between gap-3 rounded border bg-red-950/40 px-3 py-2 text-sm"
-  >
-    <span>
-      {error instanceof Error ? error.message : 'Something went wrong'}
-    </span>
-    {onRetry !== undefined && (
-      <button
-        type="button"
-        onClick={onRetry}
-        className="cursor-pointer font-semibold underline"
-      >
-        Try again
-      </button>
-    )}
-  </div>
-);
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <div
+      role="alert"
+      className="border-neon-red/60 text-neon-red-core flex flex-wrap items-center justify-between gap-3 rounded border bg-red-950/40 px-3 py-2 text-sm"
+    >
+      <span>{errorText(error, t)}</span>
+      {onRetry !== undefined && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="cursor-pointer font-semibold underline"
+        >
+          {t('common.tryAgain')}
+        </button>
+      )}
+    </div>
+  );
+};
 
 export {
   Avatar,

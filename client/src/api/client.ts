@@ -14,19 +14,47 @@ const { api } = hc<AppType>(window.location.origin);
 
 /** An answer from the API that says something went wrong */
 class ApiError extends Error {
-  /** Machine-readable, for example `not_found` or `no_player_linked` */
+  /** Machine-readable, for example `not_in_hive` or `no_player_linked` */
   readonly code: string;
+  /** Values the text for the code may need, like the limit for `hive_full` */
+  readonly details: Record<string, unknown> | undefined;
   readonly status: number;
 
-  constructor(status: number, code: string, message: string) {
+  constructor(
+    status: number,
+    code: string,
+    message: string,
+    details?: Record<string, unknown>
+  ) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.code = code;
+    this.details = details;
   }
 }
 
-type ErrorBody = { error?: { code?: string; message?: string } };
+type ErrorBody = {
+  error?: { code?: string; details?: unknown; message?: string };
+};
+
+/** Reads the error a failed response carries */
+const apiErrorOf = async (response: {
+  json: () => Promise<unknown>;
+  status: number;
+}): Promise<ApiError> => {
+  const body = (await response.json().catch(() => ({}))) as ErrorBody;
+  const details = body.error?.details;
+
+  return new ApiError(
+    response.status,
+    body.error?.code ?? 'unknown',
+    body.error?.message ?? 'Something went wrong',
+    typeof details === 'object' && details !== null && !Array.isArray(details)
+      ? (details as Record<string, unknown>)
+      : undefined
+  );
+};
 
 /**
  * Waits for a call and returns its JSON, or throws an ApiError.
@@ -45,15 +73,7 @@ const unwrap = async <Output>(
 
   if (response.ok) return response.json();
 
-  const body = (await response
-    .json()
-    .catch(() => ({}))) as unknown as ErrorBody;
-
-  throw new ApiError(
-    response.status,
-    body.error?.code ?? 'unknown',
-    body.error?.message ?? 'Something went wrong'
-  );
+  throw await apiErrorOf(response);
 };
 
-export { api, ApiError, unwrap };
+export { api, ApiError, apiErrorOf, unwrap };

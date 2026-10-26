@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { Link, useParams, useSearchParams } from 'react-router';
 
 import { PAGE_SIZE, useComparison, useHive } from '@/api/queries.ts';
@@ -18,11 +19,11 @@ import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 import type { ComparisonFilter } from '@/api/queries.ts';
 
-const FILTERS: { label: string; value: ComparisonFilter }[] = [
-  { value: 'all', label: 'All shared maps' },
-  { value: 'losing', label: 'Where I am behind' },
-  { value: 'winning', label: 'Where I am ahead' },
-];
+const FILTERS = [
+  { value: 'all', label: 'comparison.filter.all' },
+  { value: 'losing', label: 'comparison.filter.losing' },
+  { value: 'winning', label: 'comparison.filter.winning' },
+] as const satisfies { label: string; value: ComparisonFilter }[];
 
 const isFilter = (value: string | null): value is ComparisonFilter =>
   FILTERS.some((filter) => filter.value === value);
@@ -34,6 +35,7 @@ const isFilter = (value: string | null): value is ComparisonFilter =>
  * survives a reload and can be shared as a link.
  */
 const ComparisonPage = () => {
+  const { t } = useTranslation();
   const { playerId = '' } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const requested = searchParams.get('filter');
@@ -48,7 +50,9 @@ const ComparisonPage = () => {
   const comparison = useComparison(playerId, { filter, page }, !notInHive);
   const items = comparison.data?.items ?? [];
   const total = comparison.data?.total;
-  const tableName = `Scores of me and ${member?.player.name ?? 'this bee'}`;
+  const tableName = t('comparison.tableName', {
+    name: member?.player.name ?? t('comparison.thisBee'),
+  });
   // While a list loads or has failed it has no total and no rows. What was
   // there before keeps the page buttons and the height of the table.
   const lastPage = lastPageOf(useLastKnown(total) ?? 0, PAGE_SIZE);
@@ -62,10 +66,10 @@ const ComparisonPage = () => {
 
   usePageTitle(
     notInHive
-      ? 'Not in your hive'
+      ? t('comparison.notInHive.title')
       : member === undefined
-        ? 'Comparison'
-        : `Me vs ${member.player.name}`
+        ? t('comparison.title')
+        : t('comparison.heading', { name: member.player.name })
   );
 
   useEffect(() => {
@@ -84,14 +88,17 @@ const ComparisonPage = () => {
     return (
       <div className="space-y-6">
         <NeonHeading color="red" className="text-3xl">
-          Not in your hive
+          {t('comparison.notInHive.title')}
         </NeonHeading>
         <EmptyState>
-          You can only compare with players in your hive, and this one is not.{' '}
-          <Link to="/hive" className="text-neon-yellow-core underline">
-            Go to my hive
-          </Link>{' '}
-          to add them.
+          <Trans
+            i18nKey="comparison.notInHive.text"
+            components={{
+              hive: (
+                <Link to="/hive" className="text-neon-yellow-core underline" />
+              ),
+            }}
+          />
         </EmptyState>
       </div>
     );
@@ -102,7 +109,7 @@ const ComparisonPage = () => {
         to="/hive"
         className="inline-block text-sm text-slate-400 hover:underline"
       >
-        ← My hive
+        {t('comparison.back')}
       </Link>
 
       {/* Picture and title stay side by side, also on a phone: the title
@@ -113,18 +120,29 @@ const ComparisonPage = () => {
         )}
         <div className="min-w-0">
           <NeonHeading color="red" className="text-2xl break-words sm:text-3xl">
-            Me vs {member?.player.name ?? '…'}
+            {t('comparison.heading', { name: member?.player.name ?? '…' })}
           </NeonHeading>
           {member !== undefined && (
             <p className="text-sm text-slate-400">
-              {member.shared} shared maps · you lead on {member.winning}, they
-              lead on {member.losing}
+              {t('dashboard.sharedMaps', {
+                count: member.shared,
+                number: formatScore(member.shared),
+              })}
+              {' · '}
+              {t('comparison.leads', {
+                winning: formatScore(member.winning),
+                losing: formatScore(member.losing),
+              })}
             </p>
           )}
         </div>
       </header>
 
-      <div role="group" aria-label="Filter" className="flex flex-wrap gap-2">
+      <div
+        role="group"
+        aria-label={t('comparison.filter.label')}
+        className="flex flex-wrap gap-2"
+      >
         {FILTERS.map(({ label, value }) => (
           <button
             key={value}
@@ -137,7 +155,7 @@ const ComparisonPage = () => {
                 : 'border-night-control text-slate-300 hover:border-slate-300'
             }`}
           >
-            {label}
+            {t(label)}
           </button>
         ))}
       </div>
@@ -152,18 +170,26 @@ const ComparisonPage = () => {
           that the list is loading, then what has arrived */}
       <p role="status" className="sr-only">
         {loading
-          ? 'Loading comparison'
+          ? t('comparison.loading')
           : total === undefined
             ? ''
-            : `${total} ${total === 1 ? 'map' : 'maps'} in this list${
-                lastPage > 1 ? `, page ${page} of ${lastPage}` : ''
-              }.`}
+            : lastPage > 1
+              ? t('comparison.listedPaged', {
+                  count: total,
+                  number: formatScore(total),
+                  page,
+                  total: lastPage,
+                })
+              : t('comparison.listed', {
+                  count: total,
+                  number: formatScore(total),
+                })}
       </p>
       {!loading && !comparison.isError && items.length === 0 && (
         <EmptyState>
           {filter === 'all'
-            ? 'You have not played any of the same maps yet.'
-            : 'No maps match this filter.'}
+            ? t('comparison.emptyAll')
+            : t('comparison.emptyFilter')}
         </EmptyState>
       )}
 
@@ -195,28 +221,28 @@ const ComparisonPage = () => {
                   scope="col"
                   className="px-2 py-2 font-semibold"
                 >
-                  Map
+                  {t('comparison.columns.map')}
                 </th>
                 <th
                   role="columnheader"
                   scope="col"
                   className="px-2 py-2 text-right font-semibold"
                 >
-                  Me
+                  {t('comparison.columns.me')}
                 </th>
                 <th
                   role="columnheader"
                   scope="col"
                   className="px-2 py-2 text-right font-semibold"
                 >
-                  {member?.player.name ?? 'Them'}
+                  {member?.player.name ?? t('comparison.columns.them')}
                 </th>
                 <th
                   role="columnheader"
                   scope="col"
                   className="px-2 py-2 text-right font-semibold"
                 >
-                  Difference
+                  {t('comparison.columns.difference')}
                 </th>
               </tr>
             </thead>
@@ -242,14 +268,16 @@ const ComparisonPage = () => {
                         role="cell"
                         className="px-2 py-2 text-right tabular-nums max-sm:flex-1 max-sm:pt-0 max-sm:text-left"
                       >
-                        <CellLabel>Me</CellLabel>
+                        <CellLabel>{t('comparison.columns.me')}</CellLabel>
                         {formatScore(mine.modifiedScore)}
                       </td>
                       <td
                         role="cell"
                         className="px-2 py-2 text-right tabular-nums max-sm:flex-1 max-sm:pt-0 max-sm:text-left"
                       >
-                        <CellLabel>{member?.player.name ?? 'Them'}</CellLabel>
+                        <CellLabel>
+                          {member?.player.name ?? t('comparison.columns.them')}
+                        </CellLabel>
                         {formatScore(theirs.modifiedScore)}
                       </td>
                       <td
@@ -262,7 +290,9 @@ const ComparisonPage = () => {
                               : 'text-slate-400'
                         }`}
                       >
-                        <CellLabel>Difference</CellLabel>
+                        <CellLabel>
+                          {t('comparison.columns.difference')}
+                        </CellLabel>
                         {formatDelta(delta)}
                       </td>
                     </tr>

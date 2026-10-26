@@ -77,7 +77,7 @@ describe('POST /api/hive', () => {
 
     expect(response.status).toBe(400);
     expect(await json(response)).toMatchObject({
-      error: { code: 'validation_failed' },
+      error: { code: 'cannot_add_self' },
     });
   });
 
@@ -85,6 +85,10 @@ describe('POST /api/hive', () => {
     const response = await addToHive('76561198999999999');
 
     expect(response.status).toBe(404);
+    // The frontend picks its text by this code
+    expect(await json(response)).toMatchObject({
+      error: { code: 'unknown_player' },
+    });
   });
 
   it('rejects a body without a player id', async () => {
@@ -184,6 +188,10 @@ describe('GET /api/hive/:playerId/comparison', () => {
     const response = await api(`/api/hive/${STRANGER}/comparison`);
 
     expect(response.status).toBe(404);
+    // The frontend picks its text by this code
+    expect(await json(response)).toMatchObject({
+      error: { code: 'not_in_hive' },
+    });
   });
 });
 
@@ -345,6 +353,10 @@ describe('DELETE /api/hive/:playerId', () => {
     });
 
     expect(response.status).toBe(404);
+    // The frontend picks its text by this code
+    expect(await json(response)).toMatchObject({
+      error: { code: 'not_in_hive' },
+    });
   });
 });
 

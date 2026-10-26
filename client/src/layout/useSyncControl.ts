@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useSyncHive, useSyncing } from '@/api/queries.ts';
 
@@ -14,6 +15,7 @@ const RESULT_SHOWN_MS = 20_000;
  * stands.
  */
 const useSyncControl = () => {
+  const { t } = useTranslation();
   const sync = useSyncHive();
   const syncing = useSyncing();
   const { data: result, reset: forgetResult } = sync;
@@ -46,11 +48,11 @@ const useSyncControl = () => {
   }, [result, forgetResult]);
 
   const message = syncing
-    ? 'Fetching scores from ScoreSaber…'
+    ? t('layout.sync.running')
     : justFinished
-      ? 'Scores are up to date.'
+      ? t('layout.sync.done')
       : result?.queued === 0
-        ? 'Already up to date, checked less than a minute ago.'
+        ? t('layout.sync.upToDate')
         : '';
 
   return {

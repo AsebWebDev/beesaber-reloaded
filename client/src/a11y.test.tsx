@@ -1,7 +1,8 @@
 import { screen, waitFor } from '@testing-library/react';
 import axe from 'axe-core';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
+import { i18n, LANGUAGES } from '@/i18n/i18n.ts';
 import { fakeApi } from '@/testing/fakeApi.ts';
 import { renderApp } from '@/testing/renderApp.tsx';
 
@@ -30,34 +31,62 @@ type State = {
   url: string;
 };
 
+/** Turns a text into a pattern that matches it literally */
+const literally = (text: string) =>
+  new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+
+/** The words a translation puts between <tag> and </tag> */
+const tagged = (text: string, tag: string) =>
+  new RegExp(`<${tag}>(.*?)</${tag}>`).exec(text)?.[1] ?? text;
+
+/**
+ * The states, found by their texts in whatever language the test runs in.
+ * `t` is called when a state is reached, after the language was set.
+ */
+const t = i18n.t;
+
 const STATES: State[] = [
   {
     name: 'the landing page',
     setup: () => fakeApi.set({ signIn: { devLogin: true, google: true } }),
     url: '/',
-    ready: () => screen.findByRole('button', { name: 'Dev Login' }),
+    ready: () => screen.findByRole('button', { name: t('landing.devLogin') }),
   },
   {
     name: 'the profile picker with search results',
     setup: () => fakeApi.set({ signedIn: true }),
     url: '/',
-    ready: () => screen.findByLabelText('Your name on ScoreSaber'),
+    ready: () => screen.findByLabelText(t('pickProfile.searchLabel')),
     act: async (user) => {
-      await user.type(screen.getByLabelText('Your name on ScoreSaber'), 'buzz');
-      await screen.findAllByRole('button', { name: /^This is me/ });
+      await user.type(
+        screen.getByLabelText(t('pickProfile.searchLabel')),
+        'buzz'
+      );
+      await screen.findAllByRole('button', {
+        name: literally(t('pickProfile.action')),
+      });
     },
   },
   {
     name: 'the dashboard with news and a bee',
     setup: () => fakeApi.signedInAs({ hive: [BEE], news: [fakeApi.news()] }),
     url: '/',
-    ready: () => screen.findByText('beat your score'),
+    // The bee's name links from the news and from her card
+    ready: () =>
+      waitFor(() =>
+        expect(screen.getAllByRole('link', { name: 'buzz' })).toHaveLength(2)
+      ),
   },
   {
     name: 'the empty dashboard',
     setup: () => fakeApi.signedInAs(),
     url: '/',
-    ready: () => screen.findByText(/Your hive is empty/),
+    ready: async () => {
+      await screen.findByText(t('dashboard.noNews'));
+      await screen.findByRole('link', {
+        name: tagged(t('dashboard.emptyHive'), 'hive'),
+      });
+    },
   },
   {
     name: 'the dashboard when its lists fail',
@@ -69,20 +98,20 @@ const STATES: State[] = [
     name: 'the hive with search results',
     setup: () => fakeApi.signedInAs({ hive: [BEE] }),
     url: '/hive',
-    ready: () => screen.findByRole('button', { name: /Remove buzz/ }),
+    ready: () =>
+      screen.findByRole('button', {
+        name: t('hive.removeFor', { name: 'buzz' }),
+      }),
     act: async (user) => {
-      await user.type(
-        screen.getByLabelText('Find a player on ScoreSaber'),
-        'buzz'
-      );
-      await screen.findByText('In your hive');
+      await user.type(screen.getByLabelText(t('hive.searchLabel')), 'buzz');
+      await screen.findByText(t('hive.inHive'));
     },
   },
   {
     name: 'the hive while a bee is being fetched',
     setup: () => fakeApi.signedInAs({ hive: [BEE], pollsUntilSynced: 5 }),
     url: '/hive',
-    ready: () => screen.findAllByText('Fetching scores from ScoreSaber…'),
+    ready: () => screen.findAllByText(t('hive.fetching')),
   },
   {
     name: 'the comparison',
@@ -100,7 +129,8 @@ const STATES: State[] = [
     name: 'my profile with several pages of scores',
     setup: () => fakeApi.signedInAs({ extraScores: 18 }),
     url: '/profile',
-    ready: () => screen.findByText('Page 1 of 2'),
+    ready: () =>
+      screen.findByText(t('pagination.position', { page: 1, total: 2 })),
   },
   {
     name: 'my profile with the profile picker open',
@@ -108,7 +138,7 @@ const STATES: State[] = [
     url: '/profile',
     ready: () => screen.findByText('Monster'),
     act: (user) =>
-      user.click(screen.getByRole('button', { name: 'Change profile' })),
+      user.click(screen.getByRole('button', { name: t('profile.change') })),
   },
   {
     name: 'my profile when the scores fail to load',
@@ -120,7 +150,10 @@ const STATES: State[] = [
     name: 'an unknown address',
     setup: () => fakeApi.signedInAs(),
     url: '/nope',
-    ready: () => screen.findByText(/nothing at this address/),
+    ready: () =>
+      screen.findByRole('link', {
+        name: tagged(t('notFound.text'), 'home'),
+      }),
   },
   {
     name: 'the error screen',
@@ -130,10 +163,11 @@ const STATES: State[] = [
   },
 ];
 
-describe('what a machine can check', () => {
-  // index.html says so; the test browser starts with an empty document
-  beforeAll(() => {
-    document.documentElement.lang = 'en';
+// Every state in every language: a translation can break a page too, say
+// with a link that lost its text or a heading that went missing
+describe.each(LANGUAGES)('what a machine can check, in %s', (language) => {
+  beforeEach(async () => {
+    await i18n.changeLanguage(language);
   });
 
   it.each(STATES)(
@@ -358,10 +392,10 @@ describe('what things are called', () => {
     await screen.findByText('Monster');
 
     expect(
-      screen.getByRole('table', { name: 'Scores of me and buzz' })
+      screen.getByRole('table', { name: 'Scores: me vs buzz' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('region', { name: 'Scores of me and buzz' })
+      screen.getByRole('region', { name: 'Scores: me vs buzz' })
     ).toHaveAttribute('tabindex', '0');
   });
 
@@ -400,6 +434,29 @@ describe('what things are called', () => {
     expect(document.querySelector('time')).toHaveAttribute(
       'datetime',
       '2024-02-01T10:00:00.000Z'
+    );
+  });
+});
+
+describe('a notice and a change of language', () => {
+  it('says what happened in the language switched to afterwards', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Change profile' })
+    );
+    await user.type(screen.getByLabelText('Your name on ScoreSaber'), 'buzz');
+    await user.click(
+      (await screen.findAllByRole('button', { name: /^This is me/ }))[0]!
+    );
+    await screen.findByRole('heading', { name: 'buzz' });
+    expect(said('You now compare as buzz.')).toBe(true);
+
+    await user.click(screen.getByRole('button', { name: 'Deutsch' }));
+
+    await waitFor(() =>
+      expect(said('Du vergleichst jetzt als buzz.')).toBe(true)
     );
   });
 });

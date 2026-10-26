@@ -206,7 +206,7 @@ describe('syncing a player', () => {
     expect(response.status).toBe(404);
     expect(await response.json()).toEqual({
       error: {
-        code: 'not_found',
+        code: 'unknown_player',
         message: 'ScoreSaber does not know this player',
       },
     });

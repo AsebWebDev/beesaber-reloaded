@@ -1,4 +1,6 @@
 import './index.css';
+// Before anything renders: the texts in the visitor's language
+import '@/i18n/i18n.ts';
 
 import { QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';

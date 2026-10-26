@@ -1,15 +1,18 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { useConfig } from '@/api/queries.ts';
 import { signInAsDev, signInWithGoogle } from '@/auth/authClient.ts';
 import { HexLogo } from '@/components/HexLogo.tsx';
+import { LanguageSwitch } from '@/components/LanguageSwitch.tsx';
 import { Button, ErrorNote, NeonHeading, Spinner } from '@/components/ui.tsx';
 import { useFocusOnMount } from '@/lib/useFocusOnMount.ts';
 import { usePageTitle } from '@/lib/usePageTitle.ts';
 
 /** What visitors see before they sign in */
 const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
+  const { t } = useTranslation();
   const main = useRef<HTMLElement>(null);
   const queryClient = useQueryClient();
   const config = useConfig();
@@ -41,19 +44,15 @@ const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
 
       <HexLogo size={120} />
 
-      <p className="max-w-xl text-lg text-slate-300">
-        Compare your Beat Saber scores with your friends. See where they are
-        ahead of you, and hear about it when someone beats your score.
-      </p>
+      <p className="max-w-xl text-lg text-slate-300">{t('landing.tagline')}</p>
 
       {/* Strangers who try to sign in get a bare refusal from Google, since
           sign-in is limited to invited accounts. This says why beforehand. */}
       <p className="max-w-xl text-sm text-slate-400">
-        <strong className="text-slate-300">
-          BeeSaber is a private, non-commercial project.
-        </strong>{' '}
-        Sign-in is open only to friends of the developer who have been invited.
-        If you were not invited, Google will not let you sign in.
+        <Trans
+          i18nKey="landing.private"
+          components={{ strong: <strong className="text-slate-300" /> }}
+        />
       </p>
 
       <div className="flex flex-col items-center gap-3">
@@ -62,7 +61,7 @@ const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
 
         {signIn?.google === true && (
           <Button disabled={google.isPending} onClick={() => google.mutate()}>
-            Sign in with Google
+            {t('landing.google')}
           </Button>
         )}
         {offersDevLogin && (
@@ -71,13 +70,11 @@ const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
             disabled={dev.isPending}
             onClick={() => dev.mutate()}
           >
-            Dev Login
+            {t('landing.devLogin')}
           </Button>
         )}
         {signIn !== undefined && !signIn.google && !offersDevLogin && (
-          <p className="text-slate-400">
-            No way to sign in is configured on the server.
-          </p>
+          <p className="text-slate-400">{t('landing.noSignIn')}</p>
         )}
 
         {google.isError && <ErrorNote error={google.error} />}
@@ -85,18 +82,24 @@ const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
       </div>
 
       <NeonHeading as="p" color="yellow" className="text-xl">
-        Find your hive
+        {t('landing.slogan')}
       </NeonHeading>
+
+      {/* Before signing in, too: the browser's language is a guess */}
+      <LanguageSwitch />
 
       {/* Every score and player comes from ScoreSaber, so it says so. The
           name plays on Beat Saber, so it says whose game that is. */}
       <p className="max-w-xl text-xs text-slate-400">
-        Scores and players come from{' '}
-        <a href="https://scoresaber.com" className="underline">
-          ScoreSaber
-        </a>
-        . BeeSaber is a fan project and not affiliated with ScoreSaber, Beat
-        Games or Meta. Beat Saber is a trademark of Meta Platforms, Inc.
+        <Trans
+          i18nKey="landing.credits"
+          components={{
+            // The link's text comes from the translation
+            scoresaber: (
+              <a href="https://scoresaber.com" className="underline" />
+            ),
+          }}
+        />
       </p>
     </main>
   );

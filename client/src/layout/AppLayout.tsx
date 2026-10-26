@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
 
 import { useSignOut } from '@/auth/useSignOut.ts';
@@ -11,10 +12,10 @@ import { useSyncControl } from './useSyncControl.ts';
 import type { Player } from '@/api/queries.ts';
 
 const LINKS = [
-  { to: '/', label: 'Dashboard' },
-  { to: '/hive', label: 'My hive' },
-  { to: '/profile', label: 'My profile' },
-];
+  { to: '/', label: 'layout.dashboard' },
+  { to: '/hive', label: 'layout.hive' },
+  { to: '/profile', label: 'layout.profile' },
+] as const;
 
 /** The frame around every page for a signed-in user: logo, menu, sync */
 const AppLayout = ({
@@ -25,6 +26,7 @@ const AppLayout = ({
   /** True when this replaces another screen, see the gate in routes.tsx */
   takeFocus?: boolean;
 }) => {
+  const { t } = useTranslation();
   const sync = useSyncControl();
   const logout = useSignOut();
   const { pathname } = useLocation();
@@ -54,7 +56,7 @@ const AppLayout = ({
         href="#content"
         className="bg-night text-neon-yellow-core sr-only rounded px-3 py-2 focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-10"
       >
-        Skip to content
+        {t('layout.skipToContent')}
       </a>
 
       <header className="flex flex-wrap items-center gap-x-4 gap-y-3 lg:w-56 lg:shrink-0 lg:flex-col lg:items-start lg:gap-4">
@@ -69,7 +71,7 @@ const AppLayout = ({
         {/* On a phone the menu is a row of its own below the logo, spread over
             the full width, so all three entries fit */}
         <nav
-          aria-label="Main"
+          aria-label={t('layout.mainMenu')}
           className="order-last flex w-full flex-wrap justify-between gap-1 lg:order-none lg:flex-col lg:justify-start"
         >
           {LINKS.map(({ label, to }) => (
@@ -86,7 +88,7 @@ const AppLayout = ({
                 }`
               }
             >
-              {label}
+              {t(label)}
             </NavLink>
           ))}
         </nav>
@@ -108,7 +110,7 @@ const AppLayout = ({
             disabled={logout.isPending}
             onClick={() => logout.mutate()}
           >
-            Sign out
+            {t('common.signOut')}
           </Button>
         </div>
       </header>
@@ -129,7 +131,7 @@ const AppLayout = ({
             onClick={sync.start}
             className="max-sm:px-3 max-sm:py-1.5 max-sm:text-xs"
           >
-            Sync scores
+            {t('layout.sync.button')}
           </Button>
         </div>
         {sync.error !== undefined && <ErrorNote error={sync.error} />}

@@ -10,28 +10,40 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status';
  *
  *   { "error": { "code": "not_found", "message": "..." } }
  *
- * `code` is for programs, `message` is for people.
+ * `code` is for programs, `message` is for people reading logs. The
+ * frontend shows a text of its own for each code, in the visitor's
+ * language, so every situation a visitor should be told about apart from
+ * the others needs a code of its own.
  */
 
 type ErrorCode =
+  | 'cannot_add_self'
   | 'forbidden'
+  | 'hive_full'
   | 'internal_error'
   | 'no_player_linked'
   | 'not_found'
+  | 'not_in_hive'
   | 'rate_limited'
   | 'scoresaber_unavailable'
   | 'unauthorized'
+  | 'unknown_player'
   | 'validation_failed';
 
 const statusOf: Record<ErrorCode, ContentfulStatusCode> = {
+  cannot_add_self: 400,
   forbidden: 403,
+  // `details.maxSize` says how many bees a hive may have
+  hive_full: 400,
   internal_error: 500,
   // 409 Conflict: the request is fine, the account is not ready for it yet
   no_player_linked: 409,
   not_found: 404,
+  not_in_hive: 404,
   rate_limited: 429,
   scoresaber_unavailable: 502,
   unauthorized: 401,
+  unknown_player: 404,
   validation_failed: 400,
 };
 
@@ -75,7 +87,7 @@ const handleError: ErrorHandler = (error, c) => {
   if (error instanceof ScoreSaberError) {
     if (error.kind === 'not_found')
       return c.json(
-        body('not_found', 'ScoreSaber does not know this player'),
+        body('unknown_player', 'ScoreSaber does not know this player'),
         404
       );
 

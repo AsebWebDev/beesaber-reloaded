@@ -1,7 +1,8 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
-import { http, HttpResponse } from 'msw';
+import { delay, http, HttpResponse } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 
+import { i18n } from '@/i18n/i18n.ts';
 import { fakeApi } from '@/testing/fakeApi.ts';
 import { renderApp } from '@/testing/renderApp.tsx';
 
@@ -367,6 +368,25 @@ describe('deleting my account', () => {
     expect(screen.queryByTestId('landing-page')).not.toBeInTheDocument();
     expect(fakeApi.state().signedIn).toBe(true);
   });
+
+  it('goes back to the landing page when the session ended before deleting', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Delete account' })
+    );
+    // The session runs out, or is ended on another device, before the
+    // question is answered
+    fakeApi.set({ signedIn: false });
+    await user.click(
+      screen.getByRole('button', { name: 'Yes, delete my account' })
+    );
+
+    // Like any other request that finds no session, not "it still exists"
+    expect(await screen.findByTestId('landing-page')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 });
 
 describe('an unknown address', () => {
@@ -615,7 +635,7 @@ describe('signing in', () => {
     );
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Google did not answer'
+      'Sign-in with Google failed.'
     );
     expect(screen.getByTestId('landing-page')).toBeInTheDocument();
   });
@@ -639,7 +659,7 @@ describe('signing in', () => {
     await user.click(await screen.findByRole('button', { name: 'Dev Login' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Email and password sign up is not enabled'
+      'Signing in with the test account failed.'
     );
     expect(screen.getByTestId('landing-page')).toBeInTheDocument();
   });
@@ -921,10 +941,9 @@ describe('the comparison with someone who is not in my hive', () => {
     expect(
       await screen.findByRole('heading', { name: 'Not in your hive' })
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Go to my hive' })).toHaveAttribute(
-      'href',
-      '/hive'
-    );
+    expect(
+      screen.getByRole('link', { name: 'Go to your hive' })
+    ).toHaveAttribute('href', '/hive');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
     expect(document.title).toBe('Not in your hive · BeeSaber');
@@ -954,5 +973,201 @@ describe('a picture that cannot be loaded', () => {
       width: '40px',
       height: '40px',
     });
+  });
+});
+
+describe('what an error says', () => {
+  it('tells what the server meant, not just that something failed', async () => {
+    // Someone removed the bee in another tab a moment ago
+    fakeApi.server.use(
+      http.delete('/api/hive/:playerId', () =>
+        HttpResponse.json(
+          {
+            error: {
+              code: 'not_in_hive',
+              message: 'This player is not in your hive',
+            },
+          },
+          { status: 404 }
+        )
+      )
+    );
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp('/hive');
+
+    await user.click(
+      await screen.findByRole('button', { name: /Remove buzz/ })
+    );
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'This player is not in your hive.'
+    );
+  });
+
+  it('says when the server cannot be reached at all', async () => {
+    fakeApi.server.use(http.get('/api/hive/news', () => HttpResponse.error()));
+    fakeApi.signedInAs();
+    renderApp();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The server could not be reached'
+    );
+  });
+});
+
+describe('the language', () => {
+  it('switches the whole app on the profile page and keeps the choice', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    await screen.findByText('Monster');
+    await user.click(screen.getByRole('button', { name: 'Deutsch' }));
+
+    // The menu, the page and the numbers in it
+    expect(
+      await screen.findByRole('link', { name: 'Übersicht' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Sprache' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('900.000')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Deutsch' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+    expect(document.documentElement.lang).toBe('de');
+    expect(document.title).toBe('Mein Profil · BeeSaber');
+    expect(localStorage.getItem('beesaber.language')).toBe('de');
+  });
+
+  it('can be switched before signing in', async () => {
+    fakeApi.set({ signIn: { devLogin: false, google: true } });
+    const { user } = renderApp();
+
+    await user.click(await screen.findByRole('button', { name: 'Deutsch' }));
+
+    expect(
+      await screen.findByRole('button', { name: 'Mit Google anmelden' })
+    ).toBeInTheDocument();
+  });
+
+  it('names each language in that language, and marks it as such', async () => {
+    fakeApi.signedInAs();
+    renderApp('/profile');
+
+    expect(
+      await screen.findByRole('button', { name: 'Deutsch' })
+    ).toHaveAttribute('lang', 'de');
+    expect(screen.getByRole('button', { name: 'English' })).toHaveAttribute(
+      'lang',
+      'en'
+    );
+  });
+});
+
+describe('a player name that looks like markup', () => {
+  it.each(['<3 Bee', 'x</player>y', '<i>it</i>'])(
+    'shows %s as it is in the news',
+    async (name) => {
+      const news = fakeApi.news();
+
+      fakeApi.signedInAs({
+        news: [{ ...news, player: { ...news.player, name } }],
+      });
+      renderApp();
+
+      expect(await screen.findByRole('link', { name })).toHaveAttribute(
+        'href',
+        `/hive/${fakeApi.BEE.id}`
+      );
+    }
+  );
+
+  it('puts the time inside the German sentence', async () => {
+    await i18n.changeLanguage('de');
+    fakeApi.signedInAs({ news: [fakeApi.news()] });
+    renderApp();
+
+    const line = (
+      await screen.findByRole('link', { name: fakeApi.BEE.name })
+    ).closest('p')!;
+
+    expect(line).toHaveTextContent(/^buzz hat vor .+ deinen Score geschlagen$/);
+  });
+});
+
+describe('numbers inside sentences', () => {
+  it('are grouped and counted the way the language does it', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp('/profile');
+
+    expect(
+      await screen.findByText(
+        /Rank #1,234 · #56 in DE · 4,322 pp · 475 maps played/
+      )
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Deutsch' }));
+
+    expect(
+      await screen.findByText(
+        /Rang 1\.234 · Rang 56 in DE · 4\.322 pp · 475 Maps gespielt/
+      )
+    ).toBeInTheDocument();
+  });
+});
+
+describe('a pick that takes a moment', () => {
+  it('names the pressed button by what it shows while it works', async () => {
+    fakeApi.server.use(
+      http.post('/api/hive', async () => {
+        await delay(300);
+
+        return HttpResponse.json({ player: fakeApi.BEE }, { status: 201 });
+      })
+    );
+    fakeApi.signedInAs();
+    const { user } = renderApp('/hive');
+
+    await user.type(
+      await screen.findByLabelText('Find a player on ScoreSaber'),
+      'buzz'
+    );
+    await user.click(
+      await screen.findByRole('button', { name: 'Add buzz to my hive' })
+    );
+
+    expect(
+      await screen.findByRole('button', { name: 'Working…' })
+    ).toBeDisabled();
+  });
+});
+
+describe('a profile that is gone while the app is open', () => {
+  it('asks for a profile again when the server says none is linked', async () => {
+    // The profile was unlinked meanwhile, say from another device
+    fakeApi.server.use(
+      http.delete('/api/hive/:playerId', () =>
+        HttpResponse.json(
+          {
+            error: {
+              code: 'no_player_linked',
+              message: 'Pick your ScoreSaber profile first',
+            },
+          },
+          { status: 409 }
+        )
+      )
+    );
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp('/hive');
+
+    await screen.findByRole('button', { name: /Remove buzz/ });
+    fakeApi.set({ playerId: null });
+    await user.click(screen.getByRole('button', { name: /Remove buzz/ }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Which player are you?' })
+    ).toBeInTheDocument();
   });
 });
