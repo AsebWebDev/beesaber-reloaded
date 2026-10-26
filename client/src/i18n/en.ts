@@ -149,6 +149,26 @@ const en = {
     thisBee: 'this bee',
     title: 'Comparison',
   },
+  map: {
+    columns: {
+      accuracy: 'Accuracy',
+      gap: 'Behind the top',
+      played: 'Played',
+      player: 'Player',
+      score: 'Score',
+    },
+    empty: 'Nobody in your hive has played this map yet.',
+    onScoreSaber: 'View on ScoreSaber',
+    place: '{{place}}.',
+    ranking: 'Hive ranking',
+    tableName: 'Hive ranking for {{song}}',
+    title: 'Map',
+    unknown: {
+      text: 'BeeSaber does not know this map. <home>Back to the dashboard</home>',
+      title: 'Map not found',
+    },
+    you: 'you',
+  },
   profile: {
     change: 'Change profile',
     changed: 'You now compare as {{name}}.',
