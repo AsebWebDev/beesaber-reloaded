@@ -6,6 +6,7 @@ import {
   countryFlag,
   difficultyName,
   formatAccuracy,
+  formatDateTime,
   formatDelta,
   formatRank,
   formatScore,
@@ -127,5 +128,29 @@ describe('in German', () => {
 
   it('keeps the names of the difficulties as players know them', () => {
     expect(difficultyName(9)).toBe('Expert+');
+  });
+});
+
+describe('in the region of the browser', () => {
+  const browserLanguages = (languages: string[]) =>
+    Object.defineProperty(navigator, 'languages', {
+      configurable: true,
+      get: () => languages,
+    });
+
+  afterEach(() => {
+    browserLanguages(['en-US']);
+  });
+
+  it('writes a British date the British way', () => {
+    browserLanguages(['en-GB']);
+
+    expect(formatDateTime('2026-10-25T12:05:28.000Z')).toMatch(/^25\/10\/2026/);
+  });
+
+  it('writes an American date the American way', () => {
+    browserLanguages(['en-US']);
+
+    expect(formatDateTime('2026-10-25T12:05:28.000Z')).toMatch(/^10\/25\/2026/);
   });
 });

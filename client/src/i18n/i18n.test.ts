@@ -2,7 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import { de } from './de.ts';
 import { en } from './en.ts';
-import { browserLanguage, detectLanguage, i18n } from './i18n.ts';
+import {
+  browserLanguage,
+  currentLocale,
+  detectLanguage,
+  i18n,
+} from './i18n.ts';
 
 describe('browserLanguage', () => {
   it('takes the first of the browser languages the app has', () => {
@@ -19,6 +24,22 @@ describe('browserLanguage', () => {
   it('finds nothing when the app has none of them', () => {
     expect(browserLanguage(['fr', 'ja'])).toBeUndefined();
     expect(browserLanguage([])).toBeUndefined();
+  });
+});
+
+describe('currentLocale', () => {
+  it("takes the browser's region when it is in the language the app shows", async () => {
+    expect(currentLocale(['en-GB', 'de-DE'])).toBe('en-GB');
+
+    await i18n.changeLanguage('de');
+
+    expect(currentLocale(['en-GB', 'de-CH'])).toBe('de-CH');
+  });
+
+  it('falls back to the language alone', async () => {
+    await i18n.changeLanguage('de');
+
+    expect(currentLocale(['en-US'])).toBe('de');
   });
 });
 

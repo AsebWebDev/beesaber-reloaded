@@ -76,6 +76,22 @@ i18n.on('languageChanged', markPageLanguage);
 const currentLanguage = (): Language =>
   isLanguage(i18n.resolvedLanguage) ? i18n.resolvedLanguage : 'en';
 
+/**
+ * The language with its region, for writing dates and numbers: the
+ * browser's own locale when it is in the language the app shows ("en-GB"
+ * writes 25/10/2026, "de-CH" 1'234), otherwise the language alone.
+ */
+const currentLocale = (
+  preferred: readonly string[] = navigator.languages
+): string => {
+  const language = currentLanguage();
+
+  return (
+    preferred.find((tag) => tag.split('-')[0]?.toLowerCase() === language) ??
+    language
+  );
+};
+
 /** Switches the app to a language and remembers the choice in the browser */
 const setLanguage = async (language: Language) => {
   try {
@@ -90,6 +106,7 @@ const setLanguage = async (language: Language) => {
 export {
   browserLanguage,
   currentLanguage,
+  currentLocale,
   detectLanguage,
   i18n,
   LANGUAGES,
