@@ -12,6 +12,8 @@ import {
 
 const BEE = '76561198000000002';
 const STRANGER = '76561198000000003';
+/** A bee in somebody else's hive, never in mine */
+const OUTSIDER = '76561198000000004';
 
 /**
  * A moment shortly after now. News only counts scores set after the bee
@@ -35,6 +37,21 @@ const addToHive = (playerId: string, as = api) =>
 
 const sync = (playerId: string) =>
   services.playersService.requestSync(playerId);
+
+/**
+ * Another account, compared as the stranger, with the outsider in its hive.
+ * The outsider's scores are stored and logged like those of my own bees,
+ * so a query that forgets whose hive it reads would find them.
+ */
+const otherHiveWithOutsider = async () => {
+  const other = await createUser('other-user');
+
+  // Checked, so that a test cannot pass only because this setup failed
+  expect((await linkProfile(STRANGER, other)).status).toBe(200);
+  expect((await addToHive(OUTSIDER, other)).status).toBe(201);
+
+  return other;
+};
 
 beforeEach(async () => {
   // I am ahead on leaderboard 1, behind on 2, and alone on 3
@@ -335,6 +352,28 @@ describe('GET /api/hive/news', () => {
 
     expect((await news()).items).toEqual([]);
   });
+
+  it('ignores the bees of other hives', async () => {
+    scoreSaber.setPlayer(STRANGER, 'stranger', [
+      { leaderboardId: 1, score: 100, playedAt: '2024-01-01T10:00:00.000Z' },
+    ]);
+    scoreSaber.setPlayer(OUTSIDER, 'outsider', []);
+    await addToHive(BEE);
+
+    const other = await otherHiveWithOutsider();
+
+    // The outsider goes past me and past the stranger on leaderboard 1
+    scoreSaber.setPlayer(OUTSIDER, 'outsider', [
+      { leaderboardId: 1, score: 999, playedAt: soon(1) },
+    ]);
+    await sync(OUTSIDER);
+
+    // News to the account whose hive the outsider is in, none to me
+    const theirs: News = await json(await other('/api/hive/news'));
+
+    expect(theirs.items).toMatchObject([{ player: { name: 'outsider' } }]);
+    expect((await news()).items).toEqual([]);
+  });
 });
 
 describe('DELETE /api/hive/:playerId', () => {
@@ -482,18 +521,26 @@ describe('GET /api/hive/maps/:leaderboardId', () => {
   });
 
   it('leaves out bees who have not played it, and players of other hives', async () => {
-    const other = await createUser('other-user');
-
     scoreSaber.setPlayer(STRANGER, 'stranger', [
       { leaderboardId: 3, score: 999, playedAt: '2024-01-07T10:00:00.000Z' },
     ]);
-    await linkProfile(STRANGER, other);
+    scoreSaber.setPlayer(OUTSIDER, 'outsider', [
+      { leaderboardId: 3, score: 998, playedAt: '2024-01-07T10:00:00.000Z' },
+    ]);
     await addToHive(BEE);
 
-    // The bee has no score on 3, the stranger is in no hive of mine
+    const other = await otherHiveWithOutsider();
+
+    // The bee has no score on 3. The stranger compares as the other
+    // account, and the outsider is a bee of that account, not of mine.
     const body: Ranking = await json(await ranking(3));
+    const theirs: Ranking = await json(await ranking(3, other));
 
     expect(body.entries.map(({ player }) => player.id)).toEqual([ME]);
+    expect(theirs.entries.map(({ player }) => player.id)).toEqual([
+      STRANGER,
+      OUTSIDER,
+    ]);
   });
 
   it('gives the same place to the same score', async () => {
@@ -681,6 +728,29 @@ describe('GET /api/hive/revenge', () => {
     expect(firstPage.items).toHaveLength(2);
     expect(secondPage.items).toHaveLength(2);
     expect(firstPage.total).toBe(4);
+  });
+
+  it('leaves out the bees of other hives', async () => {
+    scoreSaber.setPlayer(STRANGER, 'stranger', []);
+    // Ahead of me on 1, but in somebody else's hive
+    scoreSaber.setPlayer(OUTSIDER, 'outsider', [
+      {
+        leaderboardId: 1,
+        maxScore: 1000,
+        score: 990,
+        playedAt: '2024-01-11T10:00:00.000Z',
+      },
+    ]);
+    await linkProfile(ME);
+    await addToHive(BEE);
+    await otherHiveWithOutsider();
+
+    const body: Revenge = await json(await revenge());
+
+    expect(new Set(body.items.map(({ bee }) => bee.id))).toEqual(
+      new Set([BEE])
+    );
+    expect(body.total).toBe(3);
   });
 
   it('answers 404 for a bee who is not in my hive', async () => {
