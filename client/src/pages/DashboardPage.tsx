@@ -8,6 +8,7 @@ import {
   useRevenge,
   useTrending,
 } from '@/api/queries.ts';
+import { Gap } from '@/components/Gap.tsx';
 import { Song } from '@/components/Song.tsx';
 import {
   Avatar,
@@ -18,7 +19,7 @@ import {
   Spinner,
   TimeAgo,
 } from '@/components/ui.tsx';
-import { formatDelta, formatGap, formatScore } from '@/lib/format.ts';
+import { formatDelta, formatScore } from '@/lib/format.ts';
 import { usePageTitle } from '@/lib/usePageTitle.ts';
 import { Bees } from '@/pages/TrendingPage.tsx';
 
@@ -96,7 +97,6 @@ const TrendingCard = ({ item }: { item: TrendingItem }) => (
 
 /** One map where a bee is ahead, and what I need to get past them */
 const RevengeCard = ({ item }: { item: RevengeItem }) => {
-  const { t } = useTranslation();
   const { bee, gap, gapShare, leaderboard } = item;
 
   return (
@@ -111,9 +111,7 @@ const RevengeCard = ({ item }: { item: RevengeItem }) => {
         </Link>
       </span>
       <span className="text-neon-red-core font-semibold tabular-nums">
-        {gapShare === null
-          ? t('revenge.points', { count: gap, number: formatScore(gap) })
-          : formatGap(gapShare)}
+        <Gap gap={gap} gapShare={gapShare} />
       </span>
     </Card>
   );

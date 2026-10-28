@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router';
 
 import { PAGE_SIZE, useHive, useRevenge } from '@/api/queries.ts';
+import { Gap } from '@/components/Gap.tsx';
 import { Pagination } from '@/components/Pagination.tsx';
 import { SkeletonRows } from '@/components/SkeletonRows.tsx';
 import { Song } from '@/components/Song.tsx';
@@ -13,7 +14,7 @@ import {
   ErrorNote,
   NeonHeading,
 } from '@/components/ui.tsx';
-import { formatGap, formatScore } from '@/lib/format.ts';
+import { formatScore } from '@/lib/format.ts';
 import { lastPageOf, pageFrom, useLastKnown } from '@/lib/pagination.ts';
 import { usePageTitle } from '@/lib/usePageTitle.ts';
 
@@ -249,9 +250,7 @@ const Row = ({ item }: { item: RevengeItem }) => {
         className={`${valueCell} text-neon-red-core font-semibold`}
       >
         <CellLabel>{t('revenge.columns.need')}</CellLabel>
-        {gapShare === null
-          ? t('revenge.points', { count: gap, number: formatScore(gap) })
-          : formatGap(gapShare)}
+        <Gap gap={gap} gapShare={gapShare} />
       </td>
     </tr>
   );

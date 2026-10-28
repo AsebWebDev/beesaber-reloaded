@@ -1520,6 +1520,42 @@ describe('the revenge list with more than one bee', () => {
 
     expect(await screen.findByText('+1,234 points')).toBeInTheDocument();
   });
+
+  it('gives the gap in points when it is too small to show in percent', async () => {
+    const news = fakeApi.news();
+
+    fakeApi.server.use(
+      http.get('/api/hive/revenge', () =>
+        HttpResponse.json({
+          items: [
+            {
+              leaderboard: news.leaderboard,
+              bee: news.player,
+              myScore: 400_000,
+              theirScore: 400_030,
+              gap: 30,
+              // 0.003 %, which rounds to "0.00%"
+              gapShare: 0.000_03,
+            },
+          ],
+          page: 1,
+          limit: 15,
+          total: 1,
+          totalPages: 1,
+        })
+      )
+    );
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp('/revenge');
+
+    expect(await screen.findByText('+30 points')).toBeInTheDocument();
+    expect(screen.queryByText(/0.00%/)).not.toBeInTheDocument();
+
+    // The dashboard says it the same way
+    await user.click(screen.getByRole('link', { name: 'Dashboard' }));
+
+    expect(await screen.findByText('+30 points')).toBeInTheDocument();
+  });
 });
 
 describe('what the hive is playing', () => {
