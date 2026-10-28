@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import axe from 'axe-core';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -194,7 +194,8 @@ const STATES: State[] = [
     name: 'the revenge list',
     setup: () => fakeApi.signedInAs({ hive: [BEE] }),
     url: '/revenge',
-    ready: () => screen.findByRole('table', { name: t('revenge.title') }),
+    // The table is there at once, with placeholder rows; wait for the rows
+    ready: () => screen.findByRole('link', { name: 'Superstar' }),
   },
   {
     name: 'an empty revenge list',
@@ -206,7 +207,8 @@ const STATES: State[] = [
     name: 'what the hive is playing',
     setup: () => fakeApi.signedInAs({ hive: [BEE] }),
     url: '/trending',
-    ready: () => screen.findByRole('table', { name: t('trending.title') }),
+    // The table is there at once, with placeholder rows; wait for the rows
+    ready: () => screen.findByRole('link', { name: 'Night Flight' }),
   },
   {
     name: 'an empty list of what the hive is playing',
@@ -451,14 +453,17 @@ describe('what things are called', () => {
     fakeApi.signedInAs({ hive: [BEE] });
     renderApp();
 
-    await screen.findByText('2 shared maps');
+    // Her card, not the other sections that name her too
+    const card = (
+      await screen.findByRole('heading', { name: 'Head to head' })
+    ).closest('section')!;
 
-    // Her card and the revenge list name her, each with a link of her name
-    const links = await screen.findAllByRole('link', { name: 'buzz' });
+    await within(card).findByText('2 shared maps');
 
-    expect(links.length).toBeGreaterThan(0);
-    for (const link of links)
-      expect(link).toHaveAttribute('href', `/hive/${BEE}`);
+    expect(within(card).getByRole('link', { name: 'buzz' })).toHaveAttribute(
+      'href',
+      `/hive/${BEE}`
+    );
   });
 
   it('does not describe pictures that stand next to a name', async () => {

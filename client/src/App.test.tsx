@@ -1379,11 +1379,18 @@ describe('a song title', () => {
     fakeApi.signedInAs({ hive: [fakeApi.BEE.id], news: [fakeApi.news()] });
     const { user } = renderApp();
 
-    // In the news, and in the revenge list below it
-    const superstar = await screen.findAllByRole('link', { name: 'Superstar' });
+    // In the news, and in the revenge list below it, each on its own
+    const news = (await screen.findByText('beat your score')).closest('div')!;
+    const revenge = (
+      await screen.findByRole('heading', { name: 'Revenge' })
+    ).closest('section')!;
 
-    for (const link of superstar)
-      expect(link).toHaveAttribute('href', '/maps/2');
+    expect(
+      within(news).getByRole('link', { name: 'Superstar' })
+    ).toHaveAttribute('href', '/maps/2');
+    expect(
+      await within(revenge).findByRole('link', { name: 'Superstar' })
+    ).toHaveAttribute('href', '/maps/2');
 
     await user.click(screen.getByRole('link', { name: 'My profile' }));
 
@@ -1663,9 +1670,16 @@ describe('what the hive is playing', () => {
         .getAllByRole('link', { name: /^buzz/ })
         .map((link) => link.textContent)
     ).toEqual(['buzz', 'buzzkill']);
-    expect(
-      within(row!).getByRole('link', { name: 'Night Flight on ScoreSaber' })
-    ).toHaveAttribute('href', 'https://scoresaber.com/leaderboard/4');
+    const onScoreSaber = within(row!).getByRole('link', {
+      name: 'Night Flight on ScoreSaber',
+    });
+
+    expect(onScoreSaber).toHaveAttribute(
+      'href',
+      'https://scoresaber.com/leaderboard/4'
+    );
+    // The name says which map; on screen the column already does
+    expect(onScoreSaber).toHaveTextContent(/^ScoreSaber$/);
     expect(row!.querySelector('time')).toHaveAttribute(
       'datetime',
       '2024-02-01T10:00:00.000Z'
