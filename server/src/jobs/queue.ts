@@ -45,7 +45,8 @@ type Handlers = {
 type JobQueue = {
   /**
    * Asks for a sync of a player. If one is already waiting for this player,
-   * nothing is added.
+   * nothing is added, but the waiting one moves up to this request's
+   * priority and start time when those are more urgent.
    */
   enqueueSync: (
     job: SyncJob,
@@ -111,8 +112,8 @@ const createPgBossQueue = (
   };
 
   return {
-    enqueueSync: async (job, { delaySeconds, priority = 'user' } = {}) => {
-      await boss.send(SYNC_QUEUE, job, {
+    enqueueSync: async (job, { delaySeconds = 0, priority = 'user' } = {}) => {
+      const id = await boss.send(SYNC_QUEUE, job, {
         priority: PRIORITY[priority],
         // One key per player. With the "stately" policy of the queue, at most
         // one job per player waits and one runs; further requests are dropped.
@@ -124,6 +125,30 @@ const createPgBossQueue = (
         // A job that runs longer than this is considered stuck
         expireInSeconds: 10 * 60,
       });
+
+      if (id !== null) return;
+
+      // A job for this player is waiting already. If it waits for the
+      // periodic catch-up or for a delayed live score while a user asks,
+      // the user would wait with it: move it up instead. Only waiting jobs
+      // are found and changed, never one that has started meanwhile.
+      const [waiting] = await boss.findJobs<SyncJob>(SYNC_QUEUE, {
+        key: job.playerId,
+        queued: true,
+      });
+
+      if (waiting === undefined) return;
+
+      const sooner =
+        waiting.startAfter.getTime() > Date.now() + delaySeconds * 1000;
+      const higher = waiting.priority < PRIORITY[priority];
+
+      if (sooner || higher)
+        await boss.update(SYNC_QUEUE, undefined, {
+          id: waiting.id,
+          ...(higher ? { priority: PRIORITY[priority] } : {}),
+          ...(sooner ? { startAfter: delaySeconds } : {}),
+        });
     },
 
     start: async ({ onSync, onTick }) => {
