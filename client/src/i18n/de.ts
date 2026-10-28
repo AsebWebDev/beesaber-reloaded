@@ -84,6 +84,9 @@ const de: Translation = {
     news: 'Neuigkeiten',
     noNews:
       'Niemand hat in letzter Zeit einen deiner Scores geschlagen. Genieß es, solange es anhält.',
+    revenge: 'Revanche',
+    revengeAll_one: 'Ganze Revanche-Liste: {{number}} Map',
+    revengeAll_other: 'Ganze Revanche-Liste: {{number}} Maps',
     sharedMaps_one: '{{number}} gemeinsame Map',
     sharedMaps_other: '{{number}} gemeinsame Maps',
     theirs: 'Score der Biene',
@@ -163,6 +166,33 @@ const de: Translation = {
       title: 'Map nicht gefunden',
     },
     you: 'du',
+  },
+  revenge: {
+    columns: {
+      bee: 'Biene',
+      map: 'Map',
+      mine: 'Du',
+      need: 'Dir fehlen',
+      theirs: 'Score der Biene',
+    },
+    empty: 'Auf keiner gemeinsamen Map liegt eine Biene vor dir.',
+    emptyBee: '{{name}} liegt auf keiner gemeinsamen Map vor dir.',
+    filter: {
+      all: 'Alle Bienen',
+      label: 'Biene',
+    },
+    intro:
+      'Maps, auf denen eine Biene vor dir liegt, die knappsten zuerst. Was dir fehlt, steht in Prozentpunkten der Genauigkeit: so viel mehr, und du bist vorne.',
+    listed_one: '{{number}} Map in dieser Liste.',
+    listed_other: '{{number}} Maps in dieser Liste.',
+    listedPaged_one:
+      '{{number}} Map in dieser Liste, Seite {{page}} von {{total}}.',
+    listedPaged_other:
+      '{{number}} Maps in dieser Liste, Seite {{page}} von {{total}}.',
+    loading: 'Revanche-Liste wird geladen',
+    points_one: '+{{number}} Punkt',
+    points_other: '+{{number}} Punkte',
+    title: 'Revanche-Liste',
   },
   profile: {
     change: 'Profil wechseln',

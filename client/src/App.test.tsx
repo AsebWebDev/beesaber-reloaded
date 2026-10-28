@@ -1244,14 +1244,176 @@ describe('a song title', () => {
     fakeApi.signedInAs({ hive: [fakeApi.BEE.id], news: [fakeApi.news()] });
     const { user } = renderApp();
 
-    expect(
-      await screen.findByRole('link', { name: 'Superstar' })
-    ).toHaveAttribute('href', '/maps/2');
+    // In the news, and in the revenge list below it
+    const superstar = await screen.findAllByRole('link', { name: 'Superstar' });
+
+    for (const link of superstar)
+      expect(link).toHaveAttribute('href', '/maps/2');
 
     await user.click(screen.getByRole('link', { name: 'My profile' }));
 
     expect(
       await screen.findByRole('link', { name: 'Monster' })
     ).toHaveAttribute('href', '/maps/1');
+  });
+});
+
+describe('the revenge list', () => {
+  it('lists the maps where a bee is ahead, with what I need to get past', async () => {
+    // On Superstar the bee has 500,000 to my 400,000, of 1,000,000
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp('/revenge');
+
+    // The table is there at once, with placeholder rows while it loads
+    await screen.findByRole('link', { name: 'Superstar' });
+
+    const table = screen.getByRole('table', { name: 'Revenge list' });
+    const [, row] = within(table).getAllByRole('row');
+
+    expect(
+      within(row!).getByRole('link', { name: 'Superstar' })
+    ).toBeInTheDocument();
+    expect(within(row!).getByRole('link', { name: 'buzz' })).toHaveAttribute(
+      'href',
+      `/hive/${fakeApi.BEE.id}`
+    );
+    expect(within(row!).getByText('400,000')).toBeInTheDocument();
+    expect(within(row!).getByText('500,000')).toBeInTheDocument();
+    expect(within(row!).getByText('+10.00%')).toBeInTheDocument();
+    expect(document.title).toBe('Revenge list · BeeSaber');
+  });
+
+  it('says so when no bee is ahead anywhere', async () => {
+    fakeApi.signedInAs();
+    renderApp('/revenge');
+
+    expect(
+      await screen.findByText(
+        'No bee is ahead of you on a map you both played.'
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('says so for a bee in the address who is not in the hive', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp('/revenge?bee=999');
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'This player is not in your hive.'
+    );
+  });
+
+  it('writes the gap the German way', async () => {
+    await i18n.changeLanguage('de');
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp('/revenge');
+
+    await screen.findByRole('link', { name: 'Superstar' });
+
+    const table = screen.getByRole('table', { name: 'Revanche-Liste' });
+
+    expect(within(table).getByText(/^\+10,00\s%$/u)).toBeInTheDocument();
+    expect(
+      within(table).getByRole('columnheader', { name: 'Dir fehlen' })
+    ).toBeInTheDocument();
+  });
+});
+
+describe('the revenge section of the dashboard', () => {
+  it('shows the closest chances and leads to the whole list', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp();
+
+    const section = (
+      await screen.findByRole('heading', { name: 'Revenge' })
+    ).closest('section')!;
+
+    expect(
+      await within(section).findByRole('link', { name: 'Superstar' })
+    ).toBeInTheDocument();
+    expect(within(section).getByText('+10.00%')).toBeInTheDocument();
+    expect(
+      within(section).getByRole('link', {
+        name: 'The whole revenge list: 1 map',
+      })
+    ).toHaveAttribute('href', '/revenge');
+  });
+
+  it('is not there while the hive is empty', async () => {
+    fakeApi.signedInAs();
+    renderApp();
+
+    await screen.findByText(/Your hive is empty/);
+
+    expect(
+      screen.queryByRole('heading', { name: 'Revenge' })
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe('the revenge list with more than one bee', () => {
+  it('shows one bee at a time, and all of them again', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id, '3003'] });
+    const { router, user } = renderApp('/revenge');
+
+    await screen.findByRole('link', { name: 'Superstar' });
+    await user.click(screen.getByRole('button', { name: 'buzzkill' }));
+
+    expect(
+      await screen.findByText(
+        'buzzkill is not ahead of you on any map you both played.'
+      )
+    ).toBeInTheDocument();
+    expect(router.state.location.search).toContain('bee=3003');
+    expect(screen.getByRole('button', { name: 'buzzkill' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+
+    await user.click(screen.getByRole('button', { name: 'All bees' }));
+
+    expect(
+      await screen.findByRole('link', { name: 'Superstar' })
+    ).toBeInTheDocument();
+    expect(router.state.location.search).not.toContain('bee=');
+  });
+
+  it('goes to the last page when the address asks for one beyond it', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { router } = renderApp('/revenge?page=9');
+
+    expect(
+      await screen.findByRole('link', { name: 'Superstar' })
+    ).toBeInTheDocument();
+    expect(router.state.location.search).toContain('page=1');
+  });
+
+  it('gives the gap in points for a map without a maximum score', async () => {
+    const news = fakeApi.news();
+
+    fakeApi.server.use(
+      http.get('/api/hive/revenge', () =>
+        HttpResponse.json({
+          items: [
+            {
+              leaderboard: { ...news.leaderboard, maxScore: 0 },
+              bee: news.player,
+              myScore: 400_000,
+              theirScore: 401_234,
+              gap: 1234,
+              gapShare: null,
+            },
+          ],
+          page: 1,
+          limit: 15,
+          total: 1,
+          totalPages: 1,
+        })
+      )
+    );
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp('/revenge');
+
+    expect(await screen.findByText('+1,234 points')).toBeInTheDocument();
   });
 });

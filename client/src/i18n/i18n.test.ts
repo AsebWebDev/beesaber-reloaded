@@ -106,6 +106,7 @@ describe('the translations', () => {
       'map.columns.score',
       'map.place',
       'map.title',
+      'revenge.columns.map',
       'scores.columns.map',
       'scores.columns.score',
     ]);

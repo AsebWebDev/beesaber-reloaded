@@ -90,6 +90,9 @@ const en = {
     news: 'News',
     noNews:
       'Nobody has beaten one of your scores lately. Enjoy it while it lasts.',
+    revenge: 'Revenge',
+    revengeAll_one: 'The whole revenge list: {{number}} map',
+    revengeAll_other: 'The whole revenge list: {{number}} maps',
     sharedMaps_one: '{{number}} shared map',
     sharedMaps_other: '{{number}} shared maps',
     theirs: 'Theirs',
@@ -168,6 +171,32 @@ const en = {
       title: 'Map not found',
     },
     you: 'you',
+  },
+  revenge: {
+    columns: {
+      bee: 'Bee',
+      map: 'Map',
+      mine: 'You',
+      need: 'You need',
+      theirs: 'Their score',
+    },
+    empty: 'No bee is ahead of you on a map you both played.',
+    emptyBee: '{{name}} is not ahead of you on any map you both played.',
+    filter: {
+      all: 'All bees',
+      label: 'Bee',
+    },
+    intro:
+      'Maps where a bee is ahead of you, the closest first. What you need is in accuracy points: that much more, and you are ahead.',
+    listed_one: '{{number}} map in this list.',
+    listed_other: '{{number}} maps in this list.',
+    listedPaged_one: '{{number}} map in this list, page {{page}} of {{total}}.',
+    listedPaged_other:
+      '{{number}} maps in this list, page {{page}} of {{total}}.',
+    loading: 'Loading the revenge list',
+    points_one: '+{{number}} point',
+    points_other: '+{{number}} points',
+    title: 'Revenge list',
   },
   profile: {
     change: 'Change profile',

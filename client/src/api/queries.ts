@@ -38,6 +38,8 @@ type Config = InferResponseType<typeof api.config.$get>;
 type AddedBee = InferResponseType<typeof api.hive.$post>;
 type SyncRequest = InferResponseType<typeof api.hive.sync.$post>;
 type SyncStatus = InferResponseType<typeof api.hive.sync.$get>;
+type RevengePage = InferResponseType<typeof api.hive.revenge.$get>;
+type RevengeItem = RevengePage['items'][number];
 type MapRanking = InferResponseType<
   (typeof api.hive.maps)[':leaderboardId']['$get']
 >;
@@ -212,6 +214,27 @@ const useSyncing = (): boolean => {
   return current !== '';
 };
 
+/** Maps where a bee is ahead of me, the closest first */
+const useRevenge = (options: {
+  bee?: string | undefined;
+  /** How many to a page; a full page of a table unless said otherwise */
+  limit?: number;
+  page: number;
+}) =>
+  useQuery({
+    queryKey: ['hive', 'revenge', options],
+    queryFn: () =>
+      unwrap(
+        api.hive.revenge.$get({
+          query: {
+            page: String(options.page),
+            limit: String(options.limit ?? PAGE_SIZE),
+            ...(options.bee === undefined ? {} : { bee: options.bee }),
+          },
+        })
+      ),
+  });
+
 /** How I and my bees stand on one map, best first */
 const useMapRanking = (leaderboardId: string) =>
   useQuery({
@@ -296,6 +319,7 @@ export {
   useNews,
   usePlayerSearch,
   useRemoveBee,
+  useRevenge,
   useScores,
   useSyncHive,
   useSyncing,
@@ -313,6 +337,8 @@ export type {
   Me,
   NewsItem,
   Player,
+  RevengeItem,
+  RevengePage,
   ScoreEntry,
   ScorePage,
   ScoreSort,

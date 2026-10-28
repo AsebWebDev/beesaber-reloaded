@@ -265,24 +265,25 @@ Deleting an account removes the account, its sessions, its link to Google and
 its hive. Players and their scores stay: they are public ScoreSaber data, and
 other accounts may follow the same players.
 
-| Method and path                  | What it does                                    |
-| -------------------------------- | ----------------------------------------------- |
-| `GET /health`                    | Is the server up and can it reach the database  |
-| `GET /config`                    | Which ways to sign in are switched on           |
-| `GET /players/search?q=`         | Find players on ScoreSaber by name              |
-| `GET /players/:id/scores`        | A player's scores, in pages; `sort`, `search`   |
-| `GET`, `POST /auth/*`            | Sign-in, callback and sign-out, by Better Auth  |
-| `GET /me`                        | My account and my ScoreSaber profile            |
-| `DELETE /me`                     | Delete my account, its sessions and its hive    |
-| `PUT /me/player`                 | Pick the ScoreSaber profile I compare as        |
-| `GET /hive`                      | My bees, each with the head-to-head record      |
-| `POST /hive`                     | Add a player to my hive                         |
-| `DELETE /hive/:playerId`         | Remove a player from my hive                    |
-| `GET /hive/:playerId/comparison` | Maps we both played, with both scores; `filter` |
-| `GET /hive/maps/:leaderboardId`  | Me and my bees on one map, best score first     |
-| `GET /hive/news`                 | Scores of bees that went past mine              |
-| `POST /hive/sync`                | Queue a fetch of new scores, mine and my bees'  |
-| `GET /hive/sync`                 | Whose scores are being fetched right now        |
+| Method and path                  | What it does                                          |
+| -------------------------------- | ----------------------------------------------------- |
+| `GET /health`                    | Is the server up and can it reach the database        |
+| `GET /config`                    | Which ways to sign in are switched on                 |
+| `GET /players/search?q=`         | Find players on ScoreSaber by name                    |
+| `GET /players/:id/scores`        | A player's scores, in pages; `sort`, `search`         |
+| `GET`, `POST /auth/*`            | Sign-in, callback and sign-out, by Better Auth        |
+| `GET /me`                        | My account and my ScoreSaber profile                  |
+| `DELETE /me`                     | Delete my account, its sessions and its hive          |
+| `PUT /me/player`                 | Pick the ScoreSaber profile I compare as              |
+| `GET /hive`                      | My bees, each with the head-to-head record            |
+| `POST /hive`                     | Add a player to my hive                               |
+| `DELETE /hive/:playerId`         | Remove a player from my hive                          |
+| `GET /hive/:playerId/comparison` | Maps we both played, with both scores; `filter`       |
+| `GET /hive/maps/:leaderboardId`  | Me and my bees on one map, best score first           |
+| `GET /hive/revenge`              | Maps where a bee is ahead of me, closest first; `bee` |
+| `GET /hive/news`                 | Scores of bees that went past mine                    |
+| `POST /hive/sync`                | Queue a fetch of new scores, mine and my bees'        |
+| `GET /hive/sync`                 | Whose scores are being fetched right now              |
 
 ### How scores get here
 

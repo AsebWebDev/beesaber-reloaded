@@ -2,7 +2,11 @@ import { AppError } from '../http/errors.ts';
 
 import type { Me } from '../http/session.ts';
 import type { PlayersService } from '../players/players.service.ts';
-import type { ComparisonOptions, HiveRepository } from './hive.repository.ts';
+import type {
+  ComparisonOptions,
+  HiveRepository,
+  RevengeOptions,
+} from './hive.repository.ts';
 
 type Dependencies = {
   playersService: PlayersService;
@@ -103,6 +107,17 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
       since === null ? [] : [{ playerId, since }]
     );
 
+  /** Maps where a bee is ahead of me, the closest first */
+  const revenge = async (me: Me, options: RevengeOptions) => {
+    if (
+      options.member !== undefined &&
+      !(await repository.isMember(me.userId, options.member))
+    )
+      throw new AppError('not_in_hive', 'This player is not in your hive');
+
+    return repository.revenge(me, options);
+  };
+
   return {
     addMember,
     compare,
@@ -111,6 +126,7 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
     listSyncing,
     mapRanking,
     removeMember,
+    revenge,
     syncAll,
   };
 };

@@ -13,6 +13,7 @@ import type {
   Me,
   NewsItem,
   Player,
+  RevengePage,
   ScoreEntry,
   ScorePage,
   SyncRequest,
@@ -220,11 +221,17 @@ const me = (): Me => {
   };
 };
 
-const member = (): HiveMember => ({
+/**
+ * A bee of the hive. buzzkill can be a second bee, who is ahead of me
+ * nowhere; any other id is buzz.
+ */
+const member = (id: string): HiveMember => ({
   player:
-    state.pollsUntilSynced > 0
-      ? { ...BEE, syncStartedAt: '2024-03-01T10:00:00.000Z' }
-      : BEE,
+    id === OTHER.id
+      ? OTHER
+      : state.pollsUntilSynced > 0
+        ? { ...BEE, syncStartedAt: '2024-03-01T10:00:00.000Z' }
+        : BEE,
   addedAt: '2024-03-01T10:00:00.000Z',
   shared: 2,
   winning: 1,
@@ -370,7 +377,7 @@ const server = setupServer(
     '/api/hive',
     () =>
       refusal('hive') ??
-      HttpResponse.json({ items: state.hive.map(() => member()) })
+      HttpResponse.json({ items: state.hive.map((id) => member(id)) })
   ),
   http.post('/api/hive', async ({ request }) => {
     const body = (await request.json()) as { playerId: string };
@@ -420,6 +427,38 @@ const server = setupServer(
       { status: 202 }
     )
   ),
+  http.get('/api/hive/revenge', ({ request }) => {
+    const refused = refusal();
+
+    if (refused !== undefined) return refused;
+
+    const url = new URL(request.url);
+    const bee = url.searchParams.get('bee');
+
+    if (bee !== null && !state.hive.includes(bee))
+      return error(404, 'not_in_hive', 'This player is not in your hive');
+
+    // buzz is ahead on Superstar: 500,000 to my 400,000, of 1,000,000.
+    // buzzkill is ahead nowhere.
+    const items =
+      state.hive.includes(BEE.id) && (bee === null || bee === BEE.id)
+        ? SHARED.filter(
+            ({ mine, theirs }) => theirs.modifiedScore > mine.modifiedScore
+          ).map(({ leaderboard: board, mine, theirs }) => ({
+            leaderboard: board,
+            bee: { id: BEE.id, name: BEE.name, avatarUrl: BEE.avatarUrl },
+            myScore: mine.modifiedScore,
+            theirScore: theirs.modifiedScore,
+            gap: theirs.modifiedScore - mine.modifiedScore,
+            gapShare:
+              board.maxScore > 0
+                ? (theirs.modifiedScore - mine.modifiedScore) / board.maxScore
+                : null,
+          }))
+        : [];
+
+    return HttpResponse.json(paginated(items, url) satisfies RevengePage);
+  }),
   http.get('/api/hive/maps/:leaderboardId', ({ params }) => {
     const refused = refusal();
 

@@ -69,6 +69,12 @@ const formatScore = (score: number): string => numbers().format(score);
 const formatAccuracy = (accuracy: number): string =>
   accuracy > 0 ? percentages().format(accuracy) : '–';
 
+/**
+ * How far behind, as a share of the map's maximum score: 0.0031 → "+0.31%".
+ * The plus says it is what is missing, not what is held.
+ */
+const formatGap = (share: number): string => `+${percentages().format(share)}`;
+
 /** 38 → "Rank #38". ScoreSaber gives inactive players the rank 0. */
 const formatRank = (rank: number): string =>
   rank > 0
@@ -121,6 +127,7 @@ export {
   formatAccuracy,
   formatDateTime,
   formatDelta,
+  formatGap,
   formatRank,
   formatScore,
   timeAgo,

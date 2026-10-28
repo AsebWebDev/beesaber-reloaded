@@ -16,6 +16,12 @@ const FAKE_SCORESABER_URL = 'https://scoresaber.test';
 
 type FakeScore = {
   leaderboardId: number;
+  /**
+   * The map's maximum score. The real answer the fake is built from has 0,
+   * as ScoreSaber sends for some unranked maps, and so does every fake map
+   * unless a test sets one.
+   */
+  maxScore?: number;
   /** ISO timestamp */
   playedAt: string;
   score: number;
@@ -26,7 +32,7 @@ type FakeScore = {
 const template = scoresFixture.data[0]!;
 
 const toEntry = (
-  { leaderboardId, playedAt, score, songName }: FakeScore,
+  { leaderboardId, maxScore, playedAt, score, songName }: FakeScore,
   index: number
 ) => ({
   score: {
@@ -39,6 +45,7 @@ const toEntry = (
   leaderboard: {
     ...template.leaderboard,
     id: leaderboardId,
+    maxScore: maxScore ?? template.leaderboard.maxScore,
     map: {
       ...template.leaderboard.map,
       hash: `HASH${leaderboardId}`,
