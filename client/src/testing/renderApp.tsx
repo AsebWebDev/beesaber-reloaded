@@ -11,9 +11,11 @@ import { routes } from '@/routes.tsx';
  * that lives in memory and a fresh cache, so tests do not affect each other.
  */
 const renderApp = (url = '/') => {
-  // The app's own client, with two changes: a failed request shows at once
-  // instead of after three tries, and every page asks the server again
-  const queryClient = createQueryClient({ retry: false, staleTime: 0 });
+  // The app's own client, with one change: a failed request shows at once
+  // instead of after three tries. Answers stay fresh as long as they do in
+  // the app, so a list that is not refreshed after a change shows up as
+  // stale here too, instead of being fetched again by every page.
+  const queryClient = createQueryClient({ retry: false });
   const router = createMemoryRouter(routes, { initialEntries: [url] });
 
   return {

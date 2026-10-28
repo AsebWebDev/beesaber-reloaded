@@ -143,6 +143,8 @@ type State = {
   pollsUntilSynced: number;
   /** Makes the server refuse to sign out, as it would when it is down */
   signOutFails: boolean;
+  /** How many bees fit into a hive. The server's limit, unless a test lowers it. */
+  hiveLimit: number;
   /** What a click on "Sync scores" queues */
   queuedBySync: number;
   signedIn: boolean;
@@ -164,6 +166,7 @@ const initial = (): State => ({
   queuedBySync: 0,
   signedIn: false,
   signOutFails: false,
+  hiveLimit: 50,
   signIn: { devLogin: true, google: false },
 });
 
@@ -217,9 +220,15 @@ const me = (): Me => {
       image: null,
       playerId: state.playerId,
     },
+    // While my scores are still being fetched, it is the first time:
+    // there has never been a finished sync
     player:
       linked !== null && state.myPollsUntilSynced > 0
-        ? { ...linked, syncStartedAt: '2024-03-01T10:00:00.000Z' }
+        ? {
+            ...linked,
+            syncStartedAt: '2024-03-01T10:00:00.000Z',
+            scoresSyncedAt: null,
+          }
         : linked,
   };
 };
@@ -240,6 +249,33 @@ const member = (id: string): HiveMember => ({
   winning: 1,
   losing: 1,
 });
+
+/** What the server answers to a request it cannot read */
+const invalid = (what: string) =>
+  error(400, 'validation_failed', `Invalid ${what}`);
+
+/** A ScoreSaber id as the server accepts it: digits, no leading zero */
+const isPlayerId = (id: string) => /^[1-9]\d{0,19}$/.test(id);
+
+/**
+ * The server's check of `page` and `limit`: whole numbers it can count
+ * with exactly, from 1 up, and at most 100 to a page.
+ */
+const badPaging = (url: URL) => {
+  const number = (name: string, max: number) => {
+    const value = url.searchParams.get(name);
+
+    if (value === null) return true;
+
+    const parsed = Number(value);
+
+    return Number.isSafeInteger(parsed) && parsed >= 1 && parsed <= max;
+  };
+
+  return number('page', Number.MAX_SAFE_INTEGER) && number('limit', 100)
+    ? undefined
+    : invalid('query');
+};
 
 const paginated = <Item>(items: Item[], url: URL) => {
   const page = Number(url.searchParams.get('page') ?? 1);
@@ -357,6 +393,10 @@ const server = setupServer(
     if (refused !== undefined) return refused;
 
     const url = new URL(request.url);
+    const unreadable = badPaging(url);
+
+    if (unreadable !== undefined) return unreadable;
+
     const search = url.searchParams.get('search')?.toLowerCase();
     const all = myScores();
     const sorted =
@@ -383,16 +423,51 @@ const server = setupServer(
       HttpResponse.json({ items: state.hive.map((id) => member(id)) })
   ),
   http.post('/api/hive', async ({ request }) => {
+    const refused = refusal();
+
+    if (refused !== undefined) return refused;
+
     const body = (await request.json()) as { playerId: string };
 
-    if (!state.hive.includes(body.playerId)) state.hive.push(body.playerId);
+    if (!isPlayerId(body.playerId)) return invalid('json');
+    if (body.playerId === state.playerId)
+      return error(
+        400,
+        'cannot_add_self',
+        'You cannot add yourself to your hive'
+      );
+    if (!state.hive.includes(body.playerId)) {
+      if (state.hive.length >= state.hiveLimit)
+        return HttpResponse.json(
+          {
+            error: {
+              code: 'hive_full',
+              message: `A hive can have at most ${state.hiveLimit} bees`,
+              details: { maxSize: state.hiveLimit },
+            },
+          },
+          { status: 400 }
+        );
+
+      state.hive.push(body.playerId);
+    }
 
     return HttpResponse.json({ player: BEE } satisfies AddedBee, {
       status: 201,
     });
   }),
   http.delete('/api/hive/:playerId', ({ params }) => {
-    state.hive = state.hive.filter((id) => id !== params.playerId);
+    const refused = refusal();
+
+    if (refused !== undefined) return refused;
+
+    const id = String(params.playerId);
+
+    if (!isPlayerId(id)) return invalid('param');
+    if (!state.hive.includes(id))
+      return error(404, 'not_in_hive', 'This player is not in your hive');
+
+    state.hive = state.hive.filter((member) => member !== id);
 
     return new HttpResponse(null, { status: 204 });
   }),
@@ -437,7 +512,10 @@ const server = setupServer(
 
     const url = new URL(request.url);
     const bee = url.searchParams.get('bee');
+    const unreadable = badPaging(url);
 
+    if (unreadable !== undefined) return unreadable;
+    if (bee !== null && !isPlayerId(bee)) return invalid('query');
     if (bee !== null && !state.hive.includes(bee))
       return error(404, 'not_in_hive', 'This player is not in your hive');
 
@@ -467,6 +545,10 @@ const server = setupServer(
 
     if (refused !== undefined) return refused;
 
+    const unreadable = badPaging(new URL(request.url));
+
+    if (unreadable !== undefined) return unreadable;
+
     // Every bee of the hive played Night Flight, which I never did; buzz
     // most lately
     const bees = [BEE, OTHER]
@@ -494,6 +576,11 @@ const server = setupServer(
     if (refused !== undefined) return refused;
 
     const id = Number(params.leaderboardId);
+
+    // Like the server: a whole number that fits its column, or no map id
+    if (!Number.isInteger(id) || id < 1 || id > 2_147_483_647)
+      return invalid('param');
+
     const board = [MONSTER, SUPERSTAR, UNPLAYED].find(
       (known) => known.id === id
     );
@@ -525,9 +612,14 @@ const server = setupServer(
             player: { avatarUrl, country, id: playerId, name },
             score: { accuracy, fullCombo, modifiedScore, playedAt },
           },
-          index
+          _,
+          all
         ) => ({
-          place: index + 1,
+          // Like the server's rank(): the same score, the same place
+          place:
+            1 +
+            all.filter((other) => other.score.modifiedScore > modifiedScore)
+              .length,
           isMe,
           player: { id: playerId, name, avatarUrl, country },
           score: { modifiedScore, accuracy, fullCombo, playedAt },
@@ -535,15 +627,22 @@ const server = setupServer(
       ),
     } satisfies MapRanking);
   }),
-  http.get('/api/hive/:playerId/comparison', async ({ request }) => {
+  http.get('/api/hive/:playerId/comparison', async ({ params, request }) => {
     await delay(state.listDelayMs);
 
     const refused = refusal('comparison');
 
     if (refused !== undefined) return refused;
 
+    const id = String(params.playerId);
     const url = new URL(request.url);
     const filter = url.searchParams.get('filter');
+    const unreadable = badPaging(url);
+
+    if (!isPlayerId(id)) return invalid('param');
+    if (unreadable !== undefined) return unreadable;
+    if (!state.hive.includes(id))
+      return error(404, 'not_in_hive', 'This player is not in your hive');
 
     return HttpResponse.json(
       paginated(

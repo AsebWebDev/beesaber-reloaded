@@ -3,11 +3,13 @@ import { useState } from 'react';
 /**
  * The page number a URL asks for. Anything that is not a whole number from 1
  * up, like `?page=abc`, `?page=0` or `?page=1.5`, means the first page.
+ * So does a number too large to count with exactly, like `?page=1e20`,
+ * which the server would refuse.
  */
 const pageFrom = (value: string | null): number => {
   const page = Number(value);
 
-  return Number.isInteger(page) && page >= 1 ? page : 1;
+  return Number.isSafeInteger(page) && page >= 1 ? page : 1;
 };
 
 /** The number of the last page of a list. An empty list still has page 1. */

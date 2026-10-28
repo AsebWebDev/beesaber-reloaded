@@ -196,6 +196,24 @@ describe('the hive page', () => {
     expect(await screen.findByText(/No bees yet/)).toBeInTheDocument();
   });
 
+  it('says so when the hive is full', async () => {
+    // The limit lowered, so that one bee fills the hive
+    fakeApi.signedInAs({ hive: ['3003'], hiveLimit: 1 });
+    const { user } = renderApp('/hive');
+
+    await user.type(
+      await screen.findByLabelText('Find a player on ScoreSaber'),
+      'buzz'
+    );
+    await user.click(
+      await screen.findByRole('button', { name: 'Add buzz to my hive' })
+    );
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'A hive can have at most 1 bees.'
+    );
+  });
+
   it('does not offer to add myself', async () => {
     fakeApi.signedInAs();
     const { user } = renderApp('/hive');
@@ -533,6 +551,140 @@ describe('when the server has trouble', () => {
   });
 });
 
+describe('the dashboard while my own scores are fetched for the first time', () => {
+  it('waits with the lists that compare my scores, instead of showing them wrong', async () => {
+    // Without my scores, every map of the bees would look new to me
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id], myPollsUntilSynced: 2 });
+    renderApp();
+
+    const trending = (
+      await screen.findByRole('heading', { name: 'What the hive is playing' })
+    ).closest('section')!;
+
+    expect(
+      within(trending).getByText(/Your own scores are still being fetched/)
+    ).toBeInTheDocument();
+    expect(
+      within(trending).queryByRole('link', { name: 'Night Flight' })
+    ).not.toBeInTheDocument();
+
+    // Once they are in, the lists follow
+    expect(
+      await within(trending).findByRole(
+        'link',
+        { name: 'Night Flight' },
+        { timeout: 6000 }
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Your own scores are still being fetched/)
+    ).not.toBeInTheDocument();
+  }, 10_000);
+});
+
+describe('what is on screen after the hive changed', () => {
+  // Answers stay fresh for half a minute, as in the app, so what these
+  // tests see is what was refreshed after the change, not loaded anew
+
+  /** The section of the dashboard under this heading */
+  const section = async (heading: string) =>
+    (await screen.findByRole('heading', { name: heading })).closest('section')!;
+
+  it('brings the dashboard up to date after a bee is added', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp();
+
+    await screen.findByText(/Your hive is empty/);
+    await user.click(screen.getByRole('link', { name: 'My hive' }));
+    await user.type(
+      await screen.findByLabelText('Find a player on ScoreSaber'),
+      'buzz'
+    );
+    await user.click(
+      (await screen.findAllByRole('button', { name: /^Add / }))[0]!
+    );
+    await screen.findByRole('button', { name: 'Remove buzz from my hive' });
+    await user.click(screen.getByRole('link', { name: 'Dashboard' }));
+
+    expect(
+      await within(await section('Revenge')).findByRole('link', {
+        name: 'Superstar',
+      })
+    ).toBeInTheDocument();
+    expect(
+      await within(await section('What the hive is playing')).findByRole(
+        'link',
+        { name: 'Night Flight' }
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('drops a removed bee from the dashboard', async () => {
+    // Another bee stays, so the sections stay and have to change
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id, '3003'] });
+    const { user } = renderApp();
+
+    await within(await section('Revenge')).findByRole('link', {
+      name: 'Superstar',
+    });
+    await user.click(screen.getByRole('link', { name: 'My hive' }));
+    await user.click(
+      await screen.findByRole('button', { name: 'Remove buzz from my hive' })
+    );
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('button', { name: 'Remove buzz from my hive' })
+      ).not.toBeInTheDocument()
+    );
+    await user.click(screen.getByRole('link', { name: 'Dashboard' }));
+
+    // buzz was the only bee ahead anywhere
+    expect(
+      await within(await section('Revenge')).findByText(
+        'No bee is ahead of you on a map you both played.'
+      )
+    ).toBeInTheDocument();
+
+    const trending = await section('What the hive is playing');
+
+    await within(trending).findByRole('link', { name: 'buzzkill' });
+    expect(
+      within(trending).queryByRole('link', { name: 'buzz' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('brings the news up to date when a sync is done', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp();
+
+    await screen.findByText(/Nobody has beaten one of your scores/);
+    // The sync takes a moment and finds that the bee went past me
+    fakeApi.set({
+      news: [fakeApi.news()],
+      pollsUntilSynced: 1,
+      queuedBySync: 1,
+    });
+    await user.click(screen.getByRole('button', { name: 'Sync scores' }));
+
+    expect(
+      await screen.findByText('beat your score', {}, { timeout: 6000 })
+    ).toBeInTheDocument();
+  }, 10_000);
+
+  it('brings the news up to date after a sync that was over before anyone looked', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp();
+
+    await screen.findByText(/Nobody has beaten one of your scores/);
+    // The job runs at once: by the first question, nobody is being fetched
+    fakeApi.set({ news: [fakeApi.news()], queuedBySync: 1 });
+    await user.click(screen.getByRole('button', { name: 'Sync scores' }));
+
+    expect(await screen.findByText('beat your score')).toBeInTheDocument();
+    expect(screen.getByText('Scores are up to date.')).toBeInTheDocument();
+  });
+});
+
 describe('when the session ends while the app is open', () => {
   it('returns to the landing page with the next answer that says so', async () => {
     fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
@@ -541,7 +693,8 @@ describe('when the session ends while the app is open', () => {
     await screen.findByText('2 shared maps');
     // The session runs out, or is ended from another device
     fakeApi.set({ signedIn: false });
-    await user.click(screen.getByRole('link', { name: 'My hive' }));
+    // My scores have not been loaded yet, so the profile asks the server
+    await user.click(screen.getByRole('link', { name: 'My profile' }));
 
     expect(await screen.findByTestId('landing-page')).toBeInTheDocument();
     // Nothing of what was loaded for the user is kept
@@ -1226,6 +1379,17 @@ describe('the hive ranking of a map', () => {
     ).toHaveAttribute('href', '/');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
+
+  it('says the same for an address that is no map id at all', async () => {
+    // The server refuses to read it, which is not a failure worth an alert
+    fakeApi.signedInAs();
+    renderApp('/maps/abc');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Map not found' })
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 });
 
 describe('a song title', () => {
@@ -1244,11 +1408,18 @@ describe('a song title', () => {
     fakeApi.signedInAs({ hive: [fakeApi.BEE.id], news: [fakeApi.news()] });
     const { user } = renderApp();
 
-    // In the news, and in the revenge list below it
-    const superstar = await screen.findAllByRole('link', { name: 'Superstar' });
+    // In the news, and in the revenge list below it, each on its own
+    const news = (await screen.findByText('beat your score')).closest('div')!;
+    const revenge = (
+      await screen.findByRole('heading', { name: 'Revenge' })
+    ).closest('section')!;
 
-    for (const link of superstar)
-      expect(link).toHaveAttribute('href', '/maps/2');
+    expect(
+      within(news).getByRole('link', { name: 'Superstar' })
+    ).toHaveAttribute('href', '/maps/2');
+    expect(
+      await within(revenge).findByRole('link', { name: 'Superstar' })
+    ).toHaveAttribute('href', '/maps/2');
 
     await user.click(screen.getByRole('link', { name: 'My profile' }));
 
@@ -1294,13 +1465,21 @@ describe('the revenge list', () => {
     ).toBeInTheDocument();
   });
 
-  it('says so for a bee in the address who is not in the hive', async () => {
+  it('says so for a bee in the address who is not in the hive, and offers a way back', async () => {
+    // One bee only, where the filter is otherwise not shown at all
     fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
-    renderApp('/revenge?bee=999');
+    const { router, user } = renderApp('/revenge?bee=999');
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'This player is not in your hive.'
     );
+
+    await user.click(screen.getByRole('button', { name: 'All bees' }));
+
+    expect(
+      await screen.findByRole('link', { name: 'Superstar' })
+    ).toBeInTheDocument();
+    expect(router.state.location.search).not.toContain('bee=');
   });
 
   it('writes the gap the German way', async () => {
@@ -1378,6 +1557,51 @@ describe('the revenge list with more than one bee', () => {
     expect(router.state.location.search).not.toContain('bee=');
   });
 
+  it('keeps the bee when it goes to the last page', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id, '3003'] });
+    const { router } = renderApp(`/revenge?bee=${fakeApi.BEE.id}&page=9`);
+
+    await screen.findByRole('link', { name: 'Superstar' });
+
+    await waitFor(() =>
+      expect(router.state.location.search).toContain('page=1')
+    );
+    expect(router.state.location.search).toContain(`bee=${fakeApi.BEE.id}`);
+  });
+
+  it('starts another bee on its first page', async () => {
+    const news = fakeApi.news();
+    const item = {
+      leaderboard: news.leaderboard,
+      bee: news.player,
+      myScore: 400_000,
+      theirScore: 500_000,
+      gap: 100_000,
+      gapShare: 0.1,
+    };
+
+    // A list long enough for a second page, whichever bee is asked for
+    fakeApi.server.use(
+      http.get('/api/hive/revenge', () =>
+        HttpResponse.json({
+          items: [item],
+          page: 2,
+          limit: 15,
+          total: 30,
+          totalPages: 2,
+        })
+      )
+    );
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id, '3003'] });
+    const { router, user } = renderApp('/revenge?page=2');
+
+    await screen.findByText('Page 2 of 2');
+    await user.click(screen.getByRole('button', { name: 'buzzkill' }));
+
+    expect(router.state.location.search).toContain('bee=3003');
+    expect(router.state.location.search).toContain('page=1');
+  });
+
   it('goes to the last page when the address asks for one beyond it', async () => {
     fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
     const { router } = renderApp('/revenge?page=9');
@@ -1416,6 +1640,42 @@ describe('the revenge list with more than one bee', () => {
 
     expect(await screen.findByText('+1,234 points')).toBeInTheDocument();
   });
+
+  it('gives the gap in points when it is too small to show in percent', async () => {
+    const news = fakeApi.news();
+
+    fakeApi.server.use(
+      http.get('/api/hive/revenge', () =>
+        HttpResponse.json({
+          items: [
+            {
+              leaderboard: news.leaderboard,
+              bee: news.player,
+              myScore: 400_000,
+              theirScore: 400_030,
+              gap: 30,
+              // 0.003 %, which rounds to "0.00%"
+              gapShare: 0.000_03,
+            },
+          ],
+          page: 1,
+          limit: 15,
+          total: 1,
+          totalPages: 1,
+        })
+      )
+    );
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp('/revenge');
+
+    expect(await screen.findByText('+30 points')).toBeInTheDocument();
+    expect(screen.queryByText(/0.00%/)).not.toBeInTheDocument();
+
+    // The dashboard says it the same way
+    await user.click(screen.getByRole('link', { name: 'Dashboard' }));
+
+    expect(await screen.findByText('+30 points')).toBeInTheDocument();
+  });
 });
 
 describe('what the hive is playing', () => {
@@ -1439,9 +1699,16 @@ describe('what the hive is playing', () => {
         .getAllByRole('link', { name: /^buzz/ })
         .map((link) => link.textContent)
     ).toEqual(['buzz', 'buzzkill']);
-    expect(
-      within(row!).getByRole('link', { name: 'Night Flight on ScoreSaber' })
-    ).toHaveAttribute('href', 'https://scoresaber.com/leaderboard/4');
+    const onScoreSaber = within(row!).getByRole('link', {
+      name: 'Night Flight on ScoreSaber',
+    });
+
+    expect(onScoreSaber).toHaveAttribute(
+      'href',
+      'https://scoresaber.com/leaderboard/4'
+    );
+    // The name says which map; on screen the column already does
+    expect(onScoreSaber).toHaveTextContent(/^ScoreSaber$/);
     expect(row!.querySelector('time')).toHaveAttribute(
       'datetime',
       '2024-02-01T10:00:00.000Z'

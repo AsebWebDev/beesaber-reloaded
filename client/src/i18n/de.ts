@@ -91,6 +91,8 @@ const de: Translation = {
     sharedMaps_other: '{{number}} gemeinsame Maps',
     theirs: 'Score der Biene',
     theyLead: 'Biene vorne: {{number}}',
+    waitForMyScores:
+      'Deine eigenen Scores werden noch von ScoreSaber geholt. Das hier erscheint, sobald sie da sind.',
     title: 'Übersicht',
     trending: 'Was die Hive gerade spielt',
     trendingAll_one: 'Alles, was die Hive gerade spielt: {{number}} Map',

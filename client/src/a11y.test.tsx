@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import axe from 'axe-core';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -76,6 +76,19 @@ const STATES: State[] = [
     ready: () =>
       waitFor(() =>
         expect(screen.getAllByRole('link', { name: 'buzz' })).toHaveLength(4)
+      ),
+  },
+  {
+    name: 'the dashboard while my own scores are fetched for the first time',
+    // Long enough not to end while axe looks
+    setup: () => fakeApi.signedInAs({ hive: [BEE], myPollsUntilSynced: 99 }),
+    url: '/',
+    // News first, revenge and what the hive is playing once the hive is in
+    ready: () =>
+      waitFor(() =>
+        expect(
+          screen.getAllByText(t('dashboard.waitForMyScores'))
+        ).toHaveLength(3)
       ),
   },
   {
@@ -181,7 +194,8 @@ const STATES: State[] = [
     name: 'the revenge list',
     setup: () => fakeApi.signedInAs({ hive: [BEE] }),
     url: '/revenge',
-    ready: () => screen.findByRole('table', { name: t('revenge.title') }),
+    // The table is there at once, with placeholder rows; wait for the rows
+    ready: () => screen.findByRole('link', { name: 'Superstar' }),
   },
   {
     name: 'an empty revenge list',
@@ -193,7 +207,8 @@ const STATES: State[] = [
     name: 'what the hive is playing',
     setup: () => fakeApi.signedInAs({ hive: [BEE] }),
     url: '/trending',
-    ready: () => screen.findByRole('table', { name: t('trending.title') }),
+    // The table is there at once, with placeholder rows; wait for the rows
+    ready: () => screen.findByRole('link', { name: 'Night Flight' }),
   },
   {
     name: 'an empty list of what the hive is playing',
@@ -380,6 +395,30 @@ describe('what is said to someone who cannot see the page change', () => {
     );
   });
 
+  it('moves the focus to the other page button when the pressed one is switched off', async () => {
+    fakeApi.signedInAs({ extraScores: 18 });
+    const { user } = renderApp('/profile');
+
+    await screen.findByText('Page 1 of 2');
+    // With the keyboard, as the people this is for would
+    screen.getByRole('button', { name: 'Next' }).focus();
+    await user.keyboard('{Enter}');
+    await screen.findByText('Page 2 of 2');
+
+    // "Next" is off on the last page. Left there, the focus would fall
+    // back to the top of the page.
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Previous' })).toHaveFocus()
+    );
+
+    await user.keyboard('{Enter}');
+    await screen.findByText('Page 1 of 2');
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Next' })).toHaveFocus()
+    );
+  });
+
   it('says when a sync has finished', async () => {
     fakeApi.signedInAs({ hive: [BEE], pollsUntilSynced: 1 });
     renderApp();
@@ -414,14 +453,17 @@ describe('what things are called', () => {
     fakeApi.signedInAs({ hive: [BEE] });
     renderApp();
 
-    await screen.findByText('2 shared maps');
+    // Her card, not the other sections that name her too
+    const card = (
+      await screen.findByRole('heading', { name: 'Head to head' })
+    ).closest('section')!;
 
-    // Her card and the revenge list name her, each with a link of her name
-    const links = await screen.findAllByRole('link', { name: 'buzz' });
+    await within(card).findByText('2 shared maps');
 
-    expect(links.length).toBeGreaterThan(0);
-    for (const link of links)
-      expect(link).toHaveAttribute('href', `/hive/${BEE}`);
+    expect(within(card).getByRole('link', { name: 'buzz' })).toHaveAttribute(
+      'href',
+      `/hive/${BEE}`
+    );
   });
 
   it('does not describe pictures that stand next to a name', async () => {

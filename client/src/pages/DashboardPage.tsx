@@ -2,12 +2,15 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
 import {
+  isFirstSync,
   isSyncing,
   useHive,
+  useMe,
   useNews,
   useRevenge,
   useTrending,
 } from '@/api/queries.ts';
+import { Gap } from '@/components/Gap.tsx';
 import { Song } from '@/components/Song.tsx';
 import {
   Avatar,
@@ -18,7 +21,7 @@ import {
   Spinner,
   TimeAgo,
 } from '@/components/ui.tsx';
-import { formatDelta, formatGap, formatScore } from '@/lib/format.ts';
+import { formatDelta, formatScore } from '@/lib/format.ts';
 import { usePageTitle } from '@/lib/usePageTitle.ts';
 import { Bees } from '@/pages/TrendingPage.tsx';
 
@@ -96,7 +99,6 @@ const TrendingCard = ({ item }: { item: TrendingItem }) => (
 
 /** One map where a bee is ahead, and what I need to get past them */
 const RevengeCard = ({ item }: { item: RevengeItem }) => {
-  const { t } = useTranslation();
   const { bee, gap, gapShare, leaderboard } = item;
 
   return (
@@ -111,9 +113,7 @@ const RevengeCard = ({ item }: { item: RevengeItem }) => {
         </Link>
       </span>
       <span className="text-neon-red-core font-semibold tabular-nums">
-        {gapShare === null
-          ? t('revenge.points', { count: gap, number: formatScore(gap) })
-          : formatGap(gapShare)}
+        <Gap gap={gap} gapShare={gapShare} />
       </span>
     </Card>
   );
@@ -182,6 +182,14 @@ const DashboardPage = () => {
   // Without bees there is nothing to take revenge on; the head-to-head
   // section above says how to get some
   const hasBees = (hive.data?.items.length ?? 0) > 0;
+  const me = useMe();
+  // News, revenge and what the hive is playing all compare with my scores.
+  // Until they are in for the first time, they would be wrong: every map
+  // of the bees would look new to me, and nobody ahead.
+  const waitForMine =
+    me.data?.player !== undefined &&
+    me.data.player !== null &&
+    isFirstSync(me.data.player);
 
   usePageTitle(t('dashboard.title'));
 
@@ -225,18 +233,27 @@ const DashboardPage = () => {
         <NeonHeading as="h2" color="red" className="text-3xl">
           {t('dashboard.news')}
         </NeonHeading>
-        {news.isPending && <Spinner />}
-        {news.isError && (
-          <ErrorNote error={news.error} onRetry={() => void news.refetch()} />
+        {waitForMine ? (
+          <EmptyState>{t('dashboard.waitForMyScores')}</EmptyState>
+        ) : (
+          <>
+            {news.isPending && <Spinner />}
+            {news.isError && (
+              <ErrorNote
+                error={news.error}
+                onRetry={() => void news.refetch()}
+              />
+            )}
+            {news.data?.items.length === 0 && (
+              <EmptyState>{t('dashboard.noNews')}</EmptyState>
+            )}
+            <div className="grid gap-3 lg:grid-cols-2">
+              {news.data?.items.map((item) => (
+                <NewsCard key={item.event.id} item={item} />
+              ))}
+            </div>
+          </>
         )}
-        {news.data?.items.length === 0 && (
-          <EmptyState>{t('dashboard.noNews')}</EmptyState>
-        )}
-        <div className="grid gap-3 lg:grid-cols-2">
-          {news.data?.items.map((item) => (
-            <NewsCard key={item.event.id} item={item} />
-          ))}
-        </div>
       </section>
 
       {hasBees && (
@@ -244,34 +261,40 @@ const DashboardPage = () => {
           <NeonHeading as="h2" color="yellow" className="text-3xl">
             {t('dashboard.revenge')}
           </NeonHeading>
-          {revenge.isPending && <Spinner />}
-          {revenge.isError && (
-            <ErrorNote
-              error={revenge.error}
-              onRetry={() => void revenge.refetch()}
-            />
-          )}
-          {revenge.data?.items.length === 0 && (
-            <EmptyState>{t('revenge.empty')}</EmptyState>
-          )}
-          <div className="space-y-3">
-            {revenge.data?.items.map((item) => (
-              <RevengeCard
-                key={`${item.leaderboard.id}-${item.bee.id}`}
-                item={item}
-              />
-            ))}
-          </div>
-          {(revenge.data?.total ?? 0) > 0 && (
-            <Link
-              to="/revenge"
-              className="text-neon-yellow-core inline-block text-sm underline"
-            >
-              {t('dashboard.revengeAll', {
-                count: revenge.data?.total,
-                number: formatScore(revenge.data?.total ?? 0),
-              })}
-            </Link>
+          {waitForMine ? (
+            <EmptyState>{t('dashboard.waitForMyScores')}</EmptyState>
+          ) : (
+            <>
+              {revenge.isPending && <Spinner />}
+              {revenge.isError && (
+                <ErrorNote
+                  error={revenge.error}
+                  onRetry={() => void revenge.refetch()}
+                />
+              )}
+              {revenge.data?.items.length === 0 && (
+                <EmptyState>{t('revenge.empty')}</EmptyState>
+              )}
+              <div className="space-y-3">
+                {revenge.data?.items.map((item) => (
+                  <RevengeCard
+                    key={`${item.leaderboard.id}-${item.bee.id}`}
+                    item={item}
+                  />
+                ))}
+              </div>
+              {(revenge.data?.total ?? 0) > 0 && (
+                <Link
+                  to="/revenge"
+                  className="text-neon-yellow-core inline-block text-sm underline"
+                >
+                  {t('dashboard.revengeAll', {
+                    count: revenge.data?.total,
+                    number: formatScore(revenge.data?.total ?? 0),
+                  })}
+                </Link>
+              )}
+            </>
           )}
         </section>
       )}
@@ -281,33 +304,39 @@ const DashboardPage = () => {
           <NeonHeading as="h2" color="yellow" className="text-3xl">
             {t('dashboard.trending')}
           </NeonHeading>
-          {trending.isPending && <Spinner />}
-          {trending.isError && (
-            <ErrorNote
-              error={trending.error}
-              onRetry={() => void trending.refetch()}
-            />
-          )}
-          {trending.data?.items.length === 0 && (
-            <EmptyState>
-              {t('trending.empty', { days: trending.data.days })}
-            </EmptyState>
-          )}
-          <div className="space-y-3">
-            {trending.data?.items.map((item) => (
-              <TrendingCard key={item.leaderboard.id} item={item} />
-            ))}
-          </div>
-          {(trending.data?.total ?? 0) > 0 && (
-            <Link
-              to="/trending"
-              className="text-neon-yellow-core inline-block text-sm underline"
-            >
-              {t('dashboard.trendingAll', {
-                count: trending.data?.total,
-                number: formatScore(trending.data?.total ?? 0),
-              })}
-            </Link>
+          {waitForMine ? (
+            <EmptyState>{t('dashboard.waitForMyScores')}</EmptyState>
+          ) : (
+            <>
+              {trending.isPending && <Spinner />}
+              {trending.isError && (
+                <ErrorNote
+                  error={trending.error}
+                  onRetry={() => void trending.refetch()}
+                />
+              )}
+              {trending.data?.items.length === 0 && (
+                <EmptyState>
+                  {t('trending.empty', { days: trending.data.days })}
+                </EmptyState>
+              )}
+              <div className="space-y-3">
+                {trending.data?.items.map((item) => (
+                  <TrendingCard key={item.leaderboard.id} item={item} />
+                ))}
+              </div>
+              {(trending.data?.total ?? 0) > 0 && (
+                <Link
+                  to="/trending"
+                  className="text-neon-yellow-core inline-block text-sm underline"
+                >
+                  {t('dashboard.trendingAll', {
+                    count: trending.data?.total,
+                    number: formatScore(trending.data?.total ?? 0),
+                  })}
+                </Link>
+              )}
+            </>
           )}
         </section>
       )}
