@@ -196,6 +196,24 @@ describe('the hive page', () => {
     expect(await screen.findByText(/No bees yet/)).toBeInTheDocument();
   });
 
+  it('says so when the hive is full', async () => {
+    // The limit lowered, so that one bee fills the hive
+    fakeApi.signedInAs({ hive: ['3003'], hiveLimit: 1 });
+    const { user } = renderApp('/hive');
+
+    await user.type(
+      await screen.findByLabelText('Find a player on ScoreSaber'),
+      'buzz'
+    );
+    await user.click(
+      await screen.findByRole('button', { name: 'Add buzz to my hive' })
+    );
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'A hive can have at most 1 bees.'
+    );
+  });
+
   it('does not offer to add myself', async () => {
     fakeApi.signedInAs();
     const { user } = renderApp('/hive');
@@ -1359,6 +1377,17 @@ describe('the hive ranking of a map', () => {
     expect(
       screen.getByRole('link', { name: 'Back to the dashboard' })
     ).toHaveAttribute('href', '/');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('says the same for an address that is no map id at all', async () => {
+    // The server refuses to read it, which is not a failure worth an alert
+    fakeApi.signedInAs();
+    renderApp('/maps/abc');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Map not found' })
+    ).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });
