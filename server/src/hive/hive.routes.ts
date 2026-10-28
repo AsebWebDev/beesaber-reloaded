@@ -65,6 +65,22 @@ const createHiveRoutes = (
       }
     )
 
+    // GET /api/hive/revenge?bee=7656...&page=1&limit=20: maps where a bee
+    // is ahead of me, the closest first
+    .get(
+      '/revenge',
+      validate('query', z.object({ ...pagination, bee: playerId.optional() })),
+      async (c) => {
+        const { bee, ...query } = c.req.valid('query');
+        const { items, total } = await service.revenge(
+          requireMe(c.get('user')),
+          { ...query, member: bee }
+        );
+
+        return c.json(paginated(items, total, query));
+      }
+    )
+
     // GET /api/hive/maps/1234: how I and my bees stand on one map
     .get(
       '/maps/:leaderboardId',

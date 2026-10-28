@@ -45,6 +45,13 @@ type ComparisonOptions = {
   page: number;
 };
 
+type RevengeOptions = {
+  limit: number;
+  /** Only this bee, or all of them */
+  member?: string | undefined;
+  page: number;
+};
+
 const mine = alias(scores, 'mine');
 const theirs = alias(scores, 'theirs');
 
@@ -274,6 +281,79 @@ const createHiveRepository = (db: Database) => {
   };
 
   /**
+   * The revenge list: every map where a bee is ahead of me, the closest
+   * first. How close is measured in accuracy points, the share of the
+   * map's maximum score between the two scores, since that is what a
+   * player can aim for: "0.3 % more and you are ahead". Maps without a
+   * maximum score, which ScoreSaber leaves out for some unranked ones,
+   * have no such share; they come last, closest in points first.
+   */
+  const revenge = async (
+    { playerId, userId }: Me,
+    { limit, member, page }: RevengeOptions
+  ) => {
+    const gap = sql<number>`${theirs.modifiedScore} - ${mine.modifiedScore}`;
+    const gapShare = sql<
+      number | null
+    >`case when ${leaderboards.maxScore} > 0 then (${theirs.modifiedScore} - ${mine.modifiedScore})::float8 / ${leaderboards.maxScore} end`;
+    const where = and(
+      eq(hiveMembers.userId, userId),
+      member === undefined ? undefined : eq(hiveMembers.memberId, member),
+      gt(theirs.modifiedScore, mine.modifiedScore)
+    );
+
+    const [items, [total]] = await Promise.all([
+      db
+        .select({
+          leaderboard: leaderboards,
+          bee: {
+            id: players.id,
+            name: players.name,
+            avatarUrl: players.avatarUrl,
+          },
+          myScore: mine.modifiedScore,
+          theirScore: theirs.modifiedScore,
+          gap: gap.mapWith(Number),
+          gapShare,
+        })
+        .from(hiveMembers)
+        .innerJoin(theirs, eq(theirs.playerId, hiveMembers.memberId))
+        .innerJoin(
+          mine,
+          and(
+            eq(mine.playerId, playerId),
+            eq(mine.leaderboardId, theirs.leaderboardId)
+          )
+        )
+        .innerJoin(leaderboards, eq(leaderboards.id, theirs.leaderboardId))
+        .innerJoin(players, eq(players.id, hiveMembers.memberId))
+        .where(where)
+        .orderBy(
+          sql`${gapShare} asc nulls last`,
+          asc(gap),
+          asc(leaderboards.id),
+          asc(players.id)
+        )
+        .limit(limit)
+        .offset((page - 1) * limit),
+      db
+        .select({ total: count() })
+        .from(hiveMembers)
+        .innerJoin(theirs, eq(theirs.playerId, hiveMembers.memberId))
+        .innerJoin(
+          mine,
+          and(
+            eq(mine.playerId, playerId),
+            eq(mine.leaderboardId, theirs.leaderboardId)
+          )
+        )
+        .where(where),
+    ]);
+
+    return { items, total: total?.total ?? 0 };
+  };
+
+  /**
    * "A bee beat your score": score changes of bees that went past my score
    * and that I have not answered yet.
    *
@@ -345,10 +425,16 @@ const createHiveRepository = (db: Database) => {
     listSyncing,
     mapRanking,
     removeMember,
+    revenge,
   };
 };
 
 type HiveRepository = ReturnType<typeof createHiveRepository>;
 
 export { createHiveRepository };
-export type { ComparisonFilter, ComparisonOptions, HiveRepository };
+export type {
+  ComparisonFilter,
+  ComparisonOptions,
+  HiveRepository,
+  RevengeOptions,
+};

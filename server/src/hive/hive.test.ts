@@ -543,3 +543,164 @@ describe('GET /api/hive/maps/:leaderboardId', () => {
     }
   );
 });
+
+describe('GET /api/hive/revenge', () => {
+  type Revenge = {
+    items: {
+      bee: { id: string };
+      gap: number;
+      gapShare: number | null;
+      leaderboard: { id: number };
+      myScore: number;
+      theirScore: number;
+    }[];
+    total: number;
+  };
+
+  const revenge = async (query = '', as = api) =>
+    as(`/api/hive/revenge${query}`);
+
+  beforeEach(() => {
+    // Me: on 1 and 2 the maps have a maximum of 1000, on 3 ScoreSaber has
+    // none; on 5 I am ahead of the bee, on 6 we are level
+    scoreSaber.setPlayer(ME, 'me', [
+      {
+        leaderboardId: 1,
+        maxScore: 1000,
+        score: 900,
+        playedAt: '2024-01-01T10:00:00.000Z',
+      },
+      {
+        leaderboardId: 2,
+        maxScore: 1000,
+        score: 400,
+        playedAt: '2024-01-02T10:00:00.000Z',
+      },
+      { leaderboardId: 3, score: 600, playedAt: '2024-01-03T10:00:00.000Z' },
+      {
+        leaderboardId: 5,
+        maxScore: 1000,
+        score: 800,
+        playedAt: '2024-01-04T10:00:00.000Z',
+      },
+      {
+        leaderboardId: 6,
+        maxScore: 1000,
+        score: 500,
+        playedAt: '2024-01-05T10:00:00.000Z',
+      },
+    ]);
+    scoreSaber.setPlayer(BEE, 'bee', [
+      // 5 % ahead
+      {
+        leaderboardId: 1,
+        maxScore: 1000,
+        score: 950,
+        playedAt: '2024-01-06T10:00:00.000Z',
+      },
+      // 1 % ahead: the closest
+      {
+        leaderboardId: 2,
+        maxScore: 1000,
+        score: 410,
+        playedAt: '2024-01-07T10:00:00.000Z',
+      },
+      // 100 points ahead, but no maximum to measure it by
+      { leaderboardId: 3, score: 700, playedAt: '2024-01-08T10:00:00.000Z' },
+      {
+        leaderboardId: 5,
+        maxScore: 1000,
+        score: 700,
+        playedAt: '2024-01-09T10:00:00.000Z',
+      },
+      {
+        leaderboardId: 6,
+        maxScore: 1000,
+        score: 500,
+        playedAt: '2024-01-10T10:00:00.000Z',
+      },
+    ]);
+  });
+
+  it('lists the maps where a bee is ahead, the closest first', async () => {
+    await linkProfile(ME);
+    await addToHive(BEE);
+
+    const response = await revenge();
+
+    expect(response.status).toBe(200);
+
+    const body: Revenge = await json(response);
+
+    expect(
+      body.items.map(({ gap, gapShare, leaderboard, myScore, theirScore }) => [
+        leaderboard.id,
+        myScore,
+        theirScore,
+        gap,
+        gapShare,
+      ])
+    ).toEqual([
+      [2, 400, 410, 10, 0.01],
+      [1, 900, 950, 50, 0.05],
+      // Without a maximum score: last, measured in points only
+      [3, 600, 700, 100, null],
+    ]);
+    // Not where I am ahead (5), nor where we are level (6)
+    expect(body.total).toBe(3);
+  });
+
+  it('shows one bee only when asked, and comes in pages', async () => {
+    scoreSaber.setPlayer(STRANGER, 'stranger', [
+      {
+        leaderboardId: 2,
+        maxScore: 1000,
+        score: 420,
+        playedAt: '2024-01-11T10:00:00.000Z',
+      },
+    ]);
+    await linkProfile(ME);
+    await addToHive(BEE);
+    await addToHive(STRANGER);
+
+    const everyone: Revenge = await json(await revenge());
+
+    expect(everyone.total).toBe(4);
+
+    const stranger: Revenge = await json(await revenge(`?bee=${STRANGER}`));
+
+    expect(stranger.items.map(({ bee }) => bee.id)).toEqual([STRANGER]);
+
+    const firstPage: Revenge = await json(await revenge('?limit=2&page=1'));
+    const secondPage: Revenge = await json(await revenge('?limit=2&page=2'));
+
+    expect(firstPage.items).toHaveLength(2);
+    expect(secondPage.items).toHaveLength(2);
+    expect(firstPage.total).toBe(4);
+  });
+
+  it('answers 404 for a bee who is not in my hive', async () => {
+    await linkProfile(ME);
+
+    const response = await revenge(`?bee=${STRANGER}`);
+
+    expect(response.status).toBe(404);
+    expect(await json(response)).toMatchObject({
+      error: { code: 'not_in_hive' },
+    });
+  });
+
+  it('rejects a bee id that is no ScoreSaber id', async () => {
+    await linkProfile(ME);
+
+    const response = await revenge('?bee=abc');
+
+    expect(response.status).toBe(400);
+  });
+
+  it('is empty without bees', async () => {
+    await linkProfile(ME);
+
+    expect(await json(await revenge())).toMatchObject({ items: [], total: 0 });
+  });
+});
