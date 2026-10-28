@@ -180,16 +180,46 @@ const DashboardPage = () => {
   const revenge = useRevenge({ limit: REVENGE_PREVIEW, page: 1 });
   const trending = useTrending({ limit: TRENDING_PREVIEW, page: 1 });
   // Without bees there is nothing to take revenge on; the head-to-head
-  // section below says how to get some
+  // section above says how to get some
   const hasBees = (hive.data?.items.length ?? 0) > 0;
 
   usePageTitle(t('dashboard.title'));
 
   return (
     <div className="space-y-10">
-      {/* The page has two parts of equal weight. Its own title is only
-          needed by those who navigate by headings. */}
+      {/* The page has several parts of equal weight. Its own title is
+          only needed by those who navigate by headings. */}
       <h1 className="sr-only">{t('dashboard.title')}</h1>
+
+      <section className="space-y-4">
+        <NeonHeading as="h2" color="blue" className="text-3xl">
+          {t('dashboard.headToHead')}
+        </NeonHeading>
+        {hive.isPending && <Spinner />}
+        {hive.isError && (
+          <ErrorNote error={hive.error} onRetry={() => void hive.refetch()} />
+        )}
+        {hive.data?.items.length === 0 && (
+          <EmptyState>
+            <Trans
+              i18nKey="dashboard.emptyHive"
+              components={{
+                hive: (
+                  <Link
+                    to="/hive"
+                    className="text-neon-yellow-core underline"
+                  />
+                ),
+              }}
+            />
+          </EmptyState>
+        )}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {hive.data?.items.map((member) => (
+            <RecordCard key={member.player.id} member={member} />
+          ))}
+        </div>
+      </section>
 
       <section className="space-y-4">
         <NeonHeading as="h2" color="red" className="text-3xl">
@@ -281,36 +311,6 @@ const DashboardPage = () => {
           )}
         </section>
       )}
-
-      <section className="space-y-4">
-        <NeonHeading as="h2" color="blue" className="text-3xl">
-          {t('dashboard.headToHead')}
-        </NeonHeading>
-        {hive.isPending && <Spinner />}
-        {hive.isError && (
-          <ErrorNote error={hive.error} onRetry={() => void hive.refetch()} />
-        )}
-        {hive.data?.items.length === 0 && (
-          <EmptyState>
-            <Trans
-              i18nKey="dashboard.emptyHive"
-              components={{
-                hive: (
-                  <Link
-                    to="/hive"
-                    className="text-neon-yellow-core underline"
-                  />
-                ),
-              }}
-            />
-          </EmptyState>
-        )}
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {hive.data?.items.map((member) => (
-            <RecordCard key={member.player.id} member={member} />
-          ))}
-        </div>
-      </section>
     </div>
   );
 };

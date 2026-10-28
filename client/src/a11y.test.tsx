@@ -458,7 +458,7 @@ describe('what things are called', () => {
     ).toEqual(['Dashboard']);
     expect(
       screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)
-    ).toEqual(['News', 'Revenge', 'What the hive is playing', 'Head to head']);
+    ).toEqual(['Head to head', 'News', 'Revenge', 'What the hive is playing']);
   });
 
   it('marks the page that is open in the menu', async () => {
