@@ -243,6 +243,10 @@ The rate limits count in the memory of the process, and the job queue and the
 live feed run inside it. Two instances would each allow the full number of
 requests and each open a connection to the live feed. Run exactly one.
 
+What that and the other choices of the Azure setup cost, and what it would
+take to change them: "Limits and trade-offs" in
+[infra/README.md](infra/README.md#limits-and-trade-offs).
+
 ## The API
 
 All paths start with `/api`. Everything except `/health`, `/config` and `/auth` needs a
