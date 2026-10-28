@@ -1,0 +1,151 @@
+name: ScoreSaber API
+
+# Once a week, looks whether ScoreSaber has changed its API description. If
+# an endpoint changed, it opens a pull request with the new copy and the
+# types made from it, says which endpoints changed and whether the server
+# uses them, and whether the code still fits the new types.
+#
+# A pull request opened with the job's own token starts no workflows of its
+# own; GitHub does that to keep workflows from triggering each other in a
+# loop. To run CI and the review on it, close and reopen it once.
+
+on:
+  schedule:
+    # Mondays at 06:17 UTC. An odd minute, since many schedules start on
+    # the hour and GitHub delays them then.
+    - cron: '17 6 * * 1'
+  # Also by hand, in the Actions tab
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: scoresaber-api
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Look for a new API description
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      # To push the branch with the new copy
+      contents: write
+      # To open the pull request, or update the one that is open
+      pull-requests: write
+    env:
+      BRANCH: scoresaber-api-update
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - name: Install Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Downloads the description, replaces our copy and lists what changed
+      # (server/scripts/updateOpenApi.ts). Only that list goes into the pull
+      # request, so the types are made in a step of their own.
+      - name: Fetch the description
+        run: >-
+          pnpm --silent --filter @beesaber/server exec tsx scripts/updateOpenApi.ts
+          | tee "$RUNNER_TEMP/update.txt"
+
+      - name: Make the types again
+        run: pnpm --filter @beesaber/server gen:api
+
+      # The copy can change without any endpoint changing, say in its
+      # version number. That is no reason for a pull request.
+      - name: Decide whether an endpoint changed
+        id: changes
+        run: |
+          if grep --quiet 'No changes. The copy is up to date.' "$RUNNER_TEMP/update.txt" \
+            || [ -z "$(git status --porcelain -- server/src/scoresaber)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No endpoint of ScoreSaber's API changed."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # The quick answer to "does this break us": does the code still fit
+      # the new types? Tests and the rest of CI follow once the pull request
+      # is reopened.
+      - name: Check the code against the new types
+        id: types
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          if pnpm typecheck > "$RUNNER_TEMP/typecheck.txt" 2>&1; then
+            echo "result=passes" >> "$GITHUB_OUTPUT"
+          else
+            echo "result=fails" >> "$GITHUB_OUTPUT"
+          fi
+
+      # The texts come from files, never from expressions in the script: the
+      # list of endpoints is ScoreSaber's text, not ours
+      - name: Open or update the pull request
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TYPES: ${{ steps.types.outputs.result }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch --create "$BRANCH"
+          git add server/src/scoresaber/openapi.json server/src/scoresaber/openapi.d.ts
+          git commit --quiet             --message 'take over the current ScoreSaber API description'             --message 'Made by the weekly ScoreSaber API workflow.'
+          git push --quiet --force origin "$BRANCH"
+
+          # The fixed texts are heredocs: Markdown with backticks, written
+          # out as they are
+          body="$RUNNER_TEMP/body.md"
+          {
+            cat <<'TEXT'
+          ScoreSaber has changed its API description. This takes over the new copy and the types made from it.
+
+          ## What changed
+
+          ```
+          TEXT
+            cat "$RUNNER_TEMP/update.txt"
+            echo '```'
+            echo
+            if [ "$TYPES" = passes ]; then
+              cat <<'TEXT'
+          **The code still fits the new types** (`pnpm typecheck` passes).
+          TEXT
+            else
+              cat <<'TEXT'
+          **The code no longer fits the new types.** `pnpm typecheck` says:
+
+          ```
+          TEXT
+              head -c 6000 "$RUNNER_TEMP/typecheck.txt"
+              echo '```'
+            fi
+            cat <<'TEXT'
+
+          ## What to do
+
+          1. Close and reopen this pull request. GitHub starts no workflows for a pull request a workflow opened, so CI and the review only run after that.
+          2. If an endpoint the server uses changed, look at the diff of `openapi.json`, and adjust the zod schemas in `server/src/scoresaber/client.ts` and the fixtures in `server/src/testing/fixtures/` if needed.
+          3. Merge once CI is green.
+          TEXT
+          } > "$body"
+
+          if [ "$(gh pr view "$BRANCH" --json state --jq .state 2>/dev/null)" = OPEN ]; then
+            gh pr edit "$BRANCH" --body-file "$body"
+            echo "Updated the open pull request"
+          else
+            gh pr create --base main --head "$BRANCH" \
+              --title 'Take over the current ScoreSaber API description' \
+              --body-file "$body"
+          fi
