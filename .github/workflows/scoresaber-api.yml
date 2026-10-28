@@ -35,6 +35,12 @@ jobs:
       pull-requests: write
     env:
       BRANCH: scoresaber-api-update
+    # With shell: bash, GitHub adds -o pipefail: in `script | tee file`, a
+    # failing script fails the step. Without it, only tee's success counts,
+    # and a download that failed would end the run green.
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Check out the code
