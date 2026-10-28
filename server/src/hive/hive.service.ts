@@ -9,6 +9,7 @@ import type {
 } from './hive.repository.ts';
 
 type Dependencies = {
+  now?: () => Date;
   playersService: PlayersService;
   repository: HiveRepository;
 };
@@ -19,8 +20,15 @@ type Dependencies = {
  */
 const MAX_HIVE_SIZE = 50;
 
+/** How many days back "what the hive is playing" looks */
+const TRENDING_DAYS = 14;
+
 /** The rules of a hive: who may be added, and what happens when they are */
-const createHiveService = ({ playersService, repository }: Dependencies) => {
+const createHiveService = ({
+  now = () => new Date(),
+  playersService,
+  repository,
+}: Dependencies) => {
   /**
    * Adds a player to my hive. Their profile is looked up right away, which
    * also proves that ScoreSaber knows them. Their scores follow in the
@@ -118,6 +126,13 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
     return repository.revenge(me, options);
   };
 
+  /** Maps my bees played in the last days that I have never played */
+  const trending = (me: Me, options: { limit: number; page: number }) =>
+    repository.trending(me, {
+      ...options,
+      since: new Date(now().getTime() - TRENDING_DAYS * 24 * 60 * 60 * 1000),
+    });
+
   return {
     addMember,
     compare,
@@ -128,10 +143,11 @@ const createHiveService = ({ playersService, repository }: Dependencies) => {
     removeMember,
     revenge,
     syncAll,
+    trending,
   };
 };
 
 type HiveService = ReturnType<typeof createHiveService>;
 
-export { createHiveService, MAX_HIVE_SIZE };
+export { createHiveService, MAX_HIVE_SIZE, TRENDING_DAYS };
 export type { HiveService };

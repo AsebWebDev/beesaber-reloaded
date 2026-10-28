@@ -41,6 +41,7 @@ const createServices = ({
     scoreSaber,
   });
   const hiveService = createHiveService({
+    now,
     repository: createHiveRepository(db),
     playersService,
   });

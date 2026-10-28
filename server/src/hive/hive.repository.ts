@@ -4,11 +4,13 @@ import {
   desc,
   eq,
   gt,
+  gte,
   inArray,
   isNotNull,
   isNull,
   lt,
   lte,
+  notExists,
   or,
   sql,
 } from 'drizzle-orm';
@@ -50,6 +52,13 @@ type RevengeOptions = {
   /** Only this bee, or all of them */
   member?: string | undefined;
   page: number;
+};
+
+type TrendingOptions = {
+  limit: number;
+  page: number;
+  /** Scores set before this moment do not count */
+  since: Date;
 };
 
 const mine = alias(scores, 'mine');
@@ -354,6 +363,70 @@ const createHiveRepository = (db: Database) => {
   };
 
   /**
+   * What the hive is playing: maps on which bees set a score since `since`
+   * and I have none at all. The maps most bees played come first, then the
+   * ones played last.
+   *
+   * `scores` holds a player's best score per map, so "played" means "set a
+   * new best". A bee who played a map again without improving does not
+   * count; we never hear of that play.
+   */
+  const trending = async (
+    { playerId, userId }: Me,
+    { limit, page, since }: TrendingOptions
+  ) => {
+    const where = and(
+      eq(hiveMembers.userId, userId),
+      gte(theirs.playedAt, since),
+      notExists(
+        db
+          .select({ leaderboardId: mine.leaderboardId })
+          .from(mine)
+          .where(
+            and(
+              eq(mine.playerId, playerId),
+              eq(mine.leaderboardId, theirs.leaderboardId)
+            )
+          )
+      )
+    );
+    // A player has one score per map, so every row of a map is another bee
+    const bees = count();
+    const lastPlayedAt = sql`max(${theirs.playedAt})`.mapWith(theirs.playedAt);
+
+    const [items, [total]] = await Promise.all([
+      db
+        .select({
+          leaderboard: leaderboards,
+          bees: sql<
+            { avatarUrl: string | null; id: string; name: string }[]
+          >`json_agg(json_build_object('id', ${players.id}, 'name', ${players.name}, 'avatarUrl', ${players.avatarUrl}) order by ${theirs.playedAt} desc, ${players.id})`,
+          lastPlayedAt,
+        })
+        .from(hiveMembers)
+        .innerJoin(theirs, eq(theirs.playerId, hiveMembers.memberId))
+        .innerJoin(leaderboards, eq(leaderboards.id, theirs.leaderboardId))
+        .innerJoin(players, eq(players.id, hiveMembers.memberId))
+        .where(where)
+        .groupBy(leaderboards.id)
+        .orderBy(desc(bees), desc(lastPlayedAt), asc(leaderboards.id))
+        .limit(limit)
+        .offset((page - 1) * limit),
+      db
+        .select({
+          total: sql<number>`count(distinct ${theirs.leaderboardId})`.mapWith(
+            Number
+          ),
+        })
+        .from(hiveMembers)
+        .innerJoin(theirs, eq(theirs.playerId, hiveMembers.memberId))
+        .where(where),
+    ]);
+
+    return { items, total: total?.total ?? 0 };
+  };
+
+  /**
    * "A bee beat your score": score changes of bees that went past my score
    * and that I have not answered yet.
    *
@@ -426,6 +499,7 @@ const createHiveRepository = (db: Database) => {
     mapRanking,
     removeMember,
     revenge,
+    trending,
   };
 };
 
@@ -437,4 +511,5 @@ export type {
   ComparisonOptions,
   HiveRepository,
   RevengeOptions,
+  TrendingOptions,
 };

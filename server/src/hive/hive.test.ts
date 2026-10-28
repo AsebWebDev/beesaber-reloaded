@@ -20,6 +20,10 @@ const STRANGER = '76561198000000003';
 const soon = (minutes: number) =>
   new Date(Date.now() + minutes * 60_000).toISOString();
 
+/** A moment some days ago, to the minute of the test */
+const daysAgo = (days: number) =>
+  new Date(Date.now() - days * 24 * 60 * 60_000).toISOString();
+
 const json = async (response: Response) => (await response.json()) as never;
 
 const addToHive = (playerId: string, as = api) =>
@@ -702,5 +706,118 @@ describe('GET /api/hive/revenge', () => {
     await linkProfile(ME);
 
     expect(await json(await revenge())).toMatchObject({ items: [], total: 0 });
+  });
+});
+
+describe('GET /api/hive/trending', () => {
+  type Trending = {
+    days: number;
+    items: {
+      bees: { id: string; name: string }[];
+      lastPlayedAt: string;
+      leaderboard: { id: number };
+    }[];
+    total: number;
+  };
+
+  const trending = async (query = '') => api(`/api/hive/trending${query}`);
+
+  /** When the stranger played map 7, the last of anyone on it */
+  let strangerOn7: string;
+
+  beforeEach(() => {
+    strangerOn7 = daysAgo(4);
+    // I played 1 lately and 2 long ago
+    scoreSaber.setPlayer(ME, 'me', [
+      { leaderboardId: 1, score: 900, playedAt: daysAgo(1) },
+      { leaderboardId: 2, score: 400, playedAt: daysAgo(400) },
+    ]);
+    scoreSaber.setPlayer(BEE, 'bee', [
+      // Maps I played, however long ago: nothing new to me
+      { leaderboardId: 1, score: 800, playedAt: daysAgo(2) },
+      { leaderboardId: 2, score: 500, playedAt: daysAgo(3) },
+      // New to me, and played by both bees
+      { leaderboardId: 7, score: 700, playedAt: daysAgo(5) },
+      // New to me, played by one bee only
+      { leaderboardId: 8, score: 700, playedAt: daysAgo(1) },
+      // New to me, but too long ago
+      { leaderboardId: 9, score: 700, playedAt: daysAgo(15) },
+    ]);
+    scoreSaber.setPlayer(STRANGER, 'stranger', [
+      { leaderboardId: 7, score: 650, playedAt: strangerOn7 },
+      { leaderboardId: 10, score: 650, playedAt: daysAgo(10) },
+    ]);
+  });
+
+  it('lists maps bees played lately that I never did, most bees first', async () => {
+    await linkProfile(ME);
+    await addToHive(BEE);
+    await addToHive(STRANGER);
+
+    const response = await trending();
+
+    expect(response.status).toBe(200);
+
+    const body: Trending = await json(response);
+
+    expect(
+      body.items.map(({ bees, leaderboard }) => [
+        leaderboard.id,
+        // Whoever played it last comes first
+        bees.map(({ name }) => name),
+      ])
+    ).toEqual([
+      [7, ['stranger', 'bee']],
+      // One bee each: the map played last first
+      [8, ['bee']],
+      [10, ['stranger']],
+    ]);
+    expect(body.items[0]?.lastPlayedAt).toBe(strangerOn7);
+    expect(body.total).toBe(3);
+    expect(body.days).toBe(14);
+  });
+
+  it('only counts the bees of my hive', async () => {
+    // Somebody else tracks the stranger, so their scores are stored
+    const other = await createUser('other-user');
+
+    await linkProfile(BEE, other);
+    await addToHive(STRANGER, other);
+    await linkProfile(ME);
+    await addToHive(BEE);
+
+    const body: Trending = await json(await trending());
+
+    expect(body.items.map(({ leaderboard }) => leaderboard.id)).toEqual([8, 7]);
+    expect(body.items[1]?.bees.map(({ id }) => id)).toEqual([BEE]);
+  });
+
+  it('comes in pages', async () => {
+    await linkProfile(ME);
+    await addToHive(BEE);
+    await addToHive(STRANGER);
+
+    const firstPage: Trending = await json(await trending('?limit=2&page=1'));
+    const secondPage: Trending = await json(await trending('?limit=2&page=2'));
+
+    expect(firstPage.items.map(({ leaderboard }) => leaderboard.id)).toEqual([
+      7, 8,
+    ]);
+    expect(secondPage.items.map(({ leaderboard }) => leaderboard.id)).toEqual([
+      10,
+    ]);
+    expect(secondPage.total).toBe(3);
+  });
+
+  it('rejects a page size it does not serve', async () => {
+    await linkProfile(ME);
+
+    expect((await trending('?limit=0')).status).toBe(400);
+  });
+
+  it('is empty without bees', async () => {
+    await linkProfile(ME);
+
+    expect(await json(await trending())).toMatchObject({ items: [], total: 0 });
   });
 });
