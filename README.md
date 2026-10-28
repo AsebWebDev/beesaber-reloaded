@@ -9,6 +9,11 @@ It runs at [beesaber.de](https://beesaber.de), a private project: sign-in is
 open to invited friends only. Everyone else can try the
 [demo](https://beesaber.de/demo/), with made-up players and scores.
 
+[![The dashboard: head-to-head records against each bee, news of who beat your score, the maps to win back, and what the hive is playing](docs/dashboard.png)](https://beesaber.de/demo/)
+
+_The dashboard of the [demo](https://beesaber.de/demo/), with made-up
+players and scores._
+
 ## What this repository shows
 
 A small app, run the way a team would run a large one. Each point links to
