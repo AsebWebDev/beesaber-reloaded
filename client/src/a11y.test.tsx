@@ -71,10 +71,11 @@ const STATES: State[] = [
     name: 'the dashboard with news and a bee',
     setup: () => fakeApi.signedInAs({ hive: [BEE], news: [fakeApi.news()] }),
     url: '/',
-    // The bee's name links from the news, the revenge list and her card
+    // The bee's name links from the news, the revenge list, what the hive
+    // is playing and the bee's card
     ready: () =>
       waitFor(() =>
-        expect(screen.getAllByRole('link', { name: 'buzz' })).toHaveLength(3)
+        expect(screen.getAllByRole('link', { name: 'buzz' })).toHaveLength(4)
       ),
   },
   {
@@ -457,7 +458,7 @@ describe('what things are called', () => {
     ).toEqual(['Dashboard']);
     expect(
       screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)
-    ).toEqual(['News', 'Revenge', 'Head to head']);
+    ).toEqual(['News', 'Revenge', 'What the hive is playing', 'Head to head']);
   });
 
   it('marks the page that is open in the menu', async () => {

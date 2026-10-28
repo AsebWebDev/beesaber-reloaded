@@ -1505,3 +1505,85 @@ describe('what the hive is playing', () => {
     ).toBeInTheDocument();
   });
 });
+
+describe('what the hive is playing, on the dashboard', () => {
+  it('shows the first maps and leads to the whole list', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp();
+
+    const section = (
+      await screen.findByRole('heading', { name: 'What the hive is playing' })
+    ).closest('section')!;
+
+    expect(
+      await within(section).findByRole('link', { name: 'Night Flight' })
+    ).toHaveAttribute('href', '/maps/4');
+    expect(within(section).getByRole('link', { name: 'buzz' })).toHaveAttribute(
+      'href',
+      `/hive/${fakeApi.BEE.id}`
+    );
+    expect(
+      within(section).getByRole('link', {
+        name: 'Everything the hive is playing: 1 map',
+      })
+    ).toHaveAttribute('href', '/trending');
+  });
+
+  it('says so when the bees played nothing new to me', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    fakeApi.server.use(
+      http.get('/api/hive/trending', () =>
+        HttpResponse.json({
+          items: [],
+          page: 1,
+          limit: 3,
+          total: 0,
+          totalPages: 0,
+          days: 14,
+        })
+      )
+    );
+    renderApp();
+
+    const section = (
+      await screen.findByRole('heading', { name: 'What the hive is playing' })
+    ).closest('section')!;
+
+    expect(
+      await within(section).findByText(/^In the last 14 days/)
+    ).toBeInTheDocument();
+    expect(
+      within(section).queryByRole('link', { name: /^Everything/ })
+    ).not.toBeInTheDocument();
+  });
+
+  it('offers to try again when the list fails', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    fakeApi.server.use(
+      http.get('/api/hive/trending', () =>
+        HttpResponse.json(
+          { error: { code: 'internal_error', message: 'Down' } },
+          { status: 500 }
+        )
+      )
+    );
+    renderApp();
+
+    const section = (
+      await screen.findByRole('heading', { name: 'What the hive is playing' })
+    ).closest('section')!;
+
+    expect(await within(section).findByRole('alert')).toBeInTheDocument();
+  });
+
+  it('is not there while the hive is empty', async () => {
+    fakeApi.signedInAs();
+    renderApp();
+
+    await screen.findByText(/Your hive is empty/);
+
+    expect(
+      screen.queryByRole('heading', { name: 'What the hive is playing' })
+    ).not.toBeInTheDocument();
+  });
+});

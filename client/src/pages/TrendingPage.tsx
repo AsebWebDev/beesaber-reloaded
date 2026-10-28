@@ -205,4 +205,4 @@ const Row = ({ item }: { item: TrendingItem }) => {
   );
 };
 
-export { TrendingPage };
+export { Bees, TrendingPage };
