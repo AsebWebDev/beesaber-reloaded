@@ -159,6 +159,31 @@ describe('GET /api/hive', () => {
     });
   });
 
+  it('counts a tie as neither a lead nor a deficit', async () => {
+    scoreSaber.setPlayer(BEE, 'bee', [
+      // Level with my 900 on 1, ahead of my 400 on 2
+      { leaderboardId: 1, score: 900, playedAt: '2024-01-04T10:00:00.000Z' },
+      { leaderboardId: 2, score: 500, playedAt: '2024-01-05T10:00:00.000Z' },
+    ]);
+    await addToHive(BEE);
+
+    expect(await json(await api('/api/hive'))).toMatchObject({
+      items: [{ shared: 2, winning: 0, losing: 1 }],
+    });
+  });
+
+  it('lists the bees in the order they were added', async () => {
+    scoreSaber.setPlayer(STRANGER, 'stranger', []);
+    await addToHive(STRANGER);
+    await addToHive(BEE);
+
+    const { items }: { items: { player: { id: string } }[] } = await json(
+      await api('/api/hive')
+    );
+
+    expect(items.map(({ player }) => player.id)).toEqual([STRANGER, BEE]);
+  });
+
   it('shows zeros for a bee without any scores', async () => {
     scoreSaber.setPlayer(BEE, 'bee', []);
     await addToHive(BEE);
@@ -195,6 +220,17 @@ describe('GET /api/hive/:playerId/comparison', () => {
       mine: { modifiedScore: 400 },
       theirs: { modifiedScore: 500 },
     });
+  });
+
+  it('comes in pages', async () => {
+    await addToHive(BEE);
+
+    const first = await compare('limit=1&page=1');
+    const second = await compare('limit=1&page=2');
+
+    expect(first.items.map((item) => item.leaderboard.id)).toEqual([2]);
+    expect(second.items.map((item) => item.leaderboard.id)).toEqual([1]);
+    expect(second.total).toBe(2);
   });
 
   it('narrows the list to where I am behind', async () => {
@@ -295,6 +331,38 @@ describe('GET /api/hive/news', () => {
     await addToHive(BEE);
 
     expect((await news()).items).toEqual([]);
+  });
+
+  it('reports a bee who was level with me and then went past', async () => {
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 1, score: 900, playedAt: '2024-01-04T10:00:00.000Z' },
+    ]);
+    await addToHive(BEE);
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 1, score: 901, playedAt: soon(1) },
+    ]);
+    await sync(BEE);
+
+    expect((await news()).items).toMatchObject([
+      { event: { previousScore: 900, newScore: 901 }, myScore: 900 },
+    ]);
+  });
+
+  it('lists the latest first, and no more than asked for', async () => {
+    await addToHive(BEE);
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 1, score: 950, playedAt: soon(1) },
+      { leaderboardId: 3, score: 650, playedAt: soon(2) },
+    ]);
+    await sync(BEE);
+
+    expect(
+      (await news()).items.map(({ leaderboard }) => leaderboard.id)
+    ).toEqual([3, 1]);
+
+    const one: News = await json(await api('/api/hive/news?limit=1'));
+
+    expect(one.items.map(({ leaderboard }) => leaderboard.id)).toEqual([3]);
   });
 
   it('shows what the bee holds now when she improved again after passing me', async () => {
@@ -789,9 +857,13 @@ describe('GET /api/hive/revenge', () => {
 
     const firstPage: Revenge = await json(await revenge('?limit=2&page=1'));
     const secondPage: Revenge = await json(await revenge('?limit=2&page=2'));
+    const key = ({ bee, leaderboard }: Revenge['items'][number]) =>
+      `${leaderboard.id}-${bee.id}`;
 
-    expect(firstPage.items).toHaveLength(2);
-    expect(secondPage.items).toHaveLength(2);
+    // Together the two pages are the whole list, in its order
+    expect([...firstPage.items, ...secondPage.items].map(key)).toEqual(
+      everyone.items.map(key)
+    );
     expect(firstPage.total).toBe(4);
   });
 
@@ -816,6 +888,28 @@ describe('GET /api/hive/revenge', () => {
       new Set([BEE])
     );
     expect(body.total).toBe(3);
+  });
+
+  it('orders maps without a maximum score by the gap in points', async () => {
+    scoreSaber.setPlayer(ME, 'me', [
+      { leaderboardId: 3, score: 600, playedAt: '2024-01-03T10:00:00.000Z' },
+      { leaderboardId: 7, score: 600, playedAt: '2024-01-03T10:00:00.000Z' },
+    ]);
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 3, score: 700, playedAt: '2024-01-08T10:00:00.000Z' },
+      { leaderboardId: 7, score: 650, playedAt: '2024-01-08T10:00:00.000Z' },
+    ]);
+    await linkProfile(ME);
+    await addToHive(BEE);
+
+    const body: Revenge = await json(await revenge());
+
+    expect(
+      body.items.map(({ gap, leaderboard }) => [leaderboard.id, gap])
+    ).toEqual([
+      [7, 50],
+      [3, 100],
+    ]);
   });
 
   it('answers 404 for a bee who is not in my hive', async () => {
