@@ -8,9 +8,15 @@ provider "azurerm" {
   features {}
 }
 
+# On every resource that takes tags. Azure's cost analysis and searches can
+# group by them, and policy.tf makes managed-by compulsory.
 locals {
   tags = {
-    app = var.name
+    app         = var.name
+    environment = "production"
+    # Changes made by hand in the portal are undone by the next apply
+    managed-by = "terraform"
+    repository = "github.com/AsebWebDev/beesaber-reloaded"
   }
 }
 

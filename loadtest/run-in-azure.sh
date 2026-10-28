@@ -28,8 +28,14 @@ script=$(python -c 'import json, sys; print(json.dumps(sys.stdin.read()))' \
 environment_id=$(az containerapp env show --resource-group "$group" \
   --name "$environment" --query id --output tsv)
 
+# The resource group refuses resources without managed-by (infra/policy.tf)
 cat > "$spec" <<YAML
 location: francecentral
+tags:
+  app: beesaber
+  environment: production
+  managed-by: loadtest/run-in-azure.sh
+  repository: github.com/AsebWebDev/beesaber-reloaded
 properties:
   environmentId: $environment_id
   workloadProfileName: Consumption
