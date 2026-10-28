@@ -65,6 +65,27 @@ const createHiveRoutes = (
       }
     )
 
+    // GET /api/hive/maps/1234: how I and my bees stand on one map
+    .get(
+      '/maps/:leaderboardId',
+      validate(
+        'param',
+        z.object({
+          // Up to the largest value of the integer column it is looked up
+          // in. Beyond that the database refuses the query, which would end
+          // as a 500 instead of a "not found".
+          leaderboardId: z.coerce.number().int().min(1).max(2_147_483_647),
+        })
+      ),
+      async (c) =>
+        c.json(
+          await service.mapRanking(
+            requireMe(c.get('user')),
+            c.req.valid('param').leaderboardId
+          )
+        )
+    )
+
     // GET /api/hive/:playerId/comparison?filter=losing&page=1&limit=20
     .get(
       '/:playerId/comparison',

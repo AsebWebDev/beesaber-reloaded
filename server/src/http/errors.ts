@@ -27,6 +27,7 @@ type ErrorCode =
   | 'rate_limited'
   | 'scoresaber_unavailable'
   | 'unauthorized'
+  | 'unknown_map'
   | 'unknown_player'
   | 'validation_failed';
 
@@ -43,6 +44,7 @@ const statusOf: Record<ErrorCode, ContentfulStatusCode> = {
   rate_limited: 429,
   scoresaber_unavailable: 502,
   unauthorized: 401,
+  unknown_map: 404,
   unknown_player: 404,
   validation_failed: 400,
 };

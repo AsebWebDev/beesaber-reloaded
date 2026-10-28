@@ -38,6 +38,9 @@ type Config = InferResponseType<typeof api.config.$get>;
 type AddedBee = InferResponseType<typeof api.hive.$post>;
 type SyncRequest = InferResponseType<typeof api.hive.sync.$post>;
 type SyncStatus = InferResponseType<typeof api.hive.sync.$get>;
+type MapRanking = InferResponseType<
+  (typeof api.hive.maps)[':leaderboardId']['$get']
+>;
 type ComparisonEntry = InferResponseType<
   (typeof api.hive)[':playerId']['comparison']['$get']
 >['items'][number];
@@ -209,6 +212,16 @@ const useSyncing = (): boolean => {
   return current !== '';
 };
 
+/** How I and my bees stand on one map, best first */
+const useMapRanking = (leaderboardId: string) =>
+  useQuery({
+    queryKey: ['hive', 'maps', leaderboardId],
+    queryFn: () =>
+      unwrap(
+        api.hive.maps[':leaderboardId'].$get({ param: { leaderboardId } })
+      ),
+  });
+
 const useComparison = (
   playerId: string,
   options: { filter: ComparisonFilter; page: number },
@@ -278,6 +291,7 @@ export {
   useConfig,
   useHive,
   useLinkProfile,
+  useMapRanking,
   useMe,
   useNews,
   usePlayerSearch,
@@ -295,6 +309,7 @@ export type {
   FoundPlayer,
   HiveMember,
   Leaderboard,
+  MapRanking,
   Me,
   NewsItem,
   Player,

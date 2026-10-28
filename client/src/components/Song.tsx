@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router';
 
 import { difficultyName } from '@/lib/format.ts';
 
@@ -22,7 +23,10 @@ const DifficultyBadge = ({ difficulty }: { difficulty: number }) => (
   </span>
 );
 
-/** Cover, title and difficulty of a map, as one table cell's content */
+/**
+ * Cover, title and difficulty of a map, as one table cell's content. The
+ * title leads to the map's page, with the ranking of the whole hive on it.
+ */
 const Song = ({ leaderboard }: { leaderboard: Leaderboard }) => {
   const { t } = useTranslation();
 
@@ -31,7 +35,9 @@ const Song = ({ leaderboard }: { leaderboard: Leaderboard }) => {
       <Picture src={leaderboard.coverUrl} size={44} className="rounded" />
       <div className="min-w-0">
         <p className="truncate font-medium text-slate-100">
-          {leaderboard.songName}
+          <Link to={`/maps/${leaderboard.id}`} className="hover:underline">
+            {leaderboard.songName}
+          </Link>
         </p>
         <p className="truncate text-xs text-slate-400">
           {t('song.byline', {

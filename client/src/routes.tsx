@@ -18,6 +18,7 @@ import { ComparisonPage } from '@/pages/ComparisonPage.tsx';
 import { DashboardPage } from '@/pages/DashboardPage.tsx';
 import { HivePage } from '@/pages/HivePage.tsx';
 import { LandingPage } from '@/pages/LandingPage.tsx';
+import { MapPage } from '@/pages/MapPage.tsx';
 import { OnboardingPage } from '@/pages/OnboardingPage.tsx';
 import { ProfilePage } from '@/pages/ProfilePage.tsx';
 
@@ -188,6 +189,7 @@ const routes: RouteObject[] = [
       { index: true, element: <DashboardPage /> },
       { path: 'hive', element: <HivePage /> },
       { path: 'hive/:playerId', element: <ComparisonPage /> },
+      { path: 'maps/:leaderboardId', element: <MapPage /> },
       { path: 'profile', element: <Profile /> },
       { path: '*', element: <NotFound /> },
     ],

@@ -103,6 +103,9 @@ describe('the translations', () => {
     expect(same).toEqual([
       'comparison.columns.map',
       'comparison.filter.label',
+      'map.columns.score',
+      'map.place',
+      'map.title',
       'scores.columns.map',
       'scores.columns.score',
     ]);

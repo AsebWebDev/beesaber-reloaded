@@ -1171,3 +1171,87 @@ describe('a profile that is gone while the app is open', () => {
     ).toBeInTheDocument();
   });
 });
+
+describe('the hive ranking of a map', () => {
+  it('lists me and my bees on the map, best first, with the gap to the top', async () => {
+    // On Superstar the bee is ahead: 500,000 to my 400,000
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp('/maps/2');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Superstar', level: 1 })
+    ).toBeInTheDocument();
+    expect(document.title).toBe('Superstar · BeeSaber');
+
+    const table = screen.getByRole('table', {
+      name: 'Hive ranking for Superstar',
+    });
+    const [, first, second] = within(table).getAllByRole('row');
+
+    expect(first).toHaveTextContent(/^1\.\s*buzz/);
+    expect(within(first!).getByText('500,000')).toBeInTheDocument();
+    expect(second).toHaveTextContent(/^2\.\s*myself\s*\(you\)/);
+    expect(within(second!).getByText('−100,000')).toBeInTheDocument();
+    // The bee links to the comparison with them, I do not link to myself
+    expect(within(first!).getByRole('link', { name: 'buzz' })).toHaveAttribute(
+      'href',
+      `/hive/${fakeApi.BEE.id}`
+    );
+    expect(
+      screen.getByRole('link', { name: 'View on ScoreSaber' })
+    ).toHaveAttribute('href', 'https://scoresaber.com/leaderboard/2');
+  });
+
+  it('says so when nobody in the hive has played the map', async () => {
+    fakeApi.signedInAs();
+    renderApp('/maps/3');
+
+    expect(
+      await screen.findByText('Nobody in your hive has played this map yet.')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Unplayed', level: 1 })
+    ).toBeInTheDocument();
+  });
+
+  it('says so for a map BeeSaber does not know, and points back', async () => {
+    fakeApi.signedInAs();
+    renderApp('/maps/999');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Map not found' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Back to the dashboard' })
+    ).toHaveAttribute('href', '/');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+});
+
+describe('a song title', () => {
+  it('leads from the comparison to the hive ranking of its map', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp(`/hive/${fakeApi.BEE.id}`);
+
+    await user.click(await screen.findByRole('link', { name: 'Monster' }));
+
+    expect(
+      await screen.findByRole('table', { name: 'Hive ranking for Monster' })
+    ).toBeInTheDocument();
+  });
+
+  it('leads there from the news and from my scores, too', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id], news: [fakeApi.news()] });
+    const { user } = renderApp();
+
+    expect(
+      await screen.findByRole('link', { name: 'Superstar' })
+    ).toHaveAttribute('href', '/maps/2');
+
+    await user.click(screen.getByRole('link', { name: 'My profile' }));
+
+    expect(
+      await screen.findByRole('link', { name: 'Monster' })
+    ).toHaveAttribute('href', '/maps/1');
+  });
+});

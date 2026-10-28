@@ -144,6 +144,26 @@ const de: Translation = {
     thisBee: 'dieser Biene',
     title: 'Vergleich',
   },
+  map: {
+    columns: {
+      accuracy: 'Genauigkeit',
+      gap: 'Rückstand',
+      played: 'Gespielt',
+      player: 'Spieler',
+      score: 'Score',
+    },
+    empty: 'Aus deiner Hive hat diese Map noch niemand gespielt.',
+    onScoreSaber: 'Auf ScoreSaber ansehen',
+    place: '{{place}}.',
+    ranking: 'Hive-Rangliste',
+    tableName: 'Hive-Rangliste für {{song}}',
+    title: 'Map',
+    unknown: {
+      text: 'BeeSaber kennt diese Map nicht. <home>Zurück zur Übersicht</home>',
+      title: 'Map nicht gefunden',
+    },
+    you: 'du',
+  },
   profile: {
     change: 'Profil wechseln',
     changed: 'Du vergleichst jetzt als {{name}}.',
@@ -216,6 +236,7 @@ const de: Translation = {
       scoresaber_unavailable:
         'ScoreSaber ist gerade nicht erreichbar. Bitte versuch es später noch einmal.',
       unauthorized: 'Du bist nicht angemeldet.',
+      unknown_map: 'BeeSaber kennt diese Map nicht.',
       unknown_player: 'ScoreSaber kennt dieses Profil nicht.',
       validation_failed:
         'Die Anfrage wurde nicht angenommen. Bitte prüf deine Eingabe.',

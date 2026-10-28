@@ -156,6 +156,27 @@ const STATES: State[] = [
       }),
   },
   {
+    name: 'the hive ranking of a map',
+    setup: () => fakeApi.signedInAs({ hive: [BEE] }),
+    url: '/maps/2',
+    ready: () =>
+      screen.findByRole('table', {
+        name: t('map.tableName', { song: 'Superstar' }),
+      }),
+  },
+  {
+    name: 'a map nobody in the hive has played',
+    setup: () => fakeApi.signedInAs(),
+    url: '/maps/3',
+    ready: () => screen.findByText(t('map.empty')),
+  },
+  {
+    name: 'a map BeeSaber does not know',
+    setup: () => fakeApi.signedInAs(),
+    url: '/maps/999',
+    ready: () => screen.findByRole('heading', { name: t('map.unknown.title') }),
+  },
+  {
     name: 'the error screen',
     setup: () => fakeApi.signedInAs({ failures: { me: 500 } }),
     url: '/',

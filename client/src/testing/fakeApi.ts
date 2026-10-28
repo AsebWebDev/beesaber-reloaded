@@ -9,6 +9,7 @@ import type {
   FoundPlayer,
   HiveMember,
   Leaderboard,
+  MapRanking,
   Me,
   NewsItem,
   Player,
@@ -87,6 +88,8 @@ const OTHER = player('3003', 'buzzkill');
 
 const MONSTER = leaderboard(1, 'Monster');
 const SUPERSTAR = leaderboard(2, 'Superstar');
+// Known, but nobody in the hive has played it
+const UNPLAYED = leaderboard(3, 'Unplayed');
 
 // I lead on Monster, the bee leads on Superstar
 const SHARED: ComparisonEntry[] = [
@@ -417,6 +420,53 @@ const server = setupServer(
       { status: 202 }
     )
   ),
+  http.get('/api/hive/maps/:leaderboardId', ({ params }) => {
+    const refused = refusal();
+
+    if (refused !== undefined) return refused;
+
+    const id = Number(params.leaderboardId);
+    const board = [MONSTER, SUPERSTAR, UNPLAYED].find(
+      (known) => known.id === id
+    );
+
+    if (board === undefined)
+      return error(
+        404,
+        'unknown_map',
+        'Nobody tracked here has played this map'
+      );
+
+    const shared = SHARED.find((entry) => entry.leaderboard.id === id);
+    const played =
+      shared === undefined
+        ? []
+        : [
+            { player: ME, score: shared.mine, isMe: true },
+            ...(state.hive.includes(BEE.id)
+              ? [{ player: BEE, score: shared.theirs, isMe: false }]
+              : []),
+          ].sort((a, b) => b.score.modifiedScore - a.score.modifiedScore);
+
+    return HttpResponse.json({
+      leaderboard: board,
+      entries: played.map(
+        (
+          {
+            isMe,
+            player: { avatarUrl, country, id: playerId, name },
+            score: { accuracy, fullCombo, modifiedScore, playedAt },
+          },
+          index
+        ) => ({
+          place: index + 1,
+          isMe,
+          player: { id: playerId, name, avatarUrl, country },
+          score: { modifiedScore, accuracy, fullCombo, playedAt },
+        })
+      ),
+    } satisfies MapRanking);
+  }),
   http.get('/api/hive/:playerId/comparison', async ({ request }) => {
     await delay(state.listDelayMs);
 
