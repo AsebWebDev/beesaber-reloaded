@@ -32,8 +32,11 @@ const validate = <
       );
   });
 
-/** A ScoreSaber player id: a Steam or Oculus id, digits only */
-const playerId = z.string().regex(/^\d{1,20}$/, 'must be a ScoreSaber id');
+/**
+ * A ScoreSaber player id: a Steam or Oculus id, digits only. No leading
+ * zero, so that every player has exactly one way to write their id.
+ */
+const playerId = z.string().regex(/^[1-9]\d{0,19}$/, 'must be a ScoreSaber id');
 
 /** Query parameters of every list that comes in pages */
 const pagination = {

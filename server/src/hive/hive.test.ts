@@ -121,6 +121,18 @@ describe('POST /api/hive', () => {
 
     expect(response.status).toBe(400);
   });
+
+  it('rejects a player id with leading zeros', async () => {
+    // ScoreSaber might answer it with the profile of the id without them.
+    // That profile would be stored under its own id, and adding the padded
+    // one would then break on the reference to it.
+    const response = await addToHive(`00${BEE}`);
+
+    expect(response.status).toBe(400);
+    expect(await json(response)).toMatchObject({
+      error: { code: 'validation_failed' },
+    });
+  });
 });
 
 describe('GET /api/hive', () => {
