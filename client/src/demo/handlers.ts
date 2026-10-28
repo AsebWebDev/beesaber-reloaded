@@ -211,9 +211,10 @@ const createDemoHandlers = ({ base = '', signInUrl }: Options = {}) => {
               theirs.modifiedScore > mine.modifiedScore &&
               Date.parse(theirs.playedAt) > Date.now() - TRENDING_DAYS * DAY
           )
-          .map(({ leaderboard: board, mine, theirs }, index) => ({
+          .map(({ leaderboard: board, mine, theirs }) => ({
             event: {
-              id: board.id * 10 + index,
+              // One per bee and map: the app keys the news by it
+              id: board.id * 10 + Number(beeId.slice(-1)),
               playerId: beeId,
               leaderboardId: board.id,
               // Just below my score before, so this play went past me

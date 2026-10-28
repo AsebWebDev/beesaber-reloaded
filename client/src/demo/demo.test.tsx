@@ -127,6 +127,21 @@ describe('the demo', () => {
     expect(fresh.length).toBeGreaterThan(0);
   });
 
+  it('gives every piece of news its own id, which the dashboard keys it by', async () => {
+    fakeApi.server.use(...createDemoHandlers().handlers);
+
+    const answer = await fetch(
+      new URL('/api/hive/news?limit=100', window.location.origin)
+    );
+    const { items } = (await answer.json()) as {
+      items: { event: { id: number } }[];
+    };
+    const ids = items.map(({ event }) => event.id);
+
+    expect(ids.length).toBeGreaterThan(1);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
   it('lets the visitor add a bee from the search, and remove one', async () => {
     const stranger = STRANGERS[0]!;
     const { user } = renderApp('/hive');
