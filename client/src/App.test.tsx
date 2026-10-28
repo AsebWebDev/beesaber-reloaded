@@ -533,6 +533,37 @@ describe('when the server has trouble', () => {
   });
 });
 
+describe('the dashboard while my own scores are fetched for the first time', () => {
+  it('waits with the lists that compare my scores, instead of showing them wrong', async () => {
+    // Without my scores, every map of the bees would look new to me
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id], myPollsUntilSynced: 2 });
+    renderApp();
+
+    const trending = (
+      await screen.findByRole('heading', { name: 'What the hive is playing' })
+    ).closest('section')!;
+
+    expect(
+      within(trending).getByText(/Your own scores are still being fetched/)
+    ).toBeInTheDocument();
+    expect(
+      within(trending).queryByRole('link', { name: 'Night Flight' })
+    ).not.toBeInTheDocument();
+
+    // Once they are in, the lists follow
+    expect(
+      await within(trending).findByRole(
+        'link',
+        { name: 'Night Flight' },
+        { timeout: 6000 }
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Your own scores are still being fetched/)
+    ).not.toBeInTheDocument();
+  }, 10_000);
+});
+
 describe('what is on screen after the hive changed', () => {
   // Answers stay fresh for half a minute, as in the app, so what these
   // tests see is what was refreshed after the change, not loaded anew

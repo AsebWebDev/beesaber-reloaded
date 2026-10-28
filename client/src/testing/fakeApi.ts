@@ -217,9 +217,15 @@ const me = (): Me => {
       image: null,
       playerId: state.playerId,
     },
+    // While my scores are still being fetched, it is the first time:
+    // there has never been a finished sync
     player:
       linked !== null && state.myPollsUntilSynced > 0
-        ? { ...linked, syncStartedAt: '2024-03-01T10:00:00.000Z' }
+        ? {
+            ...linked,
+            syncStartedAt: '2024-03-01T10:00:00.000Z',
+            scoresSyncedAt: null,
+          }
         : linked,
   };
 };

@@ -97,6 +97,8 @@ const en = {
     sharedMaps_other: '{{number}} shared maps',
     theirs: 'Theirs',
     theyLead: 'They lead on {{number}}',
+    waitForMyScores:
+      'Your own scores are still being fetched from ScoreSaber. This shows up once they are in.',
     title: 'Dashboard',
     trending: 'What the hive is playing',
     trendingAll_one: 'Everything the hive is playing: {{number}} map',

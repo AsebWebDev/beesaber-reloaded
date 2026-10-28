@@ -73,6 +73,12 @@ const NEWS_INTERVAL_MS = 60_000;
 const isSyncing = (player: { syncStartedAt: string | null }): boolean =>
   player.syncStartedAt !== null;
 
+/** True while the player's scores are fetched, and never have been before */
+const isFirstSync = (player: {
+  scoresSyncedAt: string | null;
+  syncStartedAt: string | null;
+}): boolean => isSyncing(player) && player.scoresSyncedAt === null;
+
 /** Which ways to sign in the server offers */
 const useConfig = () =>
   useQuery({
@@ -336,6 +342,7 @@ const useSyncHive = () => {
 };
 
 export {
+  isFirstSync,
   isSyncing,
   PAGE_SIZE,
   useAddBee,

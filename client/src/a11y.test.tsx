@@ -79,6 +79,16 @@ const STATES: State[] = [
       ),
   },
   {
+    name: 'the dashboard while my own scores are fetched for the first time',
+    // Long enough not to end while axe looks
+    setup: () => fakeApi.signedInAs({ hive: [BEE], myPollsUntilSynced: 99 }),
+    url: '/',
+    ready: async () =>
+      expect(
+        await screen.findAllByText(t('dashboard.waitForMyScores'))
+      ).toHaveLength(3),
+  },
+  {
     name: 'the empty dashboard',
     setup: () => fakeApi.signedInAs(),
     url: '/',
