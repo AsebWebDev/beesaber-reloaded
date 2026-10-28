@@ -327,6 +327,59 @@ describe('GET /api/hive/news', () => {
     expect((await news()).items).toEqual([]);
   });
 
+  it('stays quiet when I close in on a bee who was ahead all along', async () => {
+    await addToHive(BEE);
+    // She was ahead on 2 already (500 to my 400) and extends her lead ...
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 2, score: 700, playedAt: soon(1) },
+    ]);
+    await sync(BEE);
+    // ... then I improve, but stay behind. She never went past me.
+    scoreSaber.setPlayer(ME, 'me', [
+      { leaderboardId: 2, score: 600, playedAt: soon(2) },
+    ]);
+    await sync(ME);
+
+    expect((await news()).items).toEqual([]);
+  });
+
+  it('stays quiet when a bee played a map before I ever did', async () => {
+    await addToHive(BEE);
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 5, score: 700, playedAt: soon(1) },
+    ]);
+    await sync(BEE);
+    // My first score there comes later and stays below hers
+    scoreSaber.setPlayer(ME, 'me', [
+      { leaderboardId: 5, score: 600, playedAt: soon(2) },
+    ]);
+    await sync(ME);
+
+    expect((await news()).items).toEqual([]);
+  });
+
+  it('keeps the report when I improve afterwards but stay behind', async () => {
+    await addToHive(BEE);
+    // She goes past my 900 on 1 ...
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 1, score: 950, playedAt: soon(1) },
+    ]);
+    await sync(BEE);
+    // ... and my answer is not enough
+    scoreSaber.setPlayer(ME, 'me', [
+      { leaderboardId: 1, score: 920, playedAt: soon(2) },
+    ]);
+    await sync(ME);
+
+    expect((await news()).items).toMatchObject([
+      {
+        leaderboard: { id: 1 },
+        event: { previousScore: 800, newScore: 950 },
+        myScore: 920,
+      },
+    ]);
+  });
+
   it('drops the report once I have taken the lead back', async () => {
     await addToHive(BEE);
     scoreSaber.setPlayer(BEE, 'bee', [

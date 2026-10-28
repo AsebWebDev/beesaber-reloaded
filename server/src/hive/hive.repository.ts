@@ -63,6 +63,8 @@ type TrendingOptions = {
 
 const mine = alias(scores, 'mine');
 const theirs = alias(scores, 'theirs');
+/** My own score changes, to tell what I held at an earlier moment */
+const myLater = alias(scoreEvents, 'my_later');
 
 const count = (condition?: ReturnType<typeof sql>) =>
   (condition === undefined
@@ -432,9 +434,37 @@ const createHiveRepository = (db: Database) => {
    *
    * Only what happened after the bee joined my hive counts. A bee may have
    * been tracked for years by someone else; none of that is news to me.
+   *
+   * "Went past my score" means the score I held when the bee played, not
+   * the one I hold now. Otherwise my own later play would turn old events
+   * into news: closing in on a bee who was ahead all along, or a first
+   * score on a map the bee had played before me.
    */
-  const listNews = ({ playerId, userId }: Me, limit: number) =>
-    db
+  const listNews = ({ playerId, userId }: Me, limit: number) => {
+    // My first improvement on the map after the bee's score. What it
+    // improved on is what I held at that moment, if anything.
+    const myNextChange = db
+      .select({ previousScore: myLater.previousScore })
+      .from(myLater)
+      .where(
+        and(
+          eq(myLater.playerId, playerId),
+          eq(myLater.leaderboardId, scoreEvents.leaderboardId),
+          gt(myLater.playedAt, scoreEvents.playedAt)
+        )
+      )
+      .orderBy(asc(myLater.playedAt), asc(myLater.id))
+      .limit(1);
+    // Without such a change, my current score is the one I held then,
+    // provided it is older than the bee's. If it is newer and no change
+    // was logged, it came from my first sync, which logs nothing; what I
+    // held before is unknown, and the event is not reported.
+    const myScoreThen = sql<number | null>`case
+      when exists ${myNextChange} then (${myNextChange})
+      when ${mine.playedAt} <= ${scoreEvents.playedAt} then ${mine.modifiedScore}
+    end`;
+
+    return db
       .select({
         event: scoreEvents,
         player: {
@@ -475,18 +505,19 @@ const createHiveRepository = (db: Database) => {
       .where(
         and(
           gt(scoreEvents.playedAt, hiveMembers.createdAt),
-          // This score took the bee past me ...
-          gt(scoreEvents.newScore, mine.modifiedScore),
+          // This score took the bee past what I held then ...
+          gt(scoreEvents.newScore, myScoreThen),
           or(
             isNull(scoreEvents.previousScore),
-            lte(scoreEvents.previousScore, mine.modifiedScore)
+            lte(scoreEvents.previousScore, myScoreThen)
           ),
-          // ... and the bee is still ahead
+          // ... and the bee is still ahead of what I hold now
           gt(theirs.modifiedScore, mine.modifiedScore)
         )
       )
       .orderBy(desc(scoreEvents.playedAt), desc(scoreEvents.id))
       .limit(limit);
+  };
 
   return {
     addMember,
