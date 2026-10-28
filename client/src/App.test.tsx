@@ -621,6 +621,19 @@ describe('what is on screen after the hive changed', () => {
       await screen.findByText('beat your score', {}, { timeout: 6000 })
     ).toBeInTheDocument();
   }, 10_000);
+
+  it('brings the news up to date after a sync that was over before anyone looked', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp();
+
+    await screen.findByText(/Nobody has beaten one of your scores/);
+    // The job runs at once: by the first question, nobody is being fetched
+    fakeApi.set({ news: [fakeApi.news()], queuedBySync: 1 });
+    await user.click(screen.getByRole('button', { name: 'Sync scores' }));
+
+    expect(await screen.findByText('beat your score')).toBeInTheDocument();
+    expect(screen.getByText('Scores are up to date.')).toBeInTheDocument();
+  });
 });
 
 describe('when the session ends while the app is open', () => {

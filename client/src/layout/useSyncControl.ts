@@ -47,9 +47,11 @@ const useSyncControl = () => {
     return () => clearTimeout(timer);
   }, [result, forgetResult]);
 
+  // A sync that was asked for and is not running any more is done, even
+  // when it was over before this page saw it run
   const message = syncing
     ? t('layout.sync.running')
-    : justFinished
+    : justFinished || (result?.queued ?? 0) > 0
       ? t('layout.sync.done')
       : result?.queued === 0
         ? t('layout.sync.upToDate')

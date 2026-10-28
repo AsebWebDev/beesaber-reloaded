@@ -321,9 +321,17 @@ const useSyncHive = () => {
 
   return useMutation({
     mutationFn: () => unwrap(api.hive.sync.$post()),
-    // Pick up who is being fetched now. useSyncing takes it from there.
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ['hive', 'sync'] }),
+    onSuccess: async ({ queued }) => {
+      // Pick up who is being fetched now. useSyncing takes it from there.
+      await queryClient.invalidateQueries({ queryKey: ['hive', 'sync'] });
+
+      const status = queryClient.getQueryData<SyncStatus>(['hive', 'sync']);
+
+      // Unless the jobs were done before anyone looked: then useSyncing
+      // never saw them run and has nothing to react to
+      if (queued > 0 && status?.syncing.length === 0)
+        await queryClient.invalidateQueries();
+    },
   });
 };
 
