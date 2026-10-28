@@ -201,9 +201,10 @@ An empty answer means servers can be created there. Any text, such as
    ```
 
    Set `PGHOST` to the server's name, `PGSSLMODE=verify-full` and
-   `PGSSLROOTCERT=system`. The token is valid for about an hour. Read the
-   job's output in Log Analytics (`ContainerAppConsoleLogs_CL`), then
-   delete the job.
+   `PGSSLROOTCERT=system`, and give the job a `managed-by` tag, without
+   which the resource group refuses it (`policy.tf`). The token is valid for
+   about an hour. Read the job's output in Log Analytics
+   (`ContainerAppConsoleLogs_CL`), then delete the job.
 
 [jobs]: https://learn.microsoft.com/azure/container-apps/jobs
 
