@@ -380,6 +380,30 @@ describe('what is said to someone who cannot see the page change', () => {
     );
   });
 
+  it('moves the focus to the other page button when the pressed one is switched off', async () => {
+    fakeApi.signedInAs({ extraScores: 18 });
+    const { user } = renderApp('/profile');
+
+    await screen.findByText('Page 1 of 2');
+    // With the keyboard, as the people this is for would
+    screen.getByRole('button', { name: 'Next' }).focus();
+    await user.keyboard('{Enter}');
+    await screen.findByText('Page 2 of 2');
+
+    // "Next" is off on the last page. Left there, the focus would fall
+    // back to the top of the page.
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Previous' })).toHaveFocus()
+    );
+
+    await user.keyboard('{Enter}');
+    await screen.findByText('Page 1 of 2');
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Next' })).toHaveFocus()
+    );
+  });
+
   it('says when a sync has finished', async () => {
     fakeApi.signedInAs({ hive: [BEE], pollsUntilSynced: 1 });
     renderApp();
