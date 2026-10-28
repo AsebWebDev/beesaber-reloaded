@@ -1350,3 +1350,70 @@ describe('the revenge section of the dashboard', () => {
     ).not.toBeInTheDocument();
   });
 });
+
+describe('the revenge list with more than one bee', () => {
+  it('shows one bee at a time, and all of them again', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id, '3003'] });
+    const { router, user } = renderApp('/revenge');
+
+    await screen.findByRole('link', { name: 'Superstar' });
+    await user.click(screen.getByRole('button', { name: 'buzzkill' }));
+
+    expect(
+      await screen.findByText(
+        'buzzkill is not ahead of you on any map you both played.'
+      )
+    ).toBeInTheDocument();
+    expect(router.state.location.search).toContain('bee=3003');
+    expect(screen.getByRole('button', { name: 'buzzkill' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+
+    await user.click(screen.getByRole('button', { name: 'All bees' }));
+
+    expect(
+      await screen.findByRole('link', { name: 'Superstar' })
+    ).toBeInTheDocument();
+    expect(router.state.location.search).not.toContain('bee=');
+  });
+
+  it('goes to the last page when the address asks for one beyond it', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { router } = renderApp('/revenge?page=9');
+
+    expect(
+      await screen.findByRole('link', { name: 'Superstar' })
+    ).toBeInTheDocument();
+    expect(router.state.location.search).toContain('page=1');
+  });
+
+  it('gives the gap in points for a map without a maximum score', async () => {
+    const news = fakeApi.news();
+
+    fakeApi.server.use(
+      http.get('/api/hive/revenge', () =>
+        HttpResponse.json({
+          items: [
+            {
+              leaderboard: { ...news.leaderboard, maxScore: 0 },
+              bee: news.player,
+              myScore: 400_000,
+              theirScore: 401_234,
+              gap: 1234,
+              gapShare: null,
+            },
+          ],
+          page: 1,
+          limit: 15,
+          total: 1,
+          totalPages: 1,
+        })
+      )
+    );
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp('/revenge');
+
+    expect(await screen.findByText('+1,234 points')).toBeInTheDocument();
+  });
+});
