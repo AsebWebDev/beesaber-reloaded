@@ -275,9 +275,11 @@ start on the next visit, which then takes a few seconds longer. The live
 feed is off; the server catches up on stale scores when it starts.
 
 `cost_saving = false` keeps one instance running all the time with the live
-feed on, as production with many users would. It costs about 12 to 15 € a
-month, and the availability test about 10 € more. The test runs only in this
-mode: with cost saving on, its calls would keep waking the app up.
+feed on, as production with many users would. Container Apps' free monthly
+grant covers about the first 8 days of it in a month; a whole month costs
+about 12 to 15 €, and the availability test about 10 € more. The test runs
+only in this mode: with cost saving on, its calls would keep waking the app
+up.
 
 An alert sends one email when it fires and one when it resolves, not one
 per check.
@@ -416,7 +418,8 @@ each is where to look first if that changes.
 | ------------------------------------------ | ---------------------------------------------------- |
 | PostgreSQL B1ms with 32 GB and its backups | Free for the first 12 months of a new account        |
 | Container App, cost saving on              | Within Container Apps' free monthly grant at low use |
-| Container App, cost saving off             | About 12 to 15 € a month                             |
+| Container App, cost saving off             | About 12 to 15 € a month; the grant covers 8 days    |
+| The environment's public IPv4 address      | About 2.70 € a month                                 |
 | Log Analytics                              | Within the free 5 GB a month                         |
 | Alerts on metrics, emails                  | Free: up to 10 watched metrics, 1000 emails a month  |
 | Availability test, cost saving off         | About 10 € a month: two places, every 5 minutes      |
