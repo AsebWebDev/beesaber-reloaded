@@ -76,15 +76,7 @@ jobs:
       # API description. Making them again must change nothing. If it does,
       # someone changed the source and forgot to run the tool.
       - name: Check that generated files are up to date
-        run: |
-          pnpm --filter @beesaber/server db:generate
-          pnpm --filter @beesaber/server gen:api
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "::error::Generated files are out of date. Run 'pnpm --filter @beesaber/server db:generate' or 'gen:api' and commit the result."
-            git status --short
-            git diff
-            exit 1
-          fi
+        run: pnpm --filter @beesaber/server check:generated
 
       # Fails when a test fails, and when the tests reach less of the code
       # than the thresholds in the vitest configuration ask for

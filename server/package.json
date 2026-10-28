@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "api:update": "tsx scripts/updateOpenApi.ts && pnpm gen:api",
+    "check:generated": "tsx scripts/checkGenerated.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file-if-exists=.env src/db/migrate.ts",
     "db:studio": "drizzle-kit studio",
