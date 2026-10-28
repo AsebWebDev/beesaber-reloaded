@@ -13,6 +13,7 @@ import type {
   Me,
   NewsItem,
   Player,
+  RevengePage,
   ScoreEntry,
   ScorePage,
   SyncRequest,
@@ -420,6 +421,36 @@ const server = setupServer(
       { status: 202 }
     )
   ),
+  http.get('/api/hive/revenge', ({ request }) => {
+    const refused = refusal();
+
+    if (refused !== undefined) return refused;
+
+    const url = new URL(request.url);
+    const bee = url.searchParams.get('bee');
+
+    if (bee !== null && !state.hive.includes(bee))
+      return error(404, 'not_in_hive', 'This player is not in your hive');
+
+    // The bee is ahead on Superstar: 500,000 to my 400,000, of 1,000,000
+    const items = state.hive.includes(BEE.id)
+      ? SHARED.filter(
+          ({ mine, theirs }) => theirs.modifiedScore > mine.modifiedScore
+        ).map(({ leaderboard: board, mine, theirs }) => ({
+          leaderboard: board,
+          bee: { id: BEE.id, name: BEE.name, avatarUrl: BEE.avatarUrl },
+          myScore: mine.modifiedScore,
+          theirScore: theirs.modifiedScore,
+          gap: theirs.modifiedScore - mine.modifiedScore,
+          gapShare:
+            board.maxScore > 0
+              ? (theirs.modifiedScore - mine.modifiedScore) / board.maxScore
+              : null,
+        }))
+      : [];
+
+    return HttpResponse.json(paginated(items, url) satisfies RevengePage);
+  }),
   http.get('/api/hive/maps/:leaderboardId', ({ params }) => {
     const refused = refusal();
 

@@ -177,6 +177,18 @@ const STATES: State[] = [
     ready: () => screen.findByRole('heading', { name: t('map.unknown.title') }),
   },
   {
+    name: 'the revenge list',
+    setup: () => fakeApi.signedInAs({ hive: [BEE] }),
+    url: '/revenge',
+    ready: () => screen.findByRole('table', { name: t('revenge.title') }),
+  },
+  {
+    name: 'an empty revenge list',
+    setup: () => fakeApi.signedInAs(),
+    url: '/revenge',
+    ready: () => screen.findByText(t('revenge.empty')),
+  },
+  {
     name: 'the error screen',
     setup: () => fakeApi.signedInAs({ failures: { me: 500 } }),
     url: '/',

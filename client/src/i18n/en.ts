@@ -169,6 +169,32 @@ const en = {
     },
     you: 'you',
   },
+  revenge: {
+    columns: {
+      bee: 'Bee',
+      map: 'Map',
+      mine: 'You',
+      need: 'You need',
+      theirs: 'Their score',
+    },
+    empty: 'No bee is ahead of you on a map you both played.',
+    emptyBee: '{{name}} is not ahead of you on any map you both played.',
+    filter: {
+      all: 'All bees',
+      label: 'Bee',
+    },
+    intro:
+      'Maps where a bee is ahead of you, the closest first. What you need is in accuracy points: that much more, and you are ahead.',
+    listed_one: '{{number}} map in this list.',
+    listed_other: '{{number}} maps in this list.',
+    listedPaged_one: '{{number}} map in this list, page {{page}} of {{total}}.',
+    listedPaged_other:
+      '{{number}} maps in this list, page {{page}} of {{total}}.',
+    loading: 'Loading the revenge list',
+    points_one: '+{{number}} point',
+    points_other: '+{{number}} points',
+    title: 'Revenge list',
+  },
   profile: {
     change: 'Change profile',
     changed: 'You now compare as {{name}}.',

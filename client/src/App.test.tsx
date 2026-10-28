@@ -1255,3 +1255,64 @@ describe('a song title', () => {
     ).toHaveAttribute('href', '/maps/1');
   });
 });
+
+describe('the revenge list', () => {
+  it('lists the maps where a bee is ahead, with what I need to get past', async () => {
+    // On Superstar the bee has 500,000 to my 400,000, of 1,000,000
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp('/revenge');
+
+    // The table is there at once, with placeholder rows while it loads
+    await screen.findByRole('link', { name: 'Superstar' });
+
+    const table = screen.getByRole('table', { name: 'Revenge list' });
+    const [, row] = within(table).getAllByRole('row');
+
+    expect(
+      within(row!).getByRole('link', { name: 'Superstar' })
+    ).toBeInTheDocument();
+    expect(within(row!).getByRole('link', { name: 'buzz' })).toHaveAttribute(
+      'href',
+      `/hive/${fakeApi.BEE.id}`
+    );
+    expect(within(row!).getByText('400,000')).toBeInTheDocument();
+    expect(within(row!).getByText('500,000')).toBeInTheDocument();
+    expect(within(row!).getByText('+10.00%')).toBeInTheDocument();
+    expect(document.title).toBe('Revenge list · BeeSaber');
+  });
+
+  it('says so when no bee is ahead anywhere', async () => {
+    fakeApi.signedInAs();
+    renderApp('/revenge');
+
+    expect(
+      await screen.findByText(
+        'No bee is ahead of you on a map you both played.'
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('says so for a bee in the address who is not in the hive', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp('/revenge?bee=999');
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'This player is not in your hive.'
+    );
+  });
+
+  it('writes the gap the German way', async () => {
+    await i18n.changeLanguage('de');
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp('/revenge');
+
+    await screen.findByRole('link', { name: 'Superstar' });
+
+    const table = screen.getByRole('table', { name: 'Revanche-Liste' });
+
+    expect(within(table).getByText(/^\+10,00\s%$/u)).toBeInTheDocument();
+    expect(
+      within(table).getByRole('columnheader', { name: 'Dir fehlen' })
+    ).toBeInTheDocument();
+  });
+});
