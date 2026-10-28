@@ -191,6 +191,32 @@ describe('a sync job that fails', () => {
     expect(row?.scoresSyncedAt).toBeNull();
   });
 
+  it('counts as failed only once the queue gives up on it', async () => {
+    const manual = createManualQueue();
+    const { services: own } = createTestApp({ queue: manual.queue });
+
+    scoreSaber.setPlayer(BEE, 'bee', []);
+    await own.playersService.requestSync(BEE);
+    scoreSaber.breakProfile(BEE, { unexpected: true });
+
+    // A first attempt fails, and a retry follows
+    expect(await manual.runAll({ last: false })).toHaveLength(1);
+    expect(await playerRow(BEE)).toMatchObject({
+      syncFailures: 0,
+      syncError: null,
+    });
+    expect((await playerRow(BEE))?.syncStartedAt).toBeInstanceOf(Date);
+
+    // The retry fails too, and it was the last one
+    await own.playersService.requestSync(BEE, { force: true });
+    expect(await manual.runAll()).toHaveLength(1);
+    expect(await playerRow(BEE)).toMatchObject({
+      syncFailures: 1,
+      syncError: 'unexpected_response',
+      syncStartedAt: null,
+    });
+  });
+
   it('clears the reason once a later attempt succeeds', async () => {
     const manual = createManualQueue();
     const { services: own } = createTestApp({ queue: manual.queue });

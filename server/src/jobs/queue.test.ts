@@ -51,6 +51,33 @@ describe('the pg-boss queue', () => {
 
     expect(received).toEqual([{ playerId }]);
   }, 30_000);
+
+  it('tries a failing job twice more and says which attempt is the last', async () => {
+    const attempts: boolean[] = [];
+    const playerId = String(Date.now());
+
+    queue = createPgBossQueue(TEST_DATABASE_URL, undefined, {
+      retryDelaySeconds: 1,
+    });
+
+    await queue.start({
+      onSync: (job, { last }) => {
+        if (job.playerId !== playerId) return Promise.resolve();
+
+        attempts.push(last);
+
+        return Promise.reject(new Error('ScoreSaber is down'));
+      },
+      onTick: () => Promise.resolve(),
+    });
+
+    await queue.enqueueSync({ playerId });
+    await waitFor(() => attempts.length >= 3, 20_000);
+    // Leave time for a fourth attempt, if there wrongly were one
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    expect(attempts).toEqual([false, false, true]);
+  }, 40_000);
 });
 
 describe('how pg-boss connects', () => {

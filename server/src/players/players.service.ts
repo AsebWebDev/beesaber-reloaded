@@ -139,7 +139,15 @@ const createPlayersService = ({
    * Fetches the player's profile and new scores. This is the job itself; it
    * runs in a worker, not in a request.
    */
-  const runSync = async (playerId: string): Promise<SyncResult> => {
+  const runSync = async (
+    playerId: string,
+    {
+      lastAttempt = true,
+    }: {
+      /** Whether the queue gives up if this attempt fails */
+      lastAttempt?: boolean;
+    } = {}
+  ): Promise<SyncResult> => {
     const startedAt = now();
 
     try {
@@ -176,14 +184,19 @@ const createPlayersService = ({
 
       return { firstSync, added, improved };
     } catch (error) {
-      // The details go to the log, the player gets a code, and the queue
-      // sees the error too, so it tries the job again
+      // The details go to the log, and the queue sees the error too, so
+      // it tries the job again
       logError(`Sync of player ${playerId} failed`, error);
-      await repository.markSyncFinished(
-        playerId,
-        startedAt,
-        syncErrorCode(error)
-      );
+
+      // Only when the queue gives up has the sync failed. Until then the
+      // player stays marked as syncing, since the next attempt is near,
+      // and the backoff counts one failure per sync, not per attempt.
+      if (lastAttempt)
+        await repository.markSyncFinished(
+          playerId,
+          startedAt,
+          syncErrorCode(error)
+        );
 
       throw error;
     }
