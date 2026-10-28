@@ -326,7 +326,9 @@ To practise, stop after step 2 and delete the restored server again:
 The vault accepts no address except the app's subnet. To change a secret,
 open it for yourself for the time it takes:
 
-1. Put your current public address into `admin_ip_ranges` and apply.
+1. Put your current public address into `admin_ip_ranges` and apply. Pause
+   a VPN first: its address is shared with everybody else on the same VPN
+   server, and the rule would let all of them past the firewall.
 2. Change the secret in the portal, or with `az keyvault secret set`.
 3. Restart the app, which reads its secrets only when it starts:
 
@@ -338,6 +340,75 @@ open it for yourself for the time it takes:
    ```
 
 4. Empty `admin_ip_ranges` and apply.
+
+## Limits and trade-offs
+
+What this setup does not do, on purpose, and what it would take. Each was
+chosen for a small app with a few users and a budget of 10 € a month, and
+each is where to look first if that changes.
+
+### One instance
+
+1. **It runs as exactly one instance.** The rate limits count in the
+   process's memory, and the job queue's workers and the live feed run
+   inside it. More instances would need the counters in Postgres or Redis,
+   and one instance chosen to hold the live feed, or every instance would
+   process every score; pg-boss already works with several. Until then a
+   crash is a short outage, and growing means a bigger instance.
+2. **One instance with a quarter core** answers fast up to about 60
+   requests a second and is full at about 130 (see `loadtest/README.md`).
+   More comes from more cores (`cpu` in `containerapps.tf`).
+
+### Availability
+
+3. **Cost saving stops the app** when nobody uses it. The next visitor waits
+   for it to start, a few seconds, and more than 30 when a new revision
+   starts at the same time. The live feed is off; scores arrive when the
+   app wakes.
+4. **The database has no standby** (no high availability, one zone). When
+   its server fails, the app is down until Azure restarts it. With the
+   Container Apps SLA, the two together promise about 99.85 % a month.
+5. **Backups stay in the region:** 7 days, to any moment, in France Central
+   only. If the whole region fails, so does access to them until it is back.
+6. **A restore takes 15 to 20 minutes** all in all (see "Restoring the
+   database"), and afterwards Terraform still describes the old server
+   until it is brought in by hand.
+
+### Security
+
+7. **The rate limits count per address.** Visitors behind one VPN server,
+   company network or mobile carrier share a limit, and an attacker with
+   many addresses gets many limits.
+8. **The Terraform state's storage account is reachable from the
+   internet**, guarded by Entra ID sign-in and roles only. A firewall would
+   lock out GitHub's runners, which have no fixed addresses.
+9. **Opening the vault goes by address** (`admin_ip_ranges`), which a VPN
+   shares with strangers; the roles still keep them out.
+10. **The Log Analytics workspace accepts shared keys**, which Container
+    Apps needs in its simple log mode.
+11. **Changes by hand run with the owner's rights** of whoever is signed in
+    to the Azure CLI, not with an identity limited to the task.
+12. **No web application firewall or CDN** in front of the app; it is
+    reached through Azure's proxy only. Azure Front Door with a WAF starts
+    at about 35 $ a month.
+
+### Operations
+
+13. **Alerts come by email only.** In a test, the "resolved" email arrived
+    long after the event. There is no second channel and nobody on call.
+14. **The availability test runs only with cost saving off**, where it is
+    worth its cost; with cost saving on, nothing notices from outside when
+    the app is gone.
+15. **Logs are kept for 30 days and capped at 0.15 GB a day.** What comes in
+    after the cap is lost until the next day, which during an attack would
+    be the part worth reading.
+16. **The app depends on ScoreSaber.** If its API changes or shuts out
+    BeeSaber, the core of the app stops. A weekly workflow
+    (`.github/workflows/scoresaber-api.yml`) notices when the API's
+    description changes.
+17. **There is no staging environment.** Every merge to `main` goes to
+    production, guarded by the checks, the review, the health check of
+    each new revision and a rollback that has been tried.
 
 ## Costs
 
