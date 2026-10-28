@@ -54,6 +54,16 @@ const toEntry = (
   },
 });
 
+/**
+ * The orders ScoreSaber sorts a player's scores in, as far as BeeSaber asks
+ * for them. Without `sort`, ScoreSaber's API sorts by "top".
+ */
+const SORTS: Record<string, (a: FakeScore, b: FakeScore) => number> = {
+  oldest: (a, b) => a.playedAt.localeCompare(b.playedAt),
+  recent: (a, b) => b.playedAt.localeCompare(a.playedAt),
+  top: (a, b) => b.score - a.score,
+};
+
 const createFakeScoreSaber = () => {
   const players = new Map<string, { name: string; scores: FakeScore[] }>();
   const brokenProfiles = new Map<string, unknown>();
@@ -109,9 +119,16 @@ const createFakeScoreSaber = () => {
       const from = c.req.query('from');
       const page = Number(c.req.query('page') ?? 1);
       const limit = Number(c.req.query('limit') ?? 8);
+      const order = SORTS[c.req.query('sort') ?? 'top'];
+
+      // An order the fake does not know is a mistake in the code under
+      // test, not something to answer with an order it did not ask for
+      if (order === undefined)
+        return c.json({ message: 'Unknown sort order' }, 400);
+
       const matching = player.scores
         .filter((score) => from === undefined || score.playedAt >= from)
-        .sort((a, b) => a.playedAt.localeCompare(b.playedAt));
+        .sort(order);
 
       return c.json({
         data: matching

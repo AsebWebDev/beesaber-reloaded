@@ -11,7 +11,12 @@ import { createFakeScoreSaber, FAKE_SCORESABER_URL } from './fakeScoreSaber.ts';
 
 import type { Limits } from '../app.ts';
 import type { Auth } from '../auth/auth.ts';
-import type { JobQueue, SyncJob, SyncPriority } from '../jobs/queue.ts';
+import type {
+  Handlers,
+  JobQueue,
+  SyncJob,
+  SyncPriority,
+} from '../jobs/queue.ts';
 
 /**
  * What a test file gets by importing this: an empty database before every
@@ -128,7 +133,7 @@ const createManualQueue = () => {
     job: SyncJob;
     priority?: SyncPriority;
   }[] = [];
-  let onSync: ((job: SyncJob) => Promise<void>) | undefined;
+  let onSync: Handlers['onSync'] | undefined;
 
   const queue: JobQueue = {
     enqueueSync: (job, options = {}) => {
@@ -151,12 +156,17 @@ const createManualQueue = () => {
   return {
     jobs,
     queue,
-    /** Runs every collected job and returns the errors they threw */
-    runAll: async () => {
+    /**
+     * Runs every collected job and returns the errors they threw. As the
+     * last attempt, unless said otherwise: a retry would follow a failure.
+     */
+    runAll: async ({ last = true }: { last?: boolean } = {}) => {
       const errors: unknown[] = [];
 
       for (const { job } of jobs.splice(0))
-        await onSync?.(job).catch((error: unknown) => errors.push(error));
+        await onSync?.(job, { last }).catch((error: unknown) =>
+          errors.push(error)
+        );
 
       return errors;
     },

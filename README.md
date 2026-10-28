@@ -320,12 +320,18 @@ frontend shows "fetching" and asks `GET /hive/sync` until it is done: every
 
 ### Talking to ScoreSaber
 
-ScoreSaber allows 25 requests a second. All requests go through a throttle
-that sends them one after the other with a pause in between, gives up on a
-request after 15 seconds without an answer, and waits when ScoreSaber says
-"too many requests". There are two such lanes: one for the long score lists
-that background jobs read, one for everything a user waits for, so a big
-fetch cannot hold up a search.
+ScoreSaber allows 25 requests a second and 400 a minute. All requests go
+through a throttle that sends them one after the other with a pause in
+between, and gives up on a request after 15 seconds without an answer.
+There are two such lanes: one for the long score lists that background jobs
+read, one for everything a user waits for, so a big fetch cannot hold up a
+search.
+
+The pauses keep both lanes together well under 25 a second. They do not
+count a minute's requests: a long run of big syncs can reach 400 a minute.
+Then ScoreSaber answers "too many requests", and the throttle waits as long
+as ScoreSaber asks, up to 30 seconds, and tries again, up to three times.
+That is enough to wait out a minute.
 
 ### What counts as news
 

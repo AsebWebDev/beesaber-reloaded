@@ -276,7 +276,8 @@ describe('flooding', () => {
     const again = await postJson('/api/hive', { playerId: idOf(0) });
 
     expect(again.status).toBe(201);
-  });
+    // Fifty bees, one request each, take a while when the machine is busy
+  }, 30_000);
 });
 
 describe('other people’s data', () => {

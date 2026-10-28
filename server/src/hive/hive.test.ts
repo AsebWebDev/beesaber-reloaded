@@ -12,6 +12,8 @@ import {
 
 const BEE = '76561198000000002';
 const STRANGER = '76561198000000003';
+/** A bee in somebody else's hive, never in mine */
+const OUTSIDER = '76561198000000004';
 
 /**
  * A moment shortly after now. News only counts scores set after the bee
@@ -35,6 +37,21 @@ const addToHive = (playerId: string, as = api) =>
 
 const sync = (playerId: string) =>
   services.playersService.requestSync(playerId);
+
+/**
+ * Another account, compared as the stranger, with the outsider in its hive.
+ * The outsider's scores are stored and logged like those of my own bees,
+ * so a query that forgets whose hive it reads would find them.
+ */
+const otherHiveWithOutsider = async () => {
+  const other = await createUser('other-user');
+
+  // Checked, so that a test cannot pass only because this setup failed
+  expect((await linkProfile(STRANGER, other)).status).toBe(200);
+  expect((await addToHive(OUTSIDER, other)).status).toBe(201);
+
+  return other;
+};
 
 beforeEach(async () => {
   // I am ahead on leaderboard 1, behind on 2, and alone on 3
@@ -104,6 +121,18 @@ describe('POST /api/hive', () => {
 
     expect(response.status).toBe(400);
   });
+
+  it('rejects a player id with leading zeros', async () => {
+    // ScoreSaber might answer it with the profile of the id without them.
+    // That profile would be stored under its own id, and adding the padded
+    // one would then break on the reference to it.
+    const response = await addToHive(`00${BEE}`);
+
+    expect(response.status).toBe(400);
+    expect(await json(response)).toMatchObject({
+      error: { code: 'validation_failed' },
+    });
+  });
 });
 
 describe('GET /api/hive', () => {
@@ -128,6 +157,31 @@ describe('GET /api/hive', () => {
         },
       ],
     });
+  });
+
+  it('counts a tie as neither a lead nor a deficit', async () => {
+    scoreSaber.setPlayer(BEE, 'bee', [
+      // Level with my 900 on 1, ahead of my 400 on 2
+      { leaderboardId: 1, score: 900, playedAt: '2024-01-04T10:00:00.000Z' },
+      { leaderboardId: 2, score: 500, playedAt: '2024-01-05T10:00:00.000Z' },
+    ]);
+    await addToHive(BEE);
+
+    expect(await json(await api('/api/hive'))).toMatchObject({
+      items: [{ shared: 2, winning: 0, losing: 1 }],
+    });
+  });
+
+  it('lists the bees in the order they were added', async () => {
+    scoreSaber.setPlayer(STRANGER, 'stranger', []);
+    await addToHive(STRANGER);
+    await addToHive(BEE);
+
+    const { items }: { items: { player: { id: string } }[] } = await json(
+      await api('/api/hive')
+    );
+
+    expect(items.map(({ player }) => player.id)).toEqual([STRANGER, BEE]);
   });
 
   it('shows zeros for a bee without any scores', async () => {
@@ -166,6 +220,17 @@ describe('GET /api/hive/:playerId/comparison', () => {
       mine: { modifiedScore: 400 },
       theirs: { modifiedScore: 500 },
     });
+  });
+
+  it('comes in pages', async () => {
+    await addToHive(BEE);
+
+    const first = await compare('limit=1&page=1');
+    const second = await compare('limit=1&page=2');
+
+    expect(first.items.map((item) => item.leaderboard.id)).toEqual([2]);
+    expect(second.items.map((item) => item.leaderboard.id)).toEqual([1]);
+    expect(second.total).toBe(2);
   });
 
   it('narrows the list to where I am behind', async () => {
@@ -268,6 +333,38 @@ describe('GET /api/hive/news', () => {
     expect((await news()).items).toEqual([]);
   });
 
+  it('reports a bee who was level with me and then went past', async () => {
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 1, score: 900, playedAt: '2024-01-04T10:00:00.000Z' },
+    ]);
+    await addToHive(BEE);
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 1, score: 901, playedAt: soon(1) },
+    ]);
+    await sync(BEE);
+
+    expect((await news()).items).toMatchObject([
+      { event: { previousScore: 900, newScore: 901 }, myScore: 900 },
+    ]);
+  });
+
+  it('lists the latest first, and no more than asked for', async () => {
+    await addToHive(BEE);
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 1, score: 950, playedAt: soon(1) },
+      { leaderboardId: 3, score: 650, playedAt: soon(2) },
+    ]);
+    await sync(BEE);
+
+    expect(
+      (await news()).items.map(({ leaderboard }) => leaderboard.id)
+    ).toEqual([3, 1]);
+
+    const one: News = await json(await api('/api/hive/news?limit=1'));
+
+    expect(one.items.map(({ leaderboard }) => leaderboard.id)).toEqual([3]);
+  });
+
   it('shows what the bee holds now when she improved again after passing me', async () => {
     await addToHive(BEE);
     scoreSaber.setPlayer(BEE, 'bee', [
@@ -310,6 +407,59 @@ describe('GET /api/hive/news', () => {
     expect((await news()).items).toEqual([]);
   });
 
+  it('stays quiet when I close in on a bee who was ahead all along', async () => {
+    await addToHive(BEE);
+    // She was ahead on 2 already (500 to my 400) and extends her lead ...
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 2, score: 700, playedAt: soon(1) },
+    ]);
+    await sync(BEE);
+    // ... then I improve, but stay behind. She never went past me.
+    scoreSaber.setPlayer(ME, 'me', [
+      { leaderboardId: 2, score: 600, playedAt: soon(2) },
+    ]);
+    await sync(ME);
+
+    expect((await news()).items).toEqual([]);
+  });
+
+  it('stays quiet when a bee played a map before I ever did', async () => {
+    await addToHive(BEE);
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 5, score: 700, playedAt: soon(1) },
+    ]);
+    await sync(BEE);
+    // My first score there comes later and stays below hers
+    scoreSaber.setPlayer(ME, 'me', [
+      { leaderboardId: 5, score: 600, playedAt: soon(2) },
+    ]);
+    await sync(ME);
+
+    expect((await news()).items).toEqual([]);
+  });
+
+  it('keeps the report when I improve afterwards but stay behind', async () => {
+    await addToHive(BEE);
+    // She goes past my 900 on 1 ...
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 1, score: 950, playedAt: soon(1) },
+    ]);
+    await sync(BEE);
+    // ... and my answer is not enough
+    scoreSaber.setPlayer(ME, 'me', [
+      { leaderboardId: 1, score: 920, playedAt: soon(2) },
+    ]);
+    await sync(ME);
+
+    expect((await news()).items).toMatchObject([
+      {
+        leaderboard: { id: 1 },
+        event: { previousScore: 800, newScore: 950 },
+        myScore: 920,
+      },
+    ]);
+  });
+
   it('drops the report once I have taken the lead back', async () => {
     await addToHive(BEE);
     scoreSaber.setPlayer(BEE, 'bee', [
@@ -333,6 +483,28 @@ describe('GET /api/hive/news', () => {
     ]);
     await sync(STRANGER);
 
+    expect((await news()).items).toEqual([]);
+  });
+
+  it('ignores the bees of other hives', async () => {
+    scoreSaber.setPlayer(STRANGER, 'stranger', [
+      { leaderboardId: 1, score: 100, playedAt: '2024-01-01T10:00:00.000Z' },
+    ]);
+    scoreSaber.setPlayer(OUTSIDER, 'outsider', []);
+    await addToHive(BEE);
+
+    const other = await otherHiveWithOutsider();
+
+    // The outsider goes past me and past the stranger on leaderboard 1
+    scoreSaber.setPlayer(OUTSIDER, 'outsider', [
+      { leaderboardId: 1, score: 999, playedAt: soon(1) },
+    ]);
+    await sync(OUTSIDER);
+
+    // News to the account whose hive the outsider is in, none to me
+    const theirs: News = await json(await other('/api/hive/news'));
+
+    expect(theirs.items).toMatchObject([{ player: { name: 'outsider' } }]);
     expect((await news()).items).toEqual([]);
   });
 });
@@ -426,22 +598,26 @@ describe('who can be in a hive', () => {
 
   it('holds the size limit when several bees are added at the same moment', async () => {
     const idOf = (index: number) => String(76561198200000000n + BigInt(index));
+    // Enough at once that, without the lock, two of them reliably count
+    // the same 49 bees
+    const racing = 12;
 
-    for (let index = 0; index < 53; index++)
+    for (let index = 0; index < 49 + racing; index++)
       scoreSaber.setPlayer(idOf(index), `bee ${index}`, []);
     // One place left
     for (let index = 0; index < 49; index++) await addToHive(idOf(index));
 
     const responses = await Promise.all(
-      [49, 50, 51, 52].map(async (index) => addToHive(idOf(index)))
+      Array.from({ length: racing }, async (_, offset) =>
+        addToHive(idOf(49 + offset))
+      )
     );
     const hive: { items: unknown[] } = await json(await api('/api/hive'));
 
     expect(hive.items).toHaveLength(50);
-    expect(responses.map((response) => response.status).sort()).toEqual([
-      201, 400, 400, 400,
-    ]);
-  });
+    expect(responses.filter(({ status }) => status === 201)).toHaveLength(1);
+    // Fifty bees and their scores take a while to set up
+  }, 30_000);
 });
 
 describe('GET /api/hive/maps/:leaderboardId', () => {
@@ -482,18 +658,26 @@ describe('GET /api/hive/maps/:leaderboardId', () => {
   });
 
   it('leaves out bees who have not played it, and players of other hives', async () => {
-    const other = await createUser('other-user');
-
     scoreSaber.setPlayer(STRANGER, 'stranger', [
       { leaderboardId: 3, score: 999, playedAt: '2024-01-07T10:00:00.000Z' },
     ]);
-    await linkProfile(STRANGER, other);
+    scoreSaber.setPlayer(OUTSIDER, 'outsider', [
+      { leaderboardId: 3, score: 998, playedAt: '2024-01-07T10:00:00.000Z' },
+    ]);
     await addToHive(BEE);
 
-    // The bee has no score on 3, the stranger is in no hive of mine
+    const other = await otherHiveWithOutsider();
+
+    // The bee has no score on 3. The stranger compares as the other
+    // account, and the outsider is a bee of that account, not of mine.
     const body: Ranking = await json(await ranking(3));
+    const theirs: Ranking = await json(await ranking(3, other));
 
     expect(body.entries.map(({ player }) => player.id)).toEqual([ME]);
+    expect(theirs.entries.map(({ player }) => player.id)).toEqual([
+      STRANGER,
+      OUTSIDER,
+    ]);
   });
 
   it('gives the same place to the same score', async () => {
@@ -677,10 +861,59 @@ describe('GET /api/hive/revenge', () => {
 
     const firstPage: Revenge = await json(await revenge('?limit=2&page=1'));
     const secondPage: Revenge = await json(await revenge('?limit=2&page=2'));
+    const key = ({ bee, leaderboard }: Revenge['items'][number]) =>
+      `${leaderboard.id}-${bee.id}`;
 
-    expect(firstPage.items).toHaveLength(2);
-    expect(secondPage.items).toHaveLength(2);
+    // Together the two pages are the whole list, in its order
+    expect([...firstPage.items, ...secondPage.items].map(key)).toEqual(
+      everyone.items.map(key)
+    );
     expect(firstPage.total).toBe(4);
+  });
+
+  it('leaves out the bees of other hives', async () => {
+    scoreSaber.setPlayer(STRANGER, 'stranger', []);
+    // Ahead of me on 1, but in somebody else's hive
+    scoreSaber.setPlayer(OUTSIDER, 'outsider', [
+      {
+        leaderboardId: 1,
+        maxScore: 1000,
+        score: 990,
+        playedAt: '2024-01-11T10:00:00.000Z',
+      },
+    ]);
+    await linkProfile(ME);
+    await addToHive(BEE);
+    await otherHiveWithOutsider();
+
+    const body: Revenge = await json(await revenge());
+
+    expect(new Set(body.items.map(({ bee }) => bee.id))).toEqual(
+      new Set([BEE])
+    );
+    expect(body.total).toBe(3);
+  });
+
+  it('orders maps without a maximum score by the gap in points', async () => {
+    scoreSaber.setPlayer(ME, 'me', [
+      { leaderboardId: 3, score: 600, playedAt: '2024-01-03T10:00:00.000Z' },
+      { leaderboardId: 7, score: 600, playedAt: '2024-01-03T10:00:00.000Z' },
+    ]);
+    scoreSaber.setPlayer(BEE, 'bee', [
+      { leaderboardId: 3, score: 700, playedAt: '2024-01-08T10:00:00.000Z' },
+      { leaderboardId: 7, score: 650, playedAt: '2024-01-08T10:00:00.000Z' },
+    ]);
+    await linkProfile(ME);
+    await addToHive(BEE);
+
+    const body: Revenge = await json(await revenge());
+
+    expect(
+      body.items.map(({ gap, leaderboard }) => [leaderboard.id, gap])
+    ).toEqual([
+      [7, 50],
+      [3, 100],
+    ]);
   });
 
   it('answers 404 for a bee who is not in my hive', async () => {

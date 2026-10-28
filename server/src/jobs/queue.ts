@@ -24,9 +24,20 @@ type SyncPriority = 'catchUp' | 'live' | 'user';
 
 const PRIORITY: Record<SyncPriority, number> = { catchUp: 0, live: 1, user: 2 };
 
+/** How often a failed sync job is tried again */
+const RETRY_LIMIT = 2;
+
+type SyncAttempt = {
+  /**
+   * Whether no retry follows if this attempt fails. A job and its retries
+   * are one sync; only the outcome of the last attempt is that sync's.
+   */
+  last: boolean;
+};
+
 type Handlers = {
   /** Fetches new scores of one player */
-  onSync: (job: SyncJob) => Promise<void>;
+  onSync: (job: SyncJob, attempt: SyncAttempt) => Promise<void>;
   /** Called every few minutes, to catch up on whatever was missed */
   onTick: () => Promise<void>;
 };
@@ -34,7 +45,8 @@ type Handlers = {
 type JobQueue = {
   /**
    * Asks for a sync of a player. If one is already waiting for this player,
-   * nothing is added.
+   * nothing is added, but the waiting one moves up to this request's
+   * priority and start time when those are more urgent.
    */
   enqueueSync: (
     job: SyncJob,
@@ -73,7 +85,11 @@ const connectionOptions = (url: string, password?: DatabasePassword) => {
 /** The real queue: jobs are stored in Postgres by pg-boss */
 const createPgBossQueue = (
   url: string,
-  password?: DatabasePassword
+  password?: DatabasePassword,
+  {
+    // Tests shorten it, to see the retries within seconds
+    retryDelaySeconds = 30,
+  }: { retryDelaySeconds?: number } = {}
 ): JobQueue => {
   const boss = new PgBoss(connectionOptions(url, password));
 
@@ -96,19 +112,43 @@ const createPgBossQueue = (
   };
 
   return {
-    enqueueSync: async (job, { delaySeconds, priority = 'user' } = {}) => {
-      await boss.send(SYNC_QUEUE, job, {
+    enqueueSync: async (job, { delaySeconds = 0, priority = 'user' } = {}) => {
+      const id = await boss.send(SYNC_QUEUE, job, {
         priority: PRIORITY[priority],
         // One key per player. With the "stately" policy of the queue, at most
         // one job per player waits and one runs; further requests are dropped.
         singletonKey: job.playerId,
         startAfter: delaySeconds,
         // A failed job is tried twice more, half a minute apart
-        retryLimit: 2,
-        retryDelay: 30,
+        retryLimit: RETRY_LIMIT,
+        retryDelay: retryDelaySeconds,
         // A job that runs longer than this is considered stuck
         expireInSeconds: 10 * 60,
       });
+
+      if (id !== null) return;
+
+      // A job for this player is waiting already. If it waits for the
+      // periodic catch-up or for a delayed live score while a user asks,
+      // the user would wait with it: move it up instead. Only waiting jobs
+      // are found and changed, never one that has started meanwhile.
+      const [waiting] = await boss.findJobs<SyncJob>(SYNC_QUEUE, {
+        key: job.playerId,
+        queued: true,
+      });
+
+      if (waiting === undefined) return;
+
+      const sooner =
+        waiting.startAfter.getTime() > Date.now() + delaySeconds * 1000;
+      const higher = waiting.priority < PRIORITY[priority];
+
+      if (sooner || higher)
+        await boss.update(SYNC_QUEUE, undefined, {
+          id: waiting.id,
+          ...(higher ? { priority: PRIORITY[priority] } : {}),
+          ...(sooner ? { startAfter: delaySeconds } : {}),
+        });
     },
 
     start: async ({ onSync, onTick }) => {
@@ -122,7 +162,8 @@ const createPgBossQueue = (
         // watching a spinner until this job has run
         { pollingIntervalSeconds: 1 },
         async (jobs) => {
-          for (const job of jobs) await onSync(job.data);
+          for (const job of jobs)
+            await onSync(job.data, { last: job.retryCount >= RETRY_LIMIT });
         }
       );
       await boss.work(TICK_QUEUE, onTick);
@@ -144,7 +185,8 @@ const createInlineQueue = (): JobQueue & { tick: () => Promise<void> } => {
   return {
     enqueueSync: async (job) => {
       try {
-        await handlers?.onSync(job);
+        // Nothing is tried again here, so every attempt is the last
+        await handlers?.onSync(job, { last: true });
       } catch {
         // Like with the real queue, a job that fails does not fail the
         // request that asked for it
@@ -164,4 +206,4 @@ const createInlineQueue = (): JobQueue & { tick: () => Promise<void> } => {
 };
 
 export { connectionOptions, createInlineQueue, createPgBossQueue };
-export type { Handlers, JobQueue, SyncJob, SyncPriority };
+export type { Handlers, JobQueue, SyncAttempt, SyncJob, SyncPriority };

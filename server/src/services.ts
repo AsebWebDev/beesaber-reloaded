@@ -57,8 +57,8 @@ type Services = ReturnType<typeof createServices>;
  */
 const startJobs = (queue: JobQueue, { playersService }: Services) =>
   queue.start({
-    onSync: async ({ playerId }) => {
-      await playersService.runSync(playerId);
+    onSync: async ({ playerId }, { last }) => {
+      await playersService.runSync(playerId, { lastAttempt: last });
     },
     onTick: async () => {
       await playersService.syncStalePlayers();

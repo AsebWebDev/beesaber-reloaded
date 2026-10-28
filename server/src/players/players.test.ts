@@ -118,6 +118,34 @@ describe('syncing a player', () => {
     ).toMatchObject({ total: 230 });
   });
 
+  it('gets past a whole page of scores set at the same moment', async () => {
+    // More scores share one timestamp than fit on a page, as after an
+    // import of old scores. Asking "from that moment" again would return
+    // the same page forever; the pages within the moment are counted.
+    const moment = '2024-01-01T10:00:00.000Z';
+    const scores = [
+      ...Array.from({ length: 150 }, (_, index) => ({
+        leaderboardId: index + 1,
+        score: 1000,
+        playedAt: moment,
+      })),
+      { leaderboardId: 999, score: 1000, playedAt: '2024-01-02T10:00:00.000Z' },
+    ];
+
+    scoreSaber.setPlayer(ALICE, 'alice', scores);
+    // Should it go round in circles, stop it after a few pages
+    scoreSaber.onScoresRequest((count) => {
+      if (count > 10) scoreSaber.setPlayer(ALICE, 'alice', []);
+    });
+
+    await sync(ALICE);
+
+    expect(scoreSaber.requests).toHaveLength(3);
+    expect(
+      await json(await api(`/api/players/${ALICE}/scores?limit=1`))
+    ).toMatchObject({ total: 151 });
+  });
+
   it('does not lose a score when the list changes between two pages', async () => {
     const minute = (n: number) =>
       new Date(Date.UTC(2024, 0, 1, 0, n)).toISOString();

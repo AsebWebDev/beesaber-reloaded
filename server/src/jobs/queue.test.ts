@@ -51,6 +51,63 @@ describe('the pg-boss queue', () => {
 
     expect(received).toEqual([{ playerId }]);
   }, 30_000);
+
+  it('moves a waiting job up when a user asks for the same player', async () => {
+    const received: SyncJob[] = [];
+    const playerId = String(Date.now());
+
+    queue = createPgBossQueue(TEST_DATABASE_URL);
+
+    await queue.start({
+      onSync: (job) => {
+        if (job.playerId === playerId) received.push(job);
+
+        return Promise.resolve();
+      },
+      onTick: () => Promise.resolve(),
+    });
+
+    // A live score asks for a sync in a minute and a half. The user's
+    // request would be dropped, as one job for the player waits already.
+    await queue.enqueueSync(
+      { playerId },
+      { delaySeconds: 90, priority: 'live' }
+    );
+    await queue.enqueueSync({ playerId });
+
+    // Instead the waiting job runs now, once
+    await waitFor(() => received.length > 0, 15_000);
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    expect(received).toEqual([{ playerId }]);
+  }, 30_000);
+
+  it('tries a failing job twice more and says which attempt is the last', async () => {
+    const attempts: boolean[] = [];
+    const playerId = String(Date.now());
+
+    queue = createPgBossQueue(TEST_DATABASE_URL, undefined, {
+      retryDelaySeconds: 1,
+    });
+
+    await queue.start({
+      onSync: (job, { last }) => {
+        if (job.playerId !== playerId) return Promise.resolve();
+
+        attempts.push(last);
+
+        return Promise.reject(new Error('ScoreSaber is down'));
+      },
+      onTick: () => Promise.resolve(),
+    });
+
+    await queue.enqueueSync({ playerId });
+    await waitFor(() => attempts.length >= 3, 20_000);
+    // Leave time for a fourth attempt, if there wrongly were one
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    expect(attempts).toEqual([false, false, true]);
+  }, 40_000);
 });
 
 describe('how pg-boss connects', () => {
