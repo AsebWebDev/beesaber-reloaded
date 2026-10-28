@@ -18,6 +18,7 @@ import type {
   ScorePage,
   SyncRequest,
   SyncStatus,
+  TrendingPage,
 } from '@/api/queries.ts';
 
 /**
@@ -91,6 +92,8 @@ const MONSTER = leaderboard(1, 'Monster');
 const SUPERSTAR = leaderboard(2, 'Superstar');
 // Known, but nobody in the hive has played it
 const UNPLAYED = leaderboard(3, 'Unplayed');
+// New to me: the bees played it lately
+const NIGHT_FLIGHT = leaderboard(4, 'Night Flight');
 
 // I lead on Monster, the bee leads on Superstar
 const SHARED: ComparisonEntry[] = [
@@ -458,6 +461,32 @@ const server = setupServer(
         : [];
 
     return HttpResponse.json(paginated(items, url) satisfies RevengePage);
+  }),
+  http.get('/api/hive/trending', ({ request }) => {
+    const refused = refusal();
+
+    if (refused !== undefined) return refused;
+
+    // Every bee of the hive played Night Flight, which I never did; buzz
+    // most lately
+    const bees = [BEE, OTHER]
+      .filter(({ id }) => state.hive.includes(id))
+      .map(({ avatarUrl, id, name }) => ({ id, name, avatarUrl }));
+    const items =
+      bees.length === 0
+        ? []
+        : [
+            {
+              leaderboard: NIGHT_FLIGHT,
+              bees,
+              lastPlayedAt: '2024-02-01T10:00:00.000Z',
+            },
+          ];
+
+    return HttpResponse.json({
+      ...paginated(items, new URL(request.url)),
+      days: 14,
+    } satisfies TrendingPage);
   }),
   http.get('/api/hive/maps/:leaderboardId', ({ params }) => {
     const refused = refusal();

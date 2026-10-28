@@ -107,6 +107,8 @@ describe('the translations', () => {
       'map.place',
       'map.title',
       'revenge.columns.map',
+      'trending.columns.map',
+      'trending.onScoreSaber',
       'scores.columns.map',
       'scores.columns.score',
     ]);

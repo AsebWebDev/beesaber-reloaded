@@ -194,6 +194,28 @@ const de: Translation = {
     points_other: '+{{number}} Punkte',
     title: 'Revanche-Liste',
   },
+  trending: {
+    columns: {
+      bees: 'Bienen',
+      map: 'Map',
+      played: 'Zuletzt gespielt',
+      scoreSaber: 'Rangliste',
+    },
+    empty:
+      'In den letzten {{days}} Tagen haben deine Bienen auf keiner Map einen Score gesetzt, die du noch nie gespielt hast.',
+    intro:
+      'Maps, die du noch nie gespielt hast und auf denen deine Bienen in den letzten {{days}} Tagen einen neuen Bestwert gesetzt haben, die von den meisten Bienen gespielten zuerst. Es zählen nur neue Bestwerte: Runden ohne einen meldet ScoreSaber nicht.',
+    listed_one: '{{number}} Map in dieser Liste.',
+    listed_other: '{{number}} Maps in dieser Liste.',
+    listedPaged_one:
+      '{{number}} Map in dieser Liste, Seite {{page}} von {{total}}.',
+    listedPaged_other:
+      '{{number}} Maps in dieser Liste, Seite {{page}} von {{total}}.',
+    loading: 'Wird geladen, was die Hive gerade spielt',
+    onScoreSaber: 'ScoreSaber',
+    onScoreSaberFor: '{{song}} auf ScoreSaber',
+    title: 'Was die Hive gerade spielt',
+  },
   profile: {
     change: 'Profil wechseln',
     changed: 'Du vergleichst jetzt als {{name}}.',

@@ -399,7 +399,7 @@ const createHiveRepository = (db: Database) => {
         .select({
           leaderboard: leaderboards,
           bees: sql<
-            { avatarUrl: string | null; id: string; name: string }[]
+            { avatarUrl: string; id: string; name: string }[]
           >`json_agg(json_build_object('id', ${players.id}, 'name', ${players.name}, 'avatarUrl', ${players.avatarUrl}) order by ${theirs.playedAt} desc, ${players.id})`,
           lastPlayedAt,
         })

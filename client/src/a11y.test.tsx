@@ -189,6 +189,18 @@ const STATES: State[] = [
     ready: () => screen.findByText(t('revenge.empty')),
   },
   {
+    name: 'what the hive is playing',
+    setup: () => fakeApi.signedInAs({ hive: [BEE] }),
+    url: '/trending',
+    ready: () => screen.findByRole('table', { name: t('trending.title') }),
+  },
+  {
+    name: 'an empty list of what the hive is playing',
+    setup: () => fakeApi.signedInAs(),
+    url: '/trending',
+    ready: () => screen.findByText(t('trending.empty', { days: 14 })),
+  },
+  {
     name: 'the error screen',
     setup: () => fakeApi.signedInAs({ failures: { me: 500 } }),
     url: '/',
