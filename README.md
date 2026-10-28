@@ -403,6 +403,15 @@ pnpm api:update
 It lists added, removed and changed endpoints and points out changes to the
 ones the server uses. The diff of the two files shows the details.
 
+Every Monday the workflow `ScoreSaber API`
+(`.github/workflows/scoresaber-api.yml`) does this on GitHub. If an endpoint
+changed, it opens a pull request with the new copy, the list of changes and
+whether `pnpm typecheck` still passes. It can also be started by hand in the
+Actions tab.
+
+GitHub starts no workflows for a pull request that a workflow opened, so CI
+and the review do not run on it by themselves: close and reopen it once.
+
 ## Dependency install scripts
 
 pnpm does not run install scripts of dependencies unless they are allowed.
