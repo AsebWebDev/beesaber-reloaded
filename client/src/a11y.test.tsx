@@ -83,10 +83,13 @@ const STATES: State[] = [
     // Long enough not to end while axe looks
     setup: () => fakeApi.signedInAs({ hive: [BEE], myPollsUntilSynced: 99 }),
     url: '/',
-    ready: async () =>
-      expect(
-        await screen.findAllByText(t('dashboard.waitForMyScores'))
-      ).toHaveLength(3),
+    // News first, revenge and what the hive is playing once the hive is in
+    ready: () =>
+      waitFor(() =>
+        expect(
+          screen.getAllByText(t('dashboard.waitForMyScores'))
+        ).toHaveLength(3)
+      ),
   },
   {
     name: 'the empty dashboard',
