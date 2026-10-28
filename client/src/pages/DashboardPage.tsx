@@ -1,7 +1,7 @@
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
-import { isSyncing, useHive, useNews } from '@/api/queries.ts';
+import { isSyncing, useHive, useNews, useRevenge } from '@/api/queries.ts';
 import { Song } from '@/components/Song.tsx';
 import {
   Avatar,
@@ -12,10 +12,10 @@ import {
   Spinner,
   TimeAgo,
 } from '@/components/ui.tsx';
-import { formatDelta, formatScore } from '@/lib/format.ts';
+import { formatDelta, formatGap, formatScore } from '@/lib/format.ts';
 import { usePageTitle } from '@/lib/usePageTitle.ts';
 
-import type { HiveMember, NewsItem } from '@/api/queries.ts';
+import type { HiveMember, NewsItem, RevengeItem } from '@/api/queries.ts';
 
 /** "A bee went past your score", one card per event */
 const NewsCard = ({ item }: { item: NewsItem }) => {
@@ -59,6 +59,34 @@ const NewsCard = ({ item }: { item: NewsItem }) => {
           {formatDelta(item.myScore - item.theirScore)}
         </span>
       </p>
+    </Card>
+  );
+};
+
+/** How many of the closest revenge chances the dashboard shows */
+const REVENGE_PREVIEW = 3;
+
+/** One map where a bee is ahead, and what I need to get past them */
+const RevengeCard = ({ item }: { item: RevengeItem }) => {
+  const { t } = useTranslation();
+  const { bee, gap, gapShare, leaderboard } = item;
+
+  return (
+    <Card className="flex flex-wrap items-center gap-x-4 gap-y-2">
+      <div className="min-w-0 flex-1 basis-64">
+        <Song leaderboard={leaderboard} />
+      </div>
+      <span className="flex items-center gap-2 text-sm text-slate-300">
+        <Avatar src={bee.avatarUrl} size={24} />
+        <Link to={`/hive/${bee.id}`} className="hover:underline">
+          {bee.name}
+        </Link>
+      </span>
+      <span className="text-neon-red-core font-semibold tabular-nums">
+        {gapShare === null
+          ? t('revenge.points', { count: gap, number: formatScore(gap) })
+          : formatGap(gapShare)}
+      </span>
     </Card>
   );
 };
@@ -121,6 +149,10 @@ const DashboardPage = () => {
   const { t } = useTranslation();
   const news = useNews();
   const hive = useHive();
+  const revenge = useRevenge({ limit: REVENGE_PREVIEW, page: 1 });
+  // Without bees there is nothing to take revenge on; the head-to-head
+  // section below says how to get some
+  const hasBees = (hive.data?.items.length ?? 0) > 0;
 
   usePageTitle(t('dashboard.title'));
 
@@ -147,6 +179,43 @@ const DashboardPage = () => {
           ))}
         </div>
       </section>
+
+      {hasBees && (
+        <section className="space-y-4">
+          <NeonHeading as="h2" color="yellow" className="text-3xl">
+            {t('dashboard.revenge')}
+          </NeonHeading>
+          {revenge.isPending && <Spinner />}
+          {revenge.isError && (
+            <ErrorNote
+              error={revenge.error}
+              onRetry={() => void revenge.refetch()}
+            />
+          )}
+          {revenge.data?.items.length === 0 && (
+            <EmptyState>{t('revenge.empty')}</EmptyState>
+          )}
+          <div className="space-y-3">
+            {revenge.data?.items.map((item) => (
+              <RevengeCard
+                key={`${item.leaderboard.id}-${item.bee.id}`}
+                item={item}
+              />
+            ))}
+          </div>
+          {(revenge.data?.total ?? 0) > 0 && (
+            <Link
+              to="/revenge"
+              className="text-neon-yellow-core inline-block text-sm underline"
+            >
+              {t('dashboard.revengeAll', {
+                count: revenge.data?.total,
+                number: formatScore(revenge.data?.total ?? 0),
+              })}
+            </Link>
+          )}
+        </section>
+      )}
 
       <section className="space-y-4">
         <NeonHeading as="h2" color="blue" className="text-3xl">

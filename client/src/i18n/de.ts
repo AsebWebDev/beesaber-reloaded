@@ -84,6 +84,9 @@ const de: Translation = {
     news: 'Neuigkeiten',
     noNews:
       'Niemand hat in letzter Zeit einen deiner Scores geschlagen. Genieß es, solange es anhält.',
+    revenge: 'Revanche',
+    revengeAll_one: 'Ganze Revanche-Liste: {{number}} Map',
+    revengeAll_other: 'Ganze Revanche-Liste: {{number}} Maps',
     sharedMaps_one: '{{number}} gemeinsame Map',
     sharedMaps_other: '{{number}} gemeinsame Maps',
     theirs: 'Score der Biene',

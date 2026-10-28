@@ -71,10 +71,10 @@ const STATES: State[] = [
     name: 'the dashboard with news and a bee',
     setup: () => fakeApi.signedInAs({ hive: [BEE], news: [fakeApi.news()] }),
     url: '/',
-    // The bee's name links from the news and from her card
+    // The bee's name links from the news, the revenge list and her card
     ready: () =>
       waitFor(() =>
-        expect(screen.getAllByRole('link', { name: 'buzz' })).toHaveLength(2)
+        expect(screen.getAllByRole('link', { name: 'buzz' })).toHaveLength(3)
       ),
   },
   {
@@ -403,10 +403,12 @@ describe('what things are called', () => {
 
     await screen.findByText('2 shared maps');
 
-    expect(screen.getByRole('link', { name: 'buzz' })).toHaveAttribute(
-      'href',
-      `/hive/${BEE}`
-    );
+    // Her card and the revenge list name her, each with a link of her name
+    const links = await screen.findAllByRole('link', { name: 'buzz' });
+
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links)
+      expect(link).toHaveAttribute('href', `/hive/${BEE}`);
   });
 
   it('does not describe pictures that stand next to a name', async () => {
@@ -443,7 +445,7 @@ describe('what things are called', () => {
     ).toEqual(['Dashboard']);
     expect(
       screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)
-    ).toEqual(['News', 'Head to head']);
+    ).toEqual(['News', 'Revenge', 'Head to head']);
   });
 
   it('marks the page that is open in the menu', async () => {

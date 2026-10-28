@@ -215,7 +215,12 @@ const useSyncing = (): boolean => {
 };
 
 /** Maps where a bee is ahead of me, the closest first */
-const useRevenge = (options: { bee?: string | undefined; page: number }) =>
+const useRevenge = (options: {
+  bee?: string | undefined;
+  /** How many to a page; a full page of a table unless said otherwise */
+  limit?: number;
+  page: number;
+}) =>
   useQuery({
     queryKey: ['hive', 'revenge', options],
     queryFn: () =>
@@ -223,7 +228,7 @@ const useRevenge = (options: { bee?: string | undefined; page: number }) =>
         api.hive.revenge.$get({
           query: {
             page: String(options.page),
-            limit: String(PAGE_SIZE),
+            limit: String(options.limit ?? PAGE_SIZE),
             ...(options.bee === undefined ? {} : { bee: options.bee }),
           },
         })

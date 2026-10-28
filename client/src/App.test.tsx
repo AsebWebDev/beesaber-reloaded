@@ -1244,9 +1244,11 @@ describe('a song title', () => {
     fakeApi.signedInAs({ hive: [fakeApi.BEE.id], news: [fakeApi.news()] });
     const { user } = renderApp();
 
-    expect(
-      await screen.findByRole('link', { name: 'Superstar' })
-    ).toHaveAttribute('href', '/maps/2');
+    // In the news, and in the revenge list below it
+    const superstar = await screen.findAllByRole('link', { name: 'Superstar' });
+
+    for (const link of superstar)
+      expect(link).toHaveAttribute('href', '/maps/2');
 
     await user.click(screen.getByRole('link', { name: 'My profile' }));
 
@@ -1314,5 +1316,37 @@ describe('the revenge list', () => {
     expect(
       within(table).getByRole('columnheader', { name: 'Dir fehlen' })
     ).toBeInTheDocument();
+  });
+});
+
+describe('the revenge section of the dashboard', () => {
+  it('shows the closest chances and leads to the whole list', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp();
+
+    const section = (
+      await screen.findByRole('heading', { name: 'Revenge' })
+    ).closest('section')!;
+
+    expect(
+      await within(section).findByRole('link', { name: 'Superstar' })
+    ).toBeInTheDocument();
+    expect(within(section).getByText('+10.00%')).toBeInTheDocument();
+    expect(
+      within(section).getByRole('link', {
+        name: 'The whole revenge list: 1 map',
+      })
+    ).toHaveAttribute('href', '/revenge');
+  });
+
+  it('is not there while the hive is empty', async () => {
+    fakeApi.signedInAs();
+    renderApp();
+
+    await screen.findByText(/Your hive is empty/);
+
+    expect(
+      screen.queryByRole('heading', { name: 'Revenge' })
+    ).not.toBeInTheDocument();
   });
 });

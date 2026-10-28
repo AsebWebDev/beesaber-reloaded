@@ -90,6 +90,9 @@ const en = {
     news: 'News',
     noNews:
       'Nobody has beaten one of your scores lately. Enjoy it while it lasts.',
+    revenge: 'Revenge',
+    revengeAll_one: 'The whole revenge list: {{number}} map',
+    revengeAll_other: 'The whole revenge list: {{number}} maps',
     sharedMaps_one: '{{number}} shared map',
     sharedMaps_other: '{{number}} shared maps',
     theirs: 'Theirs',
