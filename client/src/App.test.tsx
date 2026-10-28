@@ -1417,3 +1417,173 @@ describe('the revenge list with more than one bee', () => {
     expect(await screen.findByText('+1,234 points')).toBeInTheDocument();
   });
 });
+
+describe('what the hive is playing', () => {
+  it('lists the maps my bees played lately that I never did', async () => {
+    // Both bees played Night Flight, buzz last
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id, '3003'] });
+    renderApp('/trending');
+
+    await screen.findByRole('link', { name: 'Night Flight' });
+
+    const table = screen.getByRole('table', {
+      name: 'What the hive is playing',
+    });
+    const [, row] = within(table).getAllByRole('row');
+
+    expect(
+      within(row!).getByRole('link', { name: 'Night Flight' })
+    ).toHaveAttribute('href', '/maps/4');
+    expect(
+      within(row!)
+        .getAllByRole('link', { name: /^buzz/ })
+        .map((link) => link.textContent)
+    ).toEqual(['buzz', 'buzzkill']);
+    expect(
+      within(row!).getByRole('link', { name: 'Night Flight on ScoreSaber' })
+    ).toHaveAttribute('href', 'https://scoresaber.com/leaderboard/4');
+    expect(row!.querySelector('time')).toHaveAttribute(
+      'datetime',
+      '2024-02-01T10:00:00.000Z'
+    );
+    expect(screen.getByText(/in the last 14 days/)).toBeInTheDocument();
+    expect(document.title).toBe('What the hive is playing · BeeSaber');
+  });
+
+  it('says so when the bees played nothing new to me', async () => {
+    fakeApi.signedInAs();
+    renderApp('/trending');
+
+    expect(
+      await screen.findByText(
+        'In the last 14 days, your bees have not set a score on a map you never played.'
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('says so when the list cannot be loaded', async () => {
+    fakeApi.server.use(
+      http.get('/api/hive/trending', () =>
+        HttpResponse.json(
+          { error: { code: 'internal_error', message: 'Down' } },
+          { status: 500 }
+        )
+      )
+    );
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp('/trending');
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+  });
+
+  it('goes to the last page when the address asks for one beyond it', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { router } = renderApp('/trending?page=9');
+
+    expect(
+      await screen.findByRole('link', { name: 'Night Flight' })
+    ).toBeInTheDocument();
+    expect(router.state.location.search).toContain('page=1');
+  });
+
+  it('speaks German', async () => {
+    await i18n.changeLanguage('de');
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp('/trending');
+
+    await screen.findByRole('link', { name: 'Night Flight' });
+
+    const table = screen.getByRole('table', {
+      name: 'Was die Hive gerade spielt',
+    });
+
+    expect(
+      within(table).getByRole('link', { name: 'Night Flight auf ScoreSaber' })
+    ).toBeInTheDocument();
+    expect(
+      within(table).getByRole('columnheader', { name: 'Zuletzt gespielt' })
+    ).toBeInTheDocument();
+  });
+});
+
+describe('what the hive is playing, on the dashboard', () => {
+  it('shows the first maps and leads to the whole list', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    renderApp();
+
+    const section = (
+      await screen.findByRole('heading', { name: 'What the hive is playing' })
+    ).closest('section')!;
+
+    expect(
+      await within(section).findByRole('link', { name: 'Night Flight' })
+    ).toHaveAttribute('href', '/maps/4');
+    expect(within(section).getByRole('link', { name: 'buzz' })).toHaveAttribute(
+      'href',
+      `/hive/${fakeApi.BEE.id}`
+    );
+    expect(
+      within(section).getByRole('link', {
+        name: 'Everything the hive is playing: 1 map',
+      })
+    ).toHaveAttribute('href', '/trending');
+  });
+
+  it('says so when the bees played nothing new to me', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    fakeApi.server.use(
+      http.get('/api/hive/trending', () =>
+        HttpResponse.json({
+          items: [],
+          page: 1,
+          limit: 3,
+          total: 0,
+          totalPages: 0,
+          days: 14,
+        })
+      )
+    );
+    renderApp();
+
+    const section = (
+      await screen.findByRole('heading', { name: 'What the hive is playing' })
+    ).closest('section')!;
+
+    expect(
+      await within(section).findByText(/^In the last 14 days/)
+    ).toBeInTheDocument();
+    expect(
+      within(section).queryByRole('link', { name: /^Everything/ })
+    ).not.toBeInTheDocument();
+  });
+
+  it('offers to try again when the list fails', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    fakeApi.server.use(
+      http.get('/api/hive/trending', () =>
+        HttpResponse.json(
+          { error: { code: 'internal_error', message: 'Down' } },
+          { status: 500 }
+        )
+      )
+    );
+    renderApp();
+
+    const section = (
+      await screen.findByRole('heading', { name: 'What the hive is playing' })
+    ).closest('section')!;
+
+    expect(await within(section).findByRole('alert')).toBeInTheDocument();
+  });
+
+  it('is not there while the hive is empty', async () => {
+    fakeApi.signedInAs();
+    renderApp();
+
+    await screen.findByText(/Your hive is empty/);
+
+    expect(
+      screen.queryByRole('heading', { name: 'What the hive is playing' })
+    ).not.toBeInTheDocument();
+  });
+});

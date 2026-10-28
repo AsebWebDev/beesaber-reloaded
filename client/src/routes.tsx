@@ -22,6 +22,7 @@ import { MapPage } from '@/pages/MapPage.tsx';
 import { OnboardingPage } from '@/pages/OnboardingPage.tsx';
 import { ProfilePage } from '@/pages/ProfilePage.tsx';
 import { RevengePage } from '@/pages/RevengePage.tsx';
+import { TrendingPage } from '@/pages/TrendingPage.tsx';
 
 import type { RouteObject } from 'react-router';
 import type { Player } from '@/api/queries.ts';
@@ -192,6 +193,7 @@ const routes: RouteObject[] = [
       { path: 'hive/:playerId', element: <ComparisonPage /> },
       { path: 'maps/:leaderboardId', element: <MapPage /> },
       { path: 'revenge', element: <RevengePage /> },
+      { path: 'trending', element: <TrendingPage /> },
       { path: 'profile', element: <Profile /> },
       { path: '*', element: <NotFound /> },
     ],

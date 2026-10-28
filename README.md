@@ -281,6 +281,7 @@ other accounts may follow the same players.
 | `GET /hive/:playerId/comparison` | Maps we both played, with both scores; `filter`       |
 | `GET /hive/maps/:leaderboardId`  | Me and my bees on one map, best score first           |
 | `GET /hive/revenge`              | Maps where a bee is ahead of me, closest first; `bee` |
+| `GET /hive/trending`             | Maps bees played in the last 14 days that I have not  |
 | `GET /hive/news`                 | Scores of bees that went past mine                    |
 | `POST /hive/sync`                | Queue a fetch of new scores, mine and my bees'        |
 | `GET /hive/sync`                 | Whose scores are being fetched right now              |

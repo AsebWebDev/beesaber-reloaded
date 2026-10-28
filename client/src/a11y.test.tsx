@@ -71,10 +71,11 @@ const STATES: State[] = [
     name: 'the dashboard with news and a bee',
     setup: () => fakeApi.signedInAs({ hive: [BEE], news: [fakeApi.news()] }),
     url: '/',
-    // The bee's name links from the news, the revenge list and her card
+    // The bee's name links from the news, the revenge list, what the hive
+    // is playing and the bee's card
     ready: () =>
       waitFor(() =>
-        expect(screen.getAllByRole('link', { name: 'buzz' })).toHaveLength(3)
+        expect(screen.getAllByRole('link', { name: 'buzz' })).toHaveLength(4)
       ),
   },
   {
@@ -187,6 +188,18 @@ const STATES: State[] = [
     setup: () => fakeApi.signedInAs(),
     url: '/revenge',
     ready: () => screen.findByText(t('revenge.empty')),
+  },
+  {
+    name: 'what the hive is playing',
+    setup: () => fakeApi.signedInAs({ hive: [BEE] }),
+    url: '/trending',
+    ready: () => screen.findByRole('table', { name: t('trending.title') }),
+  },
+  {
+    name: 'an empty list of what the hive is playing',
+    setup: () => fakeApi.signedInAs(),
+    url: '/trending',
+    ready: () => screen.findByText(t('trending.empty', { days: 14 })),
   },
   {
     name: 'the error screen',
@@ -445,7 +458,7 @@ describe('what things are called', () => {
     ).toEqual(['Dashboard']);
     expect(
       screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)
-    ).toEqual(['News', 'Revenge', 'Head to head']);
+    ).toEqual(['Head to head', 'News', 'Revenge', 'What the hive is playing']);
   });
 
   it('marks the page that is open in the menu', async () => {

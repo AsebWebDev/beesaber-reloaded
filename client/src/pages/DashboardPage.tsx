@@ -1,7 +1,13 @@
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
-import { isSyncing, useHive, useNews, useRevenge } from '@/api/queries.ts';
+import {
+  isSyncing,
+  useHive,
+  useNews,
+  useRevenge,
+  useTrending,
+} from '@/api/queries.ts';
 import { Song } from '@/components/Song.tsx';
 import {
   Avatar,
@@ -14,8 +20,14 @@ import {
 } from '@/components/ui.tsx';
 import { formatDelta, formatGap, formatScore } from '@/lib/format.ts';
 import { usePageTitle } from '@/lib/usePageTitle.ts';
+import { Bees } from '@/pages/TrendingPage.tsx';
 
-import type { HiveMember, NewsItem, RevengeItem } from '@/api/queries.ts';
+import type {
+  HiveMember,
+  NewsItem,
+  RevengeItem,
+  TrendingItem,
+} from '@/api/queries.ts';
 
 /** "A bee went past your score", one card per event */
 const NewsCard = ({ item }: { item: NewsItem }) => {
@@ -65,6 +77,22 @@ const NewsCard = ({ item }: { item: NewsItem }) => {
 
 /** How many of the closest revenge chances the dashboard shows */
 const REVENGE_PREVIEW = 3;
+
+/** How many of the maps the hive is playing the dashboard shows */
+const TRENDING_PREVIEW = 3;
+
+/** A map new to me that bees played lately, and who played it */
+const TrendingCard = ({ item }: { item: TrendingItem }) => (
+  <Card className="flex flex-wrap items-center gap-x-4 gap-y-2">
+    <div className="min-w-0 flex-1 basis-64">
+      <Song leaderboard={item.leaderboard} />
+    </div>
+    <div className="text-sm text-slate-300">
+      <Bees bees={item.bees} />
+    </div>
+    <TimeAgo date={item.lastPlayedAt} className="text-sm text-slate-400" />
+  </Card>
+);
 
 /** One map where a bee is ahead, and what I need to get past them */
 const RevengeCard = ({ item }: { item: RevengeItem }) => {
@@ -150,17 +178,48 @@ const DashboardPage = () => {
   const news = useNews();
   const hive = useHive();
   const revenge = useRevenge({ limit: REVENGE_PREVIEW, page: 1 });
+  const trending = useTrending({ limit: TRENDING_PREVIEW, page: 1 });
   // Without bees there is nothing to take revenge on; the head-to-head
-  // section below says how to get some
+  // section above says how to get some
   const hasBees = (hive.data?.items.length ?? 0) > 0;
 
   usePageTitle(t('dashboard.title'));
 
   return (
     <div className="space-y-10">
-      {/* The page has two parts of equal weight. Its own title is only
-          needed by those who navigate by headings. */}
+      {/* The page has several parts of equal weight. Its own title is
+          only needed by those who navigate by headings. */}
       <h1 className="sr-only">{t('dashboard.title')}</h1>
+
+      <section className="space-y-4">
+        <NeonHeading as="h2" color="blue" className="text-3xl">
+          {t('dashboard.headToHead')}
+        </NeonHeading>
+        {hive.isPending && <Spinner />}
+        {hive.isError && (
+          <ErrorNote error={hive.error} onRetry={() => void hive.refetch()} />
+        )}
+        {hive.data?.items.length === 0 && (
+          <EmptyState>
+            <Trans
+              i18nKey="dashboard.emptyHive"
+              components={{
+                hive: (
+                  <Link
+                    to="/hive"
+                    className="text-neon-yellow-core underline"
+                  />
+                ),
+              }}
+            />
+          </EmptyState>
+        )}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {hive.data?.items.map((member) => (
+            <RecordCard key={member.player.id} member={member} />
+          ))}
+        </div>
+      </section>
 
       <section className="space-y-4">
         <NeonHeading as="h2" color="red" className="text-3xl">
@@ -217,35 +276,41 @@ const DashboardPage = () => {
         </section>
       )}
 
-      <section className="space-y-4">
-        <NeonHeading as="h2" color="blue" className="text-3xl">
-          {t('dashboard.headToHead')}
-        </NeonHeading>
-        {hive.isPending && <Spinner />}
-        {hive.isError && (
-          <ErrorNote error={hive.error} onRetry={() => void hive.refetch()} />
-        )}
-        {hive.data?.items.length === 0 && (
-          <EmptyState>
-            <Trans
-              i18nKey="dashboard.emptyHive"
-              components={{
-                hive: (
-                  <Link
-                    to="/hive"
-                    className="text-neon-yellow-core underline"
-                  />
-                ),
-              }}
+      {hasBees && (
+        <section className="space-y-4">
+          <NeonHeading as="h2" color="yellow" className="text-3xl">
+            {t('dashboard.trending')}
+          </NeonHeading>
+          {trending.isPending && <Spinner />}
+          {trending.isError && (
+            <ErrorNote
+              error={trending.error}
+              onRetry={() => void trending.refetch()}
             />
-          </EmptyState>
-        )}
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {hive.data?.items.map((member) => (
-            <RecordCard key={member.player.id} member={member} />
-          ))}
-        </div>
-      </section>
+          )}
+          {trending.data?.items.length === 0 && (
+            <EmptyState>
+              {t('trending.empty', { days: trending.data.days })}
+            </EmptyState>
+          )}
+          <div className="space-y-3">
+            {trending.data?.items.map((item) => (
+              <TrendingCard key={item.leaderboard.id} item={item} />
+            ))}
+          </div>
+          {(trending.data?.total ?? 0) > 0 && (
+            <Link
+              to="/trending"
+              className="text-neon-yellow-core inline-block text-sm underline"
+            >
+              {t('dashboard.trendingAll', {
+                count: trending.data?.total,
+                number: formatScore(trending.data?.total ?? 0),
+              })}
+            </Link>
+          )}
+        </section>
+      )}
     </div>
   );
 };

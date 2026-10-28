@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import { requireMe } from '../http/session.ts';
 import { paginated, pagination, playerId, validate } from '../http/validate.ts';
+import { TRENDING_DAYS } from './hive.service.ts';
 
 import type { MiddlewareHandler } from 'hono';
 import type { UserEnv } from '../http/session.ts';
@@ -80,6 +81,18 @@ const createHiveRoutes = (
         return c.json(paginated(items, total, query));
       }
     )
+
+    // GET /api/hive/trending?page=1&limit=20: maps my bees played lately
+    // that I have never played. Says how many days back it looks.
+    .get('/trending', validate('query', z.object(pagination)), async (c) => {
+      const query = c.req.valid('query');
+      const { items, total } = await service.trending(
+        requireMe(c.get('user')),
+        query
+      );
+
+      return c.json({ ...paginated(items, total, query), days: TRENDING_DAYS });
+    })
 
     // GET /api/hive/maps/1234: how I and my bees stand on one map
     .get(

@@ -40,6 +40,8 @@ type SyncRequest = InferResponseType<typeof api.hive.sync.$post>;
 type SyncStatus = InferResponseType<typeof api.hive.sync.$get>;
 type RevengePage = InferResponseType<typeof api.hive.revenge.$get>;
 type RevengeItem = RevengePage['items'][number];
+type TrendingPage = InferResponseType<typeof api.hive.trending.$get>;
+type TrendingItem = TrendingPage['items'][number];
 type MapRanking = InferResponseType<
   (typeof api.hive.maps)[':leaderboardId']['$get']
 >;
@@ -235,6 +237,25 @@ const useRevenge = (options: {
       ),
   });
 
+/** Maps my bees played lately that I have never played */
+const useTrending = (options: {
+  /** How many to a page; a full page of a table unless said otherwise */
+  limit?: number;
+  page: number;
+}) =>
+  useQuery({
+    queryKey: ['hive', 'trending', options],
+    queryFn: () =>
+      unwrap(
+        api.hive.trending.$get({
+          query: {
+            page: String(options.page),
+            limit: String(options.limit ?? PAGE_SIZE),
+          },
+        })
+      ),
+  });
+
 /** How I and my bees stand on one map, best first */
 const useMapRanking = (leaderboardId: string) =>
   useQuery({
@@ -323,6 +344,7 @@ export {
   useScores,
   useSyncHive,
   useSyncing,
+  useTrending,
 };
 export type {
   AddedBee,
@@ -344,4 +366,6 @@ export type {
   ScoreSort,
   SyncRequest,
   SyncStatus,
+  TrendingItem,
+  TrendingPage,
 };

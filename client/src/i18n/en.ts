@@ -98,6 +98,9 @@ const en = {
     theirs: 'Theirs',
     theyLead: 'They lead on {{number}}',
     title: 'Dashboard',
+    trending: 'What the hive is playing',
+    trendingAll_one: 'Everything the hive is playing: {{number}} map',
+    trendingAll_other: 'Everything the hive is playing: {{number}} maps',
     youLead: 'You lead on {{number}}',
     yours: 'yours',
   },
@@ -197,6 +200,27 @@ const en = {
     points_one: '+{{number}} point',
     points_other: '+{{number}} points',
     title: 'Revenge list',
+  },
+  trending: {
+    columns: {
+      bees: 'Bees',
+      map: 'Map',
+      played: 'Last played',
+      scoreSaber: 'Leaderboard',
+    },
+    empty:
+      'In the last {{days}} days, your bees have not set a score on a map you never played.',
+    intro:
+      'Maps you have never played on which your bees set a new best in the last {{days}} days, the ones most bees played first. Only new bests count: ScoreSaber does not tell of plays without one.',
+    listed_one: '{{number}} map in this list.',
+    listed_other: '{{number}} maps in this list.',
+    listedPaged_one: '{{number}} map in this list, page {{page}} of {{total}}.',
+    listedPaged_other:
+      '{{number}} maps in this list, page {{page}} of {{total}}.',
+    loading: 'Loading what the hive is playing',
+    onScoreSaber: 'ScoreSaber',
+    onScoreSaberFor: '{{song}} on ScoreSaber',
+    title: 'What the hive is playing',
   },
   profile: {
     change: 'Change profile',
