@@ -84,7 +84,10 @@ const RevengePage = () => {
         <p className="text-sm text-slate-400">{t('revenge.intro')}</p>
       </div>
 
-      {(hive.data?.items.length ?? 0) > 1 && (
+      {/* With one bee there is nothing to choose, unless the address
+          names a bee: maybe one who has left the hive, and "All bees" is
+          the way back */}
+      {((hive.data?.items.length ?? 0) > 1 || bee !== undefined) && (
         <div
           role="group"
           aria-label={t('revenge.filter.label')}

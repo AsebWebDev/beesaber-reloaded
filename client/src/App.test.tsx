@@ -1398,13 +1398,21 @@ describe('the revenge list', () => {
     ).toBeInTheDocument();
   });
 
-  it('says so for a bee in the address who is not in the hive', async () => {
+  it('says so for a bee in the address who is not in the hive, and offers a way back', async () => {
+    // One bee only, where the filter is otherwise not shown at all
     fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
-    renderApp('/revenge?bee=999');
+    const { router, user } = renderApp('/revenge?bee=999');
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'This player is not in your hive.'
     );
+
+    await user.click(screen.getByRole('button', { name: 'All bees' }));
+
+    expect(
+      await screen.findByRole('link', { name: 'Superstar' })
+    ).toBeInTheDocument();
+    expect(router.state.location.search).not.toContain('bee=');
   });
 
   it('writes the gap the German way', async () => {
@@ -1480,6 +1488,51 @@ describe('the revenge list with more than one bee', () => {
       await screen.findByRole('link', { name: 'Superstar' })
     ).toBeInTheDocument();
     expect(router.state.location.search).not.toContain('bee=');
+  });
+
+  it('keeps the bee when it goes to the last page', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id, '3003'] });
+    const { router } = renderApp(`/revenge?bee=${fakeApi.BEE.id}&page=9`);
+
+    await screen.findByRole('link', { name: 'Superstar' });
+
+    await waitFor(() =>
+      expect(router.state.location.search).toContain('page=1')
+    );
+    expect(router.state.location.search).toContain(`bee=${fakeApi.BEE.id}`);
+  });
+
+  it('starts another bee on its first page', async () => {
+    const news = fakeApi.news();
+    const item = {
+      leaderboard: news.leaderboard,
+      bee: news.player,
+      myScore: 400_000,
+      theirScore: 500_000,
+      gap: 100_000,
+      gapShare: 0.1,
+    };
+
+    // A list long enough for a second page, whichever bee is asked for
+    fakeApi.server.use(
+      http.get('/api/hive/revenge', () =>
+        HttpResponse.json({
+          items: [item],
+          page: 2,
+          limit: 15,
+          total: 30,
+          totalPages: 2,
+        })
+      )
+    );
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id, '3003'] });
+    const { router, user } = renderApp('/revenge?page=2');
+
+    await screen.findByText('Page 2 of 2');
+    await user.click(screen.getByRole('button', { name: 'buzzkill' }));
+
+    expect(router.state.location.search).toContain('bee=3003');
+    expect(router.state.location.search).toContain('page=1');
   });
 
   it('goes to the last page when the address asks for one beyond it', async () => {
