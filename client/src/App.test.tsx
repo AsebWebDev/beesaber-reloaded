@@ -533,6 +533,96 @@ describe('when the server has trouble', () => {
   });
 });
 
+describe('what is on screen after the hive changed', () => {
+  // Answers stay fresh for half a minute, as in the app, so what these
+  // tests see is what was refreshed after the change, not loaded anew
+
+  /** The section of the dashboard under this heading */
+  const section = async (heading: string) =>
+    (await screen.findByRole('heading', { name: heading })).closest('section')!;
+
+  it('brings the dashboard up to date after a bee is added', async () => {
+    fakeApi.signedInAs();
+    const { user } = renderApp();
+
+    await screen.findByText(/Your hive is empty/);
+    await user.click(screen.getByRole('link', { name: 'My hive' }));
+    await user.type(
+      await screen.findByLabelText('Find a player on ScoreSaber'),
+      'buzz'
+    );
+    await user.click(
+      (await screen.findAllByRole('button', { name: /^Add / }))[0]!
+    );
+    await screen.findByRole('button', { name: 'Remove buzz from my hive' });
+    await user.click(screen.getByRole('link', { name: 'Dashboard' }));
+
+    expect(
+      await within(await section('Revenge')).findByRole('link', {
+        name: 'Superstar',
+      })
+    ).toBeInTheDocument();
+    expect(
+      await within(await section('What the hive is playing')).findByRole(
+        'link',
+        { name: 'Night Flight' }
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('drops a removed bee from the dashboard', async () => {
+    // Another bee stays, so the sections stay and have to change
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id, '3003'] });
+    const { user } = renderApp();
+
+    await within(await section('Revenge')).findByRole('link', {
+      name: 'Superstar',
+    });
+    await user.click(screen.getByRole('link', { name: 'My hive' }));
+    await user.click(
+      await screen.findByRole('button', { name: 'Remove buzz from my hive' })
+    );
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('button', { name: 'Remove buzz from my hive' })
+      ).not.toBeInTheDocument()
+    );
+    await user.click(screen.getByRole('link', { name: 'Dashboard' }));
+
+    // buzz was the only bee ahead anywhere
+    expect(
+      await within(await section('Revenge')).findByText(
+        'No bee is ahead of you on a map you both played.'
+      )
+    ).toBeInTheDocument();
+
+    const trending = await section('What the hive is playing');
+
+    await within(trending).findByRole('link', { name: 'buzzkill' });
+    expect(
+      within(trending).queryByRole('link', { name: 'buzz' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('brings the news up to date when a sync is done', async () => {
+    fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
+    const { user } = renderApp();
+
+    await screen.findByText(/Nobody has beaten one of your scores/);
+    // The sync takes a moment and finds that the bee went past me
+    fakeApi.set({
+      news: [fakeApi.news()],
+      pollsUntilSynced: 1,
+      queuedBySync: 1,
+    });
+    await user.click(screen.getByRole('button', { name: 'Sync scores' }));
+
+    expect(
+      await screen.findByText('beat your score', {}, { timeout: 6000 })
+    ).toBeInTheDocument();
+  }, 10_000);
+});
+
 describe('when the session ends while the app is open', () => {
   it('returns to the landing page with the next answer that says so', async () => {
     fakeApi.signedInAs({ hive: [fakeApi.BEE.id] });
@@ -541,7 +631,8 @@ describe('when the session ends while the app is open', () => {
     await screen.findByText('2 shared maps');
     // The session runs out, or is ended from another device
     fakeApi.set({ signedIn: false });
-    await user.click(screen.getByRole('link', { name: 'My hive' }));
+    // My scores have not been loaded yet, so the profile asks the server
+    await user.click(screen.getByRole('link', { name: 'My profile' }));
 
     expect(await screen.findByTestId('landing-page')).toBeInTheDocument();
     // Nothing of what was loaded for the user is kept
