@@ -211,9 +211,13 @@ const createPlayersRepository = (db: Database) => {
 
       if (rows.length === 0) return { added: 0, improved: 0 };
 
-      // Two syncs of the same player must not interleave here: both would
-      // read "no score yet" and both would log the same event. The lock is
-      // per player and is released when the transaction ends.
+      // Two syncs of the same player must not interleave here. Both would
+      // read the same stored score: the same event would be logged twice
+      // (the unique index on events catches that), and when they bring
+      // different improvements, the later event would name the wrong
+      // previous score (nothing else catches that, and news depends on
+      // it). The lock is per player and is released when the transaction
+      // ends.
       await tx.execute(
         sql`select pg_advisory_xact_lock(hashtext(${`player:${playerId}`}))`
       );

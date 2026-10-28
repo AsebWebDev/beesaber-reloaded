@@ -598,22 +598,26 @@ describe('who can be in a hive', () => {
 
   it('holds the size limit when several bees are added at the same moment', async () => {
     const idOf = (index: number) => String(76561198200000000n + BigInt(index));
+    // Enough at once that, without the lock, two of them reliably count
+    // the same 49 bees
+    const racing = 12;
 
-    for (let index = 0; index < 53; index++)
+    for (let index = 0; index < 49 + racing; index++)
       scoreSaber.setPlayer(idOf(index), `bee ${index}`, []);
     // One place left
     for (let index = 0; index < 49; index++) await addToHive(idOf(index));
 
     const responses = await Promise.all(
-      [49, 50, 51, 52].map(async (index) => addToHive(idOf(index)))
+      Array.from({ length: racing }, async (_, offset) =>
+        addToHive(idOf(49 + offset))
+      )
     );
     const hive: { items: unknown[] } = await json(await api('/api/hive'));
 
     expect(hive.items).toHaveLength(50);
-    expect(responses.map((response) => response.status).sort()).toEqual([
-      201, 400, 400, 400,
-    ]);
-  });
+    expect(responses.filter(({ status }) => status === 201)).toHaveLength(1);
+    // Fifty bees and their scores take a while to set up
+  }, 30_000);
 });
 
 describe('GET /api/hive/maps/:leaderboardId', () => {

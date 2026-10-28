@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 
 import { players, scoreEvents } from '../db/schema.ts';
+import { createInlineQueue } from '../jobs/queue.ts';
 import {
   api,
   createManualQueue,
@@ -12,7 +13,6 @@ import {
   ME,
   scoreSaber,
   services,
-  tick,
 } from '../testing/harness.ts';
 
 /**
@@ -420,10 +420,19 @@ describe('the periodic catch-up', () => {
   });
 
   it('runs as the queue’s periodic job', async () => {
-    scoreSaber.setPlayer(ME, 'me', []);
-    await linkProfile(ME);
+    let time = new Date('2024-05-01T12:00:00.000Z');
+    const queue = createInlineQueue();
+    const { app } = createTestApp({ now: () => time, queue });
+    const user = await createUser('test-user', app);
 
-    // Nothing is stale yet, so the job has nothing to do, but it has to run
-    await expect(tick()).resolves.toBeUndefined();
+    scoreSaber.setPlayer(ME, 'me', []);
+    await linkProfile(ME, user);
+
+    // An hour later the scores are old. The queue's periodic job finds
+    // that and fetches them again.
+    time = new Date('2024-05-01T13:00:00.000Z');
+    await queue.tick();
+
+    expect((await playerRow(ME))?.scoresSyncedAt).toEqual(time);
   });
 });
