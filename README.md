@@ -5,12 +5,60 @@ Sign in, link your [ScoreSaber](https://scoresaber.com/) profile and add other
 players as "bees" to your "hive". BeeSaber then shows which songs you have both
 played and who scored higher.
 
+It runs at [beesaber.de](https://beesaber.de), a private project: sign-in is
+open to invited friends only.
+
+## What this repository shows
+
+A small app, run the way a team would run a large one. Each point links to
+where it lives.
+
+**Built with an AI agent, reviewed like a team.** The modernisation was written
+with [Claude Code](https://claude.com/claude-code), in small pull requests, each
+with its tests, behind CI as the gate. A
+[second Claude](.github/workflows/claude-review.yml) reviews every pull
+request; each finding is fixed or answered with a reason, then resolved, and
+nothing reaches `main` without a person's yes. The pull requests and commit
+history show the loop.
+
+**Azure, described in [Terraform](infra/).** Container Apps in a private
+[network](infra/network.tf), PostgreSQL without a public address
+([database.tf](infra/database.tf)), [Key Vault](infra/keyvault.tf), its own
+[domain](infra/domain.tf) with certificates Azure renews,
+[alerts](infra/monitoring.tf), a budget, and [tags with policies](infra/policy.tf)
+that Azure enforces: a resource without them is refused.
+
+**No passwords in use.** The app signs in to the database with short-lived
+tokens of its managed identity ([password.ts](server/src/db/password.ts)), and
+the database accepts nothing else. GitHub deploys to Azure through OIDC
+([deploy.tf](infra/deploy.tf)), with no stored credentials. The secrets the
+app uses live in Key Vault only, never in the image or the repository.
+
+**Delivery.** Every merge builds one image, scans it
+([Trivy](https://trivy.dev)), publishes it and deploys it by digest
+([ci.yml](.github/workflows/ci.yml), [deploy.yml](.github/workflows/deploy.yml)).
+A new version gets traffic only once its health check passes, and
+[rollback.yml](.github/workflows/rollback.yml) brings back any earlier one.
+
+**Tried, not claimed.** A [restore](infra/README.md#restoring-the-database) of
+the database to a moment an hour earlier (ready in 8½ minutes), a rollback, a
+[load test](loadtest/README.md) from inside Azure (one instance with a quarter
+core: fast to about 60 requests a second, full at 130, no errors), alerts
+that fired for real, and the [limits and trade-offs](infra/README.md#limits-and-trade-offs)
+written down.
+
+**The app.** A typed API client built from the server's own route types (see
+"Structure" below), a [live feed](server/src/scoresaber/liveFeed.ts) of new
+scores from ScoreSaber, a [job queue](server/src/jobs/queue.ts) in Postgres,
+English and German, [accessibility checks](client/src/a11y.test.tsx) with axe,
+and files [compressed at build time](client/build/precompress.ts).
+
 ## Status
 
-The project was built in 2021/22 and is being modernised step by step. **It runs
-end to end on a developer's machine**: sign in, pick your ScoreSaber profile,
-add friends to your hive and compare scores. New scores of your friends arrive
-by themselves, usually within a minute of being set.
+The project was built in 2021/22 and modernised step by step. It runs in
+production on Azure: sign in, pick your ScoreSaber profile, add friends to
+your hive and compare scores. New scores of your friends arrive by
+themselves, usually within a minute of being set.
 
 | Phase | Content                                                      | State |
 | ----- | ------------------------------------------------------------ | ----- |
@@ -21,7 +69,7 @@ by themselves, usually within a minute of being set.
 | 4     | Sign-in with Google, accounts and sessions                   | done  |
 | 5     | New frontend with Tailwind and react-router on the new API   | done  |
 | 6     | Background jobs: live score feed, sync without waiting       | done  |
-| 7     | Production readiness: Docker image, deployment               | doing |
+| 7     | Production on Azure: image, Terraform, CI/CD, monitoring     | done  |
 
 ## Structure
 
