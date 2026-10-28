@@ -79,6 +79,12 @@ const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
 
         {google.isError && <ErrorNote error={google.error} />}
         {dev.isError && <ErrorNote error={dev.error} />}
+
+        {/* A plain link on purpose: the demo is a page of its own, with its
+            own API in the browser (client/src/demo/main.tsx) */}
+        <a href="/demo/" className="text-sm text-slate-300 underline">
+          {t('landing.demo')}
+        </a>
       </div>
 
       <NeonHeading as="p" color="yellow" className="text-xl">

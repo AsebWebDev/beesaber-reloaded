@@ -47,6 +47,14 @@ describe('before signing in', () => {
     ).toBeInTheDocument();
   });
 
+  it('offers those who were not invited the demo', async () => {
+    renderApp();
+
+    expect(
+      await screen.findByRole('link', { name: /See a demo with made-up data/ })
+    ).toHaveAttribute('href', '/demo/');
+  });
+
   it('names ScoreSaber as the source of the scores', async () => {
     renderApp();
 

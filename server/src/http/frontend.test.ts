@@ -22,6 +22,15 @@ writeFileSync(join(root, 'assets', 'index-1a2b.js.gz'), 'gzip bytes');
 writeFileSync(join(root, 'index.html.br'), 'brotli page');
 writeFileSync(join(root, 'favicon.ico'), 'icon');
 
+// The demo, which the build puts into a folder of its own
+mkdirSync(join(root, 'demo', 'assets'), { recursive: true });
+writeFileSync(
+  join(root, 'demo', 'index.html'),
+  '<!doctype html><title>BeeSaber demo</title>'
+);
+writeFileSync(join(root, 'demo', 'assets', 'demo-9z8y.js'), 'demo()');
+writeFileSync(join(root, 'demo', 'mockServiceWorker.js'), 'worker()');
+
 // Outside the folder that is handed out
 writeFileSync(join(tmpdir(), 'beesaber-secret.txt'), 'secret');
 
@@ -35,7 +44,7 @@ const api = new Hono()
   .get('/health', (c) => c.json({ status: 'ok' }))
   .notFound((c) => c.json({ error: { code: 'not_found' } }, 404));
 
-const site = withFrontend(api, root);
+const site = withFrontend(api, root, { appUrl: 'https://beesaber.test' });
 
 describe('the server with the built frontend', () => {
   it('passes requests under /api to the API', async () => {
@@ -160,8 +169,83 @@ describe('the server with the built frontend', () => {
   });
 
   it('refuses to start without a built frontend', () => {
-    expect(() => withFrontend(api, join(root, 'missing'))).toThrow(
-      /pnpm build/
+    expect(() =>
+      withFrontend(api, join(root, 'missing'), {
+        appUrl: 'https://beesaber.test',
+      })
+    ).toThrow(/pnpm build/);
+  });
+});
+
+describe('the demo next to the app', () => {
+  it('sends /demo to /demo/, the folder its service worker controls', async () => {
+    const response = await site.request('/demo');
+
+    expect(response.status).toBe(301);
+    expect(response.headers.get('location')).toBe('/demo/');
+  });
+
+  it('hands out the demo for every address under /demo/', async () => {
+    for (const path of ['/demo/', '/demo/hive/76561198400000002']) {
+      const response = await site.request(path);
+
+      expect(await response.text()).toContain('BeeSaber demo');
+    }
+  });
+
+  it('hands out the demo’s files from its own folder', async () => {
+    const file = await site.request('/demo/assets/demo-9z8y.js');
+    const worker = await site.request('/demo/mockServiceWorker.js');
+
+    expect(await file.text()).toBe('demo()');
+    expect(file.headers.get('cache-control')).toContain('immutable');
+    expect(await worker.text()).toBe('worker()');
+    // The worker keeps its name, so browsers have to ask for it again
+    expect(worker.headers.get('cache-control')).toBe('no-cache');
+  });
+
+  it('lets the demo’s pages connect to the demo’s API only, not to the real one', async () => {
+    const policy = (await site.request('/demo/')).headers.get(
+      'content-security-policy'
     );
+
+    expect(policy).toContain('connect-src https://beesaber.test/demo-api/');
+    expect(policy).not.toMatch(/connect-src[^;]*'self'/);
+    expect(policy).toContain("script-src 'self'");
+  });
+
+  it('lets the demo’s service worker fetch the demo’s files, and still not the real API', async () => {
+    const policy = (
+      await site.request('/demo/mockServiceWorker.js')
+    ).headers.get('content-security-policy');
+
+    expect(policy).toContain(
+      'connect-src https://beesaber.test/demo/ https://beesaber.test/demo-api/'
+    );
+    expect(policy).not.toMatch(/connect-src[^;]*'self'/);
+  });
+
+  it('keeps the policy of the real app as it is', async () => {
+    const policy = (await site.request('/hive')).headers.get(
+      'content-security-policy'
+    );
+
+    expect(policy).toContain("connect-src 'self'");
+    expect(policy).not.toContain('demo-api');
+  });
+
+  it('has nothing at the demo’s API, so a request the demo missed goes nowhere', async () => {
+    for (const method of ['GET', 'POST', 'DELETE']) {
+      const response = await site.request('/demo-api/api/me', { method });
+
+      expect(response.status).toBe(404);
+      expect(await response.text()).not.toContain('BeeSaber');
+    }
+  });
+
+  it('serves no service worker outside of /demo/, where it could answer for the real app', async () => {
+    const response = await site.request('/mockServiceWorker.js');
+
+    expect(response.status).toBe(404);
   });
 });

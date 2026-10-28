@@ -1,5 +1,7 @@
 import { hc } from 'hono/client';
 
+import { API_BASE } from './base.ts';
+
 import type { AppType } from '@beesaber/server';
 
 /**
@@ -10,7 +12,7 @@ import type { AppType } from '@beesaber/server';
  * what comes back. Only the type is imported; no server code ends up in the
  * browser.
  */
-const { api } = hc<AppType>(window.location.origin);
+const { api } = hc<AppType>(API_BASE);
 
 /** An answer from the API that says something went wrong */
 class ApiError extends Error {

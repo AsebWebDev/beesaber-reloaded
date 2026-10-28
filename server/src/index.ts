@@ -68,7 +68,7 @@ else console.log('Live feed is off: LIVE_FEED=false');
 const site = withCanonicalHost(
   config.FRONTEND_DIR === undefined
     ? app
-    : withFrontend(app, config.FRONTEND_DIR),
+    : withFrontend(app, config.FRONTEND_DIR, { appUrl: config.APP_URL }),
   config.APP_URL
 );
 
