@@ -41,9 +41,17 @@ const de: Translation = {
     text: 'Diese Seite konnte nicht angezeigt werden. Neu laden hilft meistens.',
     title: 'Etwas ist schiefgelaufen',
   },
+  demo: {
+    banner:
+      'Eine Demo mit erfundenen Spielern und Scores. Nichts hier ist echt, und nichts, was du tust, verlässt deinen Browser.',
+    back: 'Zurück zu BeeSaber',
+    unsupported:
+      'Die Demo beantwortet ihre Anfragen in deinem Browser, mit einem Service Worker, und dieser Browser führt hier keinen aus. Private Fenster und in andere Apps eingebaute Browser schalten sie oft ab. Öffne die Demo in einem normalen Fenster von Chrome, Edge, Firefox oder Safari.',
+  },
   landing: {
     credits:
       'Scores und Spieler stammen von <scoresaber>ScoreSaber</scoresaber>. BeeSaber ist ein Fanprojekt und steht in keiner Verbindung zu ScoreSaber, Beat Games oder Meta. Beat Saber ist eine Marke der Meta Platforms, Inc.',
+    demo: 'Nicht eingeladen? Sieh dir eine Demo mit erfundenen Daten an',
     devLogin: 'Dev-Login',
     google: 'Mit Google anmelden',
     noSignIn: 'Auf dem Server ist keine Anmeldung eingerichtet.',

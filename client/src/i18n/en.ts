@@ -47,9 +47,17 @@ const en = {
     text: 'This page could not be shown. Loading it again usually helps.',
     title: 'Something went wrong',
   },
+  demo: {
+    banner:
+      'A demo with made-up players and scores. Nothing here is real, and nothing you do leaves your browser.',
+    back: 'Back to BeeSaber',
+    unsupported:
+      'The demo answers its requests inside your browser, with a service worker, and this browser does not run one here. Private windows and browsers built into other apps often switch them off. Open the demo in a normal window of Chrome, Edge, Firefox or Safari.',
+  },
   landing: {
     credits:
       'Scores and players come from <scoresaber>ScoreSaber</scoresaber>. BeeSaber is a fan project and not affiliated with ScoreSaber, Beat Games or Meta. Beat Saber is a trademark of Meta Platforms, Inc.',
+    demo: 'Not invited? See a demo with made-up data',
     devLogin: 'Dev Login',
     google: 'Sign in with Google',
     noSignIn: 'No way to sign in is configured on the server.',

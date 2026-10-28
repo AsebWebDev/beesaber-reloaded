@@ -3,10 +3,18 @@ import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
-import { precompressPlugin } from './build/precompress.ts';
+import { demoPlugin } from './plugins/demo.ts';
+import { precompressPlugin } from './plugins/precompress.ts';
 
-export default defineConfig({
-  plugins: [react(), tailwindcss(), precompressPlugin()],
+export default defineConfig(({ mode }) => ({
+  plugins: [react(), tailwindcss(), demoPlugin(), precompressPlugin()],
+  // The demo (`vite build --mode demo`) is served at /demo, next to the app,
+  // with its own pictures. See client/src/demo/main.tsx.
+  ...(mode === 'demo' && {
+    base: '/demo/',
+    publicDir: 'demo-public',
+    build: { outDir: 'dist/demo' },
+  }),
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -38,4 +46,4 @@ export default defineConfig({
       thresholds: { lines: 93, branches: 82, functions: 93, statements: 93 },
     },
   },
-});
+}));

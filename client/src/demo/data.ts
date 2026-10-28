@@ -143,13 +143,13 @@ const LEADERBOARDS: Leaderboard[] = SONGS.map(([song, artist, mapper], i) => {
 
 /** How well each player plays: their usual accuracy, and how often they play */
 const SKILL: Record<string, { accuracy: number; plays: number }> = {
-  [ME.id]: { accuracy: 0.9, plays: 0.8 },
-  [BEES[0]!.id]: { accuracy: 0.935, plays: 0.7 },
-  [BEES[1]!.id]: { accuracy: 0.91, plays: 0.65 },
-  [BEES[2]!.id]: { accuracy: 0.885, plays: 0.6 },
-  [BEES[3]!.id]: { accuracy: 0.865, plays: 0.55 },
-  [STRANGERS[0]!.id]: { accuracy: 0.92, plays: 0.6 },
-  [STRANGERS[1]!.id]: { accuracy: 0.875, plays: 0.5 },
+  [ME.id]: { accuracy: 0.912, plays: 0.8 },
+  [BEES[0]!.id]: { accuracy: 0.922, plays: 0.7 },
+  [BEES[1]!.id]: { accuracy: 0.915, plays: 0.65 },
+  [BEES[2]!.id]: { accuracy: 0.905, plays: 0.6 },
+  [BEES[3]!.id]: { accuracy: 0.893, plays: 0.55 },
+  [STRANGERS[0]!.id]: { accuracy: 0.918, plays: 0.6 },
+  [STRANGERS[1]!.id]: { accuracy: 0.9, plays: 0.5 },
 };
 
 /**

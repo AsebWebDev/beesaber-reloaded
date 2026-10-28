@@ -6,7 +6,8 @@ players as "bees" to your "hive". BeeSaber then shows which songs you have both
 played and who scored higher.
 
 It runs at [beesaber.de](https://beesaber.de), a private project: sign-in is
-open to invited friends only.
+open to invited friends only. Everyone else can try the
+[demo](https://beesaber.de/demo/), with made-up players and scores.
 
 ## What this repository shows
 
@@ -34,6 +35,16 @@ the database accepts nothing else. GitHub deploys to Azure through OIDC
 ([deploy.tf](infra/deploy.tf)), with no stored credentials. The secrets the
 app uses live in Key Vault only, never in the image or the repository.
 
+**A demo for everyone else.** The same app at `/demo`, with an API that
+answers in the browser ([handlers.ts](client/src/demo/handlers.ts)) from a
+made-up hive. It cannot reach the real API with a visitor's session, for
+three reasons, each enough on its own: its service worker controls only
+`/demo/`, it calls a path the server has no route for, and the browser's
+Content-Security-Policy for `/demo` allows nothing else
+([main.tsx](client/src/demo/main.tsx),
+[frontend.ts](server/src/http/frontend.ts)). A test renders every page with
+the demo's data and checks it with axe.
+
 **Delivery.** Every merge builds one image, scans it
 ([Trivy](https://trivy.dev)), publishes it and deploys it by digest
 ([ci.yml](.github/workflows/ci.yml), [deploy.yml](.github/workflows/deploy.yml)).
@@ -51,7 +62,7 @@ written down.
 "Structure" below), a [live feed](server/src/scoresaber/liveFeed.ts) of new
 scores from ScoreSaber, a [job queue](server/src/jobs/queue.ts) in Postgres,
 English and German, [accessibility checks](client/src/a11y.test.tsx) with axe,
-and files [compressed at build time](client/build/precompress.ts).
+and files [compressed at build time](client/plugins/precompress.ts).
 
 ## Status
 

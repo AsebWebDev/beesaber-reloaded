@@ -1,5 +1,6 @@
 import { createAuthClient } from 'better-auth/react';
 
+import { API_BASE } from '@/api/base.ts';
 import { LocalizedError } from '@/i18n/errors.ts';
 
 /**
@@ -10,7 +11,8 @@ import { LocalizedError } from '@/i18n/errors.ts';
  * `{ data, error }`, and every function here turns an `error` into an
  * exception, so a failure cannot pass for a success.
  */
-const authClient = createAuthClient();
+// A URL with a path is taken as the whole address of the auth routes
+const authClient = createAuthClient({ baseURL: `${API_BASE}/api/auth` });
 
 /** Sends the browser to Google. It comes back signed in. */
 const signInWithGoogle = async () => {
