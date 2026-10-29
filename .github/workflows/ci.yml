@@ -68,6 +68,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Lint the workflows
+        run: pnpm lint:workflows
+
       - name: Check types
         run: pnpm typecheck
 

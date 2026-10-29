@@ -12,7 +12,7 @@
     "db:migrate": "pnpm --filter @beesaber/server db:migrate",
     "api:update": "pnpm --filter @beesaber/server api:update",
     "build": "pnpm -r build",
-    "ci-check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm --filter @beesaber/server check:generated && pnpm test:coverage && pnpm build",
+    "ci-check": "pnpm format:check && pnpm lint && pnpm lint:workflows && pnpm typecheck && pnpm --filter @beesaber/server check:generated && pnpm test:coverage && pnpm build",
     "test": "pnpm -r test",
     "test:coverage": "pnpm -r test:coverage",
     "typecheck": "pnpm -r typecheck",
@@ -20,7 +20,8 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint:workflows": "node scripts/lint-workflows.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
