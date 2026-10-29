@@ -50,16 +50,17 @@ const AppLayout = ({
 
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-6 lg:flex-row lg:gap-10">
-      {/* Invisible until reached with Tab: lets keyboard users jump over the
-          menu, which otherwise comes first on every page */}
-      <a
-        href="#content"
-        className="bg-night text-neon-yellow-core sr-only rounded px-3 py-2 focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-10"
-      >
-        {t('layout.skipToContent')}
-      </a>
-
       <header className="flex flex-wrap items-center gap-x-4 gap-y-3 lg:w-56 lg:shrink-0 lg:flex-col lg:items-start lg:gap-4">
+        {/* Invisible until reached with Tab: lets keyboard users jump over
+            the menu, which otherwise comes first on every page. Inside the
+            header, so that no content of the page is outside a landmark. */}
+        <a
+          href="#content"
+          className="bg-night text-neon-yellow-core sr-only rounded px-3 py-2 focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-10"
+        >
+          {t('layout.skipToContent')}
+        </a>
+
         <Link to="/" className="flex items-center gap-2 sm:gap-3">
           <HexLogo size={40} />
           <span className="font-neon text-2xl tracking-wide uppercase sm:text-3xl">
@@ -81,9 +82,13 @@ const AppLayout = ({
               end={to === '/'}
               className={({ isActive }) =>
                 `font-neon rounded px-1 py-1.5 text-[clamp(0.8rem,4.2vw,1.125rem)] tracking-wide whitespace-nowrap uppercase transition sm:px-3 sm:text-xl ${
-                  // Underlined as well: the glow alone is a difference of colour
+                  // Underlined as well: the glow alone is a difference of colour.
+                  // The glow lightens what is behind the text, so the text is
+                  // bold: bold text of 20px needs a contrast of 3:1, not 4.5:1.
+                  // On a phone the text is smaller than that, so it shines
+                  // without the glow there.
                   isActive
-                    ? 'glow-yellow underline decoration-2 underline-offset-8'
+                    ? 'glow-yellow font-bold underline decoration-2 underline-offset-8 max-sm:[text-shadow:none]'
                     : 'text-slate-300 hover:text-white'
                 }`
               }

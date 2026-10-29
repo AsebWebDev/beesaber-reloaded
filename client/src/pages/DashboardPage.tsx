@@ -247,7 +247,9 @@ const DashboardPage = () => {
             {news.data?.items.length === 0 && (
               <EmptyState>{t('dashboard.noNews')}</EmptyState>
             )}
-            <div className="grid gap-3 lg:grid-cols-2">
+            {/* One column that may shrink: without it, a card is at least as
+                wide as its longest line and sticks out on a narrow phone */}
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
               {news.data?.items.map((item) => (
                 <NewsCard key={item.event.id} item={item} />
               ))}

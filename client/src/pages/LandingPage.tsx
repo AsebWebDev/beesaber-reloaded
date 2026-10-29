@@ -87,7 +87,9 @@ const LandingPage = ({ takeFocus = false }: { takeFocus?: boolean }) => {
         </a>
       </div>
 
-      <NeonHeading as="p" color="yellow" className="text-xl">
+      {/* Bold, because the glow lightens what is behind the text: bold text
+          this large needs a contrast of 3:1, not 4.5:1 */}
+      <NeonHeading as="p" color="yellow" className="text-xl font-bold">
         {t('landing.slogan')}
       </NeonHeading>
 
