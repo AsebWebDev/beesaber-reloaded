@@ -159,27 +159,30 @@ profile, and add a friend on the "My hive" page.
 
 Run these from the repository root.
 
-| Command              | What it does                                                         |
-| -------------------- | -------------------------------------------------------------------- |
-| `pnpm client`        | Start the frontend                                                   |
-| `pnpm server`        | Start the API in watch mode                                          |
-| `pnpm db`            | Start the database and wait until it is ready                        |
-| `pnpm db:migrate`    | Apply database migrations without starting the server                |
-| `pnpm app`           | Build the Docker image and run it on http://localhost:8080           |
-| `pnpm app:stop`      | Stop the app started with `pnpm app`                                 |
-| `pnpm api:update`    | Fetch ScoreSaber's current API description and regenerate the types  |
-| `pnpm test`          | Run the tests once                                                   |
-| `pnpm test:coverage` | Run the tests and report which code they do not reach                |
-| `pnpm lint`          | Check the code with ESLint                                           |
-| `pnpm lint:fix`      | Let ESLint fix what it can                                           |
-| `pnpm typecheck`     | Type-check all packages                                              |
-| `pnpm format`        | Format all files with Prettier                                       |
-| `pnpm build`         | Build the frontend for production                                    |
-| `pnpm ci-check`      | Run the checks of CI, in its order, and stop at the first that fails |
+| Command               | What it does                                                         |
+| --------------------- | -------------------------------------------------------------------- |
+| `pnpm client`         | Start the frontend                                                   |
+| `pnpm server`         | Start the API in watch mode                                          |
+| `pnpm db`             | Start the database and wait until it is ready                        |
+| `pnpm db:migrate`     | Apply database migrations without starting the server                |
+| `pnpm app`            | Build the Docker image and run it on http://localhost:8080           |
+| `pnpm app:stop`       | Stop the app started with `pnpm app`                                 |
+| `pnpm api:update`     | Fetch ScoreSaber's current API description and regenerate the types  |
+| `pnpm test`           | Run the tests once                                                   |
+| `pnpm test:coverage`  | Run the tests and report which code they do not reach                |
+| `pnpm lint`           | Check the code with ESLint                                           |
+| `pnpm lint:fix`       | Let ESLint fix what it can                                           |
+| `pnpm lint:workflows` | Check the GitHub Actions workflows with actionlint (needs Docker)    |
+| `pnpm typecheck`      | Type-check all packages                                              |
+| `pnpm format`         | Format all files with Prettier                                       |
+| `pnpm build`          | Build the frontend for production                                    |
+| `pnpm ci-check`       | Run the checks of CI, in its order, and stop at the first that fails |
 
-`pnpm ci-check` runs formatting, lint, types, the check that generated files
-are up to date, the tests with their coverage thresholds, and the build. The
-server tests need the database, so start `pnpm db` first. It does not build
+`pnpm ci-check` runs formatting, lint, the workflow check, types, the check
+that generated files are up to date, the tests with their coverage
+thresholds, and the build. The server tests need the database, so start
+`pnpm db` first; the workflow check runs actionlint's image, so Docker has to
+be running. It does not build
 and scan the Docker image or audit the dependencies; those run in CI only.
 The name is not `ci`: `pnpm ci` is a command of pnpm itself, which deletes
 `node_modules` and installs everything again.
@@ -198,11 +201,11 @@ server on port 5001.
 
 Checks run in three places:
 
-| Where           | When                           | What                                                                                  |
-| --------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
-| Pre-commit hook | On `git commit`                | ESLint and Prettier, on the staged files                                              |
-| GitHub Actions  | On pull requests and on `main` | Dependency audit, formatting, lint, types, tests, build, Docker image, security scans |
-| Your terminal   | Whenever you like              | The commands above                                                                    |
+| Where           | When                           | What                                                                                                  |
+| --------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Pre-commit hook | On `git commit`                | ESLint and Prettier, on the staged files                                                              |
+| GitHub Actions  | On pull requests and on `main` | Dependency audit, formatting, lint, workflow check, types, tests, build, Docker image, security scans |
+| Your terminal   | Whenever you like              | The commands above                                                                                    |
 
 The hook is installed by `pnpm install`. The workflow is defined in
 `.github/workflows/ci.yml`.

@@ -25,6 +25,12 @@ const { status, error } = spawnSync(
   { stdio: 'inherit' }
 );
 
-if (error) throw error;
+if (error) {
+  // Without Docker, spawning it fails before actionlint could say anything
+  console.error(
+    `actionlint runs in Docker, which could not be started: ${error.message}`
+  );
+  process.exit(1);
+}
 
 process.exit(status ?? 1);
