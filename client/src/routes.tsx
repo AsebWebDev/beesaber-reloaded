@@ -1,16 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import { Link, useRouteError } from 'react-router';
+import { useTranslation } from 'react-i18next';
+import { useRouteError } from 'react-router';
 
 import { useMe } from '@/api/queries.ts';
 import { useSignOut } from '@/auth/useSignOut.ts';
-import {
-  Button,
-  EmptyState,
-  ErrorNote,
-  NeonHeading,
-  Spinner,
-} from '@/components/ui.tsx';
+import { Button, ErrorNote, NeonHeading, Spinner } from '@/components/ui.tsx';
 import { AppLayout } from '@/layout/AppLayout.tsx';
 import { useFocusOnMount } from '@/lib/useFocusOnMount.ts';
 import { usePageTitle } from '@/lib/usePageTitle.ts';
@@ -19,6 +13,7 @@ import { DashboardPage } from '@/pages/DashboardPage.tsx';
 import { HivePage } from '@/pages/HivePage.tsx';
 import { LandingPage } from '@/pages/LandingPage.tsx';
 import { MapPage } from '@/pages/MapPage.tsx';
+import { NotFoundPage } from '@/pages/NotFoundPage.tsx';
 import { OnboardingPage } from '@/pages/OnboardingPage.tsx';
 import { ProfilePage } from '@/pages/ProfilePage.tsx';
 import { RevengePage } from '@/pages/RevengePage.tsx';
@@ -125,23 +120,6 @@ const Profile = () => {
   return player == null ? null : <ProfilePage player={player} />;
 };
 
-const NotFound = () => {
-  const { t } = useTranslation();
-
-  usePageTitle(t('notFound.title'));
-
-  return (
-    <EmptyState>
-      <Trans
-        i18nKey="notFound.text"
-        components={{
-          home: <Link to="/" className="text-neon-yellow-core underline" />,
-        }}
-      />
-    </EmptyState>
-  );
-};
-
 /**
  * The last line of defence: shown when a page throws while it is drawn, for
  * example because the server sent something this code did not expect.
@@ -195,7 +173,7 @@ const routes: RouteObject[] = [
       { path: 'revenge', element: <RevengePage /> },
       { path: 'trending', element: <TrendingPage /> },
       { path: 'profile', element: <Profile /> },
-      { path: '*', element: <NotFound /> },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ];

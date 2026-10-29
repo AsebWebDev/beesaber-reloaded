@@ -63,6 +63,18 @@ core: fast to about 60 requests a second, full at 130, no errors), alerts
 that fired for real, and the [limits and trade-offs](infra/README.md#limits-and-trade-offs)
 written down.
 
+**Accessible, to WCAG 2.2 AA.** On every change, CI runs
+[axe-core](https://github.com/dequelabs/axe-core) over 22 states of the app,
+in English and in German ([a11y.test.tsx](client/src/a11y.test.tsx)), and
+over every page of the demo. What no machine finds is tested as well: where
+the focus goes when what had it disappears (a removed bee, a closed picker,
+a new screen), what a screen reader is told when a list loads, a search
+finds players or a sync ends, and that every button and link is named for
+what it does. Audits in a real browser, the last in October 2026, checked
+colour contrast with the neon glow, reflow down to 320px, the order and
+visibility of the keyboard focus, the page's language, its title and
+headings, and that nothing moves for those who asked for reduced motion.
+
 **The app.** A typed API client built from the server's own route types (see
 "Structure" below), a [live feed](server/src/scoresaber/liveFeed.ts) of new
 scores from ScoreSaber, a [job queue](server/src/jobs/queue.ts) in Postgres,
