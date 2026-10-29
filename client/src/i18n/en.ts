@@ -38,7 +38,8 @@ const en = {
     },
   },
   notFound: {
-    text: 'There is nothing at this address. <home>Back to the dashboard</home>',
+    address: 'There is nothing at <path>{{path}}</path>.',
+    text: 'Maybe the link is old, or the address was mistyped. <home>Back to the dashboard</home>',
     title: 'Page not found',
   },
   crash: {

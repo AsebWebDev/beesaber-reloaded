@@ -32,7 +32,8 @@ const de: Translation = {
     },
   },
   notFound: {
-    text: 'Unter dieser Adresse gibt es nichts. <home>Zurück zur Übersicht</home>',
+    address: 'Unter <path>{{path}}</path> gibt es nichts.',
+    text: 'Vielleicht ist der Link alt, oder die Adresse hat einen Tippfehler. <home>Zurück zur Übersicht</home>',
     title: 'Seite nicht gefunden',
   },
   crash: {

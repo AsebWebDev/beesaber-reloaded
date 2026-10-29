@@ -416,13 +416,17 @@ describe('deleting my account', () => {
 });
 
 describe('an unknown address', () => {
-  it('says so and links back', async () => {
+  it('says so in a heading, names the address and links back', async () => {
     fakeApi.signedInAs();
     renderApp('/does-not-exist');
 
     expect(
-      await screen.findByText(/There is nothing at this address/)
+      await screen.findByRole('heading', { level: 1, name: 'Page not found' })
     ).toBeInTheDocument();
+    expect(screen.getByText('/does-not-exist')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Back to the dashboard' })
+    ).toHaveAttribute('href', '/');
   });
 });
 
