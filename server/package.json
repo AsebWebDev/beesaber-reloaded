@@ -20,9 +20,9 @@
   "dependencies": {
     "@hono/node-server": "^2.1.5",
     "@hono/zod-validator": "^0.9.1",
-    "better-auth": "^1.7.12",
+    "better-auth": "^1.7.14",
     "drizzle-orm": "^0.45.4",
-    "hono": "^4.13.13",
+    "hono": "^4.13.14",
     "openapi-fetch": "^0.17.0",
     "pg-boss": "^12.38.0",
     "postgres": "^3.4.9",
