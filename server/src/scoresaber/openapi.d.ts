@@ -11,7 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["u8_getHealth_v2"];
+        get: operations["d8_getHealth_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -251,7 +251,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["$Ft_getAliases_v2"];
+        get: operations["QFt_getAliases_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -269,7 +269,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["$Ft_disableAlias_v2"];
+        post: operations["QFt_disableAlias_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -285,7 +285,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["$Ft_disableAllAliases_v2"];
+        post: operations["QFt_disableAllAliases_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -363,7 +363,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["D8_getLeaderboardListings_v2"];
+        get: operations["O8_getLeaderboardListings_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -379,7 +379,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["D8_getLeaderboardById_v2"];
+        get: operations["O8_getLeaderboardById_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -395,7 +395,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["D8_getLeaderboardPlayStatsById_v2"];
+        get: operations["O8_getLeaderboardPlayStatsById_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -411,7 +411,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["D8_getLeaderboardScoresById_v2"];
+        get: operations["O8_getLeaderboardScoresById_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -427,7 +427,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["D8_getDifficultiesForHash_v2"];
+        get: operations["O8_getDifficultiesForHash_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -443,7 +443,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["D8_getLeaderboardByHash_v2"];
+        get: operations["O8_getLeaderboardByHash_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -459,7 +459,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["D8_getLeaderboardScoresByHash_v2"];
+        get: operations["O8_getLeaderboardScoresByHash_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -475,9 +475,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["S5_listTournaments_v2"];
+        get: operations["C5_listTournaments_v2"];
         put?: never;
-        post: operations["S5_createTournament_v2"];
+        post: operations["C5_createTournament_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -491,7 +491,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["S5_getWorkflowOptions_v2"];
+        get: operations["C5_getWorkflowOptions_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -507,8 +507,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["S5_getSettings_v2"];
-        put: operations["S5_upsertSettings_v2"];
+        get: operations["C5_getSettings_v2"];
+        put: operations["C5_upsertSettings_v2"];
         post?: never;
         delete?: never;
         options?: never;
@@ -523,7 +523,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["v5_listPlayerTournaments_v2"];
+        get: operations["y5_listPlayerTournaments_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -539,7 +539,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["v5_listPlayerRooms_v2"];
+        get: operations["y5_listPlayerRooms_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -555,7 +555,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["v5_getPlayerRoom_v2"];
+        get: operations["y5_getPlayerRoom_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -571,7 +571,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["v5_getPlayerRoomByInviteCode_v2"];
+        get: operations["y5_getPlayerRoomByInviteCode_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -587,9 +587,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["b5_listRoles_v2"];
+        get: operations["x5_listRoles_v2"];
         put?: never;
-        post: operations["b5_upsertRole_v2"];
+        post: operations["x5_upsertRole_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -606,7 +606,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete: operations["b5_deleteRole_v2"];
+        delete: operations["x5_deleteRole_v2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -621,7 +621,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["b5_assignRole_v2"];
+        post: operations["x5_assignRole_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -638,7 +638,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete: operations["b5_unassignRole_v2"];
+        delete: operations["x5_unassignRole_v2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -651,9 +651,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["b5_listTeams_v2"];
+        get: operations["x5_listTeams_v2"];
         put?: never;
-        post: operations["b5_upsertTeam_v2"];
+        post: operations["x5_upsertTeam_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -670,7 +670,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete: operations["b5_deleteTeam_v2"];
+        delete: operations["x5_deleteTeam_v2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -683,8 +683,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["b5_listAuthorizedPlayers_v2"];
-        put: operations["b5_syncAuthorizedPlayers_v2"];
+        get: operations["x5_listAuthorizedPlayers_v2"];
+        put: operations["x5_syncAuthorizedPlayers_v2"];
         post?: never;
         delete?: never;
         options?: never;
@@ -699,9 +699,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["p5_listRooms_v2"];
+        get: operations["m5_listRooms_v2"];
         put?: never;
-        post: operations["p5_upsertRoom_v2"];
+        post: operations["m5_upsertRoom_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -715,7 +715,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["p5_getRoomsView_v2"];
+        get: operations["m5_getRoomsView_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -731,7 +731,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["p5_getRoomView_v2"];
+        get: operations["m5_getRoomView_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -748,7 +748,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["p5_setRoomMembers_v2"];
+        put: operations["m5_setRoomMembers_v2"];
         post?: never;
         delete?: never;
         options?: never;
@@ -764,7 +764,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["p5_setRoomSong_v2"];
+        put: operations["m5_setRoomSong_v2"];
         post?: never;
         delete?: never;
         options?: never;
@@ -781,7 +781,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["p5_closeRoom_v2"];
+        post: operations["m5_closeRoom_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -798,7 +798,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete: operations["p5_deleteRoom_v2"];
+        delete: operations["m5_deleteRoom_v2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -813,7 +813,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["d5_startMap_v2"];
+        post: operations["f5_startMap_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -829,7 +829,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["d5_returnToMenu_v2"];
+        post: operations["f5_returnToMenu_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -845,7 +845,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["d5_prompt_v2"];
+        post: operations["f5_prompt_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -861,7 +861,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["d5_bottifyPlayer_v2"];
+        post: operations["f5_bottifyPlayer_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -877,7 +877,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["d5_unbottifyPlayer_v2"];
+        post: operations["f5_unbottifyPlayer_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -893,7 +893,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["d5_followRoom_v2"];
+        post: operations["f5_followRoom_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -907,7 +907,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["N5_getMapListings_v2"];
+        get: operations["P5_getMapListings_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -923,7 +923,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["N5_getMapByHash_v2"];
+        get: operations["P5_getMapByHash_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -939,7 +939,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["N5_getMapById_v2"];
+        get: operations["P5_getMapById_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -955,7 +955,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["HDt_steamLogin_v2"];
+        get: operations["BDt_steamLogin_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -971,7 +971,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["HDt_steamCallback_v2"];
+        get: operations["BDt_steamCallback_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -987,7 +987,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["HDt_patreonLogin_v2"];
+        get: operations["BDt_patreonLogin_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1003,7 +1003,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["HDt_patreonCallback_v2"];
+        get: operations["BDt_patreonCallback_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1019,7 +1019,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["HDt_discordLogin_v2"];
+        get: operations["BDt_discordLogin_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1035,7 +1035,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["HDt_discordCallback_v2"];
+        get: operations["BDt_discordCallback_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1051,7 +1051,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["HDt_getToken_v2"];
+        get: operations["BDt_getToken_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1069,7 +1069,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["HDt_startEmailLogin_v2"];
+        post: operations["BDt_startEmailLogin_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1085,7 +1085,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["HDt_verifyEmailLogin_v2"];
+        post: operations["BDt_verifyEmailLogin_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1101,7 +1101,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["HDt_logout_v2"];
+        post: operations["BDt_logout_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1117,7 +1117,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["X6_startSignup_v2"];
+        post: operations["Z6_startSignup_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1133,7 +1133,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["X6_completeSignup_v2"];
+        post: operations["Z6_completeSignup_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1149,7 +1149,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["X6_loginWithPassword_v2"];
+        post: operations["Z6_loginWithPassword_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1165,7 +1165,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["X6_startPasswordReset_v2"];
+        post: operations["Z6_startPasswordReset_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1181,7 +1181,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["X6_completePasswordReset_v2"];
+        post: operations["Z6_completePasswordReset_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1195,7 +1195,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["X6_getPasswordCredential_v2"];
+        get: operations["Z6_getPasswordCredential_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1213,7 +1213,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["X6_startPasswordSetup_v2"];
+        post: operations["Z6_startPasswordSetup_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1229,7 +1229,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["X6_completePasswordSetup_v2"];
+        post: operations["Z6_completePasswordSetup_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1245,7 +1245,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["X6_changePassword_v2"];
+        post: operations["Z6_changePassword_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1261,7 +1261,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["W6_startRegistration_v2"];
+        post: operations["G6_startRegistration_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1277,7 +1277,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["W6_verifyRegistration_v2"];
+        post: operations["G6_verifyRegistration_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1293,7 +1293,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["W6_startAuthentication_v2"];
+        post: operations["G6_startAuthentication_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1309,7 +1309,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["W6_verifyAuthentication_v2"];
+        post: operations["G6_verifyAuthentication_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1323,7 +1323,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["W6_listPasskeys_v2"];
+        get: operations["G6_listPasskeys_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1342,10 +1342,10 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete: operations["W6_deletePasskey_v2"];
+        delete: operations["G6_deletePasskey_v2"];
         options?: never;
         head?: never;
-        patch: operations["W6_renamePasskey_v2"];
+        patch: operations["G6_renamePasskey_v2"];
         trace?: never;
     };
     "/api/v2/auth/device/start": {
@@ -1357,7 +1357,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["H6_startDeviceLogin_v2"];
+        post: operations["U6_startDeviceLogin_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1371,7 +1371,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["H6_getDeviceLoginStatus_v2"];
+        get: operations["U6_getDeviceLoginStatus_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1501,7 +1501,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["nkt_authenticate_v2"];
+        post: operations["ekt_authenticate_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1521,7 +1521,7 @@ export interface paths {
          * Upload a game score
          * @description Requires a game session. Lower or duplicate scores are accepted when otherwise valid.
          */
-        post: operations["nkt_uploadScore_v2"];
+        post: operations["ekt_uploadScore_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1536,7 +1536,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["nkt_setActiveRealms_v2"];
+        put: operations["ekt_setActiveRealms_v2"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1553,7 +1553,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["$6_registerOfficialBuild_v2"];
+        post: operations["e8_registerOfficialBuild_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1823,9 +1823,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["ETt_getAllBadges_v2"];
+        get: operations["wTt_getAllBadges_v2"];
         put?: never;
-        post: operations["ETt_createBadge_v2"];
+        post: operations["wTt_createBadge_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1840,9 +1840,9 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["ETt_updateBadge_v2"];
+        put: operations["wTt_updateBadge_v2"];
         post?: never;
-        delete: operations["ETt_deleteBadge_v2"];
+        delete: operations["wTt_deleteBadge_v2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1855,8 +1855,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["ETt_getPlayerBadges_v2"];
-        put: operations["ETt_replacePlayerBadges_v2"];
+        get: operations["wTt_getPlayerBadges_v2"];
+        put: operations["wTt_replacePlayerBadges_v2"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1873,8 +1873,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["ETt_assignBadge_v2"];
-        delete: operations["ETt_unassignBadge_v2"];
+        post: operations["wTt_assignBadge_v2"];
+        delete: operations["wTt_unassignBadge_v2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1889,7 +1889,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["BTt_rankLeaderboard_v2"];
+        post: operations["RTt_rankLeaderboard_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1905,7 +1905,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["BTt_unrankLeaderboard_v2"];
+        post: operations["RTt_unrankLeaderboard_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1921,7 +1921,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["BTt_recalculatePP_v2"];
+        post: operations["RTt_recalculatePP_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1937,7 +1937,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["BTt_setManualPP_v2"];
+        post: operations["RTt_setManualPP_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1953,7 +1953,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["BTt_qualifyLeaderboard_v2"];
+        post: operations["RTt_qualifyLeaderboard_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1969,7 +1969,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["BTt_loveLeaderboard_v2"];
+        post: operations["RTt_loveLeaderboard_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1983,7 +1983,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["G3_listPermissions_v2"];
+        get: operations["K3_listPermissions_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2002,7 +2002,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete: operations["KTt_deleteScore_v2"];
+        delete: operations["WTt_deleteScore_v2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2017,7 +2017,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["Z3_createDevelopmentCredential_v2"];
+        post: operations["Q3_createDevelopmentCredential_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2033,7 +2033,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["Z3_revokeDevelopmentCredential_v2"];
+        post: operations["Q3_revokeDevelopmentCredential_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2049,7 +2049,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["Z3_revokeOfficialBuild_v2"];
+        post: operations["Q3_revokeOfficialBuild_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2063,9 +2063,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["Z3_getOfficialBuildCompatibility_v2"];
+        get: operations["Q3_getOfficialBuildCompatibility_v2"];
         put?: never;
-        post: operations["Z3_addOfficialBuildCompatibility_v2"];
+        post: operations["Q3_addOfficialBuildCompatibility_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2079,9 +2079,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["oEt_getActiveBan_v2"];
+        get: operations["iEt_getActiveBan_v2"];
         put?: never;
-        post: operations["oEt_banPlayer_v2"];
+        post: operations["iEt_banPlayer_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2097,7 +2097,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["oEt_unbanPlayer_v2"];
+        post: operations["iEt_unbanPlayer_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2113,7 +2113,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["oEt_silencePlayer_v2"];
+        post: operations["iEt_silencePlayer_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2129,7 +2129,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["oEt_unsilencePlayer_v2"];
+        post: operations["iEt_unsilencePlayer_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2145,7 +2145,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["oEt_updateRoleText_v2"];
+        post: operations["iEt_updateRoleText_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2161,7 +2161,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["oEt_adminResetCountry_v2"];
+        post: operations["iEt_adminResetCountry_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2177,7 +2177,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["oEt_updatePermissions_v2"];
+        post: operations["iEt_updatePermissions_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2193,7 +2193,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["oEt_mergePlayer_v2"];
+        post: operations["iEt_mergePlayer_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2210,7 +2210,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete: operations["oEt_deleteUserData_v2"];
+        delete: operations["iEt_deleteUserData_v2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2223,9 +2223,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["t6_getVersions_v2"];
+        get: operations["n6_getVersions_v2"];
         put?: never;
-        post: operations["t6_createVersion_v2"];
+        post: operations["n6_createVersion_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2241,7 +2241,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["t6_updateWhitelist_v2"];
+        post: operations["n6_updateWhitelist_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2258,7 +2258,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete: operations["t6_deleteVersion_v2"];
+        delete: operations["n6_deleteVersion_v2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2271,7 +2271,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["lLt_getMe_v2"];
+        get: operations["cLt_getMe_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2287,8 +2287,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["lLt_getVanity_v2"];
-        put: operations["lLt_claimVanity_v2"];
+        get: operations["cLt_getVanity_v2"];
+        put: operations["cLt_claimVanity_v2"];
         post?: never;
         delete?: never;
         options?: never;
@@ -2304,7 +2304,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["lLt_updatePinnedScores_v2"];
+        put: operations["cLt_updatePinnedScores_v2"];
         post?: never;
         delete?: never;
         options?: never;
@@ -2320,7 +2320,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["lLt_updateProfileCustomization_v2"];
+        put: operations["cLt_updateProfileCustomization_v2"];
         post?: never;
         delete?: never;
         options?: never;
@@ -2336,7 +2336,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["lLt_updateProfileCustomizationStyle_v2"];
+        put: operations["cLt_updateProfileCustomizationStyle_v2"];
         post?: never;
         delete?: never;
         options?: never;
@@ -2353,8 +2353,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["lLt_uploadProfileCustomizationBackground_v2"];
-        delete: operations["lLt_resetProfileCustomizationBackground_v2"];
+        post: operations["cLt_uploadProfileCustomizationBackground_v2"];
+        delete: operations["cLt_resetProfileCustomizationBackground_v2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2367,7 +2367,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["lLt_getMyInfo_v2"];
+        get: operations["cLt_getMyInfo_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2383,7 +2383,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["lLt_getQuestKey_v2"];
+        get: operations["cLt_getQuestKey_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2399,7 +2399,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["lLt_canResetCountry_v2"];
+        get: operations["cLt_canResetCountry_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2417,7 +2417,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["lLt_resetCountry_v2"];
+        post: operations["cLt_resetCountry_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2433,7 +2433,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["lLt_updateBio_v2"];
+        post: operations["cLt_updateBio_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2449,7 +2449,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["lLt_updateName_v2"];
+        post: operations["cLt_updateName_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2465,7 +2465,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["lLt_updateLiveSpectating_v2"];
+        post: operations["cLt_updateLiveSpectating_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2481,7 +2481,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["lLt_uploadAvatar_v2"];
+        post: operations["cLt_uploadAvatar_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2495,7 +2495,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["lLt_getReplaySlots_v2"];
+        get: operations["cLt_getReplaySlots_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2513,7 +2513,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["lLt_refreshPatreonBenefits_v2"];
+        post: operations["cLt_refreshPatreonBenefits_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2529,8 +2529,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["lLt_claimReplaySlot_v2"];
-        delete: operations["lLt_releaseReplaySlot_v2"];
+        post: operations["cLt_claimReplaySlot_v2"];
+        delete: operations["cLt_releaseReplaySlot_v2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2543,7 +2543,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["lLt_getConnections_v2"];
+        get: operations["cLt_getConnections_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2561,7 +2561,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["lLt_switchPrimaryConnection_v2"];
+        post: operations["cLt_switchPrimaryConnection_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2577,7 +2577,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["lLt_startOculusEmailMerge_v2"];
+        post: operations["cLt_startOculusEmailMerge_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2593,7 +2593,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["lLt_verifyOculusEmailMerge_v2"];
+        post: operations["cLt_verifyOculusEmailMerge_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2607,7 +2607,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["lLt_getAccountMergeChallenge_v2"];
+        get: operations["cLt_getAccountMergeChallenge_v2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2625,7 +2625,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["lLt_confirmAccountMerge_v2"];
+        post: operations["cLt_confirmAccountMerge_v2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2642,7 +2642,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete: operations["lLt_removeConnection_v2"];
+        delete: operations["cLt_removeConnection_v2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2657,7 +2657,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["MRt_authenticate[0]_v1"];
+        post: operations["jRt_authenticate[0]_v1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2671,7 +2671,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["MRt_getLeaderboard[0]_v1"];
+        get: operations["jRt_getLeaderboard[0]_v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2687,7 +2687,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["MRt_getLeaderboardAroundFriends[0]_v1"];
+        get: operations["jRt_getLeaderboardAroundFriends[0]_v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2703,7 +2703,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["MRt_getLeaderboardAroundCountry[0]_v1"];
+        get: operations["jRt_getLeaderboardAroundCountry[0]_v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2719,7 +2719,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["MRt_getLeaderboardAroundRegion[0]_v1"];
+        get: operations["jRt_getLeaderboardAroundRegion[0]_v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2735,7 +2735,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["MRt_getLeaderboardAroundPlayer[0]_v1"];
+        get: operations["jRt_getLeaderboardAroundPlayer[0]_v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2751,7 +2751,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["MRt_getPlayers[0]_v1"];
+        get: operations["jRt_getPlayers[0]_v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2767,7 +2767,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["MRt_getPlayersAroundCountry[0]_v1"];
+        get: operations["jRt_getPlayersAroundCountry[0]_v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2783,7 +2783,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["MRt_getPlayersAroundFriends[0]_v1"];
+        get: operations["jRt_getPlayersAroundFriends[0]_v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2799,7 +2799,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["MRt_getPlayersAroundRegion[0]_v1"];
+        get: operations["jRt_getPlayersAroundRegion[0]_v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2815,7 +2815,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["MRt_getPlayersAroundPlayer[0]_v1"];
+        get: operations["jRt_getPlayersAroundPlayer[0]_v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2833,7 +2833,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["MRt_uploadScore[0]_v1"];
+        post: operations["jRt_uploadScore[0]_v1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2847,7 +2847,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["MRt_downloadReplay[0]_v1"];
+        get: operations["jRt_downloadReplay[0]_v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2863,7 +2863,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["MRt_healthCheck[0]_v1"];
+        get: operations["jRt_healthCheck[0]_v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3140,7 +3140,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    u8_getHealth_v2: {
+    d8_getHealth_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -5486,7 +5486,7 @@ export interface operations {
             };
         };
     };
-    $Ft_getAliases_v2: {
+    QFt_getAliases_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -5578,7 +5578,7 @@ export interface operations {
             };
         };
     };
-    $Ft_disableAlias_v2: {
+    QFt_disableAlias_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -5689,7 +5689,7 @@ export interface operations {
             };
         };
     };
-    $Ft_disableAllAliases_v2: {
+    QFt_disableAllAliases_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -6365,7 +6365,7 @@ export interface operations {
             };
         };
     };
-    D8_getLeaderboardListings_v2: {
+    O8_getLeaderboardListings_v2: {
         parameters: {
             query?: {
                 /** @description Page number */
@@ -6535,7 +6535,7 @@ export interface operations {
             };
         };
     };
-    D8_getLeaderboardById_v2: {
+    O8_getLeaderboardById_v2: {
         parameters: {
             query?: {
                 /** @description Realm ID (defaults to the active realm) */
@@ -6685,7 +6685,7 @@ export interface operations {
             };
         };
     };
-    D8_getLeaderboardPlayStatsById_v2: {
+    O8_getLeaderboardPlayStatsById_v2: {
         parameters: {
             query?: {
                 /** @description Realm ID (defaults to the active realm) */
@@ -6815,7 +6815,7 @@ export interface operations {
             };
         };
     };
-    D8_getLeaderboardScoresById_v2: {
+    O8_getLeaderboardScoresById_v2: {
         parameters: {
             query?: {
                 /** @description Page number */
@@ -6992,7 +6992,7 @@ export interface operations {
             };
         };
     };
-    D8_getDifficultiesForHash_v2: {
+    O8_getDifficultiesForHash_v2: {
         parameters: {
             query?: {
                 /** @description Realm ID (defaults to the active realm) */
@@ -7112,7 +7112,7 @@ export interface operations {
             };
         };
     };
-    D8_getLeaderboardByHash_v2: {
+    O8_getLeaderboardByHash_v2: {
         parameters: {
             query?: {
                 /** @description Realm ID (defaults to the active realm) */
@@ -7264,7 +7264,7 @@ export interface operations {
             };
         };
     };
-    D8_getLeaderboardScoresByHash_v2: {
+    O8_getLeaderboardScoresByHash_v2: {
         parameters: {
             query?: {
                 /** @description Page number */
@@ -7484,7 +7484,7 @@ export interface operations {
             };
         };
     };
-    S5_listTournaments_v2: {
+    C5_listTournaments_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -7530,7 +7530,7 @@ export interface operations {
             };
         };
     };
-    S5_createTournament_v2: {
+    C5_createTournament_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -7674,7 +7674,7 @@ export interface operations {
             };
         };
     };
-    S5_getWorkflowOptions_v2: {
+    C5_getWorkflowOptions_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -7719,7 +7719,7 @@ export interface operations {
             };
         };
     };
-    S5_getSettings_v2: {
+    C5_getSettings_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -7854,7 +7854,7 @@ export interface operations {
             };
         };
     };
-    S5_upsertSettings_v2: {
+    C5_upsertSettings_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -8043,7 +8043,7 @@ export interface operations {
             };
         };
     };
-    v5_listPlayerTournaments_v2: {
+    y5_listPlayerTournaments_v2: {
         parameters: {
             query?: never;
             header?: {
@@ -8094,7 +8094,7 @@ export interface operations {
             };
         };
     };
-    v5_listPlayerRooms_v2: {
+    y5_listPlayerRooms_v2: {
         parameters: {
             query?: never;
             header?: {
@@ -8242,7 +8242,7 @@ export interface operations {
             };
         };
     };
-    v5_getPlayerRoom_v2: {
+    y5_getPlayerRoom_v2: {
         parameters: {
             query?: never;
             header?: {
@@ -8417,7 +8417,7 @@ export interface operations {
             };
         };
     };
-    v5_getPlayerRoomByInviteCode_v2: {
+    y5_getPlayerRoomByInviteCode_v2: {
         parameters: {
             query?: never;
             header?: {
@@ -8591,7 +8591,7 @@ export interface operations {
             };
         };
     };
-    b5_listRoles_v2: {
+    x5_listRoles_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -8703,7 +8703,7 @@ export interface operations {
             };
         };
     };
-    b5_upsertRole_v2: {
+    x5_upsertRole_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -8890,7 +8890,7 @@ export interface operations {
             };
         };
     };
-    b5_deleteRole_v2: {
+    x5_deleteRole_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -9040,7 +9040,7 @@ export interface operations {
             };
         };
     };
-    b5_assignRole_v2: {
+    x5_assignRole_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -9200,7 +9200,7 @@ export interface operations {
             };
         };
     };
-    b5_unassignRole_v2: {
+    x5_unassignRole_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -9351,7 +9351,7 @@ export interface operations {
             };
         };
     };
-    b5_listTeams_v2: {
+    x5_listTeams_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -9444,7 +9444,7 @@ export interface operations {
             };
         };
     };
-    b5_upsertTeam_v2: {
+    x5_upsertTeam_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -9608,7 +9608,7 @@ export interface operations {
             };
         };
     };
-    b5_deleteTeam_v2: {
+    x5_deleteTeam_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -9758,7 +9758,7 @@ export interface operations {
             };
         };
     };
-    b5_listAuthorizedPlayers_v2: {
+    x5_listAuthorizedPlayers_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -9866,7 +9866,7 @@ export interface operations {
             };
         };
     };
-    b5_syncAuthorizedPlayers_v2: {
+    x5_syncAuthorizedPlayers_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -10069,7 +10069,7 @@ export interface operations {
             };
         };
     };
-    p5_listRooms_v2: {
+    m5_listRooms_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -10208,7 +10208,7 @@ export interface operations {
             };
         };
     };
-    p5_upsertRoom_v2: {
+    m5_upsertRoom_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -10445,7 +10445,7 @@ export interface operations {
             };
         };
     };
-    p5_getRoomsView_v2: {
+    m5_getRoomsView_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -10678,7 +10678,7 @@ export interface operations {
             };
         };
     };
-    p5_getRoomView_v2: {
+    m5_getRoomView_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -11007,7 +11007,7 @@ export interface operations {
             };
         };
     };
-    p5_setRoomMembers_v2: {
+    m5_setRoomMembers_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -11244,7 +11244,7 @@ export interface operations {
             };
         };
     };
-    p5_setRoomSong_v2: {
+    m5_setRoomSong_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -11505,7 +11505,7 @@ export interface operations {
             };
         };
     };
-    p5_closeRoom_v2: {
+    m5_closeRoom_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -11675,7 +11675,7 @@ export interface operations {
             };
         };
     };
-    p5_deleteRoom_v2: {
+    m5_deleteRoom_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -11845,7 +11845,7 @@ export interface operations {
             };
         };
     };
-    d5_startMap_v2: {
+    f5_startMap_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -12030,7 +12030,7 @@ export interface operations {
             };
         };
     };
-    d5_returnToMenu_v2: {
+    f5_returnToMenu_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -12200,7 +12200,7 @@ export interface operations {
             };
         };
     };
-    d5_prompt_v2: {
+    f5_prompt_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -12385,7 +12385,7 @@ export interface operations {
             };
         };
     };
-    d5_bottifyPlayer_v2: {
+    f5_bottifyPlayer_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -12569,7 +12569,7 @@ export interface operations {
             };
         };
     };
-    d5_unbottifyPlayer_v2: {
+    f5_unbottifyPlayer_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -12740,7 +12740,7 @@ export interface operations {
             };
         };
     };
-    d5_followRoom_v2: {
+    f5_followRoom_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -12919,7 +12919,7 @@ export interface operations {
             };
         };
     };
-    N5_getMapListings_v2: {
+    P5_getMapListings_v2: {
         parameters: {
             query?: {
                 /** @description Page number */
@@ -13089,7 +13089,7 @@ export interface operations {
             };
         };
     };
-    N5_getMapByHash_v2: {
+    P5_getMapByHash_v2: {
         parameters: {
             query?: {
                 /** @description Realm ID (defaults to the active realm) */
@@ -13239,7 +13239,7 @@ export interface operations {
             };
         };
     };
-    N5_getMapById_v2: {
+    P5_getMapById_v2: {
         parameters: {
             query?: {
                 /** @description Realm ID (defaults to the active realm) */
@@ -13553,7 +13553,7 @@ export interface operations {
             };
         };
     };
-    HDt_steamLogin_v2: {
+    BDt_steamLogin_v2: {
         parameters: {
             query?: {
                 intent?: "login" | "merge";
@@ -13646,7 +13646,7 @@ export interface operations {
             };
         };
     };
-    HDt_steamCallback_v2: {
+    BDt_steamCallback_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -13663,7 +13663,7 @@ export interface operations {
             };
         };
     };
-    HDt_patreonLogin_v2: {
+    BDt_patreonLogin_v2: {
         parameters: {
             query?: {
                 intent?: "login" | "link";
@@ -13758,7 +13758,7 @@ export interface operations {
             };
         };
     };
-    HDt_patreonCallback_v2: {
+    BDt_patreonCallback_v2: {
         parameters: {
             query?: {
                 /** @description Patreon OAuth authorization code */
@@ -13822,7 +13822,7 @@ export interface operations {
             };
         };
     };
-    HDt_discordLogin_v2: {
+    BDt_discordLogin_v2: {
         parameters: {
             query?: {
                 intent?: "login" | "link";
@@ -13917,7 +13917,7 @@ export interface operations {
             };
         };
     };
-    HDt_discordCallback_v2: {
+    BDt_discordCallback_v2: {
         parameters: {
             query?: {
                 /** @description Discord OAuth authorization code */
@@ -13981,7 +13981,7 @@ export interface operations {
             };
         };
     };
-    HDt_getToken_v2: {
+    BDt_getToken_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -14020,7 +14020,7 @@ export interface operations {
             };
         };
     };
-    HDt_startEmailLogin_v2: {
+    BDt_startEmailLogin_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -14162,7 +14162,7 @@ export interface operations {
             };
         };
     };
-    HDt_verifyEmailLogin_v2: {
+    BDt_verifyEmailLogin_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -14309,7 +14309,7 @@ export interface operations {
             };
         };
     };
-    HDt_logout_v2: {
+    BDt_logout_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -14387,7 +14387,7 @@ export interface operations {
             };
         };
     };
-    X6_startSignup_v2: {
+    Z6_startSignup_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -14529,7 +14529,7 @@ export interface operations {
             };
         };
     };
-    X6_completeSignup_v2: {
+    Z6_completeSignup_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -14679,7 +14679,7 @@ export interface operations {
             };
         };
     };
-    X6_loginWithPassword_v2: {
+    Z6_loginWithPassword_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -14784,7 +14784,7 @@ export interface operations {
             };
         };
     };
-    X6_startPasswordReset_v2: {
+    Z6_startPasswordReset_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -14926,7 +14926,7 @@ export interface operations {
             };
         };
     };
-    X6_completePasswordReset_v2: {
+    Z6_completePasswordReset_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -15074,7 +15074,7 @@ export interface operations {
             };
         };
     };
-    X6_getPasswordCredential_v2: {
+    Z6_getPasswordCredential_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -15116,7 +15116,7 @@ export interface operations {
             };
         };
     };
-    X6_startPasswordSetup_v2: {
+    Z6_startPasswordSetup_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -15258,7 +15258,7 @@ export interface operations {
             };
         };
     };
-    X6_completePasswordSetup_v2: {
+    Z6_completePasswordSetup_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -15402,7 +15402,7 @@ export interface operations {
             };
         };
     };
-    X6_changePassword_v2: {
+    Z6_changePassword_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -15542,7 +15542,7 @@ export interface operations {
             };
         };
     };
-    W6_startRegistration_v2: {
+    G6_startRegistration_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -15641,7 +15641,7 @@ export interface operations {
             };
         };
     };
-    W6_verifyRegistration_v2: {
+    G6_verifyRegistration_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -15785,7 +15785,7 @@ export interface operations {
             };
         };
     };
-    W6_startAuthentication_v2: {
+    G6_startAuthentication_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -15867,7 +15867,7 @@ export interface operations {
             };
         };
     };
-    W6_verifyAuthentication_v2: {
+    G6_verifyAuthentication_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -16011,7 +16011,7 @@ export interface operations {
             };
         };
     };
-    W6_listPasskeys_v2: {
+    G6_listPasskeys_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -16057,7 +16057,7 @@ export interface operations {
             };
         };
     };
-    W6_deletePasskey_v2: {
+    G6_deletePasskey_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -16168,7 +16168,7 @@ export interface operations {
             };
         };
     };
-    W6_renamePasskey_v2: {
+    G6_renamePasskey_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -16289,7 +16289,7 @@ export interface operations {
             };
         };
     };
-    H6_startDeviceLogin_v2: {
+    U6_startDeviceLogin_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -16368,7 +16368,7 @@ export interface operations {
             };
         };
     };
-    H6_getDeviceLoginStatus_v2: {
+    U6_getDeviceLoginStatus_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -17360,7 +17360,7 @@ export interface operations {
             };
         };
     };
-    nkt_authenticate_v2: {
+    ekt_authenticate_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -17582,7 +17582,7 @@ export interface operations {
             };
         };
     };
-    nkt_uploadScore_v2: {
+    ekt_uploadScore_v2: {
         parameters: {
             query?: never;
             header: {
@@ -17782,7 +17782,7 @@ export interface operations {
             };
         };
     };
-    nkt_setActiveRealms_v2: {
+    ekt_setActiveRealms_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -17915,7 +17915,7 @@ export interface operations {
             };
         };
     };
-    $6_registerOfficialBuild_v2: {
+    e8_registerOfficialBuild_v2: {
         parameters: {
             query?: never;
             header: {
@@ -21803,7 +21803,7 @@ export interface operations {
             };
         };
     };
-    ETt_getAllBadges_v2: {
+    wTt_getAllBadges_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -21846,7 +21846,7 @@ export interface operations {
             };
         };
     };
-    ETt_createBadge_v2: {
+    wTt_createBadge_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -21984,7 +21984,7 @@ export interface operations {
             };
         };
     };
-    ETt_updateBadge_v2: {
+    wTt_updateBadge_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -22145,7 +22145,7 @@ export interface operations {
             };
         };
     };
-    ETt_deleteBadge_v2: {
+    wTt_deleteBadge_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -22295,7 +22295,7 @@ export interface operations {
             };
         };
     };
-    ETt_getPlayerBadges_v2: {
+    wTt_getPlayerBadges_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -22407,7 +22407,7 @@ export interface operations {
             };
         };
     };
-    ETt_replacePlayerBadges_v2: {
+    wTt_replacePlayerBadges_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -22571,7 +22571,7 @@ export interface operations {
             };
         };
     };
-    ETt_assignBadge_v2: {
+    wTt_assignBadge_v2: {
         parameters: {
             query?: {
                 /** @description Badge description override */
@@ -22728,7 +22728,7 @@ export interface operations {
             };
         };
     };
-    ETt_unassignBadge_v2: {
+    wTt_unassignBadge_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -22839,7 +22839,7 @@ export interface operations {
             };
         };
     };
-    BTt_rankLeaderboard_v2: {
+    RTt_rankLeaderboard_v2: {
         parameters: {
             query?: {
                 /** @description Realm ID (defaults to the active realm) */
@@ -23005,7 +23005,7 @@ export interface operations {
             };
         };
     };
-    BTt_unrankLeaderboard_v2: {
+    RTt_unrankLeaderboard_v2: {
         parameters: {
             query?: {
                 /** @description Realm ID (defaults to the active realm) */
@@ -23162,7 +23162,7 @@ export interface operations {
             };
         };
     };
-    BTt_recalculatePP_v2: {
+    RTt_recalculatePP_v2: {
         parameters: {
             query?: {
                 /** @description Realm ID (defaults to the active realm) */
@@ -23280,7 +23280,7 @@ export interface operations {
             };
         };
     };
-    BTt_setManualPP_v2: {
+    RTt_setManualPP_v2: {
         parameters: {
             query?: {
                 /** @description Realm ID (defaults to the active realm) */
@@ -23446,7 +23446,7 @@ export interface operations {
             };
         };
     };
-    BTt_qualifyLeaderboard_v2: {
+    RTt_qualifyLeaderboard_v2: {
         parameters: {
             query?: {
                 /** @description Realm ID (defaults to the active realm) */
@@ -23602,7 +23602,7 @@ export interface operations {
             };
         };
     };
-    BTt_loveLeaderboard_v2: {
+    RTt_loveLeaderboard_v2: {
         parameters: {
             query?: {
                 /** @description Realm ID (defaults to the active realm) */
@@ -23758,7 +23758,7 @@ export interface operations {
             };
         };
     };
-    G3_listPermissions_v2: {
+    K3_listPermissions_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -23798,7 +23798,7 @@ export interface operations {
             };
         };
     };
-    KTt_deleteScore_v2: {
+    WTt_deleteScore_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -23908,7 +23908,7 @@ export interface operations {
             };
         };
     };
-    Z3_createDevelopmentCredential_v2: {
+    Q3_createDevelopmentCredential_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -24056,7 +24056,7 @@ export interface operations {
             };
         };
     };
-    Z3_revokeDevelopmentCredential_v2: {
+    Q3_revokeDevelopmentCredential_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -24204,7 +24204,7 @@ export interface operations {
             };
         };
     };
-    Z3_revokeOfficialBuild_v2: {
+    Q3_revokeOfficialBuild_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -24352,7 +24352,7 @@ export interface operations {
             };
         };
     };
-    Z3_getOfficialBuildCompatibility_v2: {
+    Q3_getOfficialBuildCompatibility_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -24394,7 +24394,7 @@ export interface operations {
             };
         };
     };
-    Z3_addOfficialBuildCompatibility_v2: {
+    Q3_addOfficialBuildCompatibility_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -24554,7 +24554,7 @@ export interface operations {
             };
         };
     };
-    oEt_getActiveBan_v2: {
+    iEt_getActiveBan_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -24669,7 +24669,7 @@ export interface operations {
             };
         };
     };
-    oEt_banPlayer_v2: {
+    iEt_banPlayer_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -24843,7 +24843,7 @@ export interface operations {
             };
         };
     };
-    oEt_unbanPlayer_v2: {
+    iEt_unbanPlayer_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -24953,7 +24953,7 @@ export interface operations {
             };
         };
     };
-    oEt_silencePlayer_v2: {
+    iEt_silencePlayer_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -25076,7 +25076,7 @@ export interface operations {
             };
         };
     };
-    oEt_unsilencePlayer_v2: {
+    iEt_unsilencePlayer_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -25186,7 +25186,7 @@ export interface operations {
             };
         };
     };
-    oEt_updateRoleText_v2: {
+    iEt_updateRoleText_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -25307,7 +25307,7 @@ export interface operations {
             };
         };
     };
-    oEt_adminResetCountry_v2: {
+    iEt_adminResetCountry_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -25428,7 +25428,7 @@ export interface operations {
             };
         };
     };
-    oEt_updatePermissions_v2: {
+    iEt_updatePermissions_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -25552,7 +25552,7 @@ export interface operations {
             };
         };
     };
-    oEt_mergePlayer_v2: {
+    iEt_mergePlayer_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -25741,7 +25741,7 @@ export interface operations {
             };
         };
     };
-    oEt_deleteUserData_v2: {
+    iEt_deleteUserData_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -25910,7 +25910,7 @@ export interface operations {
             };
         };
     };
-    t6_getVersions_v2: {
+    n6_getVersions_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -25956,7 +25956,7 @@ export interface operations {
             };
         };
     };
-    t6_createVersion_v2: {
+    n6_createVersion_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -26106,7 +26106,7 @@ export interface operations {
             };
         };
     };
-    t6_updateWhitelist_v2: {
+    n6_updateWhitelist_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -26228,7 +26228,7 @@ export interface operations {
             };
         };
     };
-    t6_deleteVersion_v2: {
+    n6_deleteVersion_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -26338,7 +26338,7 @@ export interface operations {
             };
         };
     };
-    lLt_getMe_v2: {
+    cLt_getMe_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -26426,7 +26426,7 @@ export interface operations {
             };
         };
     };
-    lLt_getVanity_v2: {
+    cLt_getVanity_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -26466,7 +26466,7 @@ export interface operations {
             };
         };
     };
-    lLt_claimVanity_v2: {
+    cLt_claimVanity_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -26645,7 +26645,7 @@ export interface operations {
             };
         };
     };
-    lLt_updatePinnedScores_v2: {
+    cLt_updatePinnedScores_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -26826,7 +26826,7 @@ export interface operations {
             };
         };
     };
-    lLt_updateProfileCustomization_v2: {
+    cLt_updateProfileCustomization_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -27027,7 +27027,7 @@ export interface operations {
             };
         };
     };
-    lLt_updateProfileCustomizationStyle_v2: {
+    cLt_updateProfileCustomizationStyle_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -27220,7 +27220,7 @@ export interface operations {
             };
         };
     };
-    lLt_uploadProfileCustomizationBackground_v2: {
+    cLt_uploadProfileCustomizationBackground_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -27407,7 +27407,7 @@ export interface operations {
             };
         };
     };
-    lLt_resetProfileCustomizationBackground_v2: {
+    cLt_resetProfileCustomizationBackground_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -27539,7 +27539,7 @@ export interface operations {
             };
         };
     };
-    lLt_getMyInfo_v2: {
+    cLt_getMyInfo_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -27579,7 +27579,7 @@ export interface operations {
             };
         };
     };
-    lLt_getQuestKey_v2: {
+    cLt_getQuestKey_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -27639,7 +27639,7 @@ export interface operations {
             };
         };
     };
-    lLt_canResetCountry_v2: {
+    cLt_canResetCountry_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -27680,7 +27680,7 @@ export interface operations {
             };
         };
     };
-    lLt_resetCountry_v2: {
+    cLt_resetCountry_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -27788,7 +27788,7 @@ export interface operations {
             };
         };
     };
-    lLt_updateBio_v2: {
+    cLt_updateBio_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -27903,7 +27903,7 @@ export interface operations {
             };
         };
     };
-    lLt_updateName_v2: {
+    cLt_updateName_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -28018,7 +28018,7 @@ export interface operations {
             };
         };
     };
-    lLt_updateLiveSpectating_v2: {
+    cLt_updateLiveSpectating_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -28133,7 +28133,7 @@ export interface operations {
             };
         };
     };
-    lLt_uploadAvatar_v2: {
+    cLt_uploadAvatar_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -28287,7 +28287,7 @@ export interface operations {
             };
         };
     };
-    lLt_getReplaySlots_v2: {
+    cLt_getReplaySlots_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -28364,7 +28364,7 @@ export interface operations {
             };
         };
     };
-    lLt_refreshPatreonBenefits_v2: {
+    cLt_refreshPatreonBenefits_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -28466,7 +28466,7 @@ export interface operations {
             };
         };
     };
-    lLt_claimReplaySlot_v2: {
+    cLt_claimReplaySlot_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -28581,7 +28581,7 @@ export interface operations {
             };
         };
     };
-    lLt_releaseReplaySlot_v2: {
+    cLt_releaseReplaySlot_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -28696,7 +28696,7 @@ export interface operations {
             };
         };
     };
-    lLt_getConnections_v2: {
+    cLt_getConnections_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -28746,7 +28746,7 @@ export interface operations {
             };
         };
     };
-    lLt_switchPrimaryConnection_v2: {
+    cLt_switchPrimaryConnection_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -28911,7 +28911,7 @@ export interface operations {
             };
         };
     };
-    lLt_startOculusEmailMerge_v2: {
+    cLt_startOculusEmailMerge_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -29053,7 +29053,7 @@ export interface operations {
             };
         };
     };
-    lLt_verifyOculusEmailMerge_v2: {
+    cLt_verifyOculusEmailMerge_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -29252,7 +29252,7 @@ export interface operations {
             };
         };
     };
-    lLt_getAccountMergeChallenge_v2: {
+    cLt_getAccountMergeChallenge_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -29441,7 +29441,7 @@ export interface operations {
             };
         };
     };
-    lLt_confirmAccountMerge_v2: {
+    cLt_confirmAccountMerge_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -29614,7 +29614,7 @@ export interface operations {
             };
         };
     };
-    lLt_removeConnection_v2: {
+    cLt_removeConnection_v2: {
         parameters: {
             query?: never;
             header?: never;
@@ -29724,7 +29724,7 @@ export interface operations {
             };
         };
     };
-    "MRt_authenticate[0]_v1": {
+    "jRt_authenticate[0]_v1": {
         parameters: {
             query?: never;
             header?: never;
@@ -29741,7 +29741,7 @@ export interface operations {
             };
         };
     };
-    "MRt_getLeaderboard[0]_v1": {
+    "jRt_getLeaderboard[0]_v1": {
         parameters: {
             query?: {
                 page?: number;
@@ -29806,7 +29806,7 @@ export interface operations {
             };
         };
     };
-    "MRt_getLeaderboardAroundFriends[0]_v1": {
+    "jRt_getLeaderboardAroundFriends[0]_v1": {
         parameters: {
             query?: {
                 page?: number;
@@ -29871,7 +29871,7 @@ export interface operations {
             };
         };
     };
-    "MRt_getLeaderboardAroundCountry[0]_v1": {
+    "jRt_getLeaderboardAroundCountry[0]_v1": {
         parameters: {
             query?: {
                 page?: number;
@@ -29936,7 +29936,7 @@ export interface operations {
             };
         };
     };
-    "MRt_getLeaderboardAroundRegion[0]_v1": {
+    "jRt_getLeaderboardAroundRegion[0]_v1": {
         parameters: {
             query?: {
                 page?: number;
@@ -30001,7 +30001,7 @@ export interface operations {
             };
         };
     };
-    "MRt_getLeaderboardAroundPlayer[0]_v1": {
+    "jRt_getLeaderboardAroundPlayer[0]_v1": {
         parameters: {
             query?: never;
             header?: never;
@@ -30022,7 +30022,7 @@ export interface operations {
             };
         };
     };
-    "MRt_getPlayers[0]_v1": {
+    "jRt_getPlayers[0]_v1": {
         parameters: {
             query?: {
                 page?: number;
@@ -30083,7 +30083,7 @@ export interface operations {
             };
         };
     };
-    "MRt_getPlayersAroundCountry[0]_v1": {
+    "jRt_getPlayersAroundCountry[0]_v1": {
         parameters: {
             query?: {
                 page?: number;
@@ -30144,7 +30144,7 @@ export interface operations {
             };
         };
     };
-    "MRt_getPlayersAroundFriends[0]_v1": {
+    "jRt_getPlayersAroundFriends[0]_v1": {
         parameters: {
             query?: {
                 page?: number;
@@ -30205,7 +30205,7 @@ export interface operations {
             };
         };
     };
-    "MRt_getPlayersAroundRegion[0]_v1": {
+    "jRt_getPlayersAroundRegion[0]_v1": {
         parameters: {
             query?: {
                 page?: number;
@@ -30266,7 +30266,7 @@ export interface operations {
             };
         };
     };
-    "MRt_getPlayersAroundPlayer[0]_v1": {
+    "jRt_getPlayersAroundPlayer[0]_v1": {
         parameters: {
             query?: never;
             header?: never;
@@ -30283,7 +30283,7 @@ export interface operations {
             };
         };
     };
-    "MRt_uploadScore[0]_v1": {
+    "jRt_uploadScore[0]_v1": {
         parameters: {
             query?: never;
             header?: never;
@@ -30300,7 +30300,7 @@ export interface operations {
             };
         };
     };
-    "MRt_downloadReplay[0]_v1": {
+    "jRt_downloadReplay[0]_v1": {
         parameters: {
             query: {
                 playerId: string;
@@ -30362,7 +30362,7 @@ export interface operations {
             };
         };
     };
-    "MRt_healthCheck[0]_v1": {
+    "jRt_healthCheck[0]_v1": {
         parameters: {
             query?: never;
             header?: never;
