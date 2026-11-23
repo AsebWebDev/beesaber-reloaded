@@ -235,7 +235,10 @@ jobs:
           docker tag beesaber:ci "$name:${GITHUB_SHA::7}"
           echo "$GH_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
           docker push "$name:${GITHUB_SHA::7}"
-          digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$name:${GITHUB_SHA::7}")
+          # Docker can also list the image under its local name, which Azure
+          # would look for on Docker Hub. No match stops the job here.
+          digest=$(docker inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$name:${GITHUB_SHA::7}" |
+            grep --fixed-strings --max-count=1 "$name@")
           echo "image=$digest" >> "$GITHUB_OUTPUT"
           echo "Published $digest"
 
