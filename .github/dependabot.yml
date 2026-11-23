@@ -1,11 +1,16 @@
 # Lets GitHub open pull requests when a dependency has a newer version or a
 # known security problem.
+#
+# Version updates wait two weeks, so a compromised release is usually found
+# before it gets here. Security updates do not wait.
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 14
     # One pull request for all minor and patch updates instead of dozens
     groups:
       minor-and-patch:
@@ -22,8 +27,12 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 14
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 14

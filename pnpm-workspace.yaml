@@ -6,3 +6,7 @@ allowBuilds:
   bcrypt: false
   esbuild: false
   msw: false
+# Two weeks, in minutes, for direct and indirect packages alike: a compromised
+# release is usually found and pulled within days. For an urgent security fix
+# that is younger, name that exact version in minimumReleaseAgeExclude.
+minimumReleaseAge: 20160
