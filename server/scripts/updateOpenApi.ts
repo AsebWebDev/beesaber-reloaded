@@ -1,7 +1,9 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
-import { resolveRefs } from './resolveRefs.ts';
+import { operationsOf } from './operationsOf.ts';
+
+import type { Spec } from './operationsOf.ts';
 
 /**
  * Downloads ScoreSaber's current OpenAPI description, replaces our copy and
@@ -23,27 +25,6 @@ const USED = [
   'GET /api/v2/players/{id}',
   'GET /api/v2/players/{id}/scores',
 ];
-
-type Spec = { paths: Record<string, Record<string, unknown>> };
-
-const METHODS = ['get', 'post', 'put', 'patch', 'delete'];
-
-/**
- * Every operation of a description, as "GET /path" with its definition.
- * References are resolved first, so a change to a schema an operation
- * points to counts as a change of the operation.
- */
-const operationsOf = (spec: Spec) =>
-  new Map(
-    Object.entries(spec.paths).flatMap(([path, methods]) =>
-      Object.entries(methods)
-        .filter(([method]) => METHODS.includes(method))
-        .map(([method, definition]): [string, string] => [
-          `${method.toUpperCase()} ${path}`,
-          JSON.stringify(resolveRefs(definition, spec)),
-        ])
-    )
-  );
 
 const isSpec = (value: unknown): value is Spec =>
   typeof value === 'object' &&
