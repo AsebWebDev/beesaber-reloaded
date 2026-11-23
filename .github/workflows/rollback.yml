@@ -21,7 +21,7 @@ permissions: {}
 jobs:
   find:
     name: Find the image of that commit
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     outputs:
       image: ${{ steps.find.outputs.image }}
