@@ -17,7 +17,7 @@ permissions: {}
 jobs:
   deploy:
     name: Deploy to Azure
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     # Only main may deploy to this environment, and only from it does Azure
     # accept the job's sign-in. A required reviewer could be added to it to

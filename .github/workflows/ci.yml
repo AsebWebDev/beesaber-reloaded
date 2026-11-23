@@ -22,7 +22,7 @@ jobs:
   check:
     # The branch protection of main requires the check with this name
     name: Lint, typecheck, test, build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
 
     # A Postgres that lives as long as this job. The server tests run against
@@ -94,7 +94,7 @@ jobs:
   # not on the day of a release.
   image:
     name: Docker image builds and starts
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
 
     services:
@@ -188,7 +188,7 @@ jobs:
   # red on every run until it is dealt with.
   audit:
     name: Dependencies without known vulnerabilities
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
 
     steps:
@@ -209,7 +209,7 @@ jobs:
     name: Publish the image
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [check, image]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     permissions:
       packages: write

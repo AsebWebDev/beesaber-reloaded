@@ -1,0 +1,5 @@
+# GitHub hosts this runner, but actionlint 1.7.12 has no entry for it, and
+# this list is the tool's only way to accept another label.
+self-hosted-runner:
+  labels:
+    - ubuntu-26.04
