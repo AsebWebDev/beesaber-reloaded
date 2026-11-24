@@ -115,18 +115,12 @@ in the browser.
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) 24 (see `.nvmrc`)
-- pnpm, provided by Corepack which ships with Node:
+- [Node.js](https://nodejs.org/) 26 (see `.nvmrc`)
+- pnpm. Node no longer ships Corepack, so install it with npm. pnpm then
+  switches to the version that `packageManager` in `package.json` names:
 
   ```sh
-  corepack enable pnpm
-  ```
-
-  If that fails with `EPERM` on Windows, let Corepack put the launchers into a
-  folder of your user profile that is already on the `PATH`:
-
-  ```powershell
-  corepack enable pnpm --install-directory "$env:APPDATA\npm"
+  npm install --global pnpm
   ```
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/), for the
