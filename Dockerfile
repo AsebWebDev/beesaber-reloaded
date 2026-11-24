@@ -9,12 +9,15 @@
 # Base for the stages that install packages: Node with pnpm, in the version
 # that package.json asks for
 # ---------------------------------------------------------------------------
-FROM node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f AS pnpm
-
-RUN corepack enable pnpm
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+FROM node:26-alpine@sha256:8996bb5821d62a8fd9bb27c1cb07462f3fdce6e47d640c6a881ead0b064ce216 AS pnpm
 
 WORKDIR /repo
+
+# Node no longer ships Corepack, so npm installs pnpm, in the version that
+# "packageManager" names: one place to change it
+COPY package.json ./
+RUN npm install --global --no-fund --no-audit \
+  "$(node -p "require('./package.json').packageManager")"
 
 # The package lists only. Docker keeps the result of every step and reuses it
 # while its inputs are unchanged, so a change to the code alone does not
@@ -53,14 +56,13 @@ RUN rm -rf node_modules/.pnpm/esbuild@* node_modules/.pnpm/@esbuild+*
 # ---------------------------------------------------------------------------
 # Stage: what runs
 # ---------------------------------------------------------------------------
-FROM node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f
+FROM node:26-alpine@sha256:8996bb5821d62a8fd9bb27c1cb07462f3fdce6e47d640c6a881ead0b064ce216
 
 # Security fixes of Alpine that came out after the base image was built.
-# npm and corepack come with the base image but play no part in running
-# the app, and what is not there cannot have a vulnerability.
+# npm comes with the base image but plays no part in running the app, and
+# what is not there cannot have a vulnerability.
 RUN apk upgrade --no-cache \
-  && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
-    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
+  && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
 ENV NODE_ENV=production
 ENV FRONTEND_DIR=/app/public
